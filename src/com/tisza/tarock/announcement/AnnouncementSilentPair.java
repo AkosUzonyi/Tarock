@@ -11,9 +11,9 @@ public final class AnnouncementSilentPair implements Announcement
 		normalPair = a;
 	}
 
-	public int calculatePoints(Gameplay gp, int player0, int player1)
+	public int calculatePoints(GameHistory gh, boolean callerTeam, boolean isSilent)
 	{
-		return normalPair.isSuccessful(gp, player0, player1) ? normalPair.getPoints() / 2 : 0;
+		return normalPair.isSuccessful(gh, false) ? normalPair.getPoints() / 2 : 0;
 	}
 
 	public boolean isSilent()

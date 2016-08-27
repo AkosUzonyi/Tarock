@@ -4,26 +4,21 @@ import java.util.*;
 
 import com.tisza.tarock.card.*;
 
-public class Bidding
+public class Announcing
 {
-	private final int beginnerPlayer;
+	private int callerPlayer;
+	private int calledPlayer = -1;
 	
-	private AllPlayersCards playersCards;
+	private AllPlayersCards playerHands;
 	private int currentPlayer;
 	
-	private int lastBidValue = 4;
-	private int lastBidPlayer = -1;
-	private boolean isKept = false;
-	
-	private BidState[] playersState = new BidState[4];
-	
-	private Invitation invit = null;
-	
-	public Bidding(GameHistory gh)
+	public Announcing(GameHistory gh)
 	{
-		playersCards = gh.dealing.getPlayersCards();
+		if (ph.size() != 4) throw new IllegalArgumentException();
+		
+		playerHands = gh.changeing.getPlayerCards();
 		beginnerPlayer = gh.beginnerPlayer;
-		currentPlayer = beginnerPlayer;
+		currentPlayer = bp;
 		
 		for (int i = 0; i < playersState.length; i++)
 		{
@@ -100,7 +95,7 @@ public class Bidding
 			int defaultBid = getDefaultBid();
 			result.add(defaultBid);
 			
-			PlayerCards cards = playersCards.getPlayerCards(currentPlayer);
+			PlayerCards cards = playerHands.get(currentPlayer);
 			boolean canInvit = checkBaseInvitationRequirements(currentPlayer);
 			
 			if (canKeep() && lastBidValue == 2 && (!canInvit || !cards.hasCard(new TarockCard(20))))
@@ -125,7 +120,7 @@ public class Bidding
 	
 	private boolean checkBiddingRequirements(int player)
 	{
-		for (Card c : playersCards.getPlayerCards(player).getCards())
+		for (Card c : playerHands.get(player).getCards())
 		{
 			if (c.isHonor())
 			{
@@ -137,7 +132,7 @@ public class Bidding
 	
 	private boolean checkBaseInvitationRequirements(int player)
 	{
-		PlayerCards h = playersCards.getPlayerCards(player);
+		PlayerCards h = playerHands.get(player);
 		return (h.hasCard(new TarockCard(21)) || h.hasCard(new TarockCard(22))) && h.tarockCount() >= 5;
 	}
 	

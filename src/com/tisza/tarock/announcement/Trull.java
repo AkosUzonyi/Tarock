@@ -7,8 +7,9 @@ import com.tisza.tarock.game.*;
 
 public class Trull extends AnnouncementBase
 {
-	public boolean isSuccessful(Gameplay gp, int player0, int player1)
+	public boolean isSuccessful(GameHistory gh, boolean callerTeam)
 	{
+		Gameplay gp = gh.gameplay;
 		List<Card> wonCards = new ArrayList<Card>();
 		wonCards.addAll(gp.getPlayerStats().get(player0).cardsWon);
 		wonCards.addAll(gp.getPlayerStats().get(player1).cardsWon);

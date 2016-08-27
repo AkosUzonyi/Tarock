@@ -8,20 +8,20 @@ public class Gameplay
 {
 	private List<PlayerStat> playerStats = new ArrayList<PlayerStat>();
 	
-	private List<HandCards> playerHands;
+	private List<PlayerCards> playerHands;
 	private List<Round> roundsPassed = new ArrayList<Round>();
 	private final int beginnerPlayer;
 	private Round currentRound;
 	
-	public Gameplay(List<HandCards> ph, int bp)
+	public Gameplay(List<PlayerCards> ph, int bp)
 	{
 		if (ph.size() != 4) throw new IllegalArgumentException();
 		
-		playerHands = new ArrayList<HandCards>(ph);
+		playerHands = new ArrayList<PlayerCards>(ph);
 		beginnerPlayer = bp;
 		currentRound = new Round(beginnerPlayer);
 		
-		for (HandCards hand : playerHands)
+		for (PlayerCards hand : playerHands)
 		{
 			PlayerStat ps = new PlayerStat();
 			ps.initialCards = hand;
@@ -34,7 +34,7 @@ public class Gameplay
 		if (isFinished())
 			throw new IllegalStateException("Game has finished, no cards can be placed");
 		
-		HandCards currentHand = playerHands.get(getNextPlayer());
+		PlayerCards currentHand = playerHands.get(getNextPlayer());
 		
 		if (!currentHand.hasCard(c))
 			return PlaceResult.NO_SUCH_CARD;
@@ -94,7 +94,7 @@ public class Gameplay
 	
 	public static class PlayerStat
 	{
-		public HandCards initialCards;
+		public PlayerCards initialCards;
 		public List<Card> cardsWon = new ArrayList<Card>();
 	}
 }

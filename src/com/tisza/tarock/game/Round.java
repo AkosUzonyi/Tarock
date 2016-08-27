@@ -24,7 +24,7 @@ public class Round
 	
 	public List<Card> getCards()
 	{
-		return new ArrayList<Card>(Arrays.asList(cards));
+		return Collections.unmodifiableList(Arrays.asList(cards));
 	}
 	
 	public boolean isFinished()

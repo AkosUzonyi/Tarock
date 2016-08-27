@@ -3,6 +3,7 @@ package com.tisza.tarock.game;
 import java.util.*;
 
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.filter.*;
 
 public class Bidding
 {
@@ -21,7 +22,7 @@ public class Bidding
 	
 	public Bidding(GameHistory gh)
 	{
-		playersCards = gh.dealing.getPlayersCards();
+		playersCards = gh.dealing.getCards();
 		beginnerPlayer = gh.beginnerPlayer;
 		currentPlayer = beginnerPlayer;
 		
@@ -46,10 +47,13 @@ public class Bidding
 		return lastBidValue - (canKeep() ? 0 : 1);
 	}
 	
-	public boolean bid(int bid)
+	public boolean bid(int bid, int player)
 	{
 		if (isFinished())
 			throw new IllegalStateException("Bidding is finished");
+		
+		if (player != currentPlayer)
+			return false;
 		
 		if (!getPossibleBids().contains(bid))
 			return false;
@@ -138,7 +142,7 @@ public class Bidding
 	private boolean checkBaseInvitationRequirements(int player)
 	{
 		PlayerCards h = playersCards.getPlayerCards(player);
-		return (h.hasCard(new TarockCard(21)) || h.hasCard(new TarockCard(22))) && h.tarockCount() >= 5;
+		return (h.hasCard(new TarockCard(21)) || h.hasCard(new TarockCard(22))) && h.filter(new TarockFilter()).size() >= 5;
 	}
 	
 	public boolean isFinished()

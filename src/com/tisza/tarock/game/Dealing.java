@@ -23,13 +23,13 @@ public class Dealing
 		talon = cardsToDeal;
 	}
 	
-	public AllPlayersCards getPlayersCards()
+	public AllPlayersCards getCards()
 	{
 		return pc;
 	}
 	
 	public List<Card> getTalon()
 	{
-		return talon;
+		return Collections.unmodifiableList(talon);
 	}
 }

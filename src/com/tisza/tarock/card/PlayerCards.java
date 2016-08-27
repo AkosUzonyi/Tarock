@@ -36,7 +36,7 @@ public class PlayerCards
 		return result;
 	}
 	
-	public List<? extends Card> getPlaceableCards(Card firstCard)
+	public List<Card> getPlaceableCards(Card firstCard)
 	{
 		if (firstCard == null)
 		{
@@ -66,9 +66,9 @@ public class PlayerCards
 		return new ArrayList<Card>();
 	}
 	
-	public List<? extends Card> getCards()
+	public List<Card> getCards()
 	{
-		return new ArrayList<Card>(cards);
+		return cards;
 	}
 	
 	public PlayerCards clone()

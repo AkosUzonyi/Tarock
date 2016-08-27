@@ -17,7 +17,7 @@ public class PlayerPairs
 		return caller;
 	}
 	
-	public boolean isCaller(int p)
+	public boolean isCallerTeam(int p)
 	{
 		return p == caller || p == called;
 	}

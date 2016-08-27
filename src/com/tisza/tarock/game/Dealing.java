@@ -11,7 +11,7 @@ public class Dealing
 	
 	public Dealing()
 	{
-		Random rnd = new Random();
+		Random rnd = new Random(1);
 		List<Card> cardsToDeal = new ArrayList<Card>(Card.all);
 		for (int p = 0; p < 4; p++)
 		{

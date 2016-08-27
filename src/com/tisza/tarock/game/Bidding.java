@@ -63,7 +63,7 @@ public class Bidding
 		{
 			if (canKeep() && lastBidValue == 2)
 			{
-				if (invit != null) throw new Error();
+				if (invit != Invitation.NONE) throw new Error();
 				invit = Invitation.XX;
 				invitingPlayer = currentPlayer;
 			}
@@ -76,14 +76,14 @@ public class Bidding
 			
 			if (jump == 1)
 			{
-				if (invit != null) throw new Error();
+				if (invit != Invitation.NONE) throw new Error();
 				invit = Invitation.XIX;
 				invitingPlayer = currentPlayer;
 			}
 			
 			if (jump == 2)
 			{
-				if (invit != null) throw new Error();
+				if (invit != Invitation.NONE) throw new Error();
 				invit = Invitation.XVIII;
 				invitingPlayer = currentPlayer;
 			}

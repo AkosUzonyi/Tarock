@@ -4,12 +4,12 @@ import com.tisza.tarock.game.*;
 
 public abstract class AnnouncementBase implements Announcement
 {
-	public abstract Result isSuccessful(GameHistory gh, boolean callerTeam);
+	public abstract Result isSuccessful(Gameplay gp, PlayerPairs pp, boolean callerTeam);
 	public abstract int getPoints();
 	
-	public int calculatePoints(GameHistory gh, boolean callerTeam, boolean isSilent)
+	public int calculatePoints(Gameplay gp, PlayerPairs pp, boolean callerTeam, boolean isSilent)
 	{
-		Result r = isSuccessful(gh, callerTeam);
+		Result r = isSuccessful(gp, pp, callerTeam);
 		
 		if (isSilent)
 		{
@@ -44,11 +44,6 @@ public abstract class AnnouncementBase implements Announcement
 	}	
 	
 	public boolean isSilent()
-	{
-		return false;
-	}
-	
-	public boolean hasSilentPair()
 	{
 		return false;
 	}

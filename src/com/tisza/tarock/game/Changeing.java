@@ -12,14 +12,11 @@ public class Changeing
 	private boolean[] donePlayer = new boolean[4];
 	private AllPlayersCards cardsAfter;
 	
-	public Changeing(GameHistory gh)
+	public Changeing(AllPlayersCards cards, List<Card> talon, int winnerPlayer, int winnerBid)
 	{
-		cardsAfter = gh.dealing.getCards().clone();
+		cardsAfter = cards;
 		
-		int winnerPlayer = gh.bidding.getWinnerPlayer();
-		int winnerBid = gh.bidding.getWinnerBid();
-		
-		List<Card> cardsRemaining = new LinkedList<Card>(gh.dealing.getTalon());
+		List<Card> cardsRemaining = new LinkedList<Card>(talon);
 		for (int i = 0; i < 4; i++)
 		{
 			int p = (i + winnerPlayer) % 4;

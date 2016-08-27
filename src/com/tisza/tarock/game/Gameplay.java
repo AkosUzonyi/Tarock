@@ -6,40 +6,29 @@ import com.tisza.tarock.card.*;
 
 public class Gameplay
 {
-	private List<PlayerStat> playerStats = new ArrayList<PlayerStat>();
+	private List<List<Card>> wonCards = new ArrayList<List<Card>>();
 	
-	private List<PlayerCards> playerHands;
+	private AllPlayersCards cards;
 	private List<Round> roundsPassed = new ArrayList<Round>();
 	private final int beginnerPlayer;
 	private Round currentRound;
 	
-	public Gameplay(List<PlayerCards> ph, int bp)
+	public Gameplay(AllPlayersCards cards, int bp)
 	{
-		if (ph.size() != 4) throw new IllegalArgumentException();
-		
-		playerHands = new ArrayList<PlayerCards>(ph);
+		this.cards = cards;
 		beginnerPlayer = bp;
 		currentRound = new Round(beginnerPlayer);
-		
-		for (PlayerCards hand : playerHands)
-		{
-			PlayerStat ps = new PlayerStat();
-			ps.initialCards = hand;
-			playerStats.add(ps);
-		}
 	}
 	
-	public PlaceResult placeCard(Card c)
+	public boolean placeCard(Card c)
 	{
 		if (isFinished())
 			throw new IllegalStateException("Game has finished, no cards can be placed");
 		
-		PlayerCards currentHand = playerHands.get(getNextPlayer());
+		PlayerCards currentHand = cards.getPlayerCards(getNextPlayer());
 		
-		if (!currentHand.hasCard(c))
-			return PlaceResult.NO_SUCH_CARD;
-		if (!currentHand.getPlaceableCards(currentRound.getFirstCard()).contains(c))
-			return PlaceResult.INVALID_CARD;
+		if (!getPlaceableCards().contains(c))
+			return false;
 		
 		currentRound.placeCard(c);
 		
@@ -47,11 +36,16 @@ public class Gameplay
 		{
 			roundsPassed.add(currentRound);
 			int winner = currentRound.getWinner();
-			playerStats.get(winner).cardsWon.addAll(currentRound.getCards());
+			wonCards.get(winner).addAll(currentRound.getCards());
 			currentRound = roundsPassed.size() >= 9 ? null : new Round(winner);
 		}
 		
-		return PlaceResult.OK;
+		return true;
+	}
+	
+	public Collection<Card> getPlaceableCards()
+	{
+		return Collections.unmodifiableCollection(cards.getPlayerCards(getNextPlayer()).getPlaceableCards(currentRound.getFirstCard()));
 	}
 	
 	public boolean isFinished()
@@ -66,11 +60,11 @@ public class Gameplay
 		return beginnerPlayer;
 	}
 	
-	public List<PlayerStat> getPlayerStats()
+	public Collection<Card> getWonCards(int player)
 	{
 		if (!isFinished())
 			throw new IllegalStateException("Game is in progress");
-		return playerStats;
+		return Collections.unmodifiableCollection(wonCards.get(player));
 	}
 
 	public List<Round> getRoundsPassed()
@@ -85,16 +79,5 @@ public class Gameplay
 		if (isFinished())
 			throw new IllegalStateException("Game has finished, no one is the next");
 		return currentRound.getNextPlayer();
-	}
-	
-	public static enum PlaceResult
-	{
-		OK, NO_SUCH_CARD, INVALID_CARD, NOT_PLAYERS_TURN;
-	}
-	
-	public static class PlayerStat
-	{
-		public PlayerCards initialCards;
-		public List<Card> cardsWon = new ArrayList<Card>();
 	}
 }

@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.card.filter.*;
+import com.tisza.tarock.game.Bidding.Invitation;
 
 public class Calling
 {
@@ -15,12 +16,11 @@ public class Calling
 	
 	private Collection<Card> callOptions = new ArrayList<Card>();
 	
-	public Calling(GameHistory gh)
+	public Calling(AllPlayersCards cards, int callerPlayer, Bidding.Invitation invit)
 	{
-		callerPlayer = gh.bidding.getWinnerPlayer();
-		cards = gh.changeing.getCards();
+		this.callerPlayer = callerPlayer;
+		this.cards = cards;
 		
-		Bidding.Invitation invit = gh.bidding.getInvitation();
 		PlayerCards pc = cards.getPlayerCards(callerPlayer);
 		for (int t = 20; t >= 1; t++)
 		{

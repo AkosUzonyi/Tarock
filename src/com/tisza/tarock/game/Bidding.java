@@ -20,10 +20,10 @@ public class Bidding
 	
 	private Invitation invit = null;
 	
-	public Bidding(GameHistory gh)
+	public Bidding(AllPlayersCards cards, int bp)
 	{
-		playersCards = gh.dealing.getCards();
-		beginnerPlayer = gh.beginnerPlayer;
+		playersCards = cards;
+		beginnerPlayer = bp;
 		currentPlayer = beginnerPlayer;
 		
 		for (int i = 0; i < playersState.length; i++)

@@ -9,7 +9,7 @@ public class Dealing
 	private final AllPlayersCards pc = new AllPlayersCards();
 	private final List<Card> talon;
 	
-	public Dealing(GameHistory gh)
+	public Dealing()
 	{
 		Random rnd = new Random();
 		List<Card> cardsToDeal = new ArrayList<Card>(Card.all);

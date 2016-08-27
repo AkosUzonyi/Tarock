@@ -36,26 +36,26 @@ public class PlayerCards
 		return result;
 	}
 	
-	public List<Card> getPlaceableCards(Card firstCard)
+	public Collection<Card> getPlaceableCards(Card firstCard)
 	{
 		if (firstCard == null)
 		{
 			return getCards();
 		}
 		
-		List<List<? extends Card>> lists = new ArrayList<List<? extends Card>>();
+		List<List<Card>> lists = new ArrayList<List<Card>>();
 		
 		if (firstCard instanceof SuitCard)
 		{
 			int firstCardSuit = ((SuitCard)firstCard).getSuit();
-			List<? extends Card> sameSuitCards = filter(new SuitFilter(firstCardSuit));
+			List<Card> sameSuitCards = filter(new SuitFilter(firstCardSuit));
 			lists.add(sameSuitCards);
 		}
 		
 		lists.add(filter(new TarockFilter()));
 		lists.add(getCards());
 		
-		for (List<? extends Card> list : lists)
+		for (List<Card> list : lists)
 		{
 			if (!list.isEmpty())
 			{

@@ -35,13 +35,8 @@ public class Round
 	public int getWinner()
 	{
 		if (!isFinished())
-		{
 			throw new IllegalStateException("Round has not finished");
-		}
-		else
-		{
-			return winnerPlayer;
-		}
+		return winnerPlayer;
 	}
 	
 	public int getNextPlayer()
@@ -51,6 +46,9 @@ public class Round
 	
 	public void placeCard(Card card)
 	{
+		if (isFinished())
+			throw new IllegalStateException();
+		
 		cards[nextPlayer++] = card;
 		nextPlayer %= 4;
 		

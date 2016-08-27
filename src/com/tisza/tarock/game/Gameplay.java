@@ -20,12 +20,13 @@ public class Gameplay
 		currentRound = new Round(beginnerPlayer);
 	}
 	
-	public boolean placeCard(Card c)
+	public boolean placeCard(Card c, int player)
 	{
 		if (isFinished())
 			throw new IllegalStateException("Game has finished, no cards can be placed");
 		
-		PlayerCards currentHand = cards.getPlayerCards(getNextPlayer());
+		if (player != getNextPlayer())
+			return false;
 		
 		if (!getPlaceableCards().contains(c))
 			return false;
@@ -45,7 +46,11 @@ public class Gameplay
 	
 	public Collection<Card> getPlaceableCards()
 	{
-		return Collections.unmodifiableCollection(cards.getPlayerCards(getNextPlayer()).getPlaceableCards(currentRound.getFirstCard()));
+		if (isFinished())
+			throw new IllegalStateException("Game has finished");
+		PlayerCards pc = cards.getPlayerCards(getNextPlayer());
+		Card firstCard = currentRound.getFirstCard();
+		return Collections.unmodifiableCollection(pc.getPlaceableCards(firstCard));
 	}
 	
 	public boolean isFinished()

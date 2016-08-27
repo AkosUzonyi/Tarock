@@ -9,8 +9,7 @@ import com.tisza.tarock.game.Bidding.Invitation;
 public class Calling
 {
 	private final int callerPlayer;
-	private int calledPlayer = -1;
-	private boolean isSoloIntentional = false;
+	private PlayerPairs playerPairs = null;
 	
 	private AllPlayersCards cards;
 	
@@ -22,7 +21,7 @@ public class Calling
 		this.cards = cards;
 		
 		PlayerCards pc = cards.getPlayerCards(callerPlayer);
-		for (int t = 20; t >= 1; t++)
+		for (int t = 20; t >= 1; t--)
 		{
 			TarockCard c = new TarockCard(t);
 			if (!pc.hasCard(c))
@@ -32,17 +31,30 @@ public class Calling
 			}
 		}
 		
-		callOptions.addAll(pc.filter(new TarockFilter()));
+		if (invit == Invitation.XIX)
+		{
+			callOptions.add(new TarockCard(19));
+		}
+		
+		if (invit == Invitation.XVIII)
+		{
+			callOptions.add(new TarockCard(18));
+		}
+		
+		callOptions.addAll(pc.filter(new CallableCardFilter()));
 	}
 	
-	public boolean call(Card card, int player)
+	public boolean call(int player, Card card)
 	{
+		if (isFinished())
+			throw new IllegalStateException();
 		if (player != callerPlayer)
 			return false;
 		
 		if (!callOptions.contains(card))
 			return false;
 		
+		int calledPlayer = -1;
 		for (int i = 0; i < 4; i++)
 		{
 			PlayerCards pc = cards.getPlayerCards(i);
@@ -52,11 +64,14 @@ public class Calling
 			}
 		}
 		
+		boolean isSoloIntentional = false;
 		if (calledPlayer < 0)
 		{
 			calledPlayer = callerPlayer;
 			isSoloIntentional = true;
 		}
+		
+		playerPairs = new PlayerPairs(callerPlayer, calledPlayer, isSoloIntentional);
 		
 		return true;
 	}
@@ -66,24 +81,15 @@ public class Calling
 		return Collections.unmodifiableCollection(callOptions);
 	}
 	
-	public int getCalledPlayer()
+	public boolean isFinished()
 	{
-		if (calledPlayer < 0)
-			throw new IllegalStateException();
-		return calledPlayer;
+		return playerPairs != null;
 	}
 	
-	public boolean isSolo()
+	public PlayerPairs getPlayerPairs()
 	{
-		if (calledPlayer < 0)
+		if (!isFinished())
 			throw new IllegalStateException();
-		return calledPlayer == callerPlayer;
-	}
-	
-	public boolean isSoloIntentional()
-	{
-		if (calledPlayer < 0)
-			throw new IllegalStateException();
-		return isSoloIntentional;
+		return playerPairs;
 	}
 }

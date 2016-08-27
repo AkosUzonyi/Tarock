@@ -44,7 +44,7 @@ public class Changeing
 		return Collections.unmodifiableCollection(cardsFromTalon.get(player));
 	}
 	
-	public boolean skart(Collection<Card> cards, int player)
+	public boolean skart(int player, Collection<Card> cards)
 	{
 		if (donePlayer[player])
 			return false;
@@ -71,7 +71,16 @@ public class Changeing
 	
 	public AllPlayersCards getCardsAfter()
 	{
-		return null;
+		return cardsAfter;
+	}
+	
+	public boolean isFinished()
+	{
+		for (boolean b : donePlayer)
+		{
+			if (!b) return false;
+		}
+		return true;
 	}
 
 	static

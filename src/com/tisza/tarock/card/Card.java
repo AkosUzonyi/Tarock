@@ -8,6 +8,7 @@ public abstract class Card
 	public static final List<Card> all = new ArrayList<Card>();
 	
 	public abstract int getPoints();
+	public abstract int getID();
 	public abstract boolean doesBeat(Card otherCard);
 	
 	public boolean isHonor()

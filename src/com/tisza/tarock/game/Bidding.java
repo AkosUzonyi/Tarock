@@ -18,7 +18,8 @@ public class Bidding
 	
 	private BidState[] playersState = new BidState[4];
 	
-	private Invitation invit = null;
+	private Invitation invit = Invitation.NONE;
+	private int invitingPlayer = -1;
 	
 	public Bidding(AllPlayersCards cards, int bp)
 	{
@@ -47,7 +48,7 @@ public class Bidding
 		return lastBidValue - (canKeep() ? 0 : 1);
 	}
 	
-	public boolean bid(int bid, int player)
+	public boolean bid(int player, int bid)
 	{
 		if (isFinished())
 			throw new IllegalStateException("Bidding is finished");
@@ -64,6 +65,7 @@ public class Bidding
 			{
 				if (invit != null) throw new Error();
 				invit = Invitation.XX;
+				invitingPlayer = currentPlayer;
 			}
 			
 			playersState[currentPlayer] = BidState.OUT;
@@ -76,12 +78,14 @@ public class Bidding
 			{
 				if (invit != null) throw new Error();
 				invit = Invitation.XIX;
+				invitingPlayer = currentPlayer;
 			}
 			
 			if (jump == 2)
 			{
 				if (invit != null) throw new Error();
 				invit = Invitation.XVIII;
+				invitingPlayer = currentPlayer;
 			}
 			
 			playersState[currentPlayer] = BidState.IN;
@@ -97,6 +101,8 @@ public class Bidding
 	
 	public List<Integer> getPossibleBids()
 	{
+		if (isFinished())
+			throw new IllegalStateException();
 		List<Integer> result = new ArrayList<Integer>();
 		result.add(-1);
 		if (checkBiddingRequirements(currentPlayer))
@@ -168,10 +174,9 @@ public class Bidding
 	{
 		if (!isFinished())
 			throw new IllegalStateException("Bidding is in progress");
-		return invit;
+		return invitingPlayer == getWinnerPlayer() ? Invitation.NONE : invit;
 	}
 	
-	//TODO: break infinite loop if all players passz
 	private void findNextPlayer()
 	{
 		int x = currentPlayer;
@@ -185,7 +190,7 @@ public class Bidding
 	
 	public static enum Invitation
 	{
-		XVIII, XIX, XX;
+		NONE, XVIII, XIX, XX;
 	}
 	
 	private static enum BidState

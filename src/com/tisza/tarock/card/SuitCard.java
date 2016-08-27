@@ -43,6 +43,11 @@ public class SuitCard extends Card
 			throw new IllegalArgumentException("Unknown card type: " + otherCard.getClass().getName());
 		}
 	}
+
+	public int getID()
+	{
+		return suit * 5 + value - 1;
+	}
 	
 	public int hashCode()
 	{

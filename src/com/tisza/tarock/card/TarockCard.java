@@ -31,6 +31,11 @@ public class TarockCard extends Card
 			throw new IllegalArgumentException("Unknown card type: " + otherCard.getClass().getName());
 		}
 	}
+
+	public int getID()
+	{
+		return value - 1 + 20;
+	}
 	
 	public int hashCode()
 	{

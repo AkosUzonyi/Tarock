@@ -1,16 +1,14 @@
 package com.tisza.tarock.announcement;
 
-import java.util.*;
-
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.announcement.AnnouncementBase.Result;
 import com.tisza.tarock.game.*;
 
 public class XXIFogas
 {
-	public boolean isSuccessful(GameHistory gh, int player0, int player1)
+	public Result isSuccessful(GameHistory gh, int player0, int player1)
 	{
 		Gameplay gp = gh.gameplay;
-		for
+		return null;
 	}
 
 	public int getPoints()

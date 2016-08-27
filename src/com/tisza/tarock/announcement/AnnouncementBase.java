@@ -9,7 +9,38 @@ public abstract class AnnouncementBase implements Announcement
 	
 	public int calculatePoints(GameHistory gh, boolean callerTeam, boolean isSilent)
 	{
+		Result r = isSuccessful(gh, callerTeam);
 		
+		if (isSilent)
+		{
+			if (r == Result.SUCCESSFUL_SILENT)
+			{
+				return getPoints() / 2;
+			}
+			else if (r == Result.FAILED_SILENT)
+			{
+				return -getPoints() / 2;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			if (r == Result.SUCCESSFUL || r == Result.SUCCESSFUL_SILENT)
+			{
+				return getPoints();
+			}
+			else if (r == Result.FAILED || r == Result.FAILED_SILENT)
+			{
+				return -getPoints();
+			}
+			else
+			{
+				return 0;
+			}
+		}
 	}	
 	
 	public boolean isSilent()

@@ -1,21 +1,25 @@
 package com.tisza.tarock.announcement;
 
+import com.tisza.tarock.game.*;
+
 
 public class AnnouncementInstance
 {
 	private final Announcement announcement;
-	private int player;
+	private GameHistory gameHistory;
+	private boolean callerTeam;
 	private int contraLevel = 0;
 	
-	public AnnouncementInstance(Announcement a, int p)
+	public AnnouncementInstance(Announcement a, GameHistory gh, boolean ct)
 	{
 		announcement = a;
-		player = p;
+		gameHistory = gh;
+		callerTeam = ct;
 	}
 	
-	public int getPlayer()
+	public int calculatePoints()
 	{
-		return player;
+		return announcement.calculatePoints(gameHistory, callerTeam, false) * (int)(Math.pow(2, contraLevel));
 	}
 	
 	public void contra()

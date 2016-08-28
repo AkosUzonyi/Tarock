@@ -31,6 +31,6 @@ public class Announcements
 	
 	static
 	{
-		//register(new Trull());
+		register(new Trull());
 	}
 }

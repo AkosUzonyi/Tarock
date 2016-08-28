@@ -7,13 +7,14 @@ import com.tisza.tarock.game.*;
 
 public class Trull extends AnnouncementBase
 {
-	public Result isSuccessful(Gameplay gp, PlayerPairs pp, boolean callerTeam)
+	public Result isSuccessful(Gameplay gp, PlayerPairs pp, Team team)
 	{
 		List<Card> wonCards = new ArrayList<Card>();
-		//wonCards.addAll(gp.getPlayerStats().get(player0).cardsWon);
-		//wonCards.addAll(gp.getPlayerStats().get(player1).cardsWon);
-		boolean successful = wonCards.containsAll(Card.honors);
-		return successful ? Result.SUCCESSFUL_SILENT : Result.FAILED;
+		for (int player : pp.getPlayersInTeam(team))
+		{
+			wonCards.addAll(gp.getWonCards(player));
+		}
+		return wonCards.containsAll(Card.honors) ? Result.SUCCESSFUL_SILENT : Result.FAILED;
 	}
 
 	public int getPoints()

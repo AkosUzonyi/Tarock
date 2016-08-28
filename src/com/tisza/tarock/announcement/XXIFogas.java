@@ -6,7 +6,7 @@ import com.tisza.tarock.game.*;
 
 public class XXIFogas
 {
-	public Result isSuccessful(Gameplay gp, PlayerPairs pp, boolean callerTeam)
+	public Result isSuccessful(Gameplay gp, PlayerPairs pp, Team team)
 	{
 		for (Round r : gp.getRoundsPassed())
 		{
@@ -14,9 +14,9 @@ public class XXIFogas
 			int XXIPlayer = r.getCards().indexOf(new TarockCard(21));
 			if (skizPlayer < 0 || XXIPlayer < 0) continue;
 			
-			boolean skizCaller = pp.isCallerTeam(skizPlayer);
-			boolean XXICaller = pp.isCallerTeam(XXIPlayer);
-			if (skizCaller == callerTeam && XXICaller != callerTeam)
+			Team skizTeam = pp.getTeam(skizPlayer);
+			Team XXITeam = pp.getTeam(XXIPlayer);
+			if (skizTeam == team && XXITeam != team)
 			{
 				return Result.SUCCESSFUL_SILENT;
 			}

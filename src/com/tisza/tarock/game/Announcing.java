@@ -38,16 +38,16 @@ public class Announcing
 		if (announcements.isEmpty())
 			return true;
 		
-		if (!identityKnown[currentPlayer] && playerPairs.isCallerTeam(player) != playerPairs.isCallerTeam(lastAnnouncer))
+		if (!identityKnown[currentPlayer] && playerPairs.getTeam(player) != playerPairs.getTeam(lastAnnouncer))
 			return false;
 		
-		boolean inCallerTeam = playerPairs.isCallerTeam(player);
-		PairState thisPlayerState = inCallerTeam ? callerState : oppponentState;
+		Team team = playerPairs.getTeam(player);
+		PairState thisPlayerState = team == Team.CALLER ? callerState : oppponentState;
 		
 		for (Announcement a : announcements)
 		{
 			thisPlayerState.announcements.add(a);
-			allAnnouncements.add(new AnnouncementInstance(a, playerPairs, inCallerTeam));
+			allAnnouncements.add(new AnnouncementInstance(a, playerPairs, team));
 		}
 		
 		lastAnnouncer = currentPlayer;
@@ -67,7 +67,7 @@ public class Announcing
 		{
 			for (AnnouncementInstance ai : allAnnouncements)
 			{
-				if (ai.isCallerTeam() != playerPairs.isCallerTeam(player) && ai.getAnnouncement() == a)
+				if (ai.getTeam() != playerPairs.getTeam(player) && ai.getAnnouncement() == a)
 				{
 					ai.contra();
 					identityKnown[player] = true;

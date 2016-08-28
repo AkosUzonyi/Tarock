@@ -6,20 +6,20 @@ import com.tisza.tarock.game.*;
 public class AnnouncementInstance
 {
 	private final Announcement announcement;
-	private boolean callerTeam;
+	private Team team;
 	private PlayerPairs playerPairs;
 	private int contraLevel = 0;
 	
-	public AnnouncementInstance(Announcement a, PlayerPairs pp, boolean ct)
+	public AnnouncementInstance(Announcement a, PlayerPairs pp, Team t)
 	{
 		announcement = a;
 		playerPairs = pp;
-		callerTeam = ct;
+		team = t;
 	}
 	
 	public int calculatePoints(Gameplay gp)
 	{
-		return announcement.calculatePoints(gp, playerPairs, callerTeam, false) * (int)(Math.pow(2, contraLevel));
+		return announcement.calculatePoints(gp, playerPairs, team, false) * (int)(Math.pow(2, contraLevel));
 	}
 	
 	public Announcement getAnnouncement()
@@ -27,14 +27,14 @@ public class AnnouncementInstance
 		return announcement;
 	}
 
+	public Team getTeam()
+	{
+		return team;
+	}
+
 	public int getContraLevel()
 	{
 		return contraLevel;
-	}
-
-	public boolean isCallerTeam()
-	{
-		return callerTeam;
 	}
 
 	public void contra()

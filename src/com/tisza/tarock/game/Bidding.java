@@ -179,13 +179,15 @@ public class Bidding
 	
 	private void findNextPlayer()
 	{
-		int x = currentPlayer;
-		do
+		for (int i = 0; i < 4; i++)
 		{
-			currentPlayer++;
-			currentPlayer %= 4;
+			int p = (currentPlayer + i + 1) % 4;
+			if (playersState[p] != BidState.OUT)
+			{
+				currentPlayer = p;
+				break;
+			}
 		}
-		while (playersState[currentPlayer] == BidState.OUT && currentPlayer != x);
 	}
 	
 	public static enum Invitation

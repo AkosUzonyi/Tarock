@@ -25,6 +25,6 @@ public class Contra
 
 	public boolean isSelf()
 	{
-		return level % 2 == 0;
+		return level % 2 == 1;
 	}
 }

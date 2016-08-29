@@ -11,6 +11,7 @@ public class Announcing
 	private final PlayerPairs playerPairs;
 	private int currentPlayer;
 	
+	private boolean currentPlayerAnnounced = false;
 	private int lastAnnouncer = -1;
 	private IdentityTracker idTrack;
 	
@@ -42,17 +43,24 @@ public class Announcing
 		
 		if (announcement == null)
 		{
+			if (currentPlayerAnnounced)
+			{
+				lastAnnouncer = currentPlayer;
+			}
 			currentPlayer++;
+			currentPlayer %= 4;
+			currentPlayerAnnounced = false;
 			return true;
 		}
 		
-		if (announcement != null && !idTrack.isIdentityKnown(player))
+		Team team = playerPairs.getTeam(player);
+		
+		if (lastAnnouncer >= 0 && team != playerPairs.getTeam(lastAnnouncer) && !idTrack.isIdentityKnown(player))
 			return false;
 		
-		Team team = playerPairs.getTeam(player);
 		announcementStates.get(announcement).team(team).announce();
 		idTrack.identityRevealed(player);
-		lastAnnouncer = currentPlayer;
+		currentPlayerAnnounced = true;
 		
 		return true;
 	}

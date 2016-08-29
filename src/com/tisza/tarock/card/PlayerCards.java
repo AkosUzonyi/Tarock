@@ -7,22 +7,22 @@ import com.tisza.tarock.card.filter.*;
 public class PlayerCards
 {
 	private List<Card> cards = new ArrayList<Card>();
-	
+
 	public void addCard(Card c)
 	{
 		cards.add(c);
 	}
-	
+
 	public boolean removeCard(Card c)
 	{
 		return cards.remove(c);
 	}
-	
+
 	public boolean hasCard(Card c)
 	{
 		return cards.contains(c);
 	}
-	
+
 	public List<Card> filter(CardFilter f)
 	{
 		List<Card> result = new ArrayList<Card>();
@@ -35,26 +35,31 @@ public class PlayerCards
 		}
 		return result;
 	}
-	
+
+	public List<Card> getCards()
+	{
+		return cards;
+	}
+
 	public Collection<Card> getPlaceableCards(Card firstCard)
 	{
 		if (firstCard == null)
 		{
 			return getCards();
 		}
-		
+
 		List<List<Card>> lists = new ArrayList<List<Card>>();
-		
+
 		if (firstCard instanceof SuitCard)
 		{
 			int firstCardSuit = ((SuitCard)firstCard).getSuit();
 			List<Card> sameSuitCards = filter(new SuitFilter(firstCardSuit));
 			lists.add(sameSuitCards);
 		}
-		
+
 		lists.add(filter(new TarockFilter()));
 		lists.add(getCards());
-		
+
 		for (List<Card> list : lists)
 		{
 			if (!list.isEmpty())
@@ -62,15 +67,33 @@ public class PlayerCards
 				return list;
 			}
 		}
-		
+
 		return new ArrayList<Card>();
 	}
-	
-	public List<Card> getCards()
+
+	public boolean canBeThrown(boolean afterChange)
 	{
-		return cards;
+		if (!afterChange && filter(new TarockFilter()).size() < 2)
+			return true;
+		
+		if (hasFourKings())
+			return true;
+		
+		return false;
 	}
 	
+	private boolean hasFourKings()
+	{
+		for (int suit = 0; suit < 4; suit++)
+		{
+			if (!cards.contains(new SuitCard(suit, 5)))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public PlayerCards clone()
 	{
 		PlayerCards clone = new PlayerCards();

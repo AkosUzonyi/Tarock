@@ -49,18 +49,6 @@ public class SuitCard extends Card
 		return suit * 5 + value - 1;
 	}
 	
-	public int hashCode()
-	{
-		return suit * 5 + value;
-	}
-
-	public boolean equals(Object o)
-	{
-		if (!(o instanceof SuitCard)) return false;
-		SuitCard other = (SuitCard)o;
-		return suit == other.suit && value == other.value;
-	}
-	
 	public String toString()
 	{
 		return "Suit " + getSuit() + "-" + getValue();

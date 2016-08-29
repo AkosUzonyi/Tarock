@@ -15,6 +15,11 @@ public class TarockCard extends Card
 		return value;
 	}
 	
+	public int getPoints()
+	{
+		return isHonor() ? 5 : 1;
+	}
+
 	public boolean doesBeat(Card otherCard)
 	{
 		if (otherCard instanceof SuitCard)
@@ -36,24 +41,7 @@ public class TarockCard extends Card
 	{
 		return value - 1 + 20;
 	}
-	
-	public int hashCode()
-	{
-		return value;
-	}
 
-	public boolean equals(Object o)
-	{
-		if (!(o instanceof TarockCard)) return false;
-		TarockCard other = (TarockCard)o;
-		return value == other.value;
-	}
-
-	public int getPoints()
-	{
-		return isHonor() ? 5 : 1;
-	}
-	
 	public String toString()
 	{
 		return "Tarock " + getValue();

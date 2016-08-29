@@ -16,6 +16,41 @@ public abstract class Card
 		return honors.contains(this);
 	}
 	
+	public static Card fromId(int id)
+	{
+		if (!isValidId(id))
+			throw new IllegalArgumentException();
+		
+		if (id < 20)
+		{
+			int suit = id % 4;
+			int value = id / 4 + 1;
+			return new SuitCard(suit, value);
+		}
+		else
+		{
+			int value = id - 20 + 1;
+			return new TarockCard(value);
+		}
+	}
+	
+	public static boolean isValidId(int id)
+	{
+		return id >= 0 && id < 42;
+	}
+	
+	public int hashCode()
+	{
+		return getID();
+	}
+
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof SuitCard)) return false;
+		Card other = (Card)o;
+		return getID() == other.getID();
+	}
+	
 	static
 	{
 		Collection<Card> honorsLocal = new ArrayList<Card>();

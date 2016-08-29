@@ -6,6 +6,8 @@ import com.tisza.tarock.game.*;
 
 public class XXIFogas
 {
+	XXIFogas(){}
+	
 	public Result isSuccessful(Gameplay gp, PlayerPairs pp, Team team)
 	{
 		for (Round r : gp.getRoundsPassed())

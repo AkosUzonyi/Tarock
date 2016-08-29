@@ -5,6 +5,8 @@ import java.util.*;
 public class Announcements
 {
 	private static final Map<Integer, Announcement> idToAnnouncement = new HashMap<Integer, Announcement>();
+	public static final Trull trull = new Trull();
+	public static final XXIFogas xxiFogas = new XXIFogas();
 	
 	public static Collection<Announcement> getAll()
 	{
@@ -31,6 +33,6 @@ public class Announcements
 	
 	static
 	{
-		register(new Trull());
+		register(trull);
 	}
 }

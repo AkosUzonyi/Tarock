@@ -38,6 +38,11 @@ public class PlayerPairs
 		return caller;
 	}
 	
+	public int getCalled()
+	{
+		return called;
+	}
+	
 	public Team getTeam(int p)
 	{
 		if (!checkPlayerIndexValid(caller) || !checkPlayerIndexValid(called))

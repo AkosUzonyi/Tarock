@@ -1,6 +1,5 @@
 package com.tisza.tarock.game;
 
-import java.security.acl.*;
 import java.util.*;
 
 import com.tisza.tarock.announcement.*;
@@ -9,14 +8,12 @@ import com.tisza.tarock.card.*;
 public class Announcing
 {
 	private final PlayerPairs playerPairs;
-	private final int currentPlayer;
+	private int currentPlayer;
 	
 	private int lastAnnouncer = -1;
-	private boolean[] identityKnown = new boolean[4];
+	private IdentityTracker idTrack;
 	
-	private Collection<AnnouncementInstance> allAnnouncements = new ArrayList<AnnouncementInstance>();
-	private PairState callerState = new PairState();
-	private PairState oppponentState = new PairState();
+	private Map<Announcement, AnnouncementState> announcementStates = new HashMap<Announcement, AnnouncementState>();
 	
 	private AllPlayersCards playerHands;
 	
@@ -24,7 +21,11 @@ public class Announcing
 	{
 		playerPairs = pp;
 		currentPlayer = playerPairs.getCaller();
-		identityKnown[currentPlayer] = true;
+		idTrack = new IdentityTracker(playerPairs);
+		for (Announcement a : Announcements.getAll())
+		{
+			announcementStates.put(a, new AnnouncementState());
+		}
 	}
 	
 	public boolean announce(int player, List<Announcement> announcements)
@@ -35,27 +36,29 @@ public class Announcing
 		if (player != currentPlayer)
 			return false;
 		
-		if (announcements.isEmpty())
-			return true;
-		
-		if (!identityKnown[currentPlayer] && playerPairs.getTeam(player) != playerPairs.getTeam(lastAnnouncer))
+		if (!announcements.isEmpty() && !idTrack.isIdentityKnown(player))
 			return false;
 		
+		if (lastAnnouncer < 0)
+		{
+			//announcements.add(game);
+		}
+		
 		Team team = playerPairs.getTeam(player);
-		PairState thisPlayerState = team == Team.CALLER ? callerState : oppponentState;
 		
 		for (Announcement a : announcements)
 		{
-			thisPlayerState.announcements.add(a);
-			allAnnouncements.add(new AnnouncementInstance(a, playerPairs, team));
+			announcementStates.get(a).team(team).announce();
+			idTrack.identityRevealed(player);
 		}
 		
-		lastAnnouncer = currentPlayer;
+		if (!announcements.isEmpty()) lastAnnouncer = currentPlayer;
 		
+		currentPlayer++;
 		return true;
 	}
 	
-	public boolean contra(int player, List<Announcement> announcementsToContra)
+	public boolean contra(int player, List<Contra> contraList)
 	{
 		if (isFinished())
 			throw new IllegalStateException();
@@ -63,19 +66,18 @@ public class Announcing
 		if (player != currentPlayer)
 			return false;
 		
-		for (Announcement a : announcementsToContra)
+		Team playerTeam = playerPairs.getTeam(player);
+		for (Contra c : contraList)
 		{
-			for (AnnouncementInstance ai : allAnnouncements)
+			Team announcerTeam = c.isSelf() ? playerTeam : playerTeam.getOther();
+			AnnouncementState.PerTeam as = announcementStates.get(c.getAnnouncement()).team(announcerTeam);
+			if (as.isAnnounced() && as.getNextTeamToContra() == playerTeam)
 			{
-				if (ai.getTeam() != playerPairs.getTeam(player) && ai.getAnnouncement() == a)
-				{
-					ai.contra();
-					identityKnown[player] = true;
-					//TODO
-				}
+				as.contra();
+				idTrack.identityRevealed(player);
 			}
 		}
-		return false;
+		return true;
 	}
 	
 	public boolean isFinished()
@@ -83,10 +85,22 @@ public class Announcing
 		return lastAnnouncer == currentPlayer;
 	}
 	
-	private static class PairState
+	private static class IdentityTracker
 	{
-		public Collection<Announcement> announcements = new ArrayList<Announcement>();
-		public boolean hasBanda = false;
+		private final PlayerPairs playerPairs;
 		
+		public IdentityTracker(PlayerPairs pp)
+		{
+			playerPairs = pp;
+		}
+		
+		public void identityRevealed(int player)
+		{
+		}
+		
+		public boolean isIdentityKnown(int player)
+		{
+			return false;
+		}
 	}
 }

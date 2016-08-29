@@ -7,6 +7,8 @@ import com.tisza.tarock.game.*;
 
 public class Trull extends AnnouncementBase
 {
+	Trull(){}
+	
 	public Result isSuccessful(Gameplay gp, PlayerPairs pp, Team team)
 	{
 		List<Card> wonCards = new ArrayList<Card>();

@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.Bidding.Invitation;
 
 public class Announcing
 {
@@ -17,18 +18,21 @@ public class Announcing
 	
 	private AllPlayersCards playerHands;
 	
-	public Announcing(PlayerPairs pp)
+	public Announcing(PlayerPairs pp, Invitation invit)
 	{
 		playerPairs = pp;
 		currentPlayer = playerPairs.getCaller();
-		idTrack = new IdentityTracker(playerPairs);
+		idTrack = new IdentityTracker(playerPairs, invit);
+		
 		for (Announcement a : Announcements.getAll())
 		{
 			announcementStates.put(a, new AnnouncementState());
 		}
+		
+		announce(playerPairs.getCaller(), Announcements.game);
 	}
 	
-	public boolean announce(int player, List<Announcement> announcements)
+	public boolean announce(int player, Announcement announcement)
 	{
 		if (isFinished())
 			throw new IllegalStateException();
@@ -36,29 +40,24 @@ public class Announcing
 		if (player != currentPlayer)
 			return false;
 		
-		if (!announcements.isEmpty() && !idTrack.isIdentityKnown(player))
+		if (announcement == null)
+		{
+			currentPlayer++;
+			return true;
+		}
+		
+		if (announcement != null && !idTrack.isIdentityKnown(player))
 			return false;
 		
-		if (lastAnnouncer < 0)
-		{
-			//announcements.add(game);
-		}
-		
 		Team team = playerPairs.getTeam(player);
+		announcementStates.get(announcement).team(team).announce();
+		idTrack.identityRevealed(player);
+		lastAnnouncer = currentPlayer;
 		
-		for (Announcement a : announcements)
-		{
-			announcementStates.get(a).team(team).announce();
-			idTrack.identityRevealed(player);
-		}
-		
-		if (!announcements.isEmpty()) lastAnnouncer = currentPlayer;
-		
-		currentPlayer++;
 		return true;
 	}
 	
-	public boolean contra(int player, List<Contra> contraList)
+	public boolean contra(int player, Contra contra)
 	{
 		if (isFinished())
 			throw new IllegalStateException();
@@ -67,17 +66,36 @@ public class Announcing
 			return false;
 		
 		Team playerTeam = playerPairs.getTeam(player);
-		for (Contra c : contraList)
+		Team announcerTeam = contra.isSelf() ? playerTeam : playerTeam.getOther();
+		AnnouncementState.PerTeam as = announcementStates.get(contra.getAnnouncement()).team(announcerTeam);
+		if (as.isAnnounced() && as.getNextTeamToContra() == playerTeam && as.getContraLevel() == contra.getLevel())
 		{
-			Team announcerTeam = c.isSelf() ? playerTeam : playerTeam.getOther();
-			AnnouncementState.PerTeam as = announcementStates.get(c.getAnnouncement()).team(announcerTeam);
-			if (as.isAnnounced() && as.getNextTeamToContra() == playerTeam)
+			as.contra();
+			idTrack.identityRevealed(player);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	public List<Contra> getPossibleContras()
+	{
+		List<Contra> result = new ArrayList<Contra>();
+		for (Announcement a : announcementStates.keySet())
+		{
+			AnnouncementState as = announcementStates.get(a);
+			for (Team t : Team.values())
 			{
-				as.contra();
-				idTrack.identityRevealed(player);
+				AnnouncementState.PerTeam ast = as.team(t);
+				if (ast.isAnnounced() && ast.getNextTeamToContra() == playerPairs.getTeam(currentPlayer))
+				{
+					result.add(new Contra(a, ast.getContraLevel()));
+				}
 			}
 		}
-		return true;
+		return result;
 	}
 	
 	public boolean isFinished()
@@ -88,19 +106,32 @@ public class Announcing
 	private static class IdentityTracker
 	{
 		private final PlayerPairs playerPairs;
+		private final Invitation invit;
+		private boolean[] identityKnown = new boolean[4];
 		
-		public IdentityTracker(PlayerPairs pp)
+		public IdentityTracker(PlayerPairs pp, Invitation i)
 		{
 			playerPairs = pp;
+			invit = i;
+			identityKnown[playerPairs.getCaller()] = true;
+			if (invit != Invitation.NONE)
+			{
+				Arrays.fill(identityKnown, true);
+			}
 		}
 		
 		public void identityRevealed(int player)
 		{
+			if (player == playerPairs.getCalled())
+			{
+				Arrays.fill(identityKnown, true);
+			}
+			identityKnown[player] = true;
 		}
 		
 		public boolean isIdentityKnown(int player)
 		{
-			return false;
+			return identityKnown[player];
 		}
 	}
 }

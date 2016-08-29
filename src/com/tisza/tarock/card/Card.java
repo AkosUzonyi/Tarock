@@ -4,8 +4,8 @@ import java.util.*;
 
 public abstract class Card
 {
-	public static final List<Card> honors = new ArrayList<Card>();
-	public static final List<Card> all = new ArrayList<Card>();
+	public static final Collection<Card> all;
+	public static final Collection<Card> honors;
 	
 	public abstract int getPoints();
 	public abstract int getID();
@@ -18,20 +18,24 @@ public abstract class Card
 	
 	static
 	{
-		honors.add(new TarockCard(1));
-		honors.add(new TarockCard(21));
-		honors.add(new TarockCard(22));
+		Collection<Card> honorsLocal = new ArrayList<Card>();
+		honorsLocal.add(new TarockCard(1));
+		honorsLocal.add(new TarockCard(21));
+		honorsLocal.add(new TarockCard(22));
+		honors = Collections.unmodifiableCollection(honorsLocal);
 		
+		Collection<Card> allLocal = new ArrayList<Card>();
 		for (int s = 0; s < 4; s++)
 		{
 			for (int v = 1; v <= 5; v++)
 			{
-				all.add(new SuitCard(s, v));
+				allLocal.add(new SuitCard(s, v));
 			}
 		}
 		for (int v = 1; v <= 22; v++)
 		{
-			all.add(new TarockCard(v));
+			allLocal.add(new TarockCard(v));
 		}
+		all = Collections.unmodifiableCollection(allLocal);
 	}
 }

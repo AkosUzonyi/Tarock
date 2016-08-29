@@ -2,12 +2,12 @@ package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.game.*;
 
-public abstract class AnnouncementBase implements Announcement
+abstract class AnnouncementBase implements Announcement
 {
-	public abstract Result isSuccessful(Gameplay gp, PlayerPairs pp, Team team);
-	public abstract int getPoints();
+	protected abstract Result isSuccessful(Gameplay gp, PlayerPairs pp, Team team);
+	protected abstract int getPoints(int winnerBid);
 	
-	public int calculatePoints(Gameplay gp, PlayerPairs pp, Team team, boolean isSilent)
+	public int calculatePoints(Gameplay gp, PlayerPairs pp, Team team, int winnerBid, boolean isSilent)
 	{
 		Result r = isSuccessful(gp, pp, team);
 		
@@ -15,11 +15,11 @@ public abstract class AnnouncementBase implements Announcement
 		{
 			if (r == Result.SUCCESSFUL_SILENT)
 			{
-				return getPoints() / 2;
+				return getPoints(winnerBid) / 2;
 			}
 			else if (r == Result.FAILED_SILENT)
 			{
-				return -getPoints() / 2;
+				return -getPoints(winnerBid) / 2;
 			}
 			else
 			{
@@ -30,11 +30,11 @@ public abstract class AnnouncementBase implements Announcement
 		{
 			if (r == Result.SUCCESSFUL || r == Result.SUCCESSFUL_SILENT)
 			{
-				return getPoints();
+				return getPoints(winnerBid);
 			}
 			else if (r == Result.FAILED || r == Result.FAILED_SILENT)
 			{
-				return -getPoints();
+				return -getPoints(winnerBid);
 			}
 			else
 			{
@@ -42,11 +42,6 @@ public abstract class AnnouncementBase implements Announcement
 			}
 		}
 	}	
-	
-	public boolean isSilent()
-	{
-		return false;
-	}
 	
 	public String getName()
 	{

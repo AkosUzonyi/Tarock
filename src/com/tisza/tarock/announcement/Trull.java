@@ -19,7 +19,7 @@ public class Trull extends AnnouncementBase
 		return wonCards.containsAll(Card.honors) ? Result.SUCCESSFUL_SILENT : Result.FAILED;
 	}
 
-	public int getPoints()
+	public int getPoints(int winnerBid)
 	{
 		return 2;
 	}

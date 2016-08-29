@@ -1,10 +1,9 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.announcement.AnnouncementBase.Result;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-public class XXIFogas
+public class XXIFogas extends AnnouncementBase
 {
 	XXIFogas(){}
 	
@@ -26,7 +25,7 @@ public class XXIFogas
 		return Result.FAILED;
 	}
 
-	public int getPoints()
+	public int getPoints(int winnerBid)
 	{
 		return 60;
 	}

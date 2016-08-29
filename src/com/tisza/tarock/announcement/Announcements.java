@@ -5,6 +5,7 @@ import java.util.*;
 public class Announcements
 {
 	private static final Map<Integer, Announcement> idToAnnouncement = new HashMap<Integer, Announcement>();
+	public static final Game game = new Game();
 	public static final Trull trull = new Trull();
 	public static final XXIFogas xxiFogas = new XXIFogas();
 	
@@ -33,6 +34,8 @@ public class Announcements
 	
 	static
 	{
+		register(game);
 		register(trull);
+		register(xxiFogas);
 	}
 }

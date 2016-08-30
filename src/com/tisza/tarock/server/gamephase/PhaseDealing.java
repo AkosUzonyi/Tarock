@@ -21,7 +21,7 @@ public class PhaseDealing implements GamePhase
 		{
 			game.sendPacketToPlayer(i, new PacketPlayerCards(d.getCards().getPlayerCards(i)));
 		}
-		game.getGameHistory().dealing = d;
+		game.getCurrentGame().dealing = d;
 		game.changeGamePhase(new PhaseBidding(game));
 	}
 

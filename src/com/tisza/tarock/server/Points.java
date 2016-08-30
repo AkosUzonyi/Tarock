@@ -5,7 +5,6 @@ import java.util.*;
 
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.server.gamephase.*;
 
 public class Points
 {
@@ -16,21 +15,28 @@ public class Points
 		pointEntries.addLast(Entry.ITINITAL_ENTRY);
 	}
 	
-	public void evaluateGame(GameHistory gh)
+	public void evaluateGame(GameInstance gi)
 	{
 		int pointsForCallerTeam = 0;
 		
-		Map<Announcement, AnnouncementState> announcementStates = gh.announcing.getAnnouncementStates();
+		Gameplay gp = gi.gameplay;
+		PlayerPairs pp = gi.calling.getPlayerPairs();
+		int winnerBid = gi.bidding.getWinnerBid();
+		
+		Map<Announcement, AnnouncementState> announcementStates = gi.announcing.getAnnouncementStates();
 		for (Map.Entry<Announcement, AnnouncementState> announcementEntry : announcementStates.entrySet())
 		{
 			Announcement a = announcementEntry.getKey();
 			AnnouncementState as = announcementEntry.getValue();
-			
-			Gameplay gp = gh.gameplay;
-			PlayerPairs pp = gh.calling.getPlayerPairs();
-			int winnerBid = gh.bidding.getWinnerBid();
-			pointsForCallerTeam += a.calculatePoints(gp, pp, Team.CALLER, winnerBid, as.team(Team.CALLER).isAnnounced());
+			for (Team t : Team.values())
+			{
+				AnnouncementState.PerTeam aspt = as.team(t);
+				int points = a.calculatePoints(gp, pp, t, winnerBid, aspt.isAnnounced()) * (int)Math.pow(2, aspt.getContraLevel());
+				pointsForCallerTeam += points * (t == Team.CALLER ? 1 : -1);
+			}
 		}
+		
+		pointEntries.addLast(pointEntries.getLast().addPoints(pointsForCallerTeam, pp.getCaller(), pp.getCalled()));
 	}
 	
 	public void readData(InputStream is) throws IOException

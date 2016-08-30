@@ -13,8 +13,8 @@ public class PhaseBidding implements GamePhase
 	public PhaseBidding(GameSession g)
 	{
 		game = g;
-		AllPlayersCards cards = game.getGameHistory().dealing.getCards();
-		int bp = game.getGameHistory().beginnerPlayer;
+		AllPlayersCards cards = game.getCurrentGame().dealing.getCards();
+		int bp = game.getCurrentGame().beginnerPlayer;
 		bidding = new Bidding(cards, bp);
 	}
 
@@ -39,11 +39,11 @@ public class PhaseBidding implements GamePhase
 		}
 		else if (packet instanceof PacketThrowCards)
 		{
-			PlayerCards cards = game.getGameHistory().dealing.getCards().getPlayerCards(player);
+			PlayerCards cards = game.getCurrentGame().dealing.getCards().getPlayerCards(player);
 			if (cards.canBeThrown(false))
 			{
 				game.broadcastPacket(new PacketCardsThrown(player, cards));
-				game.startNewGame();
+				game.startNewGame(true);
 			}
 		}
 	}
@@ -52,11 +52,12 @@ public class PhaseBidding implements GamePhase
 	{
 		if (bidding.isFinished())
 		{
-			game.getGameHistory().bidding = bidding;
+			game.getCurrentGame().bidding = bidding;
 			game.changeGamePhase(new PhaseCalling(game));
 		}
 		else
 		{
+			game.broadcastPacket(new PacketTurn(bidding.getNextPlayer(), PacketTurn.Type.BID));
 			game.sendPacketToPlayer(bidding.getNextPlayer(), new PacketAvailableBids(bidding.getPossibleBids()));
 		}
 	}

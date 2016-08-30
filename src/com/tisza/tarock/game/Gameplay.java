@@ -20,7 +20,7 @@ public class Gameplay
 		currentRound = new Round(beginnerPlayer);
 	}
 	
-	public boolean placeCard(Card c, int player)
+	public boolean playCard(Card c, int player)
 	{
 		if (isFinished())
 			throw new IllegalStateException("Game has finished, no cards can be placed");

@@ -13,8 +13,8 @@ public class PhaseAnnouncing implements GamePhase
 	public PhaseAnnouncing(GameSession g)
 	{
 		game = g;
-		PlayerPairs pp = game.getGameHistory().calling.getPlayerPairs();
-		Invitation invit = game.getGameHistory().bidding.getInvitation();
+		PlayerPairs pp = game.getCurrentGame().calling.getPlayerPairs();
+		Invitation invit = game.getCurrentGame().bidding.getInvitation();
 		announcing = new Announcing(pp, invit);
 	}
 
@@ -53,11 +53,14 @@ public class PhaseAnnouncing implements GamePhase
 	
 	private void onAnnounced()
 	{
-		game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAnnounceTurn());
 		if (announcing.isFinished())
 		{
-			game.getGameHistory().announcing = announcing;
+			game.getCurrentGame().announcing = announcing;
 			game.changeGamePhase(new PhaseGameplay(game));
+		}
+		else
+		{
+			game.broadcastPacket(new PacketTurn(announcing.getNextPlayer(), PacketTurn.Type.ANNOUNCE));
 		}
 	}
 }

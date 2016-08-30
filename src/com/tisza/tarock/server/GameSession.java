@@ -2,9 +2,6 @@ package com.tisza.tarock.server;
 
 import java.util.*;
 
-import android.annotation.SuppressLint;
-import android.util.*;
-
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
 import com.tisza.tarock.server.gamephase.*;
@@ -13,14 +10,13 @@ public class GameSession
 {
 	private int nextBeginnerPlayer;
 	
-	private GameHistory gh;
 	private GamePhase currentGamePhase;
+	private GameInstance currentGame;
 	
 	//sorted by id
 	private List<String> playerNames = new ArrayList<String>();
 	private List<PacketHandler> handlers = new ArrayList<PacketHandler>();
 	
-	@SuppressLint("UseSparseArrays")
 	private Map<Integer, Connection> playerIDToConnection = new HashMap<Integer, Connection>();
 	
 	public GameSession(int beginnerPlayer, Collection<String> names)
@@ -57,7 +53,7 @@ public class GameSession
 			throw new IllegalStateException();
 		
 		if (doubleRound) nextBeginnerPlayer--;
-		gh = new GameHistory(nextBeginnerPlayer);
+		currentGame = new GameInstance(nextBeginnerPlayer);
 		nextBeginnerPlayer = (nextBeginnerPlayer + 1) % 4;
 		
 		for (int i = 0; i < 4; i++)
@@ -66,14 +62,16 @@ public class GameSession
 		}
 		changeGamePhase(new PhaseDealing(this));
 	}
-	
-	public GameHistory getGameHistory()
+		
+	public GameInstance getCurrentGame()
 	{
-		return gh;
+		return currentGame;
 	}
-	
+
 	public void changeGamePhase(GamePhase newPhase)
 	{
+		if (currentGame == null)
+			throw new IllegalStateException();
 		currentGamePhase = newPhase;
 		currentGamePhase.start();
 	}
@@ -107,6 +105,15 @@ public class GameSession
 		}
 	}
 	
+	public void close()
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			disconnectFromPlayer(i);
+		}
+		currentGame = null;
+	}
+	
 	public synchronized void loginAuthorized(String name, Connection connection)
 	{
 		String failure = null;
@@ -132,6 +139,7 @@ public class GameSession
 		if (failure != null)
 		{
 			connection.sendPacket(new PacketLoginFailed(failure));
+			connection.closeRequest();
 		}
 	}
 

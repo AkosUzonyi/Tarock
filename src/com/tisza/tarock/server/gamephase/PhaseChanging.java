@@ -15,10 +15,10 @@ public class PhaseChanging implements GamePhase
 	public PhaseChanging(GameSession g)
 	{
 		game = g;
-		AllPlayersCards cards = game.getGameHistory().dealing.getCards();
-		List<Card> talon = game.getGameHistory().dealing.getTalon();
-		int winnerPlayer = game.getGameHistory().bidding.getWinnerPlayer();
-		int winnerBid = game.getGameHistory().bidding.getWinnerBid();
+		AllPlayersCards cards = game.getCurrentGame().dealing.getCards();
+		List<Card> talon = game.getCurrentGame().dealing.getTalon();
+		int winnerPlayer = game.getCurrentGame().bidding.getWinnerPlayer();
+		int winnerBid = game.getCurrentGame().bidding.getWinnerBid();
 		changing = new Changing(cards, talon, winnerPlayer, winnerBid);
 	}
 
@@ -42,7 +42,7 @@ public class PhaseChanging implements GamePhase
 				{
 					if (changing.isFinished())
 					{
-						game.getGameHistory().changing = changing;
+						game.getCurrentGame().changing = changing;
 						game.changeGamePhase(new PhaseAnnouncing(game));
 					}
 				}

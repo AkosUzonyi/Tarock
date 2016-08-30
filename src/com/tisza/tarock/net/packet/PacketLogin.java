@@ -6,7 +6,7 @@ public class PacketLogin extends Packet
 {
 	private String name;
 	
-	public PacketLogin() {}
+	PacketLogin() {}
 	
 	public PacketLogin(String name)
 	{

@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.tisza.tarock.card.*;
 
-public class Changeing
+public class Changing
 {
 	private static final List<Card> forbiddenCards = new ArrayList<Card>();
 	
@@ -12,7 +12,7 @@ public class Changeing
 	private boolean[] donePlayer = new boolean[4];
 	private AllPlayersCards cardsAfter;
 	
-	public Changeing(AllPlayersCards cards, List<Card> talon, int winnerPlayer, int winnerBid)
+	public Changing(AllPlayersCards cards, List<Card> talon, int winnerPlayer, int winnerBid)
 	{
 		cardsAfter = cards;
 		
@@ -44,27 +44,34 @@ public class Changeing
 		return Collections.unmodifiableCollection(cardsFromTalon.get(player));
 	}
 	
-	public boolean skart(int player, Collection<Card> cards)
+	public boolean skart(int player, Collection<Card> cardsToSkart)
 	{
 		if (donePlayer[player])
 			return false;
 		
-		List<Card> cardsFromTalonForCurrentPlayer = cardsFromTalon.get(player);
+		List<Card> cardsFromTalonForPlayer = new ArrayList<Card>(cardsFromTalon.get(player));
 		PlayerCards pc = cardsAfter.getPlayerCards(player);
 		
-		if (cards.size() != cardsFromTalonForCurrentPlayer.size())
+		if (cardsToSkart.size() != cardsFromTalonForPlayer.size())
 			return false;
 		
-		if (!pc.getCards().containsAll(cards))
-			return false;
-		
-		for (Card c : cards)
+		for (Card c : cardsToSkart)
 		{
-			if (forbiddenCards.contains(c)) return false;
+			if (forbiddenCards.contains(c))
+				return false;
+			if (!pc.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
+				return false;
 		}
 		
-		pc.getCards().removeAll(cards);
-		pc.getCards().addAll(cardsFromTalonForCurrentPlayer);
+		for (Card c : cardsToSkart)
+		{
+			boolean x = pc.removeCard(c) || cardsFromTalonForPlayer.remove(c);
+		}
+		
+		pc.getCards().addAll(cardsFromTalonForPlayer);
+		
+		if (pc.getCards().size() != 9)
+			throw new Error();
 		
 		return true;
 	}

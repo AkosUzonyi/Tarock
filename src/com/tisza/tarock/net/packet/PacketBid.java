@@ -6,7 +6,7 @@ public class PacketBid extends PacketGameAction
 {
 	private int bid;
 	
-	public PacketBid() {}
+	PacketBid() {}
 	
 	public PacketBid(int bid, int player)
 	{

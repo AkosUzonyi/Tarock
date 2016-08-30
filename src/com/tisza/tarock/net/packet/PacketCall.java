@@ -8,7 +8,7 @@ public class PacketCall extends PacketGameAction
 {
 	private Card card;
 	
-	public PacketCall() {}
+	PacketCall() {}
 	
 	public PacketCall(Card c, int player)
 	{

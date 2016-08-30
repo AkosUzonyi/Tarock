@@ -12,6 +12,7 @@ import com.tisza.tarock.server.gamephase.*;
 public class GameSession
 {
 	private int nextBeginnerPlayer;
+	
 	private GameHistory gh;
 	private GamePhase currentGamePhase;
 	
@@ -50,12 +51,15 @@ public class GameSession
 		}
 	}
 	
-	public void startNewGame()
+	public void startNewGame(boolean doubleRound)
 	{
 		if (playerIDToConnection.size() != 4)
 			throw new IllegalStateException();
+		
+		if (doubleRound) nextBeginnerPlayer--;
 		gh = new GameHistory(nextBeginnerPlayer);
 		nextBeginnerPlayer = (nextBeginnerPlayer + 1) % 4;
+		
 		for (int i = 0; i < 4; i++)
 		{
 			sendPacketToPlayer(i, new PacketStartGame(playerNames, i));
@@ -71,6 +75,7 @@ public class GameSession
 	public void changeGamePhase(GamePhase newPhase)
 	{
 		currentGamePhase = newPhase;
+		currentGamePhase.start();
 	}
 
 	public void packetFromPlayer(int player, Packet packet)

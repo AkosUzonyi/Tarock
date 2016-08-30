@@ -8,7 +8,7 @@ public class PacketAnnounce extends PacketGameAction
 {
 	private Announcement announcement;
 	
-	public PacketAnnounce() {}
+	PacketAnnounce() {}
 	
 	public PacketAnnounce(Announcement a, int player)
 	{

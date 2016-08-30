@@ -7,7 +7,7 @@ public class GameHistory
 	public final int beginnerPlayer;
 	public Dealing dealing = null;
 	public Bidding bidding = null;
-	public Changeing changeing = null;
+	public Changing changing = null;
 	public Calling calling = null;
 	public Announcing announcing = null;
 	public Gameplay gameplay = null;

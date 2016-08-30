@@ -9,7 +9,7 @@ public class PacketContra extends PacketGameAction
 {
 	private Contra contra;
 	
-	public PacketContra() {}
+	PacketContra() {}
 	
 	public PacketContra(Contra c, int player)
 	{

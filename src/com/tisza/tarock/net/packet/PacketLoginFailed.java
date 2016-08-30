@@ -6,7 +6,7 @@ public class PacketLoginFailed extends Packet
 {
 	private String error;
 	
-	public PacketLoginFailed() {}
+	PacketLoginFailed() {}
 	
 	public PacketLoginFailed(String e)
 	{

@@ -5,21 +5,20 @@ import java.util.*;
 
 import com.tisza.tarock.card.*;
 
-public class PacketChange extends PacketGameAction
+public class PacketAvailableCalls extends Packet
 {
-	private Collection<Card> cards;
+	private List<Card> cards;
 	
-	PacketChange() {}
+	PacketAvailableCalls() {}
 	
-	public PacketChange(Collection<Card> c, int player)
+	public PacketAvailableCalls(List<Card> c)
 	{
-		super(player);
 		cards = c;
 	}
 
-	public Collection<Card> getCards()
+	public List<Card> getAvailableCalls()
 	{
-		return Collections.unmodifiableCollection(cards);
+		return cards;
 	}
 
 	protected void readData(DataInputStream dis) throws IOException

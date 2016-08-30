@@ -2,14 +2,11 @@ package com.tisza.tarock.net.packet;
 
 import java.io.*;
 
-public class PacketThrowCards extends PacketGameAction
+import com.tisza.tarock.announcement.*;
+
+public class PacketAnnounceTurn extends Packet
 {
-	PacketThrowCards() {}
-	
-	public PacketThrowCards(int player)
-	{
-		super(player);
-	}
+	public PacketAnnounceTurn() {}
 
 	protected void readData(DataInputStream dis) throws IOException
 	{

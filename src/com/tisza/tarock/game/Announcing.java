@@ -33,6 +33,16 @@ public class Announcing
 		announce(playerPairs.getCaller(), Announcements.game);
 	}
 	
+	public int getNextPlayer()
+	{
+		return currentPlayer;
+	}
+	
+	public Map<Announcement, AnnouncementState> getAnnouncementStates()
+	{
+		return announcementStates;
+	}
+
 	public boolean announce(int player, Announcement announcement)
 	{
 		if (isFinished())

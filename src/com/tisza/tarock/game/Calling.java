@@ -13,7 +13,7 @@ public class Calling
 	
 	private AllPlayersCards cards;
 	
-	private Collection<Card> callOptions = new ArrayList<Card>();
+	private List<Card> callOptions = new ArrayList<Card>();
 	
 	public Calling(AllPlayersCards cards, int callerPlayer, Bidding.Invitation invit)
 	{
@@ -42,6 +42,11 @@ public class Calling
 		}
 		
 		callOptions.addAll(pc.filter(new CallableCardFilter()));
+	}
+	
+	public int getCaller()
+	{
+		return callerPlayer;
 	}
 	
 	public boolean call(int player, Card card)
@@ -76,9 +81,9 @@ public class Calling
 		return true;
 	}
 	
-	public Collection<Card> getCallableTarocks()
+	public List<Card> getCallableCards()
 	{
-		return Collections.unmodifiableCollection(callOptions);
+		return Collections.unmodifiableList(callOptions);
 	}
 	
 	public boolean isFinished()

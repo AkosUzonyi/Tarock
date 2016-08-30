@@ -8,7 +8,7 @@ public class PacketPlayCard extends PacketGameAction
 {
 	private Card card;
 	
-	public PacketPlayCard() {}
+	PacketPlayCard() {}
 	
 	public PacketPlayCard(Card c, int player)
 	{

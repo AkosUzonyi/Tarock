@@ -1,0 +1,51 @@
+package com.tisza.tarock.server;
+
+import java.io.*;
+
+import com.tisza.tarock.net.*;
+import com.tisza.tarock.net.packet.*;
+
+public class LoginHandler implements PacketHandler
+{
+	private GameSession game;
+	private Connection connection;
+	private ServerOptions options;
+	private String name = null;
+	
+	public LoginHandler(GameSession g, Connection c, ServerOptions o)
+	{
+		game = g;
+		connection = c;
+		options = o;
+	}
+	
+	public void handlePacket(Packet p)
+	{
+		if (p instanceof PacketLogin)
+		{
+			if (!options.isSecured())
+			{
+				PacketLogin pl = (PacketLogin)p;
+				name = pl.getName();
+				synchronized (game)
+				{
+				}
+			}
+		}
+	}
+	
+	private void loginFailed(String desc)
+	{
+		name = null;
+		connection.sendPacket(new PacketLoginFailed(desc));
+		connection.closeRequest();
+	}
+
+	public void connectionClosed()
+	{
+		if (name != null)
+		{
+			game.logout(name);
+		}
+	}
+}

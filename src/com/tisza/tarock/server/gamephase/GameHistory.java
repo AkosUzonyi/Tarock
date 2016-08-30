@@ -1,4 +1,6 @@
-package com.tisza.tarock.game;
+package com.tisza.tarock.server.gamephase;
+
+import com.tisza.tarock.game.*;
 
 public class GameHistory
 {

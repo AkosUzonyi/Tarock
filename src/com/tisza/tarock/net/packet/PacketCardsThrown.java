@@ -31,10 +31,7 @@ public class PacketCardsThrown extends Packet
 		for (int i = 0; i < size; i++)
 		{
 			int id = dis.readByte();
-			if (Card.isValidId(id))
-			{
-				thrownCards.addCard(Card.fromId(id));
-			}
+			thrownCards.addCard(Card.fromId(id));
 		}
 	}
 

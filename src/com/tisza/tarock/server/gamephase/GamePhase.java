@@ -6,4 +6,5 @@ public interface GamePhase
 {
 	public void start();
 	public void packetFromPlayer(int player, Packet packet);
+	//public void playerLoggedIn(int player);
 }

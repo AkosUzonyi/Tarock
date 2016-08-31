@@ -11,13 +11,13 @@ public class Dealing
 	
 	public Dealing()
 	{
-		Random rnd = new Random();
 		List<Card> cardsToDeal = new ArrayList<Card>(Card.all);
+		Collections.shuffle(cardsToDeal);
 		for (int p = 0; p < 4; p++)
 		{
 			for (int i = 0; i < 9; i++)
 			{
-				pc.getPlayerCards(p).addCard(cardsToDeal.remove(rnd.nextInt(cardsToDeal.size())));
+				pc.getPlayerCards(p).addCard(cardsToDeal.remove(0));
 			}
 		}
 		talon = cardsToDeal;

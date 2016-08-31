@@ -70,5 +70,11 @@ public abstract class Packet
 		register(13, PacketAnnounce.class);
 		register(14, PacketContra.class);
 		register(15, PacketPlayCard.class);
+		register(16, PacketAnnouncementStatistics.class);
+		register(17, PacketPoints.class);
+		register(18, PacketReadyForNewGame.class);
+		
+		register(19, PacketMessage.class);
+		register(20, PacketSkartTarock.class);
 	}
 }

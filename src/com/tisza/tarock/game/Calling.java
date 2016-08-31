@@ -9,16 +9,25 @@ import com.tisza.tarock.game.Bidding.Invitation;
 public class Calling
 {
 	private final int callerPlayer;
-	private PlayerPairs playerPairs = null;
-	private Invitation invit;
 	
 	private AllPlayersCards cards;
+	private PlayerPairs playerPairs = null;
+	private Invitation invit;
+	private boolean canCallAnyTarock;
 	
-	public Calling(AllPlayersCards cards, int callerPlayer, Bidding.Invitation invit)
+	public Calling(AllPlayersCards cards, int callerPlayer, Bidding.Invitation invit, int[] tarockSkartedCounts)
 	{
 		this.callerPlayer = callerPlayer;
 		this.cards = cards;
 		this.invit = invit;
+		canCallAnyTarock = false;
+		for (int i = 0; i < 4; i++)
+		{
+			if (i != callerPlayer && tarockSkartedCounts[i] > 0)
+			{
+				canCallAnyTarock = true;
+			}
+		}
 	}
 	
 	public int getCaller()
@@ -66,6 +75,19 @@ public class Calling
 		
 		List<Card> callOptions = new ArrayList<Card>();
 		
+		if (canCallAnyTarock)
+		{
+			CardFilter cf = new CallableCardFilter();
+			for (Card c : Card.all)
+			{
+				if (cf.match(c))
+				{
+					callOptions.add(c);
+				}
+			}
+			return callOptions;
+		}
+		
 		PlayerCards pc = cards.getPlayerCards(callerPlayer);
 		for (int t = 20; t >= 1; t--)
 		{
@@ -79,12 +101,20 @@ public class Calling
 		
 		if (invit == Invitation.XIX)
 		{
-			callOptions.add(new TarockCard(19));
+			Card c = new TarockCard(19);
+			if (!callOptions.contains(c))
+			{
+				callOptions.add(c);
+			}
 		}
 		
 		if (invit == Invitation.XVIII)
 		{
-			callOptions.add(new TarockCard(18));
+			Card c = new TarockCard(18);
+			if (!callOptions.contains(c))
+			{
+				callOptions.add(c);
+			}
 		}
 		
 		callOptions.addAll(pc.filter(new CallableCardFilter()));

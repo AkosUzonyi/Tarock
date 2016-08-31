@@ -48,6 +48,11 @@ public class Points
 		return sortedPlayerNames.indexOf(playerNames.get(playerID));
 	}
 	
+	public Entry getCurrentPoints()
+	{
+		return pointEntries.getLast();
+	}
+	
 	public void readData(InputStream is) throws IOException
 	{
 		pointEntries.clear();
@@ -62,7 +67,13 @@ public class Points
 			}
 			pointEntries.addLast(new Entry(points));
 		}
+		
 		dirtyEntries = 0;
+		
+		if (pointEntries.size() == 0)
+		{
+			pointEntries.addLast(Entry.ITINITAL_ENTRY);
+		}
 	}
 	
 	public void writeData(OutputStream os) throws IOException
@@ -92,9 +103,10 @@ public class Points
 		
 		while (iterator.hasNext())
 		{
+			Entry entry = iterator.next();
 			for (int i = 0; i < 4; i++)
 			{
-				dos.writeInt(iterator.next().getPoint(i));
+				dos.writeInt(entry.getPoint(i));
 			}
 		}
 	}

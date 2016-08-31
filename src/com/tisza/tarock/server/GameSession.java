@@ -4,8 +4,6 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import com.tisza.tarock.announcement.*;
-import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
 import com.tisza.tarock.server.gamephase.*;
@@ -110,7 +108,7 @@ public class GameSession implements Runnable
 			{
 				PlayerPacket pp = packetsReceived.take();
 				waitForAllPlayersToConnect();
-				packetFromPlayer(pp.player, pp.packet);
+				currentGamePhase.packetFromPlayer(pp.player, pp.packet);
 			}
 		}
 		catch (InterruptedException e)
@@ -136,30 +134,14 @@ public class GameSession implements Runnable
 			throw new RuntimeException();
 	}
 
-	public void evaluatePoints()
+	public Points getPoints()
+	{
+		return points;
+	}
+	
+	public void savePoints()
 	{
 		checkThread();
-		
-		int pointsForCallerTeam = 0;
-		
-		Gameplay gp = currentGame.gameplay;
-		PlayerPairs pp = currentGame.calling.getPlayerPairs();
-		int winnerBid = currentGame.bidding.getWinnerBid();
-		
-		Map<Announcement, AnnouncementState> announcementStates = currentGame.announcing.getAnnouncementStates();
-		for (Map.Entry<Announcement, AnnouncementState> announcementEntry : announcementStates.entrySet())
-		{
-			Announcement a = announcementEntry.getKey();
-			AnnouncementState as = announcementEntry.getValue();
-			for (Team t : Team.values())
-			{
-				AnnouncementState.PerTeam aspt = as.team(t);
-				int points = a.calculatePoints(gp, pp, t, winnerBid, aspt.isAnnounced()) * (int)Math.pow(2, aspt.getContraLevel());
-				pointsForCallerTeam += points * (t == Team.CALLER ? 1 : -1);
-			}
-		}
-		
-		points.addPoints(pointsForCallerTeam, pp.getCaller(), pp.getCalled());
 		
 		if (pointsFile != null)
 		{
@@ -191,14 +173,6 @@ public class GameSession implements Runnable
 		currentGamePhase.start();
 	}
 
-	private void packetFromPlayer(int player, Packet packet)
-	{
-		if (currentGamePhase != null)
-		{
-			currentGamePhase.packetFromPlayer(player, packet);
-		}
-	}
-
 	public void playerConnectionClosed(int player)
 	{
 		disconnectFromPlayer(player);
@@ -226,12 +200,28 @@ public class GameSession implements Runnable
 	
 	public void close()
 	{
+		gameThread.interrupt();
+		try
+		{
+			gameThread.join(1000);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+		currentGame = null;
 		for (int i = 0; i < 4; i++)
 		{
 			disconnectFromPlayer(i);
 		}
-		gameThread.interrupt();
-		currentGame = null;
+	}
+	
+	private void onSuccessfulLogin(int player)
+	{
+		if (currentGamePhase != null)
+		{
+			//currentGamePhase.playerLoggedIn(player);
+		}
 	}
 	
 	public void loginAuthorized(String name, Connection connection)
@@ -256,6 +246,7 @@ public class GameSession implements Runnable
 				{
 					playerIDToConnection.put(player, connection);
 					System.out.println("User logged in: " + name);
+					onSuccessfulLogin(player);
 					connection.addPacketHandler(handlers.get(player));
 					connectionLock.notify();
 				}

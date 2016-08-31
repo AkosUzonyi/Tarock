@@ -25,10 +25,10 @@ abstract class GamePoints extends AnnouncementBase
 				points += c.getPoints();
 			}
 		}
-		return points > getMinPointsRequired() ? (canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL) : Result.FAILED;
+		return points >= getMinPointsRequired() ? (canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL) : Result.FAILED;
 	}
 	
-	protected int getPoints(int winnerBid)
+	public int getPoints(int winnerBid)
 	{
 		return getDefaultPoints() * (4 - winnerBid);
 	}

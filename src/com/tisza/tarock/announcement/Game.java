@@ -12,6 +12,11 @@ public class Game extends GamePoints
 		return 1;
 	}
 
+	protected boolean canBeSilent()
+	{
+		return false;
+	}
+
 	public int getID()
 	{
 		return 0;

@@ -24,7 +24,9 @@ public class PacketCall extends PacketGameAction
 	protected void readData(DataInputStream dis) throws IOException
 	{
 		super.readData(dis);
-		card = Card.fromId(dis.readByte());
+		int id = dis.readByte();
+		
+		card = Card.fromId(id);
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException

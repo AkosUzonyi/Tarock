@@ -44,7 +44,7 @@ public class PhaseBidding implements GamePhase
 			if (cards.canBeThrown(false))
 			{
 				game.broadcastPacket(new PacketCardsThrown(player, cards));
-				game.startNewGame(true);
+				game.changeGamePhase(new PhasePendingNewGame(game, true));
 			}
 		}
 	}
@@ -55,7 +55,7 @@ public class PhaseBidding implements GamePhase
 		{
 			if (bidding.getWinnerPlayer() < 0)
 			{
-				game.startNewGame(true);
+				game.changeGamePhase(new PhasePendingNewGame(game, true));
 			}
 			else
 			{
@@ -67,5 +67,9 @@ public class PhaseBidding implements GamePhase
 			game.broadcastPacket(new PacketTurn(bidding.getNextPlayer(), PacketTurn.Type.BID));
 			game.sendPacketToPlayer(bidding.getNextPlayer(), new PacketAvailableBids(bidding.getPossibleBids()));
 		}
+	}
+
+	public void playerLoggedIn(int player)
+	{
 	}
 }

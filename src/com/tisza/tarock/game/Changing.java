@@ -15,6 +15,7 @@ public class Changing
 	
 	private List<List<Card>> cardsFromTalon = null;
 	private boolean[] donePlayer = new boolean[4];
+	private int[] tarockCounts = new int[4];
 	
 	public Changing(AllPlayersCards cards, List<Card> talon, int winnerPlayer, int winnerBid)
 	{
@@ -24,10 +25,10 @@ public class Changing
 		this.winnerBid = winnerBid;
 	}
 	
-	public Collection<Card> getCardsObtainedFromTalon(int player)
+	public List<Card> getCardsObtainedFromTalon(int player)
 	{
 		if (cardsFromTalon == null) dealCardsFromTalon();
-		return Collections.unmodifiableCollection(cardsFromTalon.get(player));
+		return Collections.unmodifiableList(cardsFromTalon.get(player));
 	}
 	
 	private void dealCardsFromTalon()
@@ -61,7 +62,7 @@ public class Changing
 		}
 	}
 	
-	public boolean skart(int player, Collection<Card> cardsToSkart)
+	public boolean skart(int player, List<Card> cardsToSkart)
 	{
 		if (donePlayer[player])
 			return false;
@@ -72,27 +73,39 @@ public class Changing
 		if (cardsToSkart.size() != cardsFromTalonForPlayer.size())
 			return false;
 		
-		for (Card c : cardsToSkart)
+		List<Card> cardsToSkartClone = new ArrayList<Card>(cardsToSkart);
+		while (!cardsToSkartClone.isEmpty())
 		{
+			Card c = cardsToSkartClone.remove(0);
+			
 			//TODO
 			//if (forbiddenCards.contains(c))
-				//return false;
-			if (!pc.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
-			{
+			//	return false;
+			
+			if (cardsToSkartClone.contains(c))
 				return false;
+			
+			if (!pc.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
+				return false;
+		}
+		
+		int tarockCount = 0;
+		for (Card c : cardsToSkart)
+		{
+			if (c instanceof TarockCard)
+			{
+				tarockCount++;
 			}
 		}
+		tarockCounts[player] = tarockCount;
 		
 		for (Card c : cardsToSkart)
 		{
-			@SuppressWarnings("unused")
-			boolean x = pc.removeCard(c) || cardsFromTalonForPlayer.remove(c);
+			pc.removeCard(c);
+			cardsFromTalonForPlayer.remove(c);
 		}
 		
 		pc.getCards().addAll(cardsFromTalonForPlayer);
-		
-		if (pc.getCards().size() != 9)
-			throw new Error();
 		
 		donePlayer[player] = true;
 
@@ -102,6 +115,11 @@ public class Changing
 	public AllPlayersCards getCardsAfter()
 	{
 		return cardsAfter;
+	}
+	
+	public int[] getTarockCounts()
+	{
+		return tarockCounts.clone();
 	}
 	
 	public boolean isFinished()

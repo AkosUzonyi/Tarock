@@ -10,6 +10,7 @@ public class Bidding
 	private final int beginnerPlayer;
 	
 	private AllPlayersCards playersCards;
+	
 	private int currentPlayer;
 	
 	private int lastBidValue = 4;
@@ -20,6 +21,8 @@ public class Bidding
 	
 	private Invitation invit = Invitation.NONE;
 	private int invitingPlayer = -1;
+	
+	private List<Integer> history = new ArrayList<Integer>();
 	
 	public Bidding(AllPlayersCards cards, int bp)
 	{
@@ -38,6 +41,11 @@ public class Bidding
 		return currentPlayer;
 	}
 	
+	public List<Integer> getHistory()
+	{
+		return Collections.unmodifiableList(history);
+	}
+
 	private boolean canKeep()
 	{
 		return !isKept && playersState[currentPlayer] == BidState.IN;
@@ -96,6 +104,7 @@ public class Bidding
 		
 		findNextPlayer();
 		
+		history.add(bid);
 		return true;
 	}
 	

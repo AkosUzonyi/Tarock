@@ -33,13 +33,12 @@ public class Connection
 			}
 			catch (EOFException e) {}
 			catch (SocketException e) {}
-			catch (Exception e)
+			catch (IOException e)
 			{
 				e.printStackTrace();
 			}
 			finally
 			{
-				System.out.println("closeRequest");
 				closeRequest();
 			}
 		}
@@ -61,7 +60,7 @@ public class Connection
 					catch (InterruptedException e) {}
 				}
 			}
-			catch (Exception e)
+			catch (IOException e)
 			{
 				e.printStackTrace();
 			}

@@ -7,19 +7,19 @@ import com.tisza.tarock.card.*;
 
 public class PacketChange extends PacketGameAction
 {
-	private Collection<Card> cards;
+	private List<Card> cards;
 	
 	PacketChange() {}
 	
-	public PacketChange(Collection<Card> c, int player)
+	public PacketChange(List<Card> cards, int player)
 	{
 		super(player);
-		cards = c;
+		this.cards = cards;
 	}
 
-	public Collection<Card> getCards()
+	public List<Card> getCards()
 	{
-		return Collections.unmodifiableCollection(cards);
+		return Collections.unmodifiableList(cards);
 	}
 
 	protected void readData(DataInputStream dis) throws IOException
@@ -29,7 +29,8 @@ public class PacketChange extends PacketGameAction
 		cards = new ArrayList<Card>(size);
 		for (int i = 0; i < size; i++)
 		{
-			cards.add(Card.fromId(dis.readByte()));
+			int id = dis.readByte();
+			cards.add(Card.fromId(id));
 		}
 	}
 

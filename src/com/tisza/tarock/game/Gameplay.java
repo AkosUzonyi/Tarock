@@ -32,11 +32,11 @@ public class Gameplay
 		if (player != getNextPlayer())
 			return false;
 		
-		System.out.println(getPlaceableCards());
+		//TODO
+		//if (!getPlaceableCards().contains(c))
+		//	return false;
 		
-		if (!getPlaceableCards().contains(c))
-			return false;
-		
+		cards.getPlayerCards(player).removeCard(c);
 		currentRound.placeCard(c);
 		
 		if (currentRound.isFinished())

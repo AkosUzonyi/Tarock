@@ -25,7 +25,7 @@ public class Server
 	{
 		if (listenterThread == null)
 		{
-			gameSession = new GameSession(0, playerNames, null);
+			gameSession = new GameSession(0, playerNames, new File("points"));
 			loginManager = new LoginManager(gameSession);
 			listenterThread = new Thread(new Runnable()
 			{

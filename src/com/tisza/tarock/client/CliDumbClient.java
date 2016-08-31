@@ -7,7 +7,7 @@ import com.tisza.tarock.card.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
 
-public class CliClient implements PacketHandler
+public class CliDumbClient implements PacketHandler
 {
 	private Connection conncection;
 	private Scanner sc = new Scanner(System.in);
@@ -15,7 +15,7 @@ public class CliClient implements PacketHandler
 	private PlayerCards pc;
 	int player = -1;
 	
-	public CliClient(String host, int port, String name) throws Exception
+	public CliDumbClient(String host, int port, String name) throws Exception
 	{
 		conncection = new Connection(new Socket(host, port));
 		conncection.sendPacket(new PacketLogin(name));
@@ -47,8 +47,7 @@ public class CliClient implements PacketHandler
 		{
 			PacketAvailableBids packet = ((PacketAvailableBids)p);
 			List<Integer> bids = packet.getAvailableBids();
-			System.out.println("Choose bid: " + bids);
-			conncection.sendPacket(new PacketBid(sc.nextInt(), player));
+			conncection.sendPacket(new PacketBid(bids.get(bids.size() - 1), player));
 		}
 		if (p instanceof PacketBid)
 		{
@@ -60,25 +59,13 @@ public class CliClient implements PacketHandler
 			PacketChange packet = ((PacketChange)p);
 			System.out.println("Cards from talon: " + packet.getCards());
 			List<Card> cardsFromTalon = new ArrayList<Card>(packet.getCards());
-			List<Card> cardsToSkart = new ArrayList<Card>();
-			for (int i = 0; i < packet.getCards().size(); i++)
-			{
-				int index = sc.nextInt();
-				int cardsSize = pc.getCards().size();
-				cardsToSkart.add(index < cardsSize ? pc.getCards().get(index) : cardsFromTalon.get(index - cardsSize));
-			}
-			conncection.sendPacket(new PacketChange(cardsToSkart, player));
-			pc.getCards().removeAll(cardsToSkart);
-			cardsFromTalon.removeAll(cardsToSkart);
-			pc.getCards().addAll(cardsFromTalon);
+			conncection.sendPacket(new PacketChange(cardsFromTalon, player));
 		}
 		if (p instanceof PacketAvailableCalls)
 		{
 			PacketAvailableCalls packet = ((PacketAvailableCalls)p);
 			List<Card> calls = packet.getAvailableCalls();
-			System.out.println("Choose card to call: " + calls);
-			int tarock = sc.nextInt();
-			conncection.sendPacket(new PacketCall(new TarockCard(tarock), player));
+			conncection.sendPacket(new PacketCall(calls.get(0), player));
 		}
 		if (p instanceof PacketCall)
 		{
@@ -96,13 +83,7 @@ public class CliClient implements PacketHandler
 				}
 				if (packet.getType() == PacketTurn.Type.PLAY_CARD)
 				{
-					//conncection.sendPacket(new PacketPlayCard(pc.getCards().get(0), player));
-					
-					System.out.println("Choose a card to play:");
-					System.out.println(pc.getCards());
-					int index = sc.nextInt();
-					conncection.sendPacket(new PacketPlayCard(pc.getCards().get(index), player));
-					
+					conncection.sendPacket(new PacketPlayCard(pc.getCards().get(0), player));
 				}
 			}
 		}

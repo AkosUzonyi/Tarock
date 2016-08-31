@@ -27,7 +27,7 @@ public class PhaseChanging implements GamePhase
 		game.getCurrentGame().changing = changing;
 		for (int i = 0; i < 4; i++)
 		{
-			Collection<Card> cards = changing.getCardsObtainedFromTalon(i);
+			List<Card> cards = changing.getCardsObtainedFromTalon(i);
 			game.sendPacketToPlayer(i, new PacketChange(cards, i));
 		}
 	}
@@ -42,8 +42,10 @@ public class PhaseChanging implements GamePhase
 				if (changing.skart(player, packetChange.getCards()))
 				{
 					game.broadcastPacket(new PacketChangeDone(player));
+					
 					if (changing.isFinished())
 					{
+						game.broadcastPacket(new PacketSkartTarock(changing.getTarockCounts()));
 						game.changeGamePhase(new PhaseCalling(game));
 					}
 				}
@@ -55,7 +57,7 @@ public class PhaseChanging implements GamePhase
 			if (cards.canBeThrown(true))
 			{
 				game.broadcastPacket(new PacketCardsThrown(player, cards));
-				game.startNewGame(true);
+				game.changeGamePhase(new PhasePendingNewGame(game, true));
 			}
 		}
 	}

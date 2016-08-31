@@ -17,11 +17,11 @@ public class PhaseDealing implements GamePhase
 	
 	public void start()
 	{
+		game.getCurrentGame().dealing = d;
 		for (int i = 0; i < 4; i++)
 		{
 			game.sendPacketToPlayer(i, new PacketPlayerCards(d.getCards().getPlayerCards(i)));
 		}
-		game.getCurrentGame().dealing = d;
 		game.changeGamePhase(new PhaseBidding(game));
 	}
 

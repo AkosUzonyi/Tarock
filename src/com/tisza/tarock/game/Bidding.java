@@ -51,7 +51,7 @@ public class Bidding
 	public boolean bid(int player, int bid)
 	{
 		if (isFinished())
-			throw new IllegalStateException("Bidding is finished");
+			return false;
 		
 		if (player != currentPlayer)
 			return false;
@@ -103,6 +103,7 @@ public class Bidding
 	{
 		if (isFinished())
 			throw new IllegalStateException();
+		
 		List<Integer> result = new ArrayList<Integer>();
 		result.add(-1);
 		if (checkBiddingRequirements(currentPlayer))

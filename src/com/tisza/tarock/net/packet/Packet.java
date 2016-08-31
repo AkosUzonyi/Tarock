@@ -12,6 +12,7 @@ public abstract class Packet
 	{
 		if (idToPacket.containsKey(id) || packetToID.containsKey(cls))
 			throw new IllegalArgumentException();
+		
 		idToPacket.put(id, cls);
 		packetToID.put(cls, id);
 	}
@@ -24,7 +25,8 @@ public abstract class Packet
 	public static Packet readPacket(InputStream is) throws IOException
 	{
 		DataInputStream dis = new DataInputStream(is);
-		Class<? extends Packet> cls = idToPacket.get(dis.readByte());
+		int id = dis.readByte();
+		Class<? extends Packet> cls = idToPacket.get(id);
 		Packet p;
 		try
 		{
@@ -44,6 +46,7 @@ public abstract class Packet
 		DataOutputStream dos = new DataOutputStream(os);
 		dos.writeByte(getID());
 		writeData(dos);
+		dos.flush();
 	}
 	
 	protected abstract void readData(DataInputStream dis) throws IOException;
@@ -51,6 +54,20 @@ public abstract class Packet
 	
 	static
 	{
-		
+		register(0, PacketLogin.class);
+		register(1, PacketLoginFailed.class);
+		register(2, PacketStartGame.class);
+		register(3, PacketPlayerCards.class);
+		register(4, PacketTurn.class);
+		register(5, PacketThrowCards.class);
+		register(6, PacketCardsThrown.class);
+		register(7, PacketAvailableBids.class);
+		register(8, PacketBid.class);
+		register(9, PacketChange.class);
+		register(10, PacketAvailableCalls.class);
+		register(11, PacketCall.class);
+		register(12, PacketAnnounce.class);
+		register(13, PacketContra.class);
+		register(14, PacketPlayCard.class);
 	}
 }

@@ -13,9 +13,11 @@ public class PacketThrowCards extends PacketGameAction
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
+		super.readData(dis);
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
+		super.writeData(dos);
 	}
 }

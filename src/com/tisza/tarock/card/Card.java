@@ -23,8 +23,8 @@ public abstract class Card
 		
 		if (id < 20)
 		{
-			int suit = id % 4;
-			int value = id / 4 + 1;
+			int suit = id / 5;
+			int value = id % 5 + 1;
 			return new SuitCard(suit, value);
 		}
 		else
@@ -46,7 +46,7 @@ public abstract class Card
 
 	public boolean equals(Object o)
 	{
-		if (!(o instanceof SuitCard)) return false;
+		if (!(o instanceof Card)) return false;
 		Card other = (Card)o;
 		return getID() == other.getID();
 	}

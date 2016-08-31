@@ -46,7 +46,7 @@ public class Announcing
 	public boolean announce(int player, Announcement announcement)
 	{
 		if (isFinished())
-			throw new IllegalStateException();
+			return false;
 		
 		if (player != currentPlayer)
 			return false;
@@ -78,7 +78,7 @@ public class Announcing
 	public boolean contra(int player, Contra contra)
 	{
 		if (isFinished())
-			throw new IllegalStateException();
+			return false;
 		
 		if (player != currentPlayer)
 			return false;
@@ -100,6 +100,9 @@ public class Announcing
 	
 	public List<Contra> getPossibleContras()
 	{
+		if (!isFinished())
+			throw new IllegalStateException();
+		
 		List<Contra> result = new ArrayList<Contra>();
 		for (Announcement a : announcementStates.keySet())
 		{

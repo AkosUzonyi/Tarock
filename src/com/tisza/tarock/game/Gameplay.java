@@ -23,7 +23,7 @@ public class Gameplay
 	public boolean playCard(Card c, int player)
 	{
 		if (isFinished())
-			throw new IllegalStateException("Game has finished, no cards can be placed");
+			return false;
 		
 		if (player != getNextPlayer())
 			return false;
@@ -48,6 +48,7 @@ public class Gameplay
 	{
 		if (isFinished())
 			throw new IllegalStateException("Game has finished");
+		
 		PlayerCards pc = cards.getPlayerCards(getNextPlayer());
 		Card firstCard = currentRound.getFirstCard();
 		return Collections.unmodifiableCollection(pc.getPlaceableCards(firstCard));

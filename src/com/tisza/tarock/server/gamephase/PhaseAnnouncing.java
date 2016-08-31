@@ -20,6 +20,7 @@ public class PhaseAnnouncing implements GamePhase
 
 	public void start()
 	{
+		game.getCurrentGame().announcing = announcing;
 		onAnnounced();
 	}
 
@@ -55,7 +56,6 @@ public class PhaseAnnouncing implements GamePhase
 	{
 		if (announcing.isFinished())
 		{
-			game.getCurrentGame().announcing = announcing;
 			game.changeGamePhase(new PhaseGameplay(game));
 		}
 		else

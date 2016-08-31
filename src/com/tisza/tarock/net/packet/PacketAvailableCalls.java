@@ -24,6 +24,7 @@ public class PacketAvailableCalls extends Packet
 	protected void readData(DataInputStream dis) throws IOException
 	{
 		int size = dis.readByte();
+		cards = new ArrayList<Card>(size);
 		for (int i = 0; i < size; i++)
 		{
 			cards.add(Card.fromId(dis.readByte()));

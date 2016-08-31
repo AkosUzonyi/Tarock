@@ -10,38 +10,15 @@ public class Calling
 {
 	private final int callerPlayer;
 	private PlayerPairs playerPairs = null;
+	private Invitation invit;
 	
 	private AllPlayersCards cards;
-	
-	private List<Card> callOptions = new ArrayList<Card>();
 	
 	public Calling(AllPlayersCards cards, int callerPlayer, Bidding.Invitation invit)
 	{
 		this.callerPlayer = callerPlayer;
 		this.cards = cards;
-		
-		PlayerCards pc = cards.getPlayerCards(callerPlayer);
-		for (int t = 20; t >= 1; t--)
-		{
-			TarockCard c = new TarockCard(t);
-			if (!pc.hasCard(c))
-			{
-				callOptions.add(c);
-				break;
-			}
-		}
-		
-		if (invit == Invitation.XIX)
-		{
-			callOptions.add(new TarockCard(19));
-		}
-		
-		if (invit == Invitation.XVIII)
-		{
-			callOptions.add(new TarockCard(18));
-		}
-		
-		callOptions.addAll(pc.filter(new CallableCardFilter()));
+		this.invit = invit;
 	}
 	
 	public int getCaller()
@@ -52,11 +29,12 @@ public class Calling
 	public boolean call(int player, Card card)
 	{
 		if (isFinished())
-			throw new IllegalStateException();
+			return false;
+		
 		if (player != callerPlayer)
 			return false;
 		
-		if (!callOptions.contains(card))
+		if (!getCallableCards().contains(card))
 			return false;
 		
 		int calledPlayer = -1;
@@ -83,7 +61,34 @@ public class Calling
 	
 	public List<Card> getCallableCards()
 	{
-		return Collections.unmodifiableList(callOptions);
+		if (isFinished())
+			throw new IllegalStateException();
+		
+		List<Card> callOptions = new ArrayList<Card>();
+		
+		PlayerCards pc = cards.getPlayerCards(callerPlayer);
+		for (int t = 20; t >= 1; t--)
+		{
+			TarockCard c = new TarockCard(t);
+			if (!pc.hasCard(c))
+			{
+				callOptions.add(c);
+				break;
+			}
+		}
+		
+		if (invit == Invitation.XIX)
+		{
+			callOptions.add(new TarockCard(19));
+		}
+		
+		if (invit == Invitation.XVIII)
+		{
+			callOptions.add(new TarockCard(18));
+		}
+		
+		callOptions.addAll(pc.filter(new CallableCardFilter()));
+		return callOptions;
 	}
 	
 	public boolean isFinished()

@@ -18,6 +18,7 @@ public class GameSession
 	private List<PacketHandler> handlers = new ArrayList<PacketHandler>();
 	
 	private Map<Integer, Connection> playerIDToConnection = new HashMap<Integer, Connection>();
+	private boolean waitingForConnection = true;
 	
 	public GameSession(int beginnerPlayer, Collection<String> names)
 	{
@@ -49,6 +50,8 @@ public class GameSession
 	
 	public void startNewGame(boolean doubleRound)
 	{
+		System.out.println("start game");
+		
 		if (playerIDToConnection.size() != 4)
 			throw new IllegalStateException();
 		
@@ -121,6 +124,7 @@ public class GameSession
 		if (!playerNames.contains(name))
 		{
 			failure = "You are not part of this game";
+			System.out.println("???: " + name);
 		}
 		else
 		{
@@ -133,6 +137,11 @@ public class GameSession
 			{
 				playerIDToConnection.put(player, connection);
 				connection.addPacketHandler(handlers.get(player));
+				if (playerIDToConnection.size() == 4)
+				{
+					startNewGame(false);
+				}
+				System.out.println("User logged in: " + name);
 			}
 		}
 		
@@ -142,14 +151,11 @@ public class GameSession
 			connection.closeRequest();
 		}
 	}
-
-	public synchronized void logout(String name)
-	{
-		disconnectFromPlayer(playerNames.indexOf(name));
-	}
 	
 	private synchronized void disconnectFromPlayer(int player)
 	{
+		System.out.println("Player disconnected: " + player);
+		Thread.dumpStack();
 		if (playerIDToConnection.containsKey(player))
 		{
 			Connection c = playerIDToConnection.remove(player);

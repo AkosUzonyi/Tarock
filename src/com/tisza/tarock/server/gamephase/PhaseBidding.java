@@ -20,6 +20,7 @@ public class PhaseBidding implements GamePhase
 
 	public void start()
 	{
+		game.getCurrentGame().bidding = bidding;
 		onSuccessfulBid();
 	}
 
@@ -52,8 +53,14 @@ public class PhaseBidding implements GamePhase
 	{
 		if (bidding.isFinished())
 		{
-			game.getCurrentGame().bidding = bidding;
-			game.changeGamePhase(new PhaseCalling(game));
+			if (bidding.getWinnerPlayer() < 0)
+			{
+				game.startNewGame(true);
+			}
+			else
+			{
+				game.changeGamePhase(new PhaseChanging(game));
+			}
 		}
 		else
 		{

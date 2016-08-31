@@ -29,7 +29,7 @@ public class PacketStartGame extends Packet
 	protected void readData(DataInputStream dis) throws IOException
 	{
 		playerID = dis.readByte();
-		names.clear();
+		names = new ArrayList<String>();
 		for (int i = 0; i < 4; i++)
 		{
 			names.add(dis.readUTF());

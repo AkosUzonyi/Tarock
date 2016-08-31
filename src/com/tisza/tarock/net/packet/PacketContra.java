@@ -24,6 +24,7 @@ public class PacketContra extends PacketGameAction
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
+		super.readData(dis);
 		Announcement a = Announcements.getFromID(dis.readShort());
 		int level = dis.readByte();
 		contra = new Contra(a, level);
@@ -31,6 +32,7 @@ public class PacketContra extends PacketGameAction
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
+		super.writeData(dos);
 		dos.writeShort(contra.getAnnouncement().getID());
 		dos.writeByte(contra.getLevel());
 	}

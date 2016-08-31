@@ -22,6 +22,7 @@ public class PacketAvailableBids extends Packet
 	protected void readData(DataInputStream dis) throws IOException
 	{
 		int size = dis.readByte();
+		bids = new ArrayList<Integer>(size);
 		for (int i = 0; i < size; i++)
 		{
 			bids.add((int)dis.readByte());
@@ -35,5 +36,11 @@ public class PacketAvailableBids extends Packet
 		{
 			dos.writeByte(bid);
 		}
+	}
+
+	@Override
+	public String toString()
+	{
+		return "PacketAvailableBids [bids=" + bids + "]";
 	}
 }

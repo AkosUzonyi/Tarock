@@ -8,40 +8,57 @@ public class Changing
 {
 	private static final List<Card> forbiddenCards = new ArrayList<Card>();
 	
-	private List<List<Card>> cardsFromTalon = new ArrayList<List<Card>>();
-	private boolean[] donePlayer = new boolean[4];
 	private AllPlayersCards cardsAfter;
+	private List<Card> talon;
+	private int winnerPlayer;
+	private int winnerBid;	
+	
+	private List<List<Card>> cardsFromTalon = null;
+	private boolean[] donePlayer = new boolean[4];
 	
 	public Changing(AllPlayersCards cards, List<Card> talon, int winnerPlayer, int winnerBid)
 	{
-		cardsAfter = cards;
+		this.cardsAfter = cards;
+		this.talon = talon;
+		this.winnerPlayer = winnerPlayer;
+		this.winnerBid = winnerBid;
+	}
+	
+	public Collection<Card> getCardsObtainedFromTalon(int player)
+	{
+		if (cardsFromTalon == null) dealCardsFromTalon();
+		return Collections.unmodifiableCollection(cardsFromTalon.get(player));
+	}
+	
+	private void dealCardsFromTalon()
+	{
+		cardsFromTalon = new ArrayList<List<Card>>(4);
+		
+		for (int i = 0; i < 4; i++)
+		{
+			cardsFromTalon.add(new ArrayList<Card>());
+		}
 		
 		List<Card> cardsRemaining = new LinkedList<Card>(talon);
 		for (int i = 0; i < 4; i++)
 		{
-			int p = (i + winnerPlayer) % 4;
+			int player = (winnerPlayer + i) % 4;
+			
 			int cardCount;
-			if (p == 0)
+			if (player == winnerPlayer)
 			{
 				cardCount = winnerBid;
 			}
 			else
 			{
-				cardCount = (float)cardsRemaining.size() / (4 - i) > 1 ? 2 : 1;
+				cardCount = (int)Math.ceil((float)cardsRemaining.size() / (4 - i));
 			}
 			
-			List<Card> _cardsFromTalon = new ArrayList<Card>();
 			for (int j = 0; j < cardCount; j++)
 			{
-				_cardsFromTalon.add(cardsRemaining.remove(0));
+				cardsFromTalon.get(player).add(cardsRemaining.remove(0));
 			}
-			cardsFromTalon.add(_cardsFromTalon);
 		}
-	}
-	
-	public Collection<Card> getCardsObtainedFromTalon(int player)
-	{
-		return Collections.unmodifiableCollection(cardsFromTalon.get(player));
 	}
 	
 	public boolean skart(int player, Collection<Card> cardsToSkart)
@@ -57,10 +74,12 @@ public class Changing
 		
 		for (Card c : cardsToSkart)
 		{
-			if (forbiddenCards.contains(c))
-				return false;
+			//if (forbiddenCards.contains(c))
+				//return false;
 			if (!pc.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
+			{
 				return false;
+			}
 		}
 		
 		for (Card c : cardsToSkart)
@@ -73,6 +92,8 @@ public class Changing
 		if (pc.getCards().size() != 9)
 			throw new Error();
 		
+		donePlayer[player] = true;
+
 		return true;
 	}
 	

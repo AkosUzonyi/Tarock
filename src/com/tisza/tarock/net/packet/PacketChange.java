@@ -24,7 +24,9 @@ public class PacketChange extends PacketGameAction
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
+		super.readData(dis);
 		int size = dis.readByte();
+		cards = new ArrayList<Card>(size);
 		for (int i = 0; i < size; i++)
 		{
 			cards.add(Card.fromId(dis.readByte()));
@@ -33,6 +35,7 @@ public class PacketChange extends PacketGameAction
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
+		super.writeData(dos);
 		dos.writeByte(cards.size());
 		for (Card c : cards)
 		{

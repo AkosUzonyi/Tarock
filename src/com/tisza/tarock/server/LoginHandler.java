@@ -5,14 +5,12 @@ import com.tisza.tarock.net.packet.*;
 
 public class LoginHandler implements PacketHandler
 {
-	private GameSession game;
-	private Connection connection;
+	private LoginManager loginManager;
 	private String name = null;
 	
-	public LoginHandler(GameSession g, Connection c)
+	public LoginHandler(LoginManager lm)
 	{
-		game = g;
-		connection = c;
+		loginManager = lm;
 	}
 	
 	public void handlePacket(Packet p)
@@ -21,22 +19,15 @@ public class LoginHandler implements PacketHandler
 		{
 			PacketLogin pl = (PacketLogin)p;
 			name = pl.getName();
-			game.loginAuthorized(name, connection);
+			loginManager.loginAuthorized(this, name);
 		}
-	}
-	
-	private void loginFailed(String desc)
-	{
-		name = null;
-		connection.sendPacket(new PacketLoginFailed(desc));
-		connection.closeRequest();
 	}
 
 	public void connectionClosed()
 	{
 		if (name != null)
 		{
-			game.logout(name);
+			loginManager.loginFailed(this);
 		}
 	}
 }

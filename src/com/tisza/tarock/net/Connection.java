@@ -22,7 +22,7 @@ public class Connection
 		{
 			try
 			{
-				while (!Thread.interrupted())
+				while (!closeRequested)
 				{
 					Packet p = Packet.readPacket(is);
 					for (PacketHandler ph : packetHandlers)
@@ -31,17 +31,16 @@ public class Connection
 					}
 				}
 			}
+			catch (EOFException e) {}
+			catch (SocketException e) {}
 			catch (Exception e)
 			{
 				e.printStackTrace();
-				try
-				{
-					close();
-				}
-				catch (IOException e1)
-				{
-					e1.printStackTrace();
-				}
+			}
+			finally
+			{
+				System.out.println("closeRequest");
+				closeRequest();
 			}
 		}
 	});
@@ -54,8 +53,12 @@ public class Connection
 			{
 				while (!closeRequested || !packetsToSend.isEmpty())
 				{
-					Packet p = packetsToSend.take();
-					p.writePacket(os);
+					try
+					{
+						Packet p = packetsToSend.take();
+						p.writePacket(os);
+					}
+					catch (InterruptedException e) {}
 				}
 			}
 			catch (Exception e)
@@ -64,9 +67,10 @@ public class Connection
 			}
 			finally
 			{
+				closeRequest();
 				try
 				{
-					os.close();
+					close();
 				}
 				catch (IOException e)
 				{
@@ -81,42 +85,66 @@ public class Connection
 		socket = s;
 		is = socket.getInputStream();
 		os = socket.getOutputStream();
-		readerThread.start();
-		writerThread.start();
+		start();
+	}
+	
+	public void start()
+	{
+		if (!closeRequested)
+		{
+			readerThread.start();
+			writerThread.start();
+		}
 	}
 	
 	public void addPacketHandler(PacketHandler ph)
 	{
-		packetHandlers.add(ph);
+		List<PacketHandler> newPacketHandlers = new ArrayList<PacketHandler>(packetHandlers);
+		newPacketHandlers.add(ph);
+		packetHandlers = newPacketHandlers;
 	}
 	
 	public void removePacketHandler(PacketHandler ph)
 	{
-		packetHandlers.remove(ph);
+		List<PacketHandler> newPacketHandlers = new ArrayList<PacketHandler>(packetHandlers);
+		newPacketHandlers.remove(ph);
+		packetHandlers = newPacketHandlers;
 	}
 	
 	public void sendPacket(Packet p)
 	{
-		packetsToSend.offer(p);
+		if (isAlive())
+		{
+			packetsToSend.offer(p);
+		}
 	}
 	
 	public void closeRequest()
 	{
-		closeRequested = true;
+		if (!closeRequested)
+		{
+			closeRequested = true;
+			writerThread.interrupt();
+		}
 	}
 	
-	@SuppressWarnings("deprecation")
+	public boolean isAlive()
+	{
+		return !closeRequested;
+	}
+	
 	private void close() throws IOException
 	{
-		readerThread.stop();
-		writerThread.stop();
-		is.close();
-		os.close();
-		socket.close();
-		socket = null;
-		for (PacketHandler ph : packetHandlers)
+		closeRequested = true;
+		if (socket != null)
 		{
-			ph.connectionClosed();
+			socket.close();
+			socket = null;
+			for (PacketHandler ph : packetHandlers)
+			{
+				ph.connectionClosed();
+			}
+			packetHandlers.clear();
 		}
 	}
 }

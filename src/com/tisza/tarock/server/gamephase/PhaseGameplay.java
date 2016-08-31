@@ -20,6 +20,7 @@ public class PhaseGameplay implements GamePhase
 
 	public void start()
 	{
+		game.getCurrentGame().gameplay = gameplay;
 		onSuccessfulPlayCard();
 	}
 
@@ -43,7 +44,6 @@ public class PhaseGameplay implements GamePhase
 	{
 		if (gameplay.isFinished())
 		{
-			game.getCurrentGame().gameplay = gameplay;
 			game.changeGamePhase(new PhaseEnd(game));
 		}
 		else

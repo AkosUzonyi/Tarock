@@ -23,11 +23,13 @@ public class PacketAnnounce extends PacketGameAction
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
+		super.readData(dis);
 		announcement = Announcements.getFromID(dis.readShort());
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
+		super.writeData(dos);
 		dos.writeShort(announcement.getID());
 	}
 }

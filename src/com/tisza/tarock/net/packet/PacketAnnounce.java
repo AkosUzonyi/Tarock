@@ -24,12 +24,27 @@ public class PacketAnnounce extends PacketGameAction
 	protected void readData(DataInputStream dis) throws IOException
 	{
 		super.readData(dis);
-		announcement = Announcements.getFromID(dis.readShort());
+		short id = dis.readShort();
+		if (id < 0)
+		{
+			announcement = null;
+		}
+		else
+		{
+			announcement = Announcements.getFromID(dis.readShort());
+		}
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
 		super.writeData(dos);
-		dos.writeShort(announcement.getID());
+		if (announcement == null)
+		{
+			dos.writeShort(-1);
+		}
+		else
+		{
+			dos.writeShort(announcement.getID());
+		}
 	}
 }

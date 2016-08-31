@@ -74,6 +74,7 @@ public class Changing
 		
 		for (Card c : cardsToSkart)
 		{
+			//TODO
 			//if (forbiddenCards.contains(c))
 				//return false;
 			if (!pc.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
@@ -84,6 +85,7 @@ public class Changing
 		
 		for (Card c : cardsToSkart)
 		{
+			@SuppressWarnings("unused")
 			boolean x = pc.removeCard(c) || cardsFromTalonForPlayer.remove(c);
 		}
 		

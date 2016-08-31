@@ -3,7 +3,6 @@ package com.tisza.tarock.game;
 import java.util.*;
 
 import com.tisza.tarock.announcement.*;
-import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.Bidding.Invitation;
 
 public class Announcing
@@ -17,7 +16,7 @@ public class Announcing
 	
 	private Map<Announcement, AnnouncementState> announcementStates = new HashMap<Announcement, AnnouncementState>();
 	
-	private AllPlayersCards playerHands;
+	//private AllPlayersCards playerHands;
 	
 	public Announcing(PlayerPairs pp, Invitation invit)
 	{

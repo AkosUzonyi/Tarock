@@ -18,6 +18,10 @@ public class Gameplay
 		this.cards = cards;
 		beginnerPlayer = bp;
 		currentRound = new Round(beginnerPlayer);
+		for (int i = 0; i < 4; i++)
+		{
+			wonCards.add(new ArrayList<Card>());
+		}
 	}
 	
 	public boolean playCard(Card c, int player)
@@ -27,6 +31,8 @@ public class Gameplay
 		
 		if (player != getNextPlayer())
 			return false;
+		
+		System.out.println(getPlaceableCards());
 		
 		if (!getPlaceableCards().contains(c))
 			return false;

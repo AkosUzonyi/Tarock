@@ -31,10 +31,14 @@ public class PhaseGameplay implements GamePhase
 			PacketPlayCard packetPlayCard = ((PacketPlayCard)packet);
 			if (packetPlayCard.getPlayer() == player)
 			{
-				if (gameplay.playCard(packetPlayCard.getCard(), player));
+				if (gameplay.playCard(packetPlayCard.getCard(), player))
 				{
 					game.broadcastPacket(packetPlayCard);
 					onSuccessfulPlayCard();
+				}
+				else
+				{
+					game.broadcastPacket(new PacketTurn(gameplay.getNextPlayer(), PacketTurn.Type.PLAY_CARD));
 				}
 			}
 		}

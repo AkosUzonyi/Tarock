@@ -144,7 +144,7 @@ public class Connection
 			{
 				ph.connectionClosed();
 			}
-			packetHandlers.clear();
+			packetHandlers = null;
 		}
 	}
 }

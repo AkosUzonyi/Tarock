@@ -3,48 +3,57 @@ package com.tisza.tarock.server;
 import java.io.*;
 import java.util.*;
 
-import com.tisza.tarock.announcement.*;
-import com.tisza.tarock.game.*;
-
 public class Points
 {
-	private Deque<Entry> pointEntries = new LinkedList<Entry>();
+	private List<String> playerNames = new ArrayList<String>();
+	private List<String> sortedPlayerNames = new ArrayList<String>();
 	
-	public Points()
+	private LinkedList<Entry> pointEntries = new LinkedList<Entry>();
+	private int dirtyEntries = 0;
+	
+	public Points(List<String> names)
 	{
+		if (names.size() != 4)
+			throw new IllegalArgumentException();
+		
+		playerNames = new ArrayList<String>(names);
+		sortedPlayerNames = new ArrayList<String>(playerNames);
+		Collections.sort(sortedPlayerNames);
+		
 		pointEntries.addLast(Entry.ITINITAL_ENTRY);
+		dirtyEntries++;
 	}
-	
-	public void evaluateGame(GameInstance gi)
+
+	public void addPoints(int pointsForCallerTeam, int caller, int called)
 	{
-		int pointsForCallerTeam = 0;
+		int c0 = getColumnIndexForPlayer(caller);
+		int c1 = getColumnIndexForPlayer(called);
+		Entry lastEntry = pointEntries.getLast();
 		
-		Gameplay gp = gi.gameplay;
-		PlayerPairs pp = gi.calling.getPlayerPairs();
-		int winnerBid = gi.bidding.getWinnerBid();
-		
-		Map<Announcement, AnnouncementState> announcementStates = gi.announcing.getAnnouncementStates();
-		for (Map.Entry<Announcement, AnnouncementState> announcementEntry : announcementStates.entrySet())
+		int[] newPoints = new int[4];
+		for (int i = 0; i < 4; i++)
 		{
-			Announcement a = announcementEntry.getKey();
-			AnnouncementState as = announcementEntry.getValue();
-			for (Team t : Team.values())
-			{
-				AnnouncementState.PerTeam aspt = as.team(t);
-				int points = a.calculatePoints(gp, pp, t, winnerBid, aspt.isAnnounced()) * (int)Math.pow(2, aspt.getContraLevel());
-				pointsForCallerTeam += points * (t == Team.CALLER ? 1 : -1);
-			}
+			newPoints[i] = lastEntry.getPoint(i) - pointsForCallerTeam;
 		}
 		
-		pointEntries.addLast(pointEntries.getLast().addPoints(pointsForCallerTeam, pp.getCaller(), pp.getCalled()));
+		newPoints[c0] += pointsForCallerTeam * 2;
+		newPoints[c1] += pointsForCallerTeam * 2;
+		
+		pointEntries.addLast(new Entry(newPoints));
+		dirtyEntries++;
+	}
+	
+	private int getColumnIndexForPlayer(int playerID)
+	{
+		return sortedPlayerNames.indexOf(playerNames.get(playerID));
 	}
 	
 	public void readData(InputStream is) throws IOException
 	{
 		pointEntries.clear();
 		DataInputStream dis = new DataInputStream(is);
-		int size = dis.readInt();
-		for (int i = 0; i < size; i++)
+		
+		while (is.available() > 0)
 		{
 			int[] points = new int[4];
 			for (int j = 0; j < 4; j++)
@@ -53,18 +62,39 @@ public class Points
 			}
 			pointEntries.addLast(new Entry(points));
 		}
+		dirtyEntries = 0;
 	}
 	
 	public void writeData(OutputStream os) throws IOException
 	{
-		pointEntries.clear();
 		DataOutputStream dos = new DataOutputStream(os);
-		dos.writeInt(pointEntries.size());
+		
 		for (Entry e : pointEntries)
 		{
 			for (int i = 0; i < 4; i++)
 			{
 				dos.writeInt(e.getPoint(i));
+			}
+		}
+		dirtyEntries = 0;
+	}
+	
+	public void appendDirtyData(OutputStream os) throws IOException
+	{
+		DataOutputStream dos = new DataOutputStream(os);
+		
+		ListIterator<Entry> iterator = pointEntries.listIterator(pointEntries.size());
+		
+		for (; dirtyEntries > 0; dirtyEntries--)
+		{
+			iterator.previous();
+		}
+		
+		while (iterator.hasNext())
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				dos.writeInt(iterator.next().getPoint(i));
 			}
 		}
 	}
@@ -84,18 +114,6 @@ public class Points
 		public int getPoint(int player)
 		{
 			return data[player];
-		}
-		
-		public Entry addPoints(int amount, int caller, int called)
-		{
-			int[] newData = data.clone();
-			for (int i = 0; i < 4; i++)
-			{
-				newData[i] -= amount;
-			}
-			newData[caller] += amount * 2;
-			newData[called] += amount * 2;
-			return new Entry(newData);
 		}
 	}
 }

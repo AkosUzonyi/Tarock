@@ -25,7 +25,7 @@ public class Server
 	{
 		if (listenterThread == null)
 		{
-			gameSession = new GameSession(0, playerNames);
+			gameSession = new GameSession(0, playerNames, null);
 			loginManager = new LoginManager(gameSession);
 			listenterThread = new Thread(new Runnable()
 			{
@@ -34,7 +34,7 @@ public class Server
 					ServerSocket ss = null;
 					try
 					{
-						ss = new ServerSocket(8128);
+						ss = new ServerSocket(port);
 						System.out.println(ss.getLocalSocketAddress());
 						while (!Thread.interrupted())
 						{

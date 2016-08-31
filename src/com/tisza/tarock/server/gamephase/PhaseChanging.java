@@ -41,6 +41,7 @@ public class PhaseChanging implements GamePhase
 			{
 				if (changing.skart(player, packetChange.getCards()))
 				{
+					game.broadcastPacket(new PacketChangeDone(player));
 					if (changing.isFinished())
 					{
 						game.changeGamePhase(new PhaseCalling(game));

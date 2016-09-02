@@ -14,9 +14,11 @@ public class CliClient implements PacketHandler
 	private List<String> names;
 	private PlayerCards pc;
 	int player = -1;
+	List<Card> cardsFromTalon;
 	
 	public CliClient(String host, int port, String name) throws Exception
 	{
+		System.out.println("c");
 		conncection = new Connection(new Socket(host, port));
 		conncection.sendPacket(new PacketLogin(name));
 		conncection.addPacketHandler(this);
@@ -47,8 +49,7 @@ public class CliClient implements PacketHandler
 		{
 			PacketAvailableBids packet = ((PacketAvailableBids)p);
 			List<Integer> bids = packet.getAvailableBids();
-			System.out.println("Choose bid: " + bids);
-			conncection.sendPacket(new PacketBid(sc.nextInt(), player));
+			System.out.println("Available bids: " + bids);
 		}
 		if (p instanceof PacketBid)
 		{
@@ -59,26 +60,13 @@ public class CliClient implements PacketHandler
 		{
 			PacketChange packet = ((PacketChange)p);
 			System.out.println("Cards from talon: " + packet.getCards());
-			List<Card> cardsFromTalon = new ArrayList<Card>(packet.getCards());
-			List<Card> cardsToSkart = new ArrayList<Card>();
-			for (int i = 0; i < packet.getCards().size(); i++)
-			{
-				int index = sc.nextInt();
-				int cardsSize = pc.getCards().size();
-				cardsToSkart.add(index < cardsSize ? pc.getCards().get(index) : cardsFromTalon.get(index - cardsSize));
-			}
-			conncection.sendPacket(new PacketChange(cardsToSkart, player));
-			pc.getCards().removeAll(cardsToSkart);
-			cardsFromTalon.removeAll(cardsToSkart);
-			pc.getCards().addAll(cardsFromTalon);
+			cardsFromTalon = new ArrayList<Card>(packet.getCards());
 		}
 		if (p instanceof PacketAvailableCalls)
 		{
 			PacketAvailableCalls packet = ((PacketAvailableCalls)p);
 			List<Card> calls = packet.getAvailableCalls();
-			System.out.println("Choose card to call: " + calls);
-			int tarock = sc.nextInt();
-			conncection.sendPacket(new PacketCall(new TarockCard(tarock), player));
+			System.out.println("Availabe calls : " + calls);
 		}
 		if (p instanceof PacketCall)
 		{
@@ -90,6 +78,31 @@ public class CliClient implements PacketHandler
 			PacketTurn packet = ((PacketTurn)p);
 			if (packet.getPlayer() == player)
 			{
+				if (packet.getType() == PacketTurn.Type.BID)
+				{
+					System.out.print("Choose bid: ");
+					conncection.sendPacket(new PacketBid(sc.nextInt(), player));
+				}
+				if (packet.getType() == PacketTurn.Type.CHANGE)
+				{
+					List<Card> cardsToSkart = new ArrayList<Card>();
+					for (int i = 0; i < cardsFromTalon.size(); i++)
+					{
+						int index = sc.nextInt();
+						int cardsSize = pc.getCards().size();
+						cardsToSkart.add(index < cardsSize ? pc.getCards().get(index) : cardsFromTalon.get(index - cardsSize));
+					}
+					conncection.sendPacket(new PacketChange(cardsToSkart, player));
+					pc.getCards().removeAll(cardsToSkart);
+					cardsFromTalon.removeAll(cardsToSkart);
+					pc.getCards().addAll(cardsFromTalon);
+				}
+				if (packet.getType() == PacketTurn.Type.CALL)
+				{
+					System.out.print("Choose card to call: ");
+					int tarock = sc.nextInt();
+					conncection.sendPacket(new PacketCall(new TarockCard(tarock), player));
+				}
 				if (packet.getType() == PacketTurn.Type.ANNOUNCE)
 				{
 					conncection.sendPacket(new PacketAnnounce(null, player));
@@ -156,6 +169,7 @@ public class CliClient implements PacketHandler
 		}
 		if (p instanceof PacketReadyForNewGame)
 		{
+			System.out.print("Press enter for new game...");
 			sc.nextLine();
 			conncection.sendPacket(new PacketReadyForNewGame());
 		}

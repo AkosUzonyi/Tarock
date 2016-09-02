@@ -20,12 +20,9 @@ public class PhaseEnd implements GamePhase
 	{
 		int pointsForCallerTeam = 0;
 		
-		Gameplay gp = game.getCurrentGame().gameplay;
 		PlayerPairs pp = game.getCurrentGame().calling.getPlayerPairs();
-		int winnerBid = game.getCurrentGame().bidding.getWinnerBid();
 		
-		Map<Announcement, AnnouncementState> announcementStates = game.getCurrentGame().announcing.getAnnouncementStates();
-		for (Map.Entry<Announcement, AnnouncementState> announcementEntry : announcementStates.entrySet())
+		for (Map.Entry<Announcement, AnnouncementState> announcementEntry : game.getCurrentGame().announcing.getAnnouncementStates().entrySet())
 		{
 			Announcement a = announcementEntry.getKey();
 			AnnouncementState as = announcementEntry.getValue();
@@ -33,15 +30,15 @@ public class PhaseEnd implements GamePhase
 			{
 				AnnouncementState.PerTeam aspt = as.team(t);
 				int contraLevel = aspt.isAnnounced() ? aspt.getContraLevel() : 0;
-				int points = a.calculatePoints(gp, pp, t, winnerBid, aspt.isAnnounced()) * (int)Math.pow(2, contraLevel);
+				int points = a.calculatePoints(game.getCurrentGame(), t, aspt.isAnnounced()) * (int)Math.pow(2, contraLevel);
 				pointsForCallerTeam += points * (t == Team.CALLER ? 1 : -1);
 				
 				List<PacketAnnouncementStatistics.Entry> statEntriesForTeam = new ArrayList<PacketAnnouncementStatistics.Entry>();
 				
-				if (a instanceof AnnouncementBase)
+				if (points > 0 && a instanceof AnnouncementBase)
 				{
 					AnnouncementBase ab = (AnnouncementBase)a;
-					AnnouncementBase.Result result = ab.isSuccessful(gp, pp, t);
+					AnnouncementBase.Result result = ab.isSuccessful(game.getCurrentGame(), t);
 					statEntriesForTeam.add(new PacketAnnouncementStatistics.Entry(a, contraLevel, result, points));
 				}
 				

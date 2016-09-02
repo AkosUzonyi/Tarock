@@ -1,6 +1,5 @@
-package com.tisza.tarock.server;
+package com.tisza.tarock.game;
 
-import com.tisza.tarock.game.*;
 
 public class GameInstance
 {

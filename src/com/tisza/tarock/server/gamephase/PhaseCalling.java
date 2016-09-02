@@ -26,8 +26,8 @@ public class PhaseCalling implements GamePhase
 		game.getCurrentGame().calling = calling;
 		
 		int caller = calling.getCaller();
-		game.broadcastPacket(new PacketTurn(caller, PacketTurn.Type.CALL));
 		game.sendPacketToPlayer(caller, new PacketAvailableCalls(calling.getCallableCards()));
+		game.broadcastPacket(new PacketTurn(caller, PacketTurn.Type.CALL));
 	}
 
 	public void packetFromPlayer(int player, Packet packet)
@@ -43,6 +43,13 @@ public class PhaseCalling implements GamePhase
 					if (calling.isFinished())
 					{
 						game.changeGamePhase(new PhaseAnnouncing(game));
+					}
+				}
+				else
+				{
+					if (player == calling.getCaller())
+					{
+						game.broadcastPacket(new PacketTurn(player, PacketTurn.Type.CALL));
 					}
 				}
 			}

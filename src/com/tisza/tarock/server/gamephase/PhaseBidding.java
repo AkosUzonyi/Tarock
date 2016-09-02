@@ -36,6 +36,10 @@ public class PhaseBidding implements GamePhase
 					game.broadcastPacket(packetBid);
 					onSuccessfulBid();
 				}
+				else
+				{
+					game.broadcastPacket(new PacketTurn(bidding.getNextPlayer(), PacketTurn.Type.BID));
+				}
 			}
 		}
 		else if (packet instanceof PacketThrowCards)
@@ -64,8 +68,8 @@ public class PhaseBidding implements GamePhase
 		}
 		else
 		{
-			game.broadcastPacket(new PacketTurn(bidding.getNextPlayer(), PacketTurn.Type.BID));
 			game.sendPacketToPlayer(bidding.getNextPlayer(), new PacketAvailableBids(bidding.getPossibleBids()));
+			game.broadcastPacket(new PacketTurn(bidding.getNextPlayer(), PacketTurn.Type.BID));
 		}
 	}
 

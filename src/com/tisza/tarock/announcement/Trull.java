@@ -9,12 +9,12 @@ public class Trull extends AnnouncementBase
 {
 	Trull(){}
 	
-	public Result isSuccessful(Gameplay gp, PlayerPairs pp, Team team)
+	public Result isSuccessful(GameInstance gi, Team team)
 	{
 		List<Card> wonCards = new ArrayList<Card>();
-		for (int player : pp.getPlayersInTeam(team))
+		for (int player : gi.calling.getPlayerPairs().getPlayersInTeam(team))
 		{
-			wonCards.addAll(gp.getWonCards(player));
+			wonCards.addAll(gi.gameplay.getWonCards(player));
 		}
 		return wonCards.containsAll(Card.honors) ? Result.SUCCESSFUL_SILENT : Result.FAILED;
 	}

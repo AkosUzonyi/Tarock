@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
 import com.tisza.tarock.server.gamephase.*;
@@ -264,7 +265,7 @@ public class GameSession implements Runnable
 	{
 		synchronized (connectionLock)
 		{
-			System.out.println("Player disconnected: " + player);
+			System.out.println("Player disconnected: " + playerNames.get(player));
 			if (playerIDToConnection.containsKey(player))
 			{
 				Connection c = playerIDToConnection.remove(player);

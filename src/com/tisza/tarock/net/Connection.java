@@ -60,6 +60,7 @@ public class Connection
 					catch (InterruptedException e) {}
 				}
 			}
+			catch (SocketException e) {}
 			catch (IOException e)
 			{
 				e.printStackTrace();

@@ -25,7 +25,7 @@ public class PacketAnnouncementStatistics extends Packet
 	protected void readData(DataInputStream dis) throws IOException
 	{
 		short size = dis.readShort();
-		entries = new ArrayList<>(size);
+		entries = new ArrayList<Entry>(size);
 		for (int i = 0; i < size; i++)
 		{
 			Announcement announcement = Announcements.getFromID(dis.readShort());

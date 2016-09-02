@@ -1,0 +1,93 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.tisza.tarock.MainActivity"
+    
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+	
+    <RelativeLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="0dp"
+	    android:layout_weight="1"
+	    android:background="#008800"
+	    >
+        <com.tisza.tarock.gui.VerticalTextView
+            android:id="@+id/playername_1"
+            style="@style/PlayerName"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:gravity="top"
+        />
+        <TextView
+            android:id="@+id/playername_2"
+            style="@style/PlayerName"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+        />
+        <com.tisza.tarock.gui.VerticalTextView
+            android:id="@+id/playername_3"
+            style="@style/PlayerName"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:gravity="bottom"
+        />
+        <FrameLayout
+            android:id="@+id/center_space"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#000088"
+            android:layout_toLeftOf="@id/playername_1"
+            android:layout_below="@id/playername_2"
+            android:layout_toRightOf="@id/playername_3"
+            android:layout_alignParentBottom="true"
+            >
+            
+        </FrameLayout>
+    </RelativeLayout>
+    
+    <LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+        >
+        
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="#808080"
+			>
+			<LinearLayout
+				android:id="@+id/my_cards_1"
+				android:layout_gravity="center_horizontal"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				>
+			</LinearLayout>    	
+		</FrameLayout>
+		
+		<FrameLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:background="#808080"
+			>
+			<LinearLayout
+				android:id="@+id/my_cards_0"
+				android:layout_gravity="center_horizontal"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				>
+			</LinearLayout>    	
+		</FrameLayout>
+	</LinearLayout>
+
+</LinearLayout>

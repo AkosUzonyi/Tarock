@@ -15,7 +15,7 @@ public class Gameplay
 	
 	public Gameplay(AllPlayersCards cards, int bp)
 	{
-		this.cards = cards;
+		this.cards = cards.clone();
 		beginnerPlayer = bp;
 		currentRound = new Round(beginnerPlayer);
 		for (int i = 0; i < 4; i++)
@@ -76,7 +76,7 @@ public class Gameplay
 	{
 		if (!isFinished())
 			throw new IllegalStateException("Game is in progress");
-		return Collections.unmodifiableCollection(wonCards.get(player));
+		return wonCards.get(player);
 	}
 
 	public List<Round> getRoundsPassed()

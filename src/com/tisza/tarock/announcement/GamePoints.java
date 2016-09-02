@@ -15,16 +15,22 @@ abstract class GamePoints extends AnnouncementBase
 		return true;
 	}
 	
-	public Result isSuccessful(Gameplay gp, PlayerPairs pp, Team team)
+	public Result isSuccessful(GameInstance gi, Team team)
 	{
 		int points = 0;
-		for (int player : pp.getPlayersInTeam(team))
+		for (int player : gi.calling.getPlayerPairs().getPlayersInTeam(team))
 		{
-			for (Card c : gp.getWonCards(player))
+			for (Card c : gi.gameplay.getWonCards(player))
 			{
 				points += c.getPoints();
 			}
 		}
+		for (Card c : gi.changing.getSkartForTeam(team))
+		{
+			points += c.getPoints();
+		}
+		System.out.println(points);
+		
 		return points >= getMinPointsRequired() ? (canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL) : Result.FAILED;
 	}
 	

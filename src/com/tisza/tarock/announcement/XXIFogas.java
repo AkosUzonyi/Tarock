@@ -7,9 +7,11 @@ public class XXIFogas extends AnnouncementBase
 {
 	XXIFogas(){}
 	
-	public Result isSuccessful(Gameplay gp, PlayerPairs pp, Team team)
+	public Result isSuccessful(GameInstance gi, Team team)
 	{
-		for (Round r : gp.getRoundsPassed())
+		PlayerPairs pp = gi.calling.getPlayerPairs();
+		
+		for (Round r : gi.gameplay.getRoundsPassed())
 		{
 			int skizPlayer = r.getCards().indexOf(new TarockCard(22));
 			int XXIPlayer = r.getCards().indexOf(new TarockCard(21));

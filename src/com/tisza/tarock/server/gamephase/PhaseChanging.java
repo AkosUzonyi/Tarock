@@ -29,6 +29,7 @@ public class PhaseChanging implements GamePhase
 		{
 			List<Card> cards = changing.getCardsObtainedFromTalon(i);
 			game.sendPacketToPlayer(i, new PacketChange(cards, i));
+			game.sendPacketToPlayer(i, new PacketTurn(i, PacketTurn.Type.CHANGE));
 		}
 	}
 
@@ -48,6 +49,10 @@ public class PhaseChanging implements GamePhase
 						game.broadcastPacket(new PacketSkartTarock(changing.getTarockCounts()));
 						game.changeGamePhase(new PhaseCalling(game));
 					}
+				}
+				else
+				{
+					game.sendPacketToPlayer(player, new PacketTurn(player, PacketTurn.Type.CHANGE));
 				}
 			}
 		}

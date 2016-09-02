@@ -8,10 +8,12 @@ public class Changing
 {
 	private static final List<Card> forbiddenCards = new ArrayList<Card>();
 	
+	private final List<Card> talon;
+	private final int winnerPlayer;
+	private final int winnerBid;
+	
 	private AllPlayersCards cardsAfter;
-	private List<Card> talon;
-	private int winnerPlayer;
-	private int winnerBid;	
+	private Map<Team, List<Card>> skartForTeams = new HashMap<Team, List<Card>>();
 	
 	private List<List<Card>> cardsFromTalon = null;
 	private boolean[] donePlayer = new boolean[4];
@@ -19,10 +21,15 @@ public class Changing
 	
 	public Changing(AllPlayersCards cards, List<Card> talon, int winnerPlayer, int winnerBid)
 	{
-		this.cardsAfter = cards;
+		this.cardsAfter = cards.clone();
 		this.talon = talon;
 		this.winnerPlayer = winnerPlayer;
 		this.winnerBid = winnerBid;
+		
+		for (Team t : Team.values())
+		{
+			skartForTeams.put(t, new ArrayList<Card>());
+		}
 	}
 	
 	public List<Card> getCardsObtainedFromTalon(int player)
@@ -67,25 +74,25 @@ public class Changing
 		if (donePlayer[player])
 			return false;
 		
-		List<Card> cardsFromTalonForPlayer = new ArrayList<Card>(cardsFromTalon.get(player));
-		PlayerCards pc = cardsAfter.getPlayerCards(player);
+		PlayerCards skartingPlayerCards = cardsAfter.getPlayerCards(player);
+		List<Card> cardsFromTalonForPlayer = cardsFromTalon.get(player);
 		
 		if (cardsToSkart.size() != cardsFromTalonForPlayer.size())
 			return false;
 		
-		List<Card> cardsToSkartClone = new ArrayList<Card>(cardsToSkart);
-		while (!cardsToSkartClone.isEmpty())
+		List<Card> reviewedSkartCards = new ArrayList<Card>();
+		for (Card c : cardsToSkart)
 		{
-			Card c = cardsToSkartClone.remove(0);
-			
 			//TODO
 			//if (forbiddenCards.contains(c))
 			//	return false;
 			
-			if (cardsToSkartClone.contains(c))
+			if (reviewedSkartCards.contains(c))
 				return false;
 			
-			if (!pc.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
+			reviewedSkartCards.add(c);
+			
+			if (!skartingPlayerCards.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
 				return false;
 		}
 		
@@ -96,16 +103,13 @@ public class Changing
 			{
 				tarockCount++;
 			}
+			
+			skartForTeams.get(player == winnerPlayer ? Team.CALLER : Team.OPPONENT).add(c);
 		}
 		tarockCounts[player] = tarockCount;
 		
-		for (Card c : cardsToSkart)
-		{
-			pc.removeCard(c);
-			cardsFromTalonForPlayer.remove(c);
-		}
-		
-		pc.getCards().addAll(cardsFromTalonForPlayer);
+		skartingPlayerCards.getCards().addAll(cardsFromTalonForPlayer);
+		skartingPlayerCards.getCards().removeAll(cardsToSkart);
 		
 		donePlayer[player] = true;
 
@@ -117,9 +121,14 @@ public class Changing
 		return cardsAfter;
 	}
 	
+	public List<Card> getSkartForTeam(Team t)
+	{
+		return skartForTeams.get(t);
+	}
+	
 	public int[] getTarockCounts()
 	{
-		return tarockCounts.clone();
+		return tarockCounts;
 	}
 	
 	public boolean isFinished()
@@ -137,9 +146,7 @@ public class Changing
 		{
 			forbiddenCards.add(new SuitCard(s, 5));
 		}
-		forbiddenCards.add(new TarockCard(1));
+		forbiddenCards.addAll(Card.honors);
 		forbiddenCards.add(new TarockCard(2));
-		forbiddenCards.add(new TarockCard(21));
-		forbiddenCards.add(new TarockCard(22));
 	}
 }

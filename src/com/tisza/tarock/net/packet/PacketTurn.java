@@ -39,6 +39,6 @@ public class PacketTurn extends Packet
 	
 	public static enum Type
 	{
-		BID, CALL, ANNOUNCE, PLAY_CARD;
+		BID, CALL, CHANGE, ANNOUNCE, PLAY_CARD;
 	}
 }

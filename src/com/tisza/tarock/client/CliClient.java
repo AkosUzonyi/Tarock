@@ -18,7 +18,6 @@ public class CliClient implements PacketHandler
 	
 	public CliClient(String host, int port, String name) throws Exception
 	{
-		System.out.println("c");
 		conncection = new Connection(new Socket(host, port));
 		conncection.sendPacket(new PacketLogin(name));
 		conncection.addPacketHandler(this);

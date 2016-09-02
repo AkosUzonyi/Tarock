@@ -1,5 +1,14 @@
 <resources>
 
     <string name="app_name">Tarock</string>
-
+    <string name="client_app_name">Tarock</string>
+    <string name="server_app_name">Tarock</string>
+    <string name="name">Name</string>
+    <string name="connect">Connect</string>
+    <string name="ip">IP address</string>
+    <string name="port">Port number</string>
+    <string name="ok">OK</string>
+    <string name="server_start">Start server</string>
+    <string name="server_stop">Stop server</string>
+    
 </resources>

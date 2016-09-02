@@ -31,6 +31,8 @@ public class PhaseAnnouncing implements GamePhase
 			PacketAnnounce packetAnnounce = ((PacketAnnounce)packet);
 			if (packetAnnounce.getPlayer() == player)
 			{
+				System.out.println(packetAnnounce.getAnnouncement());
+				if (packetAnnounce.getAnnouncement() != null) System.out.println(packetAnnounce.getAnnouncement().getClass().getSimpleName());
 				if (announcing.announce(player, packetAnnounce.getAnnouncement()))
 				{
 					game.broadcastPacket(packetAnnounce);

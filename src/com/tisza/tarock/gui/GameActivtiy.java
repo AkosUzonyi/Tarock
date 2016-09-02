@@ -9,9 +9,11 @@ import android.graphics.*;
 import android.os.*;
 import android.view.*;
 import android.view.View.OnClickListener;
+import android.view.animation.*;
 import android.widget.*;
 
 import com.tisza.tarock.*;
+import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
@@ -24,6 +26,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private LinearLayout myCardsView0;
 	private LinearLayout myCardsView1;
 	private FrameLayout center_space;
+	private Button okButton;
 	
 	private View biddingView;
 	private ScrollView biddingScrollView;
@@ -61,6 +64,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		myCardsView0 = (LinearLayout)game.findViewById(R.id.my_cards_0);
 		myCardsView1 = (LinearLayout)game.findViewById(R.id.my_cards_1);
 		
+		okButton = (Button)game.findViewById(R.id.ok_button);
 		
 		played_cards = new RelativeLayout(this);
 		played_cards.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
@@ -74,12 +78,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		setContentView(game);
 		
-		/*final String host = getIntent().getStringExtra("host");
+		final String host = getIntent().getStringExtra("host");
 		final int port = getIntent().getIntExtra("port", 8128);
-		String name = getIntent().getStringExtra("name");*/
-		final String host = "192.168.0.3";
-		final int port = 8128;
-		final String name = "D";
+		final String name = getIntent().getStringExtra("name");
 		
 		Thread connThread = new Thread(new Runnable()
 		{
@@ -87,7 +88,29 @@ public class GameActivtiy extends Activity implements PacketHandler
 			{
 				try
 				{
-					conncection = new Connection(new Socket(host, port));
+					Socket socket = new Socket();
+					socket.connect(new InetSocketAddress(host, port), 1000);
+					conncection = new Connection(socket);
+					conncection.sendPacket(new PacketLogin(name));
+					conncection.addPacketHandler(new PacketHandler()
+					{
+						public void handlePacket(final Packet p)
+						{
+							runOnUiThread(new Runnable()
+							{
+								public void run()
+								{
+									GameActivtiy.this.handlePacket(p);
+								}
+							});
+						}
+						
+
+						public void connectionClosed()
+						{
+							GameActivtiy.this.connectionClosed();
+						}
+					});
 				}
 				catch (IOException e)
 				{
@@ -105,48 +128,33 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			e.printStackTrace();
 		}
-		conncection.sendPacket(new PacketLogin(name));
-		conncection.addPacketHandler(new PacketHandler()
-		{
-			public void handlePacket(final Packet p)
-			{
-				runOnUiThread(new Runnable()
-				{
-					public void run()
-					{
-						GameActivtiy.this.handlePacket(p);
-					}
-				});
-			}
-			
-
-			public void connectionClosed()
-			{
-				GameActivtiy.this.connectionClosed();
-			}
-		});
 	}
 	
 	private Connection conncection;
-	private List<String> names;
-	private PlayerCards pc;
-	private int cardsPlayed = 0;
+	private List<String> playerNames;
+	private PlayerCards myCards;
 	private int myID = -1;
+	private int cardsPlayed = 0;
 	private Map<Card, View> cardToViewMapping = new HashMap<Card, View>();
+	
+	private List<Card> cardsToSkart = new ArrayList<Card>();
+	private int numSkart;
+	private boolean skarting = false;
 
 	public void handlePacket(Packet p)
 	{
+		Handler handler = new Handler();
 		if (p instanceof PacketStartGame)
 		{
 			PacketStartGame packet = ((PacketStartGame)p);
 			myID = packet.getPlayerID();
-			names = packet.getNames();
+			playerNames = packet.getNames();
 			for (int i = 0; i < 4; i++)
 			{
 				int pos = getPositionFromPlayerID(i);
 				if (pos != 0)
 				{
-					playerNameViews[pos].setText(names.get(i));
+					playerNameViews[pos].setText(playerNames.get(i));
 					playerNameViews[pos].invalidate();
 				}
 			}
@@ -154,7 +162,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		if (p instanceof PacketPlayerCards)
 		{
 			PacketPlayerCards packet = ((PacketPlayerCards)p);
-			pc = packet.getPlayerCards();
+			myCards = packet.getPlayerCards();
 			arrangeCards();
 		}
 		if (p instanceof PacketAvailableBids)
@@ -180,13 +188,36 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			PacketBid packet = ((PacketBid)p);
 			String bidText = biddingTextView.getText().toString();
-			bidText += names.get(packet.getPlayer()) + " bidded: " + packet.getBid() + "\n";
+			if (bidText == null) bidText = "";
+			bidText += playerNames.get(packet.getPlayer()) + " licitalt: " + packet.getBid() + "\n";
 			biddingTextView.setText(bidText);
 		}
 		if (p instanceof PacketChange)
 		{
 			PacketChange packet = ((PacketChange)p);
-			conncection.sendPacket(packet);
+			myCards.getCards().addAll(packet.getCards());
+			skarting = true;
+			numSkart = packet.getCards().size();
+			arrangeCards();
+			
+			okButton.setOnClickListener(new OnClickListener()
+			{
+				public void onClick(View v)
+				{
+					conncection.sendPacket(new PacketChange(cardsToSkart, myID));
+				}
+			});
+		}
+		if (p instanceof PacketChangeDone)
+		{
+			PacketChangeDone packet = ((PacketChangeDone)p);
+			if (packet.getPlayer() == myID)
+			{
+				okButton.setOnClickListener(null);
+				myCards.getCards().removeAll(cardsToSkart);
+				skarting = false;
+				arrangeCards();
+			}
 		}
 		if (p instanceof PacketAvailableCalls)
 		{
@@ -213,7 +244,15 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			PacketCall packet = ((PacketCall)p);
 			String bidText = biddingTextView.getText().toString();
-			bidText += names.get(packet.getPlayer()) + " called: " + packet.getCalledCard() + "\n";
+			bidText += playerNames.get(packet.getPlayer()) + " hivott: " + packet.getCalledCard() + "\n";
+			biddingTextView.setText(bidText);
+		}
+		if (p instanceof PacketAnnounce)
+		{
+			PacketAnnounce packet = ((PacketAnnounce)p);
+			String bidText = biddingTextView.getText().toString();
+			String annName = packet.getAnnouncement() == null ? "passz" : packet.getAnnouncement().getClass().getSimpleName();
+			bidText += playerNames.get(packet.getPlayer()) + " bemondta: " + annName + "\n";
 			biddingTextView.setText(bidText);
 		}
 		if (p instanceof PacketTurn)
@@ -232,11 +271,32 @@ public class GameActivtiy extends Activity implements PacketHandler
 				}
 				if (packet.getType() == PacketTurn.Type.ANNOUNCE)
 				{
-					conncection.sendPacket(new PacketAnnounce(null, myID));
+					availabeBidsView.removeAllViews();
+					for (final Announcement a : Announcements.getAll())
+					{
+						Button announceButton = new Button(this);
+						announceButton.setText(a.getClass().getSimpleName());
+						announceButton.setOnClickListener(new OnClickListener()
+						{
+							public void onClick(View v)
+							{
+								conncection.sendPacket(new PacketAnnounce(a, myID));
+							}
+						});
+						availabeBidsView.addView(announceButton);
+					}
+					
+					okButton.setOnClickListener(new OnClickListener()
+					{
+						public void onClick(View v)
+						{
+							conncection.sendPacket(new PacketAnnounce(null, myID));
+						}
+					});
 				}
 				if (packet.getType() == PacketTurn.Type.PLAY_CARD)
 				{
-					if (center_space.getChildAt(0) == biddingView)
+					if (center_space.getChildAt(0) != played_cards)
 					{
 						center_space.removeAllViews();
 						center_space.addView(played_cards);
@@ -272,11 +332,17 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			PacketPlayCard packet = ((PacketPlayCard)p);
 			
+			if (center_space.getChildAt(0) == biddingView)
+			{
+				center_space.removeAllViews();
+				center_space.addView(played_cards);
+			}
+			
 			int pos = getPositionFromPlayerID(packet.getPlayer());
 			
 			if (packet.getPlayer() == myID)
 			{
-				pc.removeCard(packet.getCard());
+				myCards.removeCard(packet.getCard());
 				View cardView = cardToViewMapping.remove(packet.getCard());
 				myCardsView0.removeView(cardView);
 				myCardsView1.removeView(cardView);
@@ -287,10 +353,16 @@ public class GameActivtiy extends Activity implements PacketHandler
 			cardsPlayed++;
 			if (cardsPlayed % 4 == 0)
 			{
-				for (ImageView cardView : playedCardViews)
+				handler.postDelayed(new Runnable()
 				{
-					cardView.setImageBitmap(getBitmapForCard(null));
-				}
+					public void run()
+					{
+						for (ImageView cardView : playedCardViews)
+						{
+							cardView.setImageBitmap(getBitmapForCard(null));
+						}
+					}
+				}, 1500);
 			}
 		}
 		if (p instanceof PacketAnnouncementStatistics)
@@ -315,9 +387,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 		cardToViewMapping.clear();
 		myCardsView0.removeAllViews();
 		myCardsView1.removeAllViews();
-		for (int i = 0; i < pc.getCards().size(); i++)
+		for (int i = 0; i < myCards.getCards().size(); i++)
 		{
-			final Card card = pc.getCards().get(i);
+			final Card card = myCards.getCards().get(i);
 			
 			ImageView cardView = new ImageView(GameActivtiy.this);
 			cardView.setAdjustViewBounds(true);
@@ -326,15 +398,40 @@ public class GameActivtiy extends Activity implements PacketHandler
 			int padding = 10;
 			cardView.setPadding(padding, padding, padding, padding);
 			cardView.setLayoutParams(new LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
-			final LinearLayout parentView = i < 5 ? myCardsView0 : myCardsView1;
+			final LinearLayout parentView = i < 6 ? myCardsView0 : myCardsView1;
 			parentView.addView(cardView);
 			cardToViewMapping.put(card, cardView);
 			
 			cardView.setOnClickListener(new OnClickListener()
 			{
+				private boolean selectedForSkart = false;
 				public void onClick(View v)
 				{
-					cardClicked(card);
+					if (skarting)
+					{
+						if (!selectedForSkart)
+						{
+							cardsToSkart.add(card);
+							selectedForSkart = true;
+							Animation a = new TranslateAnimation(0, 0, 0, -30);
+							a.setDuration(300);
+							a.setFillAfter(true);
+							v.startAnimation(a);
+						}
+						else
+						{
+							cardsToSkart.remove(card);
+							selectedForSkart = false;
+							Animation a = new TranslateAnimation(0, 0, -30, 0);
+							a.setDuration(300);
+							a.setFillAfter(true);
+							v.startAnimation(a);
+						}
+					}
+					else
+					{
+						conncection.sendPacket(new PacketPlayCard(card, myID));
+					}
 				}
 			});
 		}
@@ -350,6 +447,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 		paint.setColor(Color.GREEN);
 		if (card != null) canvas.drawText(card.toString(), 0, 0, paint);
 		
+		if (card == null) return null;
+		
 		int id = R.drawable.testcard;
 		if (ResourceMappings.cardToImageResource.containsKey(card))
 		{
@@ -364,13 +463,17 @@ public class GameActivtiy extends Activity implements PacketHandler
 		return (id - myID + 4) % 4;
 	}
 
-	protected void cardClicked(Card card)
-	{
-		conncection.sendPacket(new PacketPlayCard(card, myID));
-	}
-
 	public void connectionClosed()
 	{
 		finish();
+	}
+	
+	protected void onDestroy()
+	{
+		super.onDestroy();
+		if (conncection != null)
+		{
+			conncection.closeRequest();
+		}
 	}
 }

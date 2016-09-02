@@ -14,6 +14,7 @@ public class Server
 	private LoginManager loginManager;
 	private GameSession gameSession;
 	private Thread listenterThread = null;
+	private ServerSocket ss;
 	
 	public Server(int port, List<String> playerNames)
 	{
@@ -31,7 +32,6 @@ public class Server
 			{
 				public void run()
 				{
-					ServerSocket ss = null;
 					try
 					{
 						ss = new ServerSocket(port);
@@ -74,6 +74,14 @@ public class Server
 		if (listenterThread != null)
 		{
 			listenterThread.interrupt();
+			try
+			{
+				ss.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 			listenterThread = null;
 			loginManager.close();
 			gameSession.close();

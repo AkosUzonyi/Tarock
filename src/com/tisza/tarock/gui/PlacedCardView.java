@@ -15,7 +15,6 @@ public class PlacedCardView extends ImageView
 	{
 		super(context);
 		this.orientation = orientation;
-		setImageResource(R.drawable.testcard);
 		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(width, RelativeLayout.LayoutParams.WRAP_CONTENT);
 		lp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 		setLayoutParams(lp);

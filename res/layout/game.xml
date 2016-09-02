@@ -13,6 +13,16 @@
 	    android:layout_weight="1"
 	    android:background="#008800"
 	    >
+	    
+        <Button
+            android:id="@+id/ok_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:text="@string/ok"
+            />
+        
         <com.tisza.tarock.gui.VerticalTextView
             android:id="@+id/playername_1"
             style="@style/PlayerName"

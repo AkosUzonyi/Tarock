@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import com.tisza.tarock.*;
 import com.tisza.tarock.net.*;
 
 public class Server

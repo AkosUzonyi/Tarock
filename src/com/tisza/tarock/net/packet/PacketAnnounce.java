@@ -31,7 +31,7 @@ public class PacketAnnounce extends PacketGameAction
 		}
 		else
 		{
-			announcement = Announcements.getFromID(dis.readShort());
+			announcement = Announcements.getFromID(id);
 		}
 	}
 

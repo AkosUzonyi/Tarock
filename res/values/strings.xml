@@ -1,8 +1,8 @@
 <resources>
 
-    <string name="app_name">Tarock</string>
-    <string name="client_app_name">Tarock</string>
-    <string name="server_app_name">Tarock</string>
+    <string name="app_name">Tarokk</string>
+    <string name="client_app_name">Tarokk client</string>
+    <string name="server_app_name">Tarokk server</string>
     <string name="name">Name</string>
     <string name="connect">Connect</string>
     <string name="ip">IP address</string>
@@ -11,4 +11,9 @@
     <string name="server_start">Start server</string>
     <string name="server_stop">Stop server</string>
     
+    <string name="loginfail_user_not_found">Ki vagy te szerencsétlen???</string>
+    <string name="loginfail_invalid_password">Helytelen jelszó</string>
+    <string name="loginfail_server_full">A szerver tele van</string>
+    <string name="loginfail_already_logged_in">Ez a játékos már bejelentkezett a játékba</string>
+    <string name="loginfail_connection_error">Csatlakozási hiba</string>
 </resources>

@@ -31,8 +31,6 @@ public class PhaseAnnouncing implements GamePhase
 			PacketAnnounce packetAnnounce = ((PacketAnnounce)packet);
 			if (packetAnnounce.getPlayer() == player)
 			{
-				System.out.println(packetAnnounce.getAnnouncement());
-				if (packetAnnounce.getAnnouncement() != null) System.out.println(packetAnnounce.getAnnouncement().getClass().getSimpleName());
 				if (announcing.announce(player, packetAnnounce.getAnnouncement()))
 				{
 					game.broadcastPacket(packetAnnounce);
@@ -63,6 +61,7 @@ public class PhaseAnnouncing implements GamePhase
 		else
 		{
 			game.broadcastPacket(new PacketTurn(announcing.getNextPlayer(), PacketTurn.Type.ANNOUNCE));
+			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailabeContras(announcing.getPossibleContras()));
 		}
 	}
 }

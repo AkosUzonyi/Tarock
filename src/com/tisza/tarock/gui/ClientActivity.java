@@ -21,7 +21,7 @@ public class ClientActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.client);
-		Button connectButton = (Button)findViewById(R.id.start_button);
+		connectButton = (Button)findViewById(R.id.start_button);
 		nameField = (EditText)findViewById(R.id.name_field);
 		hostField = (EditText)findViewById(R.id.host_field);
 		portField = (EditText)findViewById(R.id.port_field);

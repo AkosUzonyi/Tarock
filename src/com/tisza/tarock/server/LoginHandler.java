@@ -27,7 +27,7 @@ public class LoginHandler implements PacketHandler
 	{
 		if (name != null)
 		{
-			loginManager.loginFailed(this);
+			loginManager.loginFailed(this, PacketLoginFailed.Reason.CONNECTION_ERROR);
 		}
 	}
 }

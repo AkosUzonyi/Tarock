@@ -4,22 +4,27 @@ import java.io.*;
 
 public class PacketLoginFailed extends Packet
 {
-	private String error;
+	private Reason reason;
 	
 	PacketLoginFailed() {}
 	
-	public PacketLoginFailed(String e)
+	public PacketLoginFailed(Reason reason)
 	{
-		error = e;
+		this.reason = reason;
 	}
 	
 	protected void readData(DataInputStream dis) throws IOException
 	{
-		error = dis.readUTF();
+		reason = Reason.values()[dis.readByte()];
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
-		dos.writeUTF(error);
+		dos.writeByte(reason.ordinal());
+	}
+	
+	public static enum Reason
+	{
+		USER_NOT_FOUND, INVALID_PASSWORD, SERVER_FULL, ALREADY_LOGGED_IN, CONNECTION_ERROR;
 	}
 }

@@ -67,14 +67,15 @@ public abstract class Packet
 		register(10, PacketChangeDone.class);
 		register(11, PacketAvailableCalls.class);
 		register(12, PacketCall.class);
-		register(13, PacketAnnounce.class);
-		register(14, PacketContra.class);
-		register(15, PacketPlayCard.class);
-		register(16, PacketAnnouncementStatistics.class);
-		register(17, PacketPoints.class);
-		register(18, PacketReadyForNewGame.class);
+		register(13, PacketAvailabeContras.class);
+		register(14, PacketAnnounce.class);
+		register(15, PacketContra.class);
+		register(16, PacketPlayCard.class);
+		register(17, PacketAnnouncementStatistics.class);
+		register(18, PacketPoints.class);
+		register(19, PacketReadyForNewGame.class);
 		
-		register(19, PacketMessage.class);
-		register(20, PacketSkartTarock.class);
+		register(20, PacketMessage.class);
+		register(21, PacketSkartTarock.class);
 	}
 }

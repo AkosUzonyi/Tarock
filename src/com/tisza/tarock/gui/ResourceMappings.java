@@ -3,19 +3,23 @@ package com.tisza.tarock.gui;
 import java.util.*;
 
 import android.content.*;
-import android.content.res.*;
 
 import com.tisza.tarock.*;
+import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.net.packet.*;
 
 public class ResourceMappings
 {
 	public static final Map<Card, Integer> cardToImageResource = new HashMap<Card, Integer>();
+	public static final Map<Announcement, Integer> announcementToName = new HashMap<Announcement, Integer>();
+	public static final Map<AnnouncementBase.Result, Integer> announcementResultToImage = new HashMap<AnnouncementBase.Result, Integer>();
+	public static final Map<PacketLoginFailed.Reason, Integer> failureReasonToMessage = new HashMap<PacketLoginFailed.Reason, Integer>();
 	
 	public static void init(Context c)
 	{
-		String[] suitNames = new String[]{"h", "d", "s", "c"};
-		String[] valueNames = new String[]{"10", "j", "c", "q", "k"};
+		String[] suitNames = new String[]{"a", "b", "c", "d"};
+		String[] valueNames = new String[]{"1", "2", "3", "4", "5"};
 		for (int s = 0; s < 4; s++)
 		{
 			for (int v = 0; v < 5; v++)
@@ -25,12 +29,23 @@ public class ResourceMappings
 				cardToImageResource.put(new SuitCard(s, v + 1), id);
 			}
 		}
-		cardToImageResource.put(new TarockCard(1), R.drawable.i);
-		cardToImageResource.put(new TarockCard(2), R.drawable.ii);
-		cardToImageResource.put(new TarockCard(13), R.drawable.xiii);
-		cardToImageResource.put(new TarockCard(19), R.drawable.xix);
-		cardToImageResource.put(new TarockCard(20), R.drawable.xx);
-		cardToImageResource.put(new TarockCard(21), R.drawable.xxi);
-		cardToImageResource.put(new TarockCard(22), R.drawable.s);
+		
+		for (int i = 1; i <= 22; i++)
+		{
+			int id = c.getResources().getIdentifier("t" + i, "drawable", c.getPackageName());
+			cardToImageResource.put(new TarockCard(i), id);
+		}
+		
+		/*for (Announcement a : Announcements.getAll())
+		{
+			announcementToName.put(a, a.getClass().getSimpleName());
+		}*/
+		
+		announcementResultToImage.put(AnnouncementBase.Result.SUCCESSFUL, R.drawable.successful);
+		announcementResultToImage.put(AnnouncementBase.Result.SUCCESSFUL_SILENT, R.drawable.successful);
+		announcementResultToImage.put(AnnouncementBase.Result.FAILED, R.drawable.failed);
+		announcementResultToImage.put(AnnouncementBase.Result.FAILED_SILENT, R.drawable.failed);
+		
+		
 	}
 }

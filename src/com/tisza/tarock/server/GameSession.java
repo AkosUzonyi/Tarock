@@ -227,11 +227,11 @@ public class GameSession implements Runnable
 	
 	public void loginAuthorized(String name, Connection connection)
 	{
-		String failure = null;
+		PacketLoginFailed.Reason failureReason = null;
 		
 		if (!playerNames.contains(name))
 		{
-			failure = "You are not part of this game";
+			failureReason = PacketLoginFailed.Reason.USER_NOT_FOUND;
 			System.out.println("???: " + name);
 		}
 		else
@@ -241,7 +241,7 @@ public class GameSession implements Runnable
 				final int player = playerNames.indexOf(name);
 				if (playerIDToConnection.containsKey(player))
 				{
-					failure = "User already logged in";
+					failureReason = PacketLoginFailed.Reason.ALREADY_LOGGED_IN;
 				}
 				else
 				{
@@ -254,9 +254,9 @@ public class GameSession implements Runnable
 			}
 		}
 		
-		if (failure != null)
+		if (failureReason != null)
 		{
-			connection.sendPacket(new PacketLoginFailed(failure));
+			connection.sendPacket(new PacketLoginFailed(failureReason));
 			connection.closeRequest();
 		}
 	}

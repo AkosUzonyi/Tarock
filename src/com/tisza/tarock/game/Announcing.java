@@ -3,6 +3,7 @@ package com.tisza.tarock.game;
 import java.util.*;
 
 import com.tisza.tarock.announcement.*;
+import com.tisza.tarock.game.AnnouncementState.PerTeam;
 import com.tisza.tarock.game.Bidding.Invitation;
 
 public class Announcing
@@ -52,6 +53,7 @@ public class Announcing
 		
 		if (announcement == null)
 		{
+			System.out.println("passz");
 			if (currentPlayerAnnounced)
 			{
 				lastAnnouncer = currentPlayer;
@@ -67,11 +69,10 @@ public class Announcing
 		if (lastAnnouncer >= 0 && team != playerPairs.getTeam(lastAnnouncer) && !idTrack.isIdentityKnown(player))
 			return false;
 		
-		announcementStates.get(announcement).team(team).announce();
 		idTrack.identityRevealed(player);
 		currentPlayerAnnounced = true;
 		
-		return true;
+		return announcementStates.get(announcement).team(team).announce();
 	}
 	
 	public boolean contra(int player, Contra contra)
@@ -99,8 +100,8 @@ public class Announcing
 	
 	public List<Contra> getPossibleContras()
 	{
-		if (!isFinished())
-			throw new IllegalStateException();
+		if (isFinished())
+			return null;
 		
 		List<Contra> result = new ArrayList<Contra>();
 		for (Announcement a : announcementStates.keySet())

@@ -4,6 +4,7 @@ import java.util.*;
 
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
+import com.tisza.tarock.net.packet.PacketLoginFailed.Reason;
 
 public class LoginManager
 {
@@ -29,12 +30,12 @@ public class LoginManager
 		game.loginAuthorized(name, authorizedConnection);
 	}
 
-	public void loginFailed(LoginHandler loginHandler)
+	public void loginFailed(LoginHandler loginHandler, Reason reason)
 	{
 		Connection failedConnection = pendingLoginHandlers.remove(loginHandler);
 		if (failedConnection.isAlive())
 		{
-			failedConnection.sendPacket(new PacketLoginFailed("Authetication error"));
+			failedConnection.sendPacket(new PacketLoginFailed(reason));
 			failedConnection.closeRequest();
 		}
 	}

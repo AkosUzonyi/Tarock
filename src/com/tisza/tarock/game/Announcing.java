@@ -3,11 +3,13 @@ package com.tisza.tarock.game;
 import java.util.*;
 
 import com.tisza.tarock.announcement.*;
-import com.tisza.tarock.game.AnnouncementState.PerTeam;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.filter.*;
 import com.tisza.tarock.game.Bidding.Invitation;
 
 public class Announcing
 {
+	private AllPlayersCards playerCards;
 	private final PlayerPairs playerPairs;
 	private int currentPlayer;
 	
@@ -15,13 +17,12 @@ public class Announcing
 	private int lastAnnouncer = -1;
 	private IdentityTracker idTrack;
 	
-	private Map<Announcement, AnnouncementState> announcementStates = new HashMap<Announcement, AnnouncementState>();
+	private Map<Announcement, AnnouncementState> announcementStates = new HashMap<Announcement, AnnouncementState>();	
 	
-	//private AllPlayersCards playerHands;
-	
-	public Announcing(PlayerPairs pp, Invitation invit)
+	public Announcing(AllPlayersCards playerCards, PlayerPairs playerPairs, Invitation invit)
 	{
-		playerPairs = pp;
+		this.playerCards = playerCards;
+		this.playerPairs = playerPairs;
 		currentPlayer = playerPairs.getCaller();
 		idTrack = new IdentityTracker(playerPairs, invit);
 		
@@ -68,6 +69,14 @@ public class Announcing
 		
 		if (lastAnnouncer >= 0 && team != playerPairs.getTeam(lastAnnouncer) && !idTrack.isIdentityKnown(player))
 			return false;
+		
+		if (announcement == Announcements.hosszuDupla)
+		{
+			if (playerCards.getPlayerCards(player).filter(new TarockFilter()).size() < 7)
+			{
+				return false;
+			}
+		}
 		
 		idTrack.identityRevealed(player);
 		currentPlayerAnnounced = true;

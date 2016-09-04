@@ -43,12 +43,12 @@ public class PlayerPairs
 		return called;
 	}
 	
-	public Team getTeam(int p)
+	public Team getTeam(int player)
 	{
 		if (!checkPlayerIndexValid(caller) || !checkPlayerIndexValid(called))
 			throw new IllegalArgumentException();
 		
-		return p == caller || p == called ? Team.CALLER : Team.OPPONENT;
+		return player == caller || player == called ? Team.CALLER : Team.OPPONENT;
 	}
 	
 	public Collection<Integer> getPlayersInTeam(Team t)

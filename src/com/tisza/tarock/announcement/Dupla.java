@@ -1,24 +1,19 @@
 package com.tisza.tarock.announcement;
 
-public class Game extends GamePoints
+public class Dupla extends GamePoints
 {
 	protected int getMinPointsRequired()
 	{
-		return 48;
+		return 71;
 	}
 
 	protected int getDefaultPoints()
 	{
-		return 1;
+		return 4;
 	}
 
 	protected boolean canBeSilent()
 	{
-		return false;
-	}
-
-	public int getID()
-	{
-		return 0;
+		return true;
 	}
 }

@@ -20,7 +20,6 @@ public class ServerActivity extends Activity
 	private EditText name3Field;
 	private Button startButton;
 	
-	private Server server;
 	private boolean running = false;
 	
 	protected void onCreate(Bundle savedInstanceState)

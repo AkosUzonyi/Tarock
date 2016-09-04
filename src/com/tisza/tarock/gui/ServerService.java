@@ -1,7 +1,7 @@
 package com.tisza.tarock.gui;
 
 import java.util.*;
-	
+
 import android.app.*;
 import android.content.*;
 import android.os.*;

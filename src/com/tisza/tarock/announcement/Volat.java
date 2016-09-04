@@ -5,13 +5,13 @@ import java.util.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-public class Trull extends TakeCards
+public class Volat extends TakeCards
 {
-	Trull(){}
+	Volat(){}
 
 	public int getPoints(int winnerBid)
 	{
-		return 2;
+		return 6;
 	}
 
 	public boolean canBeSilent()
@@ -21,6 +21,6 @@ public class Trull extends TakeCards
 
 	protected Collection<Card> getCardsToTake()
 	{
-		return Card.honors;
+		return Card.all;
 	}
 }

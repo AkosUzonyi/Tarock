@@ -1,4 +1,4 @@
-package com.tisza.tarock.client;
+package com.tisza.tarock.cli;
 
 import java.util.*;
 

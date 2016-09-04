@@ -43,7 +43,12 @@ public abstract class AnnouncementBase implements Announcement
 				return 0;
 			}
 		}
-	}	
+	}
+	
+	public int getID()
+	{
+		return Announcements.getID(this);
+	}
 	
 	public String getName()
 	{

@@ -15,7 +15,7 @@ public class PhaseAnnouncing implements GamePhase
 		game = g;
 		PlayerPairs pp = game.getCurrentGame().calling.getPlayerPairs();
 		Invitation invit = game.getCurrentGame().bidding.getInvitation();
-		announcing = new Announcing(pp, invit);
+		announcing = new Announcing(game.getCurrentGame().changing.getCardsAfter(), pp, invit);
 	}
 
 	public void start()

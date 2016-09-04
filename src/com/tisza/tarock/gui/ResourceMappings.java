@@ -12,7 +12,7 @@ import com.tisza.tarock.net.packet.*;
 public class ResourceMappings
 {
 	public static final Map<Card, Integer> cardToImageResource = new HashMap<Card, Integer>();
-	public static final Map<Announcement, Integer> announcementToName = new HashMap<Announcement, Integer>();
+	public static final Map<Announcement, String> announcementToName = new HashMap<Announcement, String>();
 	public static final Map<AnnouncementBase.Result, Integer> announcementResultToImage = new HashMap<AnnouncementBase.Result, Integer>();
 	public static final Map<PacketLoginFailed.Reason, Integer> failureReasonToMessage = new HashMap<PacketLoginFailed.Reason, Integer>();
 	
@@ -36,10 +36,10 @@ public class ResourceMappings
 			cardToImageResource.put(new TarockCard(i), id);
 		}
 		
-		/*for (Announcement a : Announcements.getAll())
+		for (Announcement a : Announcements.getAll())
 		{
 			announcementToName.put(a, a.getClass().getSimpleName());
-		}*/
+		}
 		
 		announcementResultToImage.put(AnnouncementBase.Result.SUCCESSFUL, R.drawable.successful);
 		announcementResultToImage.put(AnnouncementBase.Result.SUCCESSFUL_SILENT, R.drawable.successful);

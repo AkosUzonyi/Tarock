@@ -25,7 +25,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private TextView[] playerNameViews;
 	private LinearLayout myCardsView0;
 	private LinearLayout myCardsView1;
-	private FrameLayout center_space;
+	private FrameLayout centerSpace;
 	private Button okButton;
 	
 	private View biddingView;
@@ -33,11 +33,11 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private TextView biddingTextView;
 	private LinearLayout availabeBidsView;
 	
-	private RelativeLayout played_cards;
+	private RelativeLayout playedCardsView;
 	private PlacedCardView[] playedCardViews;
 	
 	private LinearLayout statisticsView;
-	private ScrollView statisticsScrollView;
+	private LinearLayout statisticsScrollView;
 	
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -46,43 +46,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 		ResourceMappings.init(this);
 			
 		cardWidth = getWindowManager().getDefaultDisplay().getWidth() / 6;
-		
-		View game = View.inflate(this, R.layout.game, null);
-		
-		center_space = (FrameLayout)game.findViewById(R.id.center_space);
-		
-		playerNameViews = new TextView[]
-		{
-				null,
-				(TextView)game.findViewById(R.id.playername_1),
-				(TextView)game.findViewById(R.id.playername_2),
-				(TextView)game.findViewById(R.id.playername_3),
-		};
-		
-		biddingView = View.inflate(this, R.layout.bidding, null);
-		biddingScrollView = (ScrollView)biddingView.findViewById(R.id.bidding_scroll);
-		biddingTextView = (TextView)biddingView.findViewById(R.id.bidding_text);
-		availabeBidsView = (LinearLayout)biddingView.findViewById(R.id.available_bids);
-				
-		myCardsView0 = (LinearLayout)game.findViewById(R.id.my_cards_0);
-		myCardsView1 = (LinearLayout)game.findViewById(R.id.my_cards_1);
-		
-		okButton = (Button)game.findViewById(R.id.ok_button);
-		
-		played_cards = new RelativeLayout(this);
-		played_cards.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-		playedCardViews = new PlacedCardView[4];
-		for (int i = 0; i < 4; i++)
-		{
-			playedCardViews[i] = new PlacedCardView(this, cardWidth, i);
-			played_cards.addView(playedCardViews[i]);
-		}
-		center_space.addView(biddingView);
-		
-		statisticsView = (LinearLayout)View.inflate(this, R.layout.statistics, null);
-		statisticsScrollView = (ScrollView)statisticsView.findViewById(R.id.statistics_scrollview);
-		
-		setContentView(game);
 		
 		final String host = getIntent().getStringExtra("host");
 		final int port = getIntent().getIntExtra("port", 8128);
@@ -136,6 +99,48 @@ public class GameActivtiy extends Activity implements PacketHandler
 		}
 	}
 	
+	private void inflateViews()
+	{
+		View game = View.inflate(this, R.layout.game, null);
+		
+		centerSpace = (FrameLayout)game.findViewById(R.id.center_space);
+		
+		playerNameViews = new TextView[]
+		{
+				null,
+				(TextView)game.findViewById(R.id.playername_1),
+				(TextView)game.findViewById(R.id.playername_2),
+				(TextView)game.findViewById(R.id.playername_3),
+		};
+		
+		biddingView = View.inflate(this, R.layout.bidding, null);
+		biddingScrollView = (ScrollView)biddingView.findViewById(R.id.bidding_scroll);
+		biddingTextView = (TextView)biddingView.findViewById(R.id.bidding_text);
+		availabeBidsView = (LinearLayout)biddingView.findViewById(R.id.available_bids);
+		centerSpace.addView(biddingView);
+				
+		myCardsView0 = (LinearLayout)game.findViewById(R.id.my_cards_0);
+		myCardsView1 = (LinearLayout)game.findViewById(R.id.my_cards_1);
+		
+		okButton = (Button)game.findViewById(R.id.ok_button);
+		
+		playedCardsView = new RelativeLayout(this);
+		playedCardsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+		playedCardViews = new PlacedCardView[4];
+		for (int i = 0; i < 4; i++)
+		{
+			playedCardViews[i] = new PlacedCardView(this, cardWidth, i);
+			playedCardsView.addView(playedCardViews[i]);
+		}
+		centerSpace.addView(playedCardsView);
+		
+		statisticsView = (LinearLayout)View.inflate(this, R.layout.statistics, null);
+		statisticsScrollView = (LinearLayout)statisticsView.findViewById(R.id.statistics_entries_list);
+		centerSpace.addView(statisticsView);
+		
+		setContentView(game);
+	}
+	
 	private Connection conncection;
 	private List<String> playerNames;
 	private PlayerCards myCards;
@@ -148,6 +153,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onStartGame(List<String> playerNames, int myID)
 	{
+		inflateViews();
+		
 		this.myID = myID;
 		this.playerNames = playerNames;
 		for (int i = 0; i < 4; i++)
@@ -158,6 +165,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 				playerNameViews[pos].setText(playerNames.get(i));
 			}
 		}
+		showCenterView(biddingView);
 	}
 	
 	private void setCards(PlayerCards cards)
@@ -263,8 +271,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void playCard(int player, Card card)
 	{
-		center_space.removeAllViews();
-		center_space.addView(played_cards);
+		showCenterView(playedCardsView);
 		
 		int pos = getPositionFromPlayerID(player);
 		
@@ -299,7 +306,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 			for (final Announcement a : Announcements.getAll())
 			{
 				Button announceButton = new Button(this);
-				announceButton.setText(a.getClass().getSimpleName());
+				announceButton.setText(ResourceMappings.announcementToName.get(a));
 				announceButton.setOnClickListener(new OnClickListener()
 				{
 					public void onClick(View v)
@@ -317,14 +324,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 					conncection.sendPacket(new PacketAnnounce(null, myID));
 				}
 			});
-		}
-		if (type == PacketTurn.Type.PLAY_CARD)
-		{
-			if (center_space.getChildAt(0) != played_cards)
-			{
-				center_space.removeAllViews();
-				center_space.addView(played_cards);
-			}
 		}
 	}
 	
@@ -356,6 +355,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		if (type == PacketTurn.Type.PLAY_CARD)
 		{
+			showCenterView(playedCardsView);
+			
 			if (cardsPlayed % 4 == 0)
 			{
 				final int dir = getPositionFromPlayerID(player);
@@ -405,8 +406,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void showStatistics(List<PacketAnnouncementStatistics.Entry> entries)
 	{
-		center_space.removeAllViews();
-		center_space.addView(statisticsView);
+		showCenterView(statisticsView);
 		
 		for (PacketAnnouncementStatistics.Entry entry : entries)
 		{
@@ -430,7 +430,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		if (p instanceof PacketStartGame)
 		{
 			PacketStartGame packet = ((PacketStartGame)p);
-			onStartGame(packet.getNames(), packet.getID());
+			onStartGame(packet.getNames(), packet.getPlayerID());
 		}
 		
 		if (p instanceof PacketPlayerCards)
@@ -581,6 +581,16 @@ public class GameActivtiy extends Activity implements PacketHandler
 				}
 			});
 		}
+	}
+	
+	private void showCenterView(View v)
+	{
+		int count = centerSpace.getChildCount();
+		for (int i = 0; i < count; i++)
+		{
+			centerSpace.getChildAt(i).setVisibility(View.GONE);
+		}
+		v.setVisibility(View.VISIBLE);
 	}
 	
 	private Bitmap getBitmapForCard(Card card)

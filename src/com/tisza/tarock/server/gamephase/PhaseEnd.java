@@ -35,7 +35,7 @@ public class PhaseEnd implements GamePhase
 				
 				List<PacketAnnouncementStatistics.Entry> statEntriesForTeam = new ArrayList<PacketAnnouncementStatistics.Entry>();
 				
-				if (points > 0 && a instanceof AnnouncementBase)
+				if (points != 0 && a instanceof AnnouncementBase)
 				{
 					AnnouncementBase ab = (AnnouncementBase)a;
 					AnnouncementBase.Result result = ab.isSuccessful(game.getCurrentGame(), t);

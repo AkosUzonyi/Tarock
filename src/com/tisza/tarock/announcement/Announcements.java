@@ -15,7 +15,7 @@ public class Announcements
 	public static final Banda[] bandak = new Banda[4];
 	public static Negykiraly negykiraly = new Negykiraly();
 	public static Dupla dupla = new Dupla();
-	public static Dupla hosszuDupla = new Dupla();
+	public static HosszuDupla hosszuDupla = new HosszuDupla();
 	public static Centrum centrum = new Centrum();
 	public static Kismadar kismadar = new Kismadar();
 	public static Nagymadar nagymadar = new Nagymadar();

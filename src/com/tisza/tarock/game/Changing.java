@@ -84,8 +84,8 @@ public class Changing
 		for (Card c : cardsToSkart)
 		{
 			//TODO
-			if (forbiddenCards.contains(c))
-				return false;
+			//if (forbiddenCards.contains(c))
+			//	return false;
 			
 			if (reviewedSkartCards.contains(c))
 				return false;

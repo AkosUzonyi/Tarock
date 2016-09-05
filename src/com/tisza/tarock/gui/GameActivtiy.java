@@ -259,6 +259,51 @@ public class GameActivtiy extends Activity implements PacketHandler
 		biddingTextView.setText(bidText);
 	}
 	
+	private void showAnnouncements(List<Announcement> announcements, List<Contra> contras)
+	{
+		availabeBidsView.removeAllViews();
+		
+		for (final Contra contra : contras)
+		{
+			Button contraButton = new Button(this);
+			String contraName = ResourceMappings.contraLevelToName.get(contra.getLevel());
+			String annName = ResourceMappings.announcementToName.get(contra.getAnnouncement());
+			contraButton.setText(contraName + " " + annName);
+			contraButton.setOnClickListener(new OnClickListener()
+			{
+				public void onClick(View v)
+				{
+					availabeBidsView.removeAllViews();
+					conncection.sendPacket(new PacketContra(contra, myID));
+				}
+			});
+			availabeBidsView.addView(contraButton);
+		}
+		
+		for (final Announcement a : announcements)
+		{
+			Button announceButton = new Button(this);
+			announceButton.setText(ResourceMappings.announcementToName.get(a));
+			announceButton.setOnClickListener(new OnClickListener()
+			{
+				public void onClick(View v)
+				{
+					availabeBidsView.removeAllViews();
+					conncection.sendPacket(new PacketAnnounce(a, myID));
+				}
+			});
+			availabeBidsView.addView(announceButton);
+		}
+		
+		okButton.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				conncection.sendPacket(new PacketAnnounce(null, myID));
+			}
+		});
+	}
+
 	private void onAnnounce(int player, Announcement announcement)
 	{
 		String bidText = biddingTextView.getText().toString();
@@ -288,54 +333,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 		playedCardViews[pos].bringToFront();
 		
 		cardsPlayed++;
-	}
-	
-	private void showAnnouncements(boolean canAnnounce, List<Contra> contras)
-	{
-		availabeBidsView.removeAllViews();
-		
-		for (final Contra contra : contras)
-		{
-			Button contraButton = new Button(this);
-			String contraName = ResourceMappings.contraLevelToName.get(contra.getLevel());
-			String annName = ResourceMappings.announcementToName.get(contra.getAnnouncement());
-			contraButton.setText(contraName + " " + annName);
-			contraButton.setOnClickListener(new OnClickListener()
-			{
-				public void onClick(View v)
-				{
-					availabeBidsView.removeAllViews();
-					conncection.sendPacket(new PacketContra(contra, myID));
-				}
-			});
-			availabeBidsView.addView(contraButton);
-		}
-		
-		if (canAnnounce)
-		{
-			for (final Announcement a : Announcements.getAll())
-			{
-				Button announceButton = new Button(this);
-				announceButton.setText(ResourceMappings.announcementToName.get(a));
-				announceButton.setOnClickListener(new OnClickListener()
-				{
-					public void onClick(View v)
-					{
-						availabeBidsView.removeAllViews();
-						conncection.sendPacket(new PacketAnnounce(a, myID));
-					}
-				});
-				availabeBidsView.addView(announceButton);
-			}
-		}
-		
-		okButton.setOnClickListener(new OnClickListener()
-		{
-			public void onClick(View v)
-			{
-				conncection.sendPacket(new PacketAnnounce(null, myID));
-			}
-		});
 	}
 	
 	private void onTurn(int player, PacketTurn.Type type)
@@ -577,10 +574,10 @@ public class GameActivtiy extends Activity implements PacketHandler
 			onCall(packet.getPlayer(), packet.getCalledCard());
 		}
 		
-		if (p instanceof PacketAvailabeContras)
+		if (p instanceof PacketAvailabeAnnouncements)
 		{
-			PacketAvailabeContras packet = ((PacketAvailabeContras)p);
-			showAnnouncements(packet.getCanAnnounce(), packet.getAvailableContras());
+			PacketAvailabeAnnouncements packet = ((PacketAvailabeAnnouncements)p);
+			showAnnouncements(packet.getAvailableAnnouncements(), packet.getAvailableContras());
 		}
 		
 		if (p instanceof PacketAnnounce)

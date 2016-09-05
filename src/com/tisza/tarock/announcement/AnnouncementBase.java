@@ -1,5 +1,8 @@
 package com.tisza.tarock.announcement;
 
+import java.util.*;
+
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
 public abstract class AnnouncementBase implements Announcement
@@ -49,6 +52,11 @@ public abstract class AnnouncementBase implements Announcement
 	public final int getID()
 	{
 		return Announcements.getID(this);
+	}
+	
+	public boolean canAnnounce(Map<Announcement, AnnouncementState> announcementStates, PlayerCards cards, int player, PlayerPairs pp)
+	{
+		return true;
 	}
 	
 	public static enum Result

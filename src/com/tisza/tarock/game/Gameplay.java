@@ -33,8 +33,8 @@ public class Gameplay
 			return false;
 		
 		//TODO
-		if (!getPlaceableCards().contains(c))
-			return false;
+		//if (!getPlaceableCards().contains(c))
+		//	return false;
 		
 		cards.getPlayerCards(player).removeCard(c);
 		currentRound.placeCard(c);

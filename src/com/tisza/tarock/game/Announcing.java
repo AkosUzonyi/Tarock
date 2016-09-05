@@ -66,10 +66,7 @@ public class Announcing
 		
 		Team team = playerPairs.getTeam(player);
 		
-		if (lastAnnouncer >= 0 && team != playerPairs.getTeam(lastAnnouncer) && !idTrack.isIdentityKnown(player))
-			return false;
-		
-		if (!isAnnouncementValid(announcement))
+		if (!getAvailableAnnouncements().contains(announcement))
 			return false;
 		
 		idTrack.identityRevealed(player);
@@ -86,36 +83,53 @@ public class Announcing
 		if (player != currentPlayer)
 			return false;
 		
-		Team playerTeam = playerPairs.getTeam(player);
-		Team announcerTeam = contra.isSelf() ? playerTeam : playerTeam.getOther();
-		AnnouncementState.PerTeam as = announcementStates.get(contra.getAnnouncement()).team(announcerTeam);
-		if (as.isAnnounced() && as.getNextTeamToContra() == playerTeam && as.getContraLevel() == contra.getLevel())
-		{
-			as.contra();
-			idTrack.identityRevealed(player);
-			currentPlayerAnnounced = true;
-			return true;
-		}
-		else
-		{
+		if (!getAvailableContras().contains(contra))
 			return false;
-		}
+		
+		Team team = playerPairs.getTeam(player);
+		
+		idTrack.identityRevealed(player);
+		currentPlayerAnnounced = true;
+		
+		announcementStates.get(contra.getAnnouncement()).team(team).contra();
+		return true;
 	}
 	
-	public boolean canAnnounce()
+	private boolean requireContra()
 	{
 		if (isFinished())
-			return false;
+			throw new IllegalStateException();
 		
 		Team team = playerPairs.getTeam(currentPlayer);
 		
 		if (lastAnnouncer >= 0 && team != playerPairs.getTeam(lastAnnouncer) && !idTrack.isIdentityKnown(currentPlayer))
-			return false;
+			return true;
 		
-		return true;
+		return false;
 	}
 	
-	public List<Contra> getPossibleContras()
+	public List<Announcement> getAvailableAnnouncements()
+	{
+		if (isFinished())
+			return null;
+		
+		List<Announcement> result = new ArrayList<Announcement>();
+		
+		if (requireContra()) return result;
+		
+		for (Announcement a : Announcements.getAll())
+		{
+			boolean announced = announcementStates.get(a).team(playerPairs.getTeam(currentPlayer)).isAnnounced();
+			if (!announced && a.canAnnounce(announcementStates, playerCards.getPlayerCards(currentPlayer), currentPlayer, playerPairs));
+			{
+				if (a instanceof Banda) System.out.println(a.getClass().getSimpleName());
+				result.add(a);
+			}
+		}
+		return result;
+	}
+	
+	public List<Contra> getAvailableContras()
 	{
 		if (isFinished())
 			return null;
@@ -139,34 +153,6 @@ public class Announcing
 	public boolean isFinished()
 	{
 		return lastAnnouncer == currentPlayer;
-	}
-	
-	private boolean isAnnouncementValid(Announcement announcement)
-	{
-		Team team = playerPairs.getTeam(currentPlayer);
-		
-		if (announcement == Announcements.hosszuDupla)
-		{
-			if (playerCards.getPlayerCards(currentPlayer).filter(new TarockFilter()).size() < 7)
-			{
-				return false;
-			}
-		}
-		
-		if (announcement instanceof Banda)
-		{
-			for (Banda banda : Announcements.bandak)
-			{
-				if (announcementStates.get(banda).team(team).isAnnounced())
-				{
-					return false;
-				}
-			}
-		}
-		
-		
-		
-		return true;
 	}
 	
 	private static class IdentityTracker

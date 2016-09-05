@@ -61,7 +61,7 @@ public class PhaseAnnouncing implements GamePhase
 		else
 		{
 			game.broadcastPacket(new PacketTurn(announcing.getNextPlayer(), PacketTurn.Type.ANNOUNCE));
-			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailabeContras(announcing.canAnnounce(), announcing.getPossibleContras()));
+			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailabeAnnouncements(announcing.getAvailableAnnouncements(), announcing.getAvailableContras()));
 		}
 	}
 }

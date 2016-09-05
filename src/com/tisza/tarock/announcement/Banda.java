@@ -3,6 +3,7 @@ package com.tisza.tarock.announcement;
 import java.util.*;
 
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 
 public class Banda extends TakeCards
 {
@@ -31,5 +32,22 @@ public class Banda extends TakeCards
 			result.add(new SuitCard(suit, v));
 		}
 		return result;
+	}
+	
+	public boolean canAnnounce(Map<Announcement, AnnouncementState> announcementStates, PlayerCards cards, int player, PlayerPairs pp)
+	{
+		if (!super.canAnnounce(announcementStates, cards, player, pp))
+			return false;
+		
+		for (Banda banda : Announcements.bandak)
+		{
+			System.out.println(banda.suit);
+			System.out.println(announcementStates.get(banda).team(pp.getTeam(player)).isAnnounced());
+			if (announcementStates.get(banda).team(pp.getTeam(player)).isAnnounced())
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 }

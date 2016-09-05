@@ -6,22 +6,22 @@ import java.util.*;
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.game.*;
 
-public class PacketAvailabeContras extends Packet
+public class PacketAvailabeAnnouncements extends Packet
 {
-	private boolean canAnnounce;
+	private List<Announcement> announcements;
 	private List<Contra> contras;
 	
-	PacketAvailabeContras() {}
+	PacketAvailabeAnnouncements() {}
 	
-	public PacketAvailabeContras(boolean canAnnounce, List<Contra> contras)
+	public PacketAvailabeAnnouncements(List<Announcement> announcements, List<Contra> contras)
 	{
-		this.canAnnounce = canAnnounce;
+		this.announcements = announcements;
 		this.contras = contras;
 	}
 
-	public boolean getCanAnnounce()
+	public List<Announcement> getAvailableAnnouncements()
 	{
-		return canAnnounce;
+		return announcements;
 	}
 
 	public List<Contra> getAvailableContras()
@@ -31,9 +31,15 @@ public class PacketAvailabeContras extends Packet
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
-		canAnnounce = dis.readBoolean();
-		
 		int size = dis.readByte();
+		announcements = new ArrayList<Announcement>(size);
+		for (int i = 0; i < size; i++)
+		{
+			Announcement a = Announcements.getFromID(dis.readShort());
+			announcements.add(a);
+		}
+		
+		size = dis.readByte();
 		contras = new ArrayList<Contra>(size);
 		for (int i = 0; i < size; i++)
 		{
@@ -45,7 +51,11 @@ public class PacketAvailabeContras extends Packet
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
-		dos.writeBoolean(canAnnounce);
+		dos.writeByte(announcements.size());
+		for (Announcement announcement : announcements)
+		{
+			dos.writeShort(announcement.getID());
+		}
 		
 		dos.writeByte(contras.size());
 		for (Contra contra : contras)

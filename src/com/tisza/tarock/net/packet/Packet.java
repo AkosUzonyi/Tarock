@@ -68,7 +68,7 @@ public abstract class Packet
 		register(11, PacketChangeDone.class);
 		register(12, PacketAvailableCalls.class);
 		register(13, PacketCall.class);
-		register(14, PacketAvailabeContras.class);
+		register(14, PacketAvailabeAnnouncements.class);
 		register(15, PacketAnnounce.class);
 		register(16, PacketContra.class);
 		register(17, PacketPlayCard.class);

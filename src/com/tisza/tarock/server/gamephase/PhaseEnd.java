@@ -22,10 +22,14 @@ public class PhaseEnd implements GamePhase
 		
 		PlayerPairs pp = game.getCurrentGame().calling.getPlayerPairs();
 		
+		//TODO: implement different statistics for teams
+		List<PacketAnnouncementStatistics.Entry> statEntriesForCallerTeam = new ArrayList<PacketAnnouncementStatistics.Entry>();
+		
 		for (Map.Entry<Announcement, AnnouncementState> announcementEntry : game.getCurrentGame().announcing.getAnnouncementStates().entrySet())
 		{
 			Announcement a = announcementEntry.getKey();
 			AnnouncementState as = announcementEntry.getValue();
+			
 			for (Team t : Team.values())
 			{
 				AnnouncementState.PerTeam aspt = as.team(t);
@@ -33,21 +37,16 @@ public class PhaseEnd implements GamePhase
 				int points = a.calculatePoints(game.getCurrentGame(), t, aspt.isAnnounced()) * (int)Math.pow(2, contraLevel);
 				pointsForCallerTeam += points * (t == Team.CALLER ? 1 : -1);
 				
-				List<PacketAnnouncementStatistics.Entry> statEntriesForTeam = new ArrayList<PacketAnnouncementStatistics.Entry>();
-				
 				if (points != 0 && a instanceof AnnouncementBase)
 				{
 					AnnouncementBase ab = (AnnouncementBase)a;
 					AnnouncementBase.Result result = ab.isSuccessful(game.getCurrentGame(), t);
-					statEntriesForTeam.add(new PacketAnnouncementStatistics.Entry(a, contraLevel, result, points));
-				}
-				
-				for (int player : pp.getPlayersInTeam(t))
-				{
-					game.sendPacketToPlayer(player, new PacketAnnouncementStatistics(statEntriesForTeam));
+					statEntriesForCallerTeam.add(new PacketAnnouncementStatistics.Entry(a, contraLevel, result, pointsForCallerTeam));
 				}
 			}
 		}
+		
+		game.broadcastPacket(new PacketAnnouncementStatistics(statEntriesForCallerTeam));
 		
 		game.getPoints().addPoints(pointsForCallerTeam, pp.getCaller(), pp.getCalled());
 		game.savePoints();

@@ -83,7 +83,7 @@ public class Announcements
 			Map<Integer, TakeRoundWithCard> map = new HashMap<Integer, TakeRoundWithCard>();
 			for (int j = 0; j < 4; j++)
 			{
-				int roundIndex = 8 - i;
+				int roundIndex = 8 - j;
 				TakeRoundWithCard ann = new TakeRoundWithCard(roundIndex, card);
 				map.put(roundIndex, ann);
 				register(13 + i * 4 + j, ann);

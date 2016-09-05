@@ -31,9 +31,4 @@ public class XXIFogas extends AnnouncementBase
 	{
 		return 60;
 	}
-	
-	public int getID()
-	{
-		return 2;
-	}
 }

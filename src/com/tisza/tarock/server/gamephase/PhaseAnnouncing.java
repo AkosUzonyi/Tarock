@@ -34,8 +34,8 @@ public class PhaseAnnouncing implements GamePhase
 				if (announcing.announce(player, packetAnnounce.getAnnouncement()))
 				{
 					game.broadcastPacket(packetAnnounce);
-					onAnnounced();
 				}
+				onAnnounced();
 			}
 		}
 		else if (packet instanceof PacketContra)
@@ -46,8 +46,8 @@ public class PhaseAnnouncing implements GamePhase
 				if (announcing.contra(player, packetContra.getContra()))
 				{
 					game.broadcastPacket(packetContra);
-					onAnnounced();
 				}
+				onAnnounced();
 			}
 		}
 	}
@@ -61,7 +61,7 @@ public class PhaseAnnouncing implements GamePhase
 		else
 		{
 			game.broadcastPacket(new PacketTurn(announcing.getNextPlayer(), PacketTurn.Type.ANNOUNCE));
-			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailabeContras(announcing.getPossibleContras()));
+			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailabeContras(announcing.canAnnounce(), announcing.getPossibleContras()));
 		}
 	}
 }

@@ -86,7 +86,7 @@ public class CliDumbClient implements PacketHandler
 				{
 					try
 					{
-						Thread.sleep(1600);
+						Thread.sleep(400);
 					}
 					catch (InterruptedException e)
 					{

@@ -8,13 +8,20 @@ import com.tisza.tarock.game.*;
 
 public class PacketAvailabeContras extends Packet
 {
+	private boolean canAnnounce;
 	private List<Contra> contras;
 	
 	PacketAvailabeContras() {}
 	
-	public PacketAvailabeContras(List<Contra> contras)
+	public PacketAvailabeContras(boolean canAnnounce, List<Contra> contras)
 	{
+		this.canAnnounce = canAnnounce;
 		this.contras = contras;
+	}
+
+	public boolean getCanAnnounce()
+	{
+		return canAnnounce;
 	}
 
 	public List<Contra> getAvailableContras()
@@ -24,6 +31,8 @@ public class PacketAvailabeContras extends Packet
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
+		canAnnounce = dis.readBoolean();
+		
 		int size = dis.readByte();
 		contras = new ArrayList<Contra>(size);
 		for (int i = 0; i < size; i++)
@@ -36,6 +45,8 @@ public class PacketAvailabeContras extends Packet
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
+		dos.writeBoolean(canAnnounce);
+		
 		dos.writeByte(contras.size());
 		for (Contra contra : contras)
 		{

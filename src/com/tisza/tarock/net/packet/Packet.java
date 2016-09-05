@@ -56,26 +56,27 @@ public abstract class Packet
 	{
 		register(0, PacketLogin.class);
 		register(1, PacketLoginFailed.class);
-		register(2, PacketStartGame.class);
-		register(3, PacketPlayerCards.class);
-		register(4, PacketTurn.class);
-		register(5, PacketThrowCards.class);
-		register(6, PacketCardsThrown.class);
-		register(7, PacketAvailableBids.class);
-		register(8, PacketBid.class);
-		register(9, PacketChange.class);
-		register(10, PacketChangeDone.class);
-		register(11, PacketAvailableCalls.class);
-		register(12, PacketCall.class);
-		register(13, PacketAvailabeContras.class);
-		register(14, PacketAnnounce.class);
-		register(15, PacketContra.class);
-		register(16, PacketPlayCard.class);
-		register(17, PacketAnnouncementStatistics.class);
-		register(18, PacketPoints.class);
-		register(19, PacketReadyForNewGame.class);
+		register(2, PacketServerStatus.class);
+		register(3, PacketStartGame.class);
+		register(4, PacketPlayerCards.class);
+		register(5, PacketTurn.class);
+		register(6, PacketThrowCards.class);
+		register(7, PacketCardsThrown.class);
+		register(8, PacketAvailableBids.class);
+		register(9, PacketBid.class);
+		register(10, PacketChange.class);
+		register(11, PacketChangeDone.class);
+		register(12, PacketAvailableCalls.class);
+		register(13, PacketCall.class);
+		register(14, PacketAvailabeContras.class);
+		register(15, PacketAnnounce.class);
+		register(16, PacketContra.class);
+		register(17, PacketPlayCard.class);
+		register(18, PacketAnnouncementStatistics.class);
+		register(19, PacketPoints.class);
+		register(20, PacketReadyForNewGame.class);
 		
-		register(20, PacketMessage.class);
-		register(21, PacketSkartTarock.class);
+		register(21, PacketMessage.class);
+		register(22, PacketSkartTarock.class);
 	}
 }

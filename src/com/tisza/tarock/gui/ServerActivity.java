@@ -9,7 +9,6 @@ import android.view.View.OnClickListener;
 import android.widget.*;
 
 import com.tisza.tarock.*;
-import com.tisza.tarock.server.*;
 
 public class ServerActivity extends Activity
 {

@@ -7,15 +7,11 @@ public class TakeRoundWithCard extends AnnouncementBase
 {
 	private int roundIndex;
 	private Card cardToTakeWith;
-	private boolean canBeSilent;
 		
 	TakeRoundWithCard(int roundIndex, Card cardToTakeWith)
 	{
 		this.roundIndex = roundIndex;
 		this.cardToTakeWith = cardToTakeWith;
-		
-		boolean is12 = cardToTakeWith.equals(new TarockCard(1)) || cardToTakeWith.equals(new TarockCard(2)); 
-		this.canBeSilent = is12 && roundIndex == 8;
 	}
 
 	public Result isSuccessful(GameInstance gi, Team team)
@@ -28,11 +24,11 @@ public class TakeRoundWithCard extends AnnouncementBase
 			
 			if (r.getWinner() == player && gi.calling.getPlayerPairs().getTeam(player) == team)
 			{
-				return canBeSilent ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
+				return canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 			}
 			else
 			{
-				return canBeSilent ? Result.FAILED_SILENT : Result.FAILED;
+				return canBeSilent() ? Result.FAILED_SILENT : Result.FAILED;
 			}
 		}
 		return Result.FAILED;
@@ -54,18 +50,19 @@ public class TakeRoundWithCard extends AnnouncementBase
 		return result;
 	}
 
-	public int getRoundIndex()
+	public final int getRoundIndex()
 	{
 		return roundIndex;
 	}
 
-	public Card getCardToTakeWith()
+	public final Card getCardToTakeWith()
 	{
 		return cardToTakeWith;
 	}
 
-	public boolean isCanBeSilent()
+	public boolean canBeSilent()
 	{
-		return canBeSilent;
+		boolean is12 = cardToTakeWith.equals(new TarockCard(1)) || cardToTakeWith.equals(new TarockCard(2)); 
+		return is12 && roundIndex == 8;
 	}
 }

@@ -11,7 +11,8 @@ public abstract class AnnouncementBase implements Announcement
 	{
 		Result r = isSuccessful(gi, team);
 		
-		int winnerBid = gi.bidding.getWinnerBid();
+		PlayerPairs pp = gi.calling.getPlayerPairs();
+		int winnerBid = pp.isSolo() && !pp.isSoloIntentional() ? 0 : gi.bidding.getWinnerBid();
 		
 		if (isAnnounced)
 		{
@@ -45,14 +46,9 @@ public abstract class AnnouncementBase implements Announcement
 		}
 	}
 	
-	public int getID()
+	public final int getID()
 	{
 		return Announcements.getID(this);
-	}
-	
-	public String getName()
-	{
-		throw new UnsupportedOperationException();
 	}
 	
 	public static enum Result

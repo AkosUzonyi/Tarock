@@ -12,13 +12,15 @@ public abstract class KezbeVacak extends TakeRoundWithCard
 
 	public Result isSuccessful(GameInstance gi, Team team)
 	{
-		if (super.isSuccessful(gi, team) == Result.FAILED) return Result.FAILED;
+		if (super.isSuccessful(gi, team) == Result.FAILED)
+			return Result.FAILED;
 		
 		for (int i = 0; i < getRoundIndex(); i++)
 		{
 			Round round = gi.gameplay.getRoundsPassed().get(i);
 			int winner = round.getWinner();
-			if (gi.calling.getPlayerPairs().getTeam(winner) != team) return Result.FAILED;
+			if (gi.calling.getPlayerPairs().getTeam(winner) != team)
+				return Result.FAILED;
 		}
 		
 		return Result.SUCCESSFUL;

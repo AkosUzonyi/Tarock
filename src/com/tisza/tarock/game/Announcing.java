@@ -54,7 +54,6 @@ public class Announcing
 		
 		if (announcement == null)
 		{
-			System.out.println("passz");
 			if (currentPlayerAnnounced)
 			{
 				lastAnnouncer = currentPlayer;
@@ -70,13 +69,8 @@ public class Announcing
 		if (lastAnnouncer >= 0 && team != playerPairs.getTeam(lastAnnouncer) && !idTrack.isIdentityKnown(player))
 			return false;
 		
-		if (announcement == Announcements.hosszuDupla)
-		{
-			if (playerCards.getPlayerCards(player).filter(new TarockFilter()).size() < 7)
-			{
-				return false;
-			}
-		}
+		if (!isAnnouncementValid(announcement))
+			return false;
 		
 		idTrack.identityRevealed(player);
 		currentPlayerAnnounced = true;
@@ -99,12 +93,26 @@ public class Announcing
 		{
 			as.contra();
 			idTrack.identityRevealed(player);
+			currentPlayerAnnounced = true;
 			return true;
 		}
 		else
 		{
 			return false;
 		}
+	}
+	
+	public boolean canAnnounce()
+	{
+		if (isFinished())
+			return false;
+		
+		Team team = playerPairs.getTeam(currentPlayer);
+		
+		if (lastAnnouncer >= 0 && team != playerPairs.getTeam(lastAnnouncer) && !idTrack.isIdentityKnown(currentPlayer))
+			return false;
+		
+		return true;
 	}
 	
 	public List<Contra> getPossibleContras()
@@ -131,6 +139,34 @@ public class Announcing
 	public boolean isFinished()
 	{
 		return lastAnnouncer == currentPlayer;
+	}
+	
+	private boolean isAnnouncementValid(Announcement announcement)
+	{
+		Team team = playerPairs.getTeam(currentPlayer);
+		
+		if (announcement == Announcements.hosszuDupla)
+		{
+			if (playerCards.getPlayerCards(currentPlayer).filter(new TarockFilter()).size() < 7)
+			{
+				return false;
+			}
+		}
+		
+		if (announcement instanceof Banda)
+		{
+			for (Banda banda : Announcements.bandak)
+			{
+				if (announcementStates.get(banda).team(team).isAnnounced())
+				{
+					return false;
+				}
+			}
+		}
+		
+		
+		
+		return true;
 	}
 	
 	private static class IdentityTracker

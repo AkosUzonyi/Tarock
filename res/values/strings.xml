@@ -16,4 +16,69 @@
     <string name="loginfail_server_full">A szerver tele van</string>
     <string name="loginfail_already_logged_in">Ez a játékos már bejelentkezett a játékba</string>
     <string name="loginfail_connection_error">Csatlakozási hiba</string>
+    
+    <string name="bid3">3</string>
+    <string name="bid2">2</string>
+    <string name="bid1">1</string>
+    <string name="bid0">Szóló</string>
+    <string name="bid_passz">Passz</string>
+    
+    <string name="suits0">Kőr</string>
+    <string name="suits1">Káró</string>
+    <string name="suits2">Pikk</string>
+    <string name="suits3">Treff</string>
+    
+    <string name="suitv1">Ász</string>
+    <string name="suitv2">Botos</string>
+    <string name="suitv3">Lovas</string>
+    <string name="suitv4">Dáma</string>
+    <string name="suitv5">Király</string>
+    
+    <string name="contra0">Kontra</string>
+    <string name="contra1">Rekontra</string>
+    <string name="contra2">Szubkontra</string>
+    <string name="contra3">Hirskontra</string>
+    <string name="contra4">Mordkontra</string>
+    <string name="contra5">Fedák Sári</string>
+    
+    <string name="passz">Passz</string>
+    <string name="jatek">Játék</string>
+    <string name="trull">Trull</string>
+    <string name="xxiFogas">XXI fogás</string>
+    <string name="banda">banda</string>
+    <string name="negykiraly">Négykirály</string>
+    <string name="dupla">Dupla</string>
+    <string name="hosszuDupla">Hosszú dupla</string>
+    
+    <string name="round8">Ultimó</string>
+    <string name="round7">Uhu</string>
+    <string name="round6">Nagymadár</string>
+    <string name="round5">Kismadár</string>
+    <string name="round4">Centrum</string>
+    <string name="round0">Fácán</string>
+    
+    <string name="t1">Pagát</string>
+    <string name="t2">Sas</string>
+    <string name="t3">Hármas tarokk</string>
+    <string name="t4">Négyes tarokk</string>
+    <string name="t5">Ötös tarokk</string>
+    <string name="t6">Hatos tarokk</string>
+    <string name="t7">Hetes tarokk</string>
+    <string name="t8">Nyolcas tarokk</string>
+    <string name="t9">Kilences tarokk</string>
+    <string name="t10">Tizes tarokk</string>
+    <string name="t11">Tizenegyes tarokk</string>
+    <string name="t12">Tizenkettes tarokk</string>
+    <string name="t13">Tizenhármas tarokk</string>
+    <string name="t14">Tizennégyes tarokk</string>
+    <string name="t15">Tizenötös tarokk</string>
+    <string name="t16">Tizenhatos tarokk</string>
+    <string name="t17">Tizenhetes tarokk</string>
+    <string name="t18">Tizennyolcas tarokk</string>
+    <string name="t19">Tizenkilences tarokk</string>
+    <string name="t20">Huszas tarokk</string>
+    <string name="t21">Huszonegy</string>
+    <string name="t22">Skíz</string>
+    
+    
 </resources>

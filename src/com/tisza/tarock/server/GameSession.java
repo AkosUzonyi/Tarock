@@ -217,8 +217,19 @@ public class GameSession implements Runnable
 		}
 	}
 	
+	private void sendStatusInfo()
+	{
+		List<String> connectedPlayerNames = new ArrayList<String>();
+		for (int player : playerIDToConnection.keySet())
+		{
+			connectedPlayerNames.add(playerNames.get(player));
+		}
+		broadcastPacket(new PacketServerStatus(connectedPlayerNames));
+	}
+	
 	private void onSuccessfulLogin(int player)
 	{
+		//sendStatusInfo();
 		if (currentGamePhase != null)
 		{
 			//currentGamePhase.playerLoggedIn(player);

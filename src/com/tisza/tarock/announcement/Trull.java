@@ -3,7 +3,6 @@ package com.tisza.tarock.announcement;
 import java.util.*;
 
 import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
 
 public class Trull extends TakeCards
 {

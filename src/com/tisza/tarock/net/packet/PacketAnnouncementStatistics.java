@@ -42,9 +42,10 @@ public class PacketAnnouncementStatistics extends Packet
 		for (int i = 0; i < size; i++)
 		{
 			Announcement announcement = Announcements.getFromID(dis.readShort());
+			boolean isAnnounced = dis.readBoolean();
 			int contraLevel = dis.readByte();
 			int points = dis.readShort();
-			entries.add(new Entry(announcement, contraLevel, points));
+			entries.add(new Entry(announcement, isAnnounced, contraLevel, points));
 		}
 		return entries;
 	}
@@ -61,6 +62,7 @@ public class PacketAnnouncementStatistics extends Packet
 		for (Entry e : entries)
 		{
 			dos.writeShort(e.getAnnouncement().getID());
+			dos.writeBoolean(e.isAnnounced());
 			dos.writeByte(e.getContraLevel());
 			dos.writeShort(e.getPoints());
 		}
@@ -69,13 +71,15 @@ public class PacketAnnouncementStatistics extends Packet
 	public static class Entry
 	{
 		private Announcement announcement;
+		private boolean isAnnounced;
 		private int contraLevel;
 		private int points;
 		
-		public Entry(Announcement announcement, int contraLevel, int points)
+		public Entry(Announcement announcement, boolean isAnnounced, int contraLevel, int points)
 		{
 			super();
 			this.announcement = announcement;
+			this.isAnnounced = isAnnounced;
 			this.contraLevel = contraLevel;
 			this.points = points;
 		}
@@ -83,6 +87,11 @@ public class PacketAnnouncementStatistics extends Packet
 		public Announcement getAnnouncement()
 		{
 			return announcement;
+		}
+		
+		public boolean isAnnounced()
+		{
+			return isAnnounced;
 		}
 		
 		public int getContraLevel()

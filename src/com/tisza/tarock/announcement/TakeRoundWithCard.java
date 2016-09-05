@@ -16,19 +16,32 @@ public class TakeRoundWithCard extends AnnouncementBase
 
 	public Result isSuccessful(GameInstance gi, Team team)
 	{
-		Round r = gi.gameplay.getRoundsPassed().get(roundIndex);
-		for (int player = 0; player < 4; player++)
+		if (canBeSilent())
 		{
-			Card card = r.getCards().get(player);
-			if (card != cardToTakeWith) continue;
+			int alma = 5;
+			int u = alma;
+		}
+		
+		Round r = gi.gameplay.getRoundsPassed().get(roundIndex);
+		for (int theCardPlayer = 0; theCardPlayer < 4; theCardPlayer++)
+		{
+			Card card = r.getCards().get(theCardPlayer);
+			if (!card.equals(cardToTakeWith)) continue;
 			
-			if (r.getWinner() == player && gi.calling.getPlayerPairs().getTeam(player) == team)
+			if (gi.calling.getPlayerPairs().getTeam(theCardPlayer) != team)
 			{
-				return canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
+				return Result.FAILED;
 			}
 			else
 			{
-				return canBeSilent() ? Result.FAILED_SILENT : Result.FAILED;
+				if (r.getWinner() == theCardPlayer)
+				{
+					return canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
+				}
+				else
+				{
+					return canBeSilent() ? Result.FAILED_SILENT : Result.FAILED;
+				}
 			}
 		}
 		return Result.FAILED;

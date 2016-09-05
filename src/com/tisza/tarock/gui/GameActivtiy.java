@@ -474,8 +474,14 @@ public class GameActivtiy extends Activity implements PacketHandler
 			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
 			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_announcement_points);
 			
+			String name = "";
+			if (!entry.isAnnounced())
+				name += getResources().getString(R.string.silent);
+			name += " ";
 			Contra c = new Contra(entry.getAnnouncement(), entry.getContraLevel());
-			nameView.setText(ResourceMappings.getContraName(c));
+			name += ResourceMappings.getContraName(c);
+			nameView.setText(name);
+			
 			pointsView.setText(entry.getPoints() + "");
 			pointsView.setTextColor(entry.getPoints() > 0 ? Color.BLACK : Color.RED);
 			

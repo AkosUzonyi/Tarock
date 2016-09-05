@@ -23,7 +23,6 @@ public class PhaseEnd implements GamePhase
 		
 		PlayerPairs pp = game.getCurrentGame().calling.getPlayerPairs();
 		
-		//TODO: implement different statistics for teams
 		Map<Team, List<PacketAnnouncementStatistics.Entry>> statEntriesForTeams = new HashMap<Team, List<PacketAnnouncementStatistics.Entry>>();
 		statEntriesForTeams.put(Team.CALLER, new ArrayList<PacketAnnouncementStatistics.Entry>());
 		statEntriesForTeams.put(Team.OPPONENT, new ArrayList<PacketAnnouncementStatistics.Entry>());
@@ -36,12 +35,16 @@ public class PhaseEnd implements GamePhase
 			for (Team team : Team.values())
 			{
 				AnnouncementState.PerTeam aspt = as.team(team);
-				int contraLevel = aspt.isAnnounced() ? aspt.getContraLevel() : 0;
+				boolean isAnnounced = aspt.isAnnounced();
+				int contraLevel = isAnnounced ? aspt.getContraLevel() : 0;
 				int points = a.calculatePoints(game.getCurrentGame(), team, aspt.isAnnounced()) * (int)Math.pow(2, contraLevel);
 				
 				pointsForCallerTeam += points * (team == Team.CALLER ? 1 : -1);
 				
-				if (points != 0) statEntriesForTeams.get(team).add(new PacketAnnouncementStatistics.Entry(a, contraLevel, points));
+				if (points != 0)
+				{
+					statEntriesForTeams.get(team).add(new PacketAnnouncementStatistics.Entry(a, isAnnounced, contraLevel, points));
+				}
 			}
 		}
 		

@@ -4,7 +4,6 @@ import java.util.*;
 
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
 import com.tisza.tarock.game.Bidding.Invitation;
 
 public class Announcing
@@ -91,7 +90,7 @@ public class Announcing
 		idTrack.identityRevealed(player);
 		currentPlayerAnnounced = true;
 		
-		announcementStates.get(contra.getAnnouncement()).team(contra.getLevel() % 2 == 0 ? team.getOther() : team).contra();
+		announcementStates.get(contra.getAnnouncement()).team(contra.getLevel() % 2 == 0 ? team : team.getOther()).contra();
 		return true;
 	}
 	
@@ -143,7 +142,7 @@ public class Announcing
 				AnnouncementState.PerTeam ast = as.team(t);
 				if (ast.isAnnounced() && ast.getNextTeamToContra() == playerPairs.getTeam(currentPlayer))
 				{
-					result.add(new Contra(a, ast.getContraLevel()));
+					result.add(new Contra(a, ast.getContraLevel() + 1));
 				}
 			}
 		}

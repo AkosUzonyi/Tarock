@@ -42,12 +42,15 @@
     <string name="suitv4">Dáma</string>
     <string name="suitv5">Király</string>
     
-    <string name="contra0">Kontra</string>
-    <string name="contra1">Rekontra</string>
-    <string name="contra2">Szubkontra</string>
-    <string name="contra3">Hirskontra</string>
-    <string name="contra4">Mordkontra</string>
-    <string name="contra5">Fedák Sári</string>
+    <string name="silent">Csendes</string>
+    
+    <string name="contra0"></string>
+    <string name="contra1">Kontra</string>
+    <string name="contra2">Rekontra</string>
+    <string name="contra3">Szubkontra</string>
+    <string name="contra4">Hirskontra</string>
+    <string name="contra5">Mordkontra</string>
+    <string name="contra6">Fedák Sári</string>
     
     <string name="passz">Passz</string>
     <string name="jatek">Játék</string>

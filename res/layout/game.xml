@@ -11,7 +11,7 @@
 	    android:layout_width="match_parent"
 	    android:layout_height="0dp"
 	    android:layout_weight="1"
-	    android:background="#008800"
+	    android:background="@drawable/wood_texture"
 	    >
 	    
         <Button
@@ -53,7 +53,7 @@
             android:id="@+id/center_space"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#000088"
+            android:background="@drawable/poker_texture"
             android:layout_toLeftOf="@id/playername_1"
             android:layout_below="@id/playername_2"
             android:layout_toRightOf="@id/playername_3"
@@ -63,16 +63,26 @@
         </FrameLayout>
     </RelativeLayout>
     
+<RelativeLayout 
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+    >
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/dark_texture"
+        android:scaleType="fitCenter"/>
+    
     <LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
+		android:background="@drawable/dark_texture_clip"
         >
         
 		<FrameLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:background="#808080"
 			>
 			<LinearLayout
 				android:id="@+id/my_cards_1"
@@ -87,7 +97,6 @@
 		<FrameLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:background="#808080"
 			>
 			<LinearLayout
 				android:id="@+id/my_cards_0"
@@ -99,5 +108,5 @@
 			</LinearLayout>    	
 		</FrameLayout>
 	</LinearLayout>
-
+</RelativeLayout>
 </LinearLayout>

@@ -95,7 +95,7 @@ public class ResourceMappings
 			bidToName.put(i, resources.getString(id));
 		}
 		
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 7; i++)
 		{
 			int id = resources.getIdentifier("contra" + i, "string", context.getPackageName());
 			contraLevelToName.put(i, resources.getString(id));

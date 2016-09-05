@@ -17,6 +17,14 @@
     <string name="loginfail_already_logged_in">Ez a játékos már bejelentkezett a játékba</string>
     <string name="loginfail_connection_error">Csatlakozási hiba</string>
     
+    <string name="turn_bid">Licitálás</string>
+    <string name="turn_call">Hívás</string>
+    <string name="turn_announce">Bemondások</string>
+    
+    <string name="action_bid">licitált</string>
+    <string name="action_call">hívott</string>
+    <string name="action_announce">bemondta</string>
+    
     <string name="bid3">3</string>
     <string name="bid2">2</string>
     <string name="bid1">1</string>
@@ -80,5 +88,8 @@
     <string name="t21">Huszonegy</string>
     <string name="t22">Skíz</string>
     
+    <string name="statictics_self">Saját figurák</string>
+    <string name="statictics_opponent">Ellenfél figurái</string>
+    <string name="statictics_points">Pontszám</string>
     
 </resources>

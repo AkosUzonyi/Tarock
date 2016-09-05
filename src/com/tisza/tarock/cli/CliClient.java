@@ -139,13 +139,12 @@ public class CliClient implements PacketHandler
 		if (p instanceof PacketAnnouncementStatistics)
 		{
 			PacketAnnouncementStatistics packet = ((PacketAnnouncementStatistics)p);
-			for (PacketAnnouncementStatistics.Entry entry : packet.getEntries())
+			/*for (PacketAnnouncementStatistics.Entry entry : packet.getEntries())
 			{
 				System.out.println(entry.getAnnouncement().getClass().getSimpleName());
-				System.out.println(entry.getResult());
 				System.out.println(entry.getContraLevel());
 				System.out.println(entry.getPoints());
-			}
+			}*/
 		}
 		if (p instanceof PacketPoints)
 		{

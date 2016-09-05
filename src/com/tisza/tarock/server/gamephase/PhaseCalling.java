@@ -14,7 +14,7 @@ public class PhaseCalling implements GamePhase
 	public PhaseCalling(GameSession g)
 	{
 		game = g;
-		AllPlayersCards cards = game.getCurrentGame().dealing.getCards();
+		AllPlayersCards cards = game.getCurrentGame().changing.getCardsAfter();
 		int callerPlayer = game.getCurrentGame().bidding.getWinnerPlayer();
 		Invitation invit = game.getCurrentGame().bidding.getInvitation();
 		int[] tarockSkartedCount = game.getCurrentGame().changing.getTarockCounts();

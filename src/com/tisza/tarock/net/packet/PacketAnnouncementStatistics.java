@@ -8,42 +8,60 @@ import com.tisza.tarock.announcement.AnnouncementBase.Result;
 
 public class PacketAnnouncementStatistics extends Packet
 {
-	private List<Entry> entries;
+	private List<Entry> selfEntries;
+	private List<Entry> opponentEntries;
 	
 	PacketAnnouncementStatistics() {}
 	
-	public PacketAnnouncementStatistics(List<Entry> entries)
+	public PacketAnnouncementStatistics(List<Entry> selfEntries, List<Entry> opponentEntries)
 	{
-		this.entries = entries;
+		this.selfEntries = selfEntries;
+		this.opponentEntries = opponentEntries;
 	}
 
-	public List<Entry> getEntries()
+	public List<Entry> getSelfEntries()
 	{
-		return entries;
+		return selfEntries;
+	}
+
+	public List<Entry> getOpponentEntries()
+	{
+		return opponentEntries;
 	}
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
+		selfEntries = readEntries(dis);
+		opponentEntries = readEntries(dis);
+	}
+	
+	private List<Entry> readEntries(DataInputStream dis) throws IOException
+	{
 		short size = dis.readShort();
-		entries = new ArrayList<Entry>(size);
+		List<Entry> entries = new ArrayList<Entry>(size);
 		for (int i = 0; i < size; i++)
 		{
 			Announcement announcement = Announcements.getFromID(dis.readShort());
 			int contraLevel = dis.readByte();
-			AnnouncementBase.Result result = AnnouncementBase.Result.values()[dis.readByte()];
 			int points = dis.readShort();
-			entries.add(new Entry(announcement, contraLevel, result, points));
+			entries.add(new Entry(announcement, contraLevel, points));
 		}
+		return entries;
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
+	{
+		writeEntries(dos, selfEntries);
+		writeEntries(dos, opponentEntries);
+	}
+	
+	private void writeEntries(DataOutputStream dos, List<Entry> entries) throws IOException
 	{
 		dos.writeShort(entries.size());
 		for (Entry e : entries)
 		{
 			dos.writeShort(e.getAnnouncement().getID());
 			dos.writeByte(e.getContraLevel());
-			dos.writeByte(e.getResult().ordinal());
 			dos.writeShort(e.getPoints());
 		}
 	}
@@ -52,15 +70,13 @@ public class PacketAnnouncementStatistics extends Packet
 	{
 		private Announcement announcement;
 		private int contraLevel;
-		private AnnouncementBase.Result result;
 		private int points;
 		
-		public Entry(Announcement announcement, int contraLevel, Result result, int points)
+		public Entry(Announcement announcement, int contraLevel, int points)
 		{
 			super();
 			this.announcement = announcement;
 			this.contraLevel = contraLevel;
-			this.result = result;
 			this.points = points;
 		}
 		
@@ -72,11 +88,6 @@ public class PacketAnnouncementStatistics extends Packet
 		public int getContraLevel()
 		{
 			return contraLevel;
-		}
-		
-		public AnnouncementBase.Result getResult()
-		{
-			return result;
 		}
 		
 		public int getPoints()

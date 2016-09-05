@@ -15,4 +15,9 @@ public class HosszuDupla extends Dupla
 		
 		return cards.filter(new TarockFilter()).size() >= 7;
 	}
+
+	protected boolean canBeSilent()
+	{
+		return false;
+	}
 }

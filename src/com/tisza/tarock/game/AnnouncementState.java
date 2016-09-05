@@ -48,6 +48,9 @@ public class AnnouncementState
 		
 		public void contra()
 		{
+			if (!isAnnounced())
+				throw new IllegalStateException();
+			
 			contraLevel++;
 		}
 		

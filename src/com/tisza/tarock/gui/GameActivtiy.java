@@ -18,6 +18,7 @@ import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
+import com.tisza.tarock.net.packet.PacketAnnouncementStatistics.Entry;
 
 public class GameActivtiy extends Activity implements PacketHandler
 {
@@ -38,7 +39,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private PlacedCardView[] playedCardViews;
 	
 	private LinearLayout statisticsView;
-	private LinearLayout statisticsLinearLayout;
+	private LinearLayout statisticsLinearLayout;	
+	private LinearLayout statisticsOpponentLinearLayout;
 	
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -149,8 +151,11 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private int cardsPlayed = 0;
 	private Map<Card, View> cardToViewMapping = new HashMap<Card, View>();
 	
+	private String messages = "";
+	
 	private List<Card> cardsToSkart = new ArrayList<Card>();
 	private boolean skarting = false;
+	private boolean canPlaceCard = false;
 	
 	private void onStartGame(List<String> playerNames, int myID)
 	{
@@ -196,14 +201,14 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onBid(int player, int bid)
 	{
-		String bidText = biddingTextView.getText().toString();
-		if (bidText == null) bidText = "";
-		bidText += playerNames.get(player);
-		bidText += " licitalt: ";
-		bidText += ResourceMappings.bidToName.get(bid);
-		bidText += "\n";
-		biddingTextView.setText(bidText);
-		biddingScrollView.scrollTo(0, biddingScrollView.getHeight());
+		messages += playerNames.get(player);
+		messages += " ";
+		messages += getResources().getString(R.string.action_bid);
+		messages += ": ";
+		messages += ResourceMappings.bidToName.get(bid);
+		messages += "\n";
+		biddingTextView.setText(messages);
+		biddingScrollView.fullScroll(View.FOCUS_DOWN);
 	}
 	
 	private void onGotCardsFromTalon(List<Card> cards)
@@ -225,6 +230,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	{
 		okButton.setOnClickListener(null);
 		myCards.getCards().removeAll(cardsToSkart);
+		cardsToSkart.clear();
 		skarting = false;
 		arrangeCards();
 	}
@@ -250,13 +256,14 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onCall(int player, Card card)
 	{
-		String bidText = biddingTextView.getText().toString();
-		if (bidText == null) bidText = "";
-		bidText += playerNames.get(player);
-		bidText += " hivott: ";
-		bidText += ResourceMappings.cardToName.get(card);
-		bidText += "\n";
-		biddingTextView.setText(bidText);
+		messages += playerNames.get(player);
+		messages += " ";
+		messages += getResources().getString(R.string.action_call);
+		messages += ": ";
+		messages += ResourceMappings.cardToName.get(card);
+		messages += "\n";
+		biddingTextView.setText(messages);
+		biddingScrollView.scrollTo(0, biddingScrollView.getHeight());
 	}
 	
 	private void showAnnouncements(List<Announcement> announcements, List<Contra> contras)
@@ -266,9 +273,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		for (final Contra contra : contras)
 		{
 			Button contraButton = new Button(this);
-			String contraName = ResourceMappings.contraLevelToName.get(contra.getLevel());
-			String annName = ResourceMappings.announcementToName.get(contra.getAnnouncement());
-			contraButton.setText(contraName + " " + annName);
+			contraButton.setText(ResourceMappings.getContraName(contra));
 			contraButton.setOnClickListener(new OnClickListener()
 			{
 				public void onClick(View v)
@@ -306,15 +311,28 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void onAnnounce(int player, Announcement announcement)
 	{
-		String bidText = biddingTextView.getText().toString();
-		if (bidText == null) bidText = "";
-		bidText += playerNames.get(player);
-		bidText += " bemondta: ";
-		bidText += ResourceMappings.announcementToName.get(announcement);
-		bidText += "\n";
-		biddingTextView.setText(bidText);
+		messages += playerNames.get(player);
+		messages += " ";
+		messages += getResources().getString(R.string.action_announce);
+		messages += ": ";
+		messages += ResourceMappings.announcementToName.get(announcement);
+		messages += "\n";
+		biddingTextView.setText(messages);
+		biddingScrollView.fullScroll(View.FOCUS_DOWN);
 	}
 	
+	private void onContra(int player, Contra contra)
+	{
+		messages += playerNames.get(player);
+		messages += " ";
+		messages += getResources().getString(R.string.action_announce);
+		messages += ": ";
+		messages += ResourceMappings.getContraName(contra);
+		messages += "\n";
+		biddingTextView.setText(messages);
+		biddingScrollView.fullScroll(View.FOCUS_DOWN);
+	}
+
 	private void playCard(int player, Card card)
 	{
 		showCenterView(playedCardsView);
@@ -365,11 +383,19 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			showCenterView(playedCardsView);
 			
-			if (cardsPlayed % 4 == 0)
+			canPlaceCard = false;
+			if (cardsPlayed % 4 != 0)
 			{
+				if (player == myID)
+				{
+					canPlaceCard = true;
+				}
+			}
+			else
+			{
+				canPlaceCard = false;
 				final int dir = getPositionFromPlayerID(player);
-				Handler handler = new Handler();
-				handler.postDelayed(new Runnable()
+				new Handler().postDelayed(new Runnable()
 				{
 					public void run()
 					{
@@ -384,49 +410,74 @@ public class GameActivtiy extends Activity implements PacketHandler
 							float ty = 0;
 							if (dir == 0)
 							{
-								ty = played_cards.getHeight() / 2;
+								ty = playedCardsView.getHeight() / 2;
 							}
 							else if (dir == 1)
 							{
-								tx = played_cards.getWidth() / 2;
+								tx = playedCardsView.getWidth() / 2;
 							}
 							else if (dir == 2)
 							{
-								ty = -played_cards.getHeight() / 2;
+								ty = -playedCardsView.getHeight() / 2;
 							}
 							else if (dir == 3)
 							{
-								tx = -played_cards.getWidth() / 2;
+								tx = -playedCardsView.getWidth() / 2;
 							}
 							Animation takeAnim = new TranslateAnimation(0, tx, 0, ty);
 							animSet.addAnimation(takeAnim);
 							animSet.setDuration(1000);
 							
-							cardView.setAnimation(animSet);*/
+							cardView.startAnimation(animSet);*/
 							
 							cardView.setImageBitmap(getBitmapForCard(null));
 						}
+						canPlaceCard = true;
 					}
-				}, 350);
+				}, 1300);
 			}
 		}
 	}
 	
-	private void showStatistics(List<PacketAnnouncementStatistics.Entry> entries)
+	private void showStatistics(List<PacketAnnouncementStatistics.Entry> selfEntries, List<Entry> opponentEntries)
 	{
-		statisticsLinearLayout.removeAllViews();
-		showCenterView(statisticsView);
+		canPlaceCard = false;
 		
+		statisticsLinearLayout.removeAllViews();
+		
+		appendHeaderToStatistics(R.string.statictics_self, R.string.statictics_points);
+		appendEntriesToStatistics(selfEntries);
+		
+		appendHeaderToStatistics(R.string.statictics_opponent, R.string.statictics_points);
+		appendEntriesToStatistics(opponentEntries);
+		
+		showCenterView(statisticsView);
+	}
+	
+	private void appendHeaderToStatistics(int res0, int res1)
+	{
+		View headerView = View.inflate(this, R.layout.statistics_header, null);
+		TextView nameView = (TextView)headerView.findViewById(R.id.statistics_announcement_name);
+		TextView pointsView = (TextView)headerView.findViewById(R.id.statistics_announcement_points);
+		
+		nameView.setText(res0);
+		pointsView.setText(res1);
+		
+		statisticsLinearLayout.addView(headerView);
+	}
+	
+	private void appendEntriesToStatistics(List<PacketAnnouncementStatistics.Entry> entries)
+	{
 		for (PacketAnnouncementStatistics.Entry entry : entries)
 		{
 			View entryView = View.inflate(this, R.layout.statistics_entry, null);
 			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
-			ImageView isSuccesfulView = (ImageView)entryView.findViewById(R.id.statistics_is_successful);
 			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_announcement_points);
 			
-			nameView.setText(ResourceMappings.announcementToName.get(entry.getAnnouncement()));
-			isSuccesfulView.setImageResource(ResourceMappings.announcementResultToImage.get(entry.getResult()));
+			Contra c = new Contra(entry.getAnnouncement(), entry.getContraLevel());
+			nameView.setText(ResourceMappings.getContraName(c));
 			pointsView.setText(entry.getPoints() + "");
+			pointsView.setTextColor(entry.getPoints() > 0 ? Color.BLACK : Color.RED);
 			
 			statisticsLinearLayout.addView(entryView);
 		}
@@ -442,12 +493,18 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			final Card card = myCards.getCards().get(i);
 			
-			ImageView cardView = new ImageView(GameActivtiy.this);
+			ImageView cardView = new ImageView(this)
+			{
+				protected void onSizeChanged(int w, int h, int oldw, int oldh)
+				{
+					int padding = (int)(getWidth() * 0.1F / 2);
+					int paddingTB = (int)(getHeight() * 0.1F / 2);
+					setPadding(padding, paddingTB, padding, paddingTB);
+				}
+			};
 			cardView.setAdjustViewBounds(true);
 			cardView.setImageBitmap(getBitmapForCard(card));
 			
-			int padding = 10;
-			cardView.setPadding(padding, padding, padding, padding);
 			cardView.setLayoutParams(new LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
 			final LinearLayout parentView = i < cardsBottom ? myCardsView0 : myCardsView1;
 			parentView.addView(cardView);
@@ -479,10 +536,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 							v.startAnimation(a);
 						}
 					}
-					else
+					else if (canPlaceCard)
 					{
 						conncection.sendPacket(new PacketPlayCard(card, myID));
-						System.out.println(card);
 					}
 				}
 			});
@@ -586,6 +642,12 @@ public class GameActivtiy extends Activity implements PacketHandler
 			onAnnounce(packet.getPlayer(), packet.getAnnouncement());
 		}
 		
+		if (p instanceof PacketContra)
+		{
+			PacketContra packet = ((PacketContra)p);
+			onContra(packet.getPlayer(), packet.getContra());
+		}
+		
 		if (p instanceof PacketPlayCard)
 		{
 			PacketPlayCard packet = ((PacketPlayCard)p);
@@ -601,8 +663,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 		if (p instanceof PacketAnnouncementStatistics)
 		{
 			PacketAnnouncementStatistics packet = ((PacketAnnouncementStatistics)p);
-			showStatistics(packet.getEntries());
+			showStatistics(packet.getSelfEntries(), packet.getOpponentEntries());
 		}
+		
 		if (p instanceof PacketPoints)
 		{
 			PacketPoints packet = ((PacketPoints)p);

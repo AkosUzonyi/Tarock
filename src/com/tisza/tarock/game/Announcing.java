@@ -91,7 +91,7 @@ public class Announcing
 		idTrack.identityRevealed(player);
 		currentPlayerAnnounced = true;
 		
-		announcementStates.get(contra.getAnnouncement()).team(team).contra();
+		announcementStates.get(contra.getAnnouncement()).team(contra.getLevel() % 2 == 0 ? team.getOther() : team).contra();
 		return true;
 	}
 	
@@ -120,9 +120,8 @@ public class Announcing
 		for (Announcement a : Announcements.getAll())
 		{
 			boolean announced = announcementStates.get(a).team(playerPairs.getTeam(currentPlayer)).isAnnounced();
-			if (!announced && a.canAnnounce(announcementStates, playerCards.getPlayerCards(currentPlayer), currentPlayer, playerPairs));
+			if (!announced && a.canAnnounce(announcementStates, playerCards.getPlayerCards(currentPlayer), currentPlayer, playerPairs))
 			{
-				if (a instanceof Banda) System.out.println(a.getClass().getSimpleName());
 				result.add(a);
 			}
 		}
@@ -135,7 +134,8 @@ public class Announcing
 			return null;
 		
 		List<Contra> result = new ArrayList<Contra>();
-		for (Announcement a : announcementStates.keySet())
+		
+		for (Announcement a : Announcements.getAll())
 		{
 			AnnouncementState as = announcementStates.get(a);
 			for (Team t : Team.values())

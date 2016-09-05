@@ -9,12 +9,15 @@ import android.content.res.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.packet.*;
 
 @SuppressLint("UseSparseArrays")
 public class ResourceMappings
 {
 	public static final Map<Card, Integer> cardToImageResource = new HashMap<Card, Integer>();
+	
+	public static final Map<PacketTurn.Type, String> turnAcitionToMessage = new HashMap<PacketTurn.Type, String>();
 	
 	public static final Map<Integer, String> bidToName = new HashMap<Integer, String>();
 	
@@ -27,6 +30,13 @@ public class ResourceMappings
 	
 	public static final Map<AnnouncementBase.Result, Integer> announcementResultToImage = new HashMap<AnnouncementBase.Result, Integer>();
 	public static final Map<PacketLoginFailed.Reason, Integer> failureReasonToMessage = new HashMap<PacketLoginFailed.Reason, Integer>();
+	
+	public static String getContraName(Contra contra)
+	{
+		String contraName = ResourceMappings.contraLevelToName.get(contra.getLevel());
+		String annName = ResourceMappings.announcementToName.get(contra.getAnnouncement());
+		return contraName + " " + annName;
+	}
 	
 	public static void init(Context context)
 	{

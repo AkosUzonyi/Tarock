@@ -41,8 +41,6 @@ public class Banda extends TakeCards
 		
 		for (Banda banda : Announcements.bandak)
 		{
-			System.out.println(banda.suit);
-			System.out.println(announcementStates.get(banda).team(pp.getTeam(player)).isAnnounced());
 			if (announcementStates.get(banda).team(pp.getTeam(player)).isAnnounced())
 			{
 				return false;

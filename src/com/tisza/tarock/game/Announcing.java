@@ -113,7 +113,7 @@ public class Announcing
 				}
 				else
 				{
-					if (canNormalAnnounce && t == currentPlayerTeam && a.canBeAnnounced(this))
+					if (canNormalAnnounce && t == currentPlayerTeam && a.canBeAnnounced(this, t))
 					{
 						result.add(new AnnouncementContra(a, 0));
 					}

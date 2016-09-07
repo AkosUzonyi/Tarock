@@ -1,52 +1,57 @@
 package com.tisza.tarock.announcement;
 
-import java.util.*;
-
-import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
 public abstract class AnnouncementBase implements Announcement
 {
-	public abstract Result isSuccessful(GameInstance gi, Team team);
-	public abstract int getPoints(int winnerBid);
+	protected abstract Result isSuccessful(GameInstance gi, Team team);
+	protected abstract int getPoints(int winnerBid);
 	
-	public int calculatePoints(GameInstance gi, Team team, boolean isAnnounced)
+	public int calculatePoints(GameInstance gi, Team team)
 	{
 		Result r = isSuccessful(gi, team);
+		
+		boolean isAnnounced = gi.announcing.isAnnounced(team, this);
+		int contraMultiplier = (int)Math.pow(2, isAnnounced ? gi.announcing.getContraLevel(team, this) : 0);
 		
 		PlayerPairs pp = gi.calling.getPlayerPairs();
 		int winnerBid = pp.isSolo() && !pp.isSoloIntentional() ? 0 : gi.bidding.getWinnerBid();
 		
+		int points;
 		if (isAnnounced)
 		{
 			if (r == Result.SUCCESSFUL || r == Result.SUCCESSFUL_SILENT)
 			{
-				return getPoints(winnerBid);
+				points = getPoints(winnerBid);
 			}
 			else if (r == Result.FAILED || r == Result.FAILED_SILENT)
 			{
-				return -getPoints(winnerBid);
+				points = -getPoints(winnerBid);
 			}
 			else
 			{
-				return 0;
+				points = 0;
 			}
 		}
 		else
 		{
 			if (r == Result.SUCCESSFUL_SILENT)
 			{
-				return getPoints(winnerBid) / 2;
+				points = getPoints(winnerBid) / 2;
 			}
 			else if (r == Result.FAILED_SILENT)
 			{
-				return -getPoints(winnerBid) / 2;
+				points = -getPoints(winnerBid) / 2;
 			}
 			else
 			{
-				return 0;
+				points = 0;
 			}
 		}
+		
+		points *= contraMultiplier;
+		
+		return points;
 	}
 	
 	public final int getID()
@@ -54,7 +59,7 @@ public abstract class AnnouncementBase implements Announcement
 		return Announcements.getID(this);
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(Announcing announcing, Team team)
 	{
 		return true;
 	}

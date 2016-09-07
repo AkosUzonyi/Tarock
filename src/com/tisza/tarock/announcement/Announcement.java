@@ -7,7 +7,7 @@ import com.tisza.tarock.game.*;
 
 public interface Announcement
 {
-	public int calculatePoints(GameInstance game, Team team, boolean isSilent);
+	public int calculatePoints(GameInstance gi, Team team);
 	public int getID();
-	public boolean canBeAnnounced(Announcing announcing);
+	public boolean canBeAnnounced(Announcing announcing, Team team);
 }

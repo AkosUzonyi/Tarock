@@ -79,9 +79,9 @@ public class ResourceMappings
 			for (int v = 0; v < 5; v++)
 			{
 				Card card = new SuitCard(s, v + 1);
+				String imaName = suitNames[s] + valueNames[v];
 				
-				String imageName = suitNames[s] + valueNames[v];
-				int id = resources.getIdentifier(imageName, "drawable", context.getPackageName());
+				int id = resources.getIdentifier(imaName, "drawable", context.getPackageName());
 				cardToImageResource.put(card, id);
 				
 				String name = suitToName.get(s) + " " + suitcardValueToName.get(v + 1);
@@ -137,15 +137,15 @@ public class ResourceMappings
 		announcementToName.put(Announcements.centrum, resources.getString(R.string.round4));
 		announcementToName.put(Announcements.kismadar, resources.getString(R.string.round5));
 		announcementToName.put(Announcements.nagymadar, resources.getString(R.string.round6));
-		for (Card card : Announcements.ultimok.keySet())
+		for (int roundIndex : Announcements.ultimok.keySet())
 		{
-			Map<Integer, TakeRoundWithCard> map = Announcements.ultimok.get(card);
-			for (int roundIndex : map.keySet())
+			Map<Card, TakeRoundWithCard> map = Announcements.ultimok.get(roundIndex);
+			for (Card card : map.keySet())
 			{
 				String roundResName = "round" + roundIndex;
 				int roundResID = resources.getIdentifier(roundResName, "string", context.getPackageName());
 				String annName = cardToName.get(card) + " " + resources.getString(roundResID);
-				announcementToName.put(map.get(roundIndex), annName);
+				announcementToName.put(map.get(card), annName);
 			}
 		}
 		

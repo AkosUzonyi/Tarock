@@ -6,9 +6,9 @@ import com.tisza.tarock.game.*;
 
 public class HosszuDupla extends Dupla
 {
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(Announcing announcing, Team team)
 	{
-		if (!super.canBeAnnounced(announcing))
+		if (!super.canBeAnnounced(announcing, team))
 			return false;
 		
 		PlayerCards cards = announcing.getCards().getPlayerCards(announcing.getNextPlayer());

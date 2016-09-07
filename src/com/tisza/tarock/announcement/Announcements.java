@@ -6,8 +6,7 @@ import com.tisza.tarock.card.*;
 
 public class Announcements
 {
-	private static final Map<Integer, Announcement> idToAnnouncement = new HashMap<Integer, Announcement>();
-	private static final Map<Announcement, Integer> announcementToID = new HashMap<Announcement, Integer>();
+	private static final List<Announcement> all = new ArrayList<Announcement>();
 	
 	public static final Jatek game = new Jatek();
 	public static final Trull trull = new Trull();
@@ -19,76 +18,72 @@ public class Announcements
 	public static Centrum centrum = new Centrum();
 	public static Kismadar kismadar = new Kismadar();
 	public static Nagymadar nagymadar = new Nagymadar();
-	public static Map<Card, Map<Integer, TakeRoundWithCard>> ultimok = new HashMap<Card, Map<Integer, TakeRoundWithCard>>();
+	public static Map<Integer, Map<Card, TakeRoundWithCard>> ultimok = new HashMap<Integer, Map<Card, TakeRoundWithCard>>();
 	
 	public static Collection<Announcement> getAll()
 	{
-		return idToAnnouncement.values();
+		return all;
 	}
 	
 	public static Announcement getFromID(int id)
 	{
-		return idToAnnouncement.get(id);
+		return all.get(id);
 	}
 	
 	public static int getID(Announcement a)
 	{
-		return announcementToID.get(a);
-	}
-	
-	private static void register(int id, Announcement a)
-	{
-		if (idToAnnouncement.containsKey(id))
-		{
-			System.err.println("Duplicate announcement id");
-		}
-		else
-		{
-			idToAnnouncement.put(id, a);
-			announcementToID.put(a, id);
-		}
+		return all.indexOf(a);
 	}
 	
 	static
 	{
-		register(0, game);
-		register(1, trull);
-		register(2, xxiFogas);
+		all.add(game);
+		all.add(trull);
+		all.add(xxiFogas);
 		for (int s = 0; s < 4; s++)
 		{
 			bandak[s] = new Banda(s);
-			register(3 + s, bandak[s]);
+			all.add(bandak[s]);
 		}
-		register(7, negykiraly);
-		register(8, dupla);
-		register(9, hosszuDupla);
-		register(10, centrum);
-		register(11, kismadar);
-		register(12, nagymadar);
+		all.add(negykiraly);
+		all.add(dupla);
+		all.add(hosszuDupla);
+		all.add(centrum);
+		all.add(kismadar);
+		all.add(nagymadar);
 		
-		List<Card> ultimoCards = new ArrayList<Card>();
-		ultimoCards.add(new TarockCard(1));
-		ultimoCards.add(new TarockCard(2));
-		ultimoCards.add(new TarockCard(21));
-		for (int s = 0; s < 4; s++)
+		for (int j = 0; j < 4; j++)
 		{
-			for (int v = 1; v <= 5; v++)
+			int roundIndex = 8 - j;
+			
+			Map<Card, TakeRoundWithCard> map = new HashMap<Card, TakeRoundWithCard>();
+			
+			for (int t = 1; t <= 2; t++)
 			{
-				ultimoCards.add(new SuitCard(s, v));
+				TarockCard c = new TarockCard(t);
+				TakeRoundWithCard announcement = new TakeRoundWithTarock(roundIndex, c);
+				map.put(c, announcement);
+				all.add(announcement);
 			}
-		}
-		for (int i = 0; i < ultimoCards.size(); i++)
-		{
-			Card card = ultimoCards.get(i);
-			Map<Integer, TakeRoundWithCard> map = new HashMap<Integer, TakeRoundWithCard>();
-			for (int j = 0; j < 4; j++)
+			
 			{
-				int roundIndex = 8 - j;
-				TakeRoundWithCard ann = new TakeRoundWithCard(roundIndex, card);
-				map.put(roundIndex, ann);
-				register(13 + i * 4 + j, ann);
+				TakeRoundWithCard announcement = new XXIUltimo(roundIndex);
+				map.put(new TarockCard(21), announcement);
+				all.add(announcement);
 			}
-			ultimok.put(card, map);
+			
+			for (int s = 0; s < 4; s++)
+			{
+				for (int v = 1; v <= 5; v++)
+				{
+					SuitCard c = new SuitCard(s, v);
+					TakeRoundWithCard announcement = new TakeRoundWithSuitCard(roundIndex, c);
+					map.put(c, announcement);
+					all.add(announcement);
+				}
+			}
+			
+			ultimok.put(roundIndex, map);
 		}
 		
 		

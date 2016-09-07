@@ -33,19 +33,17 @@ public class PhaseEnd implements GamePhase
 		{
 			for (Announcement announcement : Announcements.getAll())
 			{
-				boolean isAnnounced = announcing.isAnnounced(team, announcement);
-				int contraMultiplier = (int)Math.pow(2, isAnnounced ? announcing.getContraLevel(team, announcement) : 0);
-				int points = announcement.calculatePoints(game.getCurrentGame(), team, isAnnounced);
-				points *= contraMultiplier;
+				int points = announcement.calculatePoints(game.getCurrentGame(), team);
 				
 				pointsForCallerTeam += points * (team == Team.CALLER ? 1 : -1);
 				
 				if (points != 0)
 				{
-					AnnouncementContra ac = new AnnouncementContra(announcement, isAnnounced ? announcing.getContraLevel(team, announcement) : -1);
+					int acl = announcing.isAnnounced(team, announcement) ? announcing.getContraLevel(team, announcement) : -1;
+					AnnouncementContra ac = new AnnouncementContra(announcement, acl);
 					statEntriesForTeams.get(team).add(new PacketAnnouncementStatistics.Entry(ac, points));
 				}
-			}	
+			}
 		}
 		
 		for (int p = 0; p < 4; p++)

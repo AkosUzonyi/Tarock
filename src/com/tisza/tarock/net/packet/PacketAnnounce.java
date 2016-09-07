@@ -3,48 +3,54 @@ package com.tisza.tarock.net.packet;
 import java.io.*;
 
 import com.tisza.tarock.announcement.*;
+import com.tisza.tarock.game.*;
 
 public class PacketAnnounce extends PacketGameAction
 {
-	private Announcement announcement;
+	private AnnouncementContra announcementContra;
 	
 	PacketAnnounce() {}
 	
-	public PacketAnnounce(Announcement a, int player)
+	public PacketAnnounce(AnnouncementContra announcement, int player)
 	{
 		super(player);
-		announcement = a;
+		this.announcementContra = announcement;
 	}
 
-	public Announcement getAnnouncement()
+	public AnnouncementContra getAnnouncement()
 	{
-		return announcement;
+		return announcementContra;
 	}
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
 		super.readData(dis);
-		short id = dis.readShort();
+		
+		int id = dis.readShort();
 		if (id < 0)
 		{
-			announcement = null;
+			announcementContra = null;
 		}
 		else
 		{
-			announcement = Announcements.getFromID(id);
+			Announcement a = Announcements.getFromID(id);
+			int contraLevel = dis.readByte();
+			announcementContra = new AnnouncementContra(a, contraLevel);
 		}
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
 		super.writeData(dos);
-		if (announcement == null)
+		
+		if (announcementContra == null)
 		{
 			dos.writeShort(-1);
 		}
 		else
 		{
-			dos.writeShort(announcement.getID());
+			dos.writeShort(announcementContra.getAnnouncement().getID());
+			dos.writeByte(announcementContra.getContraLevel());
 		}
 	}
 }

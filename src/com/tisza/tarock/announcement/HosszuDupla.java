@@ -1,18 +1,17 @@
 package com.tisza.tarock.announcement;
 
-import java.util.*;
-
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.card.filter.*;
 import com.tisza.tarock.game.*;
 
 public class HosszuDupla extends Dupla
 {
-	public boolean canAnnounce(Map<Announcement, AnnouncementState> announcementStates, PlayerCards cards, int player, PlayerPairs pp)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
-		if (!super.canAnnounce(announcementStates, cards, player, pp))
+		if (!super.canBeAnnounced(announcing))
 			return false;
 		
+		PlayerCards cards = announcing.getCards().getPlayerCards(announcing.getNextPlayer());
 		return cards.filter(new TarockFilter()).size() >= 7;
 	}
 

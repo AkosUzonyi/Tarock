@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.announcement.AnnouncementBase.Result;
+import com.tisza.tarock.game.*;
 
 public class PacketAnnouncementStatistics extends Packet
 {
@@ -41,11 +42,10 @@ public class PacketAnnouncementStatistics extends Packet
 		List<Entry> entries = new ArrayList<Entry>(size);
 		for (int i = 0; i < size; i++)
 		{
-			Announcement announcement = Announcements.getFromID(dis.readShort());
-			boolean isAnnounced = dis.readBoolean();
+			Announcement a = Announcements.getFromID(dis.readShort());
 			int contraLevel = dis.readByte();
 			int points = dis.readShort();
-			entries.add(new Entry(announcement, isAnnounced, contraLevel, points));
+			entries.add(new Entry(new AnnouncementContra(a, contraLevel), points));
 		}
 		return entries;
 	}
@@ -61,42 +61,27 @@ public class PacketAnnouncementStatistics extends Packet
 		dos.writeShort(entries.size());
 		for (Entry e : entries)
 		{
-			dos.writeShort(e.getAnnouncement().getID());
-			dos.writeBoolean(e.isAnnounced());
-			dos.writeByte(e.getContraLevel());
+			dos.writeShort(e.getAnnouncementContra().getAnnouncement().getID());
+			dos.writeByte(e.getAnnouncementContra().getContraLevel());
 			dos.writeShort(e.getPoints());
 		}
 	}
 	
 	public static class Entry
 	{
-		private Announcement announcement;
-		private boolean isAnnounced;
-		private int contraLevel;
+		private AnnouncementContra announcement;
 		private int points;
 		
-		public Entry(Announcement announcement, boolean isAnnounced, int contraLevel, int points)
+		public Entry(AnnouncementContra announcement, int points)
 		{
 			super();
 			this.announcement = announcement;
-			this.isAnnounced = isAnnounced;
-			this.contraLevel = contraLevel;
 			this.points = points;
 		}
 		
-		public Announcement getAnnouncement()
+		public AnnouncementContra getAnnouncementContra()
 		{
 			return announcement;
-		}
-		
-		public boolean isAnnounced()
-		{
-			return isAnnounced;
-		}
-		
-		public int getContraLevel()
-		{
-			return contraLevel;
 		}
 		
 		public int getPoints()

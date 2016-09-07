@@ -8,60 +8,39 @@ import com.tisza.tarock.game.*;
 
 public class PacketAvailabeAnnouncements extends Packet
 {
-	private List<Announcement> announcements;
-	private List<Contra> contras;
+	private List<AnnouncementContra> announcements;
 	
 	PacketAvailabeAnnouncements() {}
 	
-	public PacketAvailabeAnnouncements(List<Announcement> announcements, List<Contra> contras)
+	public PacketAvailabeAnnouncements(List<AnnouncementContra> announcements)
 	{
 		this.announcements = announcements;
-		this.contras = contras;
 	}
 
-	public List<Announcement> getAvailableAnnouncements()
+	public List<AnnouncementContra> getAvailableAnnouncements()
 	{
 		return announcements;
 	}
 
-	public List<Contra> getAvailableContras()
-	{
-		return contras;
-	}
-
 	protected void readData(DataInputStream dis) throws IOException
 	{
-		int size = dis.readByte();
-		announcements = new ArrayList<Announcement>(size);
+		int size = dis.readShort();
+		announcements = new ArrayList<AnnouncementContra>(size);
 		for (int i = 0; i < size; i++)
 		{
 			Announcement a = Announcements.getFromID(dis.readShort());
-			announcements.add(a);
-		}
-		
-		size = dis.readByte();
-		contras = new ArrayList<Contra>(size);
-		for (int i = 0; i < size; i++)
-		{
-			Announcement a = Announcements.getFromID(dis.readShort());
-			int level = dis.readByte();
-			contras.add(new Contra(a, level));
+			int contraLevel = dis.readByte();
+			announcements.add(new AnnouncementContra(a, contraLevel));
 		}
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
-		dos.writeByte(announcements.size());
-		for (Announcement announcement : announcements)
+		dos.writeShort(announcements.size());
+		for (AnnouncementContra announcement : announcements)
 		{
-			dos.writeShort(announcement.getID());
-		}
-		
-		dos.writeByte(contras.size());
-		for (Contra contra : contras)
-		{
-			dos.writeShort(contra.getAnnouncement().getID());
-			dos.writeByte(contra.getLevel());
+			dos.writeShort(announcement.getAnnouncement().getID());
+			dos.writeByte(announcement.getContraLevel());
 		}
 	}
 }

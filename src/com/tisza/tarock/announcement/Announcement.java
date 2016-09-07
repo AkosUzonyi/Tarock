@@ -9,5 +9,5 @@ public interface Announcement
 {
 	public int calculatePoints(GameInstance game, Team team, boolean isSilent);
 	public int getID();
-	public boolean canAnnounce(Map<Announcement, AnnouncementState> announcementStates, PlayerCards cards, int player, PlayerPairs pp);
+	public boolean canBeAnnounced(Announcing announcing);
 }

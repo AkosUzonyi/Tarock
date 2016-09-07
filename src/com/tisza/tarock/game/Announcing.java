@@ -16,7 +16,8 @@ public class Announcing
 	private int lastAnnouncer = -1;
 	private IdentityTracker idTrack;
 	
-	private Map<Announcement, AnnouncementState> announcementStates = new HashMap<Announcement, AnnouncementState>();	
+	//-1 if not announced
+	private Map<Team, Map<Announcement, Integer>> announcementContraLevels = new HashMap<Team, Map<Announcement, Integer>>();	
 	
 	public Announcing(AllPlayersCards playerCards, PlayerPairs playerPairs, Invitation invit)
 	{
@@ -25,25 +26,20 @@ public class Announcing
 		currentPlayer = playerPairs.getCaller();
 		idTrack = new IdentityTracker(playerPairs, invit);
 		
-		for (Announcement a : Announcements.getAll())
+		for (Team team : Team.values())
 		{
-			announcementStates.put(a, new AnnouncementState());
+			Map<Announcement, Integer> map = new HashMap<Announcement, Integer>();
+			for (Announcement a : Announcements.getAll())
+			{
+				map.put(a, -1);
+			}
+			announcementContraLevels.put(team, map);
 		}
 		
-		announce(playerPairs.getCaller(), Announcements.game);
-	}
-	
-	public int getNextPlayer()
-	{
-		return currentPlayer;
-	}
-	
-	public Map<Announcement, AnnouncementState> getAnnouncementStates()
-	{
-		return announcementStates;
+		announce(playerPairs.getCaller(), new AnnouncementContra(Announcements.game, 0));
 	}
 
-	public boolean announce(int player, Announcement announcement)
+	public boolean announce(int player, AnnouncementContra ac)
 	{
 		if (isFinished())
 			return false;
@@ -51,7 +47,7 @@ public class Announcing
 		if (player != currentPlayer)
 			return false;
 		
-		if (announcement == null)
+		if (ac == null)
 		{
 			if (currentPlayerAnnounced)
 			{
@@ -65,32 +61,14 @@ public class Announcing
 		
 		Team team = playerPairs.getTeam(player);
 		
-		if (!getAvailableAnnouncements().contains(announcement))
+		if (!getAvailableAnnouncements().contains(ac))
 			return false;
 		
 		idTrack.identityRevealed(player);
 		currentPlayerAnnounced = true;
 		
-		return announcementStates.get(announcement).team(team).announce();
-	}
-	
-	public boolean contra(int player, Contra contra)
-	{
-		if (isFinished())
-			return false;
-		
-		if (player != currentPlayer)
-			return false;
-		
-		if (!getAvailableContras().contains(contra))
-			return false;
-		
-		Team team = playerPairs.getTeam(player);
-		
-		idTrack.identityRevealed(player);
-		currentPlayerAnnounced = true;
-		
-		announcementStates.get(contra.getAnnouncement()).team(contra.getLevel() % 2 == 0 ? team : team.getOther()).contra();
+		announcementContraLevels.get(ac.getNextTeamToContra(team)).put(ac.getAnnouncement(), ac.getContraLevel());
+		System.out.println(announcementContraLevels.get(team).get(Announcements.trull));
 		return true;
 	}
 	
@@ -99,54 +77,79 @@ public class Announcing
 		if (isFinished())
 			throw new IllegalStateException();
 		
-		Team team = playerPairs.getTeam(currentPlayer);
+		if (lastAnnouncer < 0)
+			return false;
 		
-		if (lastAnnouncer >= 0 && team != playerPairs.getTeam(lastAnnouncer) && !idTrack.isIdentityKnown(currentPlayer))
+		Team currentPlayerTeam = playerPairs.getTeam(currentPlayer);
+		Team lastAnnouncerTeam = playerPairs.getTeam(lastAnnouncer);
+		
+		if (currentPlayerTeam != lastAnnouncerTeam && !idTrack.isIdentityKnown(currentPlayer))
 			return true;
 		
 		return false;
 	}
 	
-	public List<Announcement> getAvailableAnnouncements()
+	public List<AnnouncementContra> getAvailableAnnouncements()
 	{
 		if (isFinished())
 			return null;
 		
-		List<Announcement> result = new ArrayList<Announcement>();
+		List<AnnouncementContra> result = new ArrayList<AnnouncementContra>();
 		
-		if (requireContra()) return result;
+		Team currentPlayerTeam = playerPairs.getTeam(currentPlayer);
+		boolean canNormalAnnounce = !requireContra();
 		
-		for (Announcement a : Announcements.getAll())
+		for (Team t : Team.values())
 		{
-			boolean announced = announcementStates.get(a).team(playerPairs.getTeam(currentPlayer)).isAnnounced();
-			if (!announced && a.canAnnounce(announcementStates, playerCards.getPlayerCards(currentPlayer), currentPlayer, playerPairs))
+			for (Announcement a : Announcements.getAll())
 			{
-				result.add(a);
-			}
-		}
-		return result;
-	}
-	
-	public List<Contra> getAvailableContras()
-	{
-		if (isFinished())
-			return null;
-		
-		List<Contra> result = new ArrayList<Contra>();
-		
-		for (Announcement a : Announcements.getAll())
-		{
-			AnnouncementState as = announcementStates.get(a);
-			for (Team t : Team.values())
-			{
-				AnnouncementState.PerTeam ast = as.team(t);
-				if (ast.isAnnounced() && ast.getNextTeamToContra() == playerPairs.getTeam(currentPlayer))
+				if (isAnnounced(t, a))
 				{
-					result.add(new Contra(a, ast.getContraLevel() + 1));
+					AnnouncementContra ac = new AnnouncementContra(a, getContraLevel(t, a) + 1);
+					if (ac.getNextTeamToContra(t) == currentPlayerTeam)
+					{
+						result.add(ac);
+					}
+				}
+				else
+				{
+					if (canNormalAnnounce && t == currentPlayerTeam && a.canBeAnnounced(this))
+					{
+						result.add(new AnnouncementContra(a, 0));
+					}
 				}
 			}
 		}
+		
 		return result;
+	}
+	
+	public int getNextPlayer()
+	{
+		return currentPlayer;
+	}
+	
+	public boolean isAnnounced(Team team, Announcement a)
+	{
+		return announcementContraLevels.get(team).get(a) >= 0;
+	}
+	
+	public int getContraLevel(Team team, Announcement a)
+	{
+		int contraLevel = announcementContraLevels.get(team).get(a);
+		if (contraLevel < 0)
+			throw new IllegalStateException();
+		return contraLevel;
+	}
+	
+	public AllPlayersCards getCards()
+	{
+		return playerCards;
+	}
+	
+	public PlayerPairs getPlayerPairs()
+	{
+		return playerPairs;
 	}
 	
 	public boolean isFinished()

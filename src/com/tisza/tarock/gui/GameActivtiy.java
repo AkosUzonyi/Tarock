@@ -6,6 +6,7 @@ import java.util.*;
 
 import android.app.*;
 import android.graphics.*;
+import android.graphics.drawable.*;
 import android.os.*;
 import android.view.*;
 import android.view.View.OnClickListener;
@@ -13,7 +14,6 @@ import android.view.animation.*;
 import android.widget.*;
 
 import com.tisza.tarock.*;
-import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
@@ -40,7 +40,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private LinearLayout statisticsView;
 	private LinearLayout statisticsLinearLayout;	
-	private LinearLayout statisticsOpponentLinearLayout;
 	
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -266,35 +265,20 @@ public class GameActivtiy extends Activity implements PacketHandler
 		biddingScrollView.scrollTo(0, biddingScrollView.getHeight());
 	}
 	
-	private void showAnnouncements(List<Announcement> announcements, List<Contra> contras)
+	private void showAnnouncements(List<AnnouncementContra> announcements)
 	{
 		availabeBidsView.removeAllViews();
 		
-		for (final Contra contra : contras)
-		{
-			Button contraButton = new Button(this);
-			contraButton.setText(ResourceMappings.getContraName(contra));
-			contraButton.setOnClickListener(new OnClickListener()
-			{
-				public void onClick(View v)
-				{
-					availabeBidsView.removeAllViews();
-					conncection.sendPacket(new PacketContra(contra, myID));
-				}
-			});
-			availabeBidsView.addView(contraButton);
-		}
-		
-		for (final Announcement a : announcements)
+		for (final AnnouncementContra ac : announcements)
 		{
 			Button announceButton = new Button(this);
-			announceButton.setText(ResourceMappings.announcementToName.get(a));
+			announceButton.setText(ResourceMappings.getAnnouncementContraContraName(ac));
 			announceButton.setOnClickListener(new OnClickListener()
 			{
 				public void onClick(View v)
 				{
 					availabeBidsView.removeAllViews();
-					conncection.sendPacket(new PacketAnnounce(a, myID));
+					conncection.sendPacket(new PacketAnnounce(ac, myID));
 				}
 			});
 			availabeBidsView.addView(announceButton);
@@ -309,25 +293,13 @@ public class GameActivtiy extends Activity implements PacketHandler
 		});
 	}
 
-	private void onAnnounce(int player, Announcement announcement)
+	private void onAnnounce(int player, AnnouncementContra announcement)
 	{
 		messages += playerNames.get(player);
 		messages += " ";
 		messages += getResources().getString(R.string.action_announce);
 		messages += ": ";
-		messages += ResourceMappings.announcementToName.get(announcement);
-		messages += "\n";
-		biddingTextView.setText(messages);
-		biddingScrollView.fullScroll(View.FOCUS_DOWN);
-	}
-	
-	private void onContra(int player, Contra contra)
-	{
-		messages += playerNames.get(player);
-		messages += " ";
-		messages += getResources().getString(R.string.action_announce);
-		messages += ": ";
-		messages += ResourceMappings.getContraName(contra);
+		messages += ResourceMappings.getAnnouncementContraContraName(announcement);
 		messages += "\n";
 		biddingTextView.setText(messages);
 		biddingScrollView.fullScroll(View.FOCUS_DOWN);
@@ -347,7 +319,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 			myCardsView1.removeView(cardView);
 		}
 		
-		playedCardViews[pos].setImageBitmap(getBitmapForCard(card));
+		playedCardViews[pos].setImageResource(getBitmapResForCard(card));
 		playedCardViews[pos].bringToFront();
 		
 		cardsPlayed++;
@@ -430,7 +402,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 							
 							cardView.startAnimation(animSet);*/
 							
-							cardView.setImageBitmap(getBitmapForCard(null));
+							//((BitmapDrawable)cardView.getDrawable()).getBitmap().recycle();
+							cardView.setImageBitmap(null);
 						}
 						canPlaceCard = true;
 					}
@@ -474,14 +447,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
 			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_announcement_points);
 			
-			String name = "";
-			if (!entry.isAnnounced())
-				name += getResources().getString(R.string.silent);
-			name += " ";
-			Contra c = new Contra(entry.getAnnouncement(), entry.getContraLevel());
-			name += ResourceMappings.getContraName(c);
-			nameView.setText(name);
-			
+			nameView.setText(ResourceMappings.getAnnouncementContraContraName(entry.getAnnouncementContra()));
 			pointsView.setText(entry.getPoints() + "");
 			pointsView.setTextColor(entry.getPoints() > 0 ? Color.BLACK : Color.RED);
 			
@@ -491,9 +457,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void arrangeCards()
 	{
-		cardToViewMapping.clear();
-		myCardsView0.removeAllViews();
-		myCardsView1.removeAllViews();
+		removeAllMyCards();
+		
 		int cardsBottom = (int)Math.ceil(myCards.getCards().size() / 2F);
 		for (int i = 0; i < myCards.getCards().size(); i++)
 		{
@@ -504,12 +469,13 @@ public class GameActivtiy extends Activity implements PacketHandler
 				protected void onSizeChanged(int w, int h, int oldw, int oldh)
 				{
 					int padding = (int)(getWidth() * 0.1F / 2);
-					int paddingTB = (int)(getHeight() * 0.1F / 2);
-					setPadding(padding, paddingTB, padding, paddingTB);
+					//int paddingTB = (int)(getHeight() * 0.1F / 2);
+					setPadding(padding, padding, padding, padding);
 				}
 			};
 			cardView.setAdjustViewBounds(true);
-			cardView.setImageBitmap(getBitmapForCard(card));
+			if (card != null)
+				cardView.setImageResource(getBitmapResForCard(card));
 			
 			cardView.setLayoutParams(new LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
 			final LinearLayout parentView = i < cardsBottom ? myCardsView0 : myCardsView1;
@@ -551,6 +517,23 @@ public class GameActivtiy extends Activity implements PacketHandler
 		}
 	}
 	
+	private void removeAllMyCards()
+	{
+		cardToViewMapping.clear();
+		
+		for (ViewGroup cardsView : new ViewGroup[]{myCardsView0, myCardsView1})
+		{
+			int c = cardsView.getChildCount();
+			for (int i = 0; i < c; i++)
+			{
+				ImageView iv = (ImageView)cardsView.getChildAt(i);
+				//((BitmapDrawable)iv.getDrawable()).getBitmap().recycle();
+				iv.setImageBitmap(null);
+			}
+			cardsView.removeAllViews();
+		}
+	}
+	
 	private void showCenterView(View v)
 	{
 		int count = centerSpace.getChildCount();
@@ -561,10 +544,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 		v.setVisibility(View.VISIBLE);
 	}
 	
-	private Bitmap getBitmapForCard(Card card)
+	private int getBitmapResForCard(Card card)
 	{
-		if (card == null) return null;
-		
 		int id;
 		if (ResourceMappings.cardToImageResource.containsKey(card))
 		{
@@ -575,7 +556,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 			throw new RuntimeException(card + " has no image");
 		}
 
-		return BitmapFactory.decodeResource(getResources(), id);
+		return id;
 	}
 	
 	private int getPositionFromPlayerID(int id)
@@ -639,19 +620,13 @@ public class GameActivtiy extends Activity implements PacketHandler
 		if (p instanceof PacketAvailabeAnnouncements)
 		{
 			PacketAvailabeAnnouncements packet = ((PacketAvailabeAnnouncements)p);
-			showAnnouncements(packet.getAvailableAnnouncements(), packet.getAvailableContras());
+			showAnnouncements(packet.getAvailableAnnouncements());
 		}
 		
 		if (p instanceof PacketAnnounce)
 		{
 			PacketAnnounce packet = ((PacketAnnounce)p);
 			onAnnounce(packet.getPlayer(), packet.getAnnouncement());
-		}
-		
-		if (p instanceof PacketContra)
-		{
-			PacketContra packet = ((PacketContra)p);
-			onContra(packet.getPlayer(), packet.getContra());
 		}
 		
 		if (p instanceof PacketPlayCard)

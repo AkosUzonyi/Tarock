@@ -31,11 +31,29 @@ public class ResourceMappings
 	public static final Map<AnnouncementBase.Result, Integer> announcementResultToImage = new HashMap<AnnouncementBase.Result, Integer>();
 	public static final Map<PacketLoginFailed.Reason, Integer> failureReasonToMessage = new HashMap<PacketLoginFailed.Reason, Integer>();
 	
-	public static String getContraName(Contra contra)
+	private static String silent;
+	private static String passz;
+	
+	public static String getAnnouncementContraContraName(AnnouncementContra ac)
 	{
-		String contraName = ResourceMappings.contraLevelToName.get(contra.getLevel());
-		String annName = ResourceMappings.announcementToName.get(contra.getAnnouncement());
-		return contraName + " " + annName;
+		if (ac == null)
+			return passz;
+		
+		String result = "";
+		
+		if (!ac.isAnnounced())
+		{
+			result += silent;
+		}
+		else
+		{
+			result += ResourceMappings.contraLevelToName.get(ac.getContraLevel());
+		}
+		
+		result += " ";
+		result += ResourceMappings.announcementToName.get(ac.getAnnouncement());
+		
+		return result;
 	}
 	
 	public static void init(Context context)
@@ -101,7 +119,10 @@ public class ResourceMappings
 			contraLevelToName.put(i, resources.getString(id));
 		}
 		
-		announcementToName.put(null, resources.getString(R.string.passz));
+		silent = resources.getString(R.string.silent);
+		
+		passz = resources.getString(R.string.passz);
+		
 		announcementToName.put(Announcements.game, resources.getString(R.string.jatek));
 		announcementToName.put(Announcements.trull, resources.getString(R.string.trull));
 		announcementToName.put(Announcements.xxiFogas, resources.getString(R.string.xxiFogas));

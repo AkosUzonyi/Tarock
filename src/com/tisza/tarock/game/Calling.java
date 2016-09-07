@@ -13,6 +13,7 @@ public class Calling
 	private AllPlayersCards cards;
 	private PlayerPairs playerPairs = null;
 	private Invitation invit;
+	private Invitation invitAccepted = null;
 	private boolean canCallAnyTarock;
 	
 	public Calling(AllPlayersCards cards, int callerPlayer, Bidding.Invitation invit, int[] tarockSkartedCounts)
@@ -54,6 +55,16 @@ public class Calling
 			{
 				calledPlayer = i;
 			}
+		}
+		
+		invitAccepted = Invitation.NONE;
+		if (invit == Invitation.XVIII && card.equals(new TarockCard(18)))
+		{
+			invitAccepted = invit;
+		}
+		if (invit == Invitation.XIX && card.equals(new TarockCard(19)))
+		{
+			invitAccepted = invit;
 		}
 		
 		boolean isSoloIntentional = false;
@@ -119,6 +130,13 @@ public class Calling
 		
 		callOptions.addAll(pc.filter(new CallableCardFilter()));
 		return callOptions;
+	}
+
+	public Invitation getInvitationAccepted()
+	{
+		if (!isFinished())
+			throw new IllegalStateException();
+		return invitAccepted;
 	}
 	
 	public boolean isFinished()

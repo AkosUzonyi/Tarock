@@ -27,25 +27,25 @@ public class PhaseEnd implements GamePhase
 		statEntriesForTeams.put(Team.CALLER, new ArrayList<PacketAnnouncementStatistics.Entry>());
 		statEntriesForTeams.put(Team.OPPONENT, new ArrayList<PacketAnnouncementStatistics.Entry>());
 		
-		for (Map.Entry<Announcement, AnnouncementState> announcementEntry : game.getCurrentGame().announcing.getAnnouncementStates().entrySet())
+		Announcing announcing = game.getCurrentGame().announcing;
+		
+		for (Team team : Team.values())
 		{
-			Announcement a = announcementEntry.getKey();
-			AnnouncementState as = announcementEntry.getValue();
-			
-			for (Team team : Team.values())
+			for (Announcement announcement : Announcements.getAll())
 			{
-				AnnouncementState.PerTeam aspt = as.team(team);
-				boolean isAnnounced = aspt.isAnnounced();
-				int contraLevel = isAnnounced ? aspt.getContraLevel() : 0;
-				int points = a.calculatePoints(game.getCurrentGame(), team, aspt.isAnnounced()) * (int)Math.pow(2, contraLevel);
+				boolean isAnnounced = announcing.isAnnounced(team, announcement);
+				int contraMultiplier = (int)Math.pow(2, isAnnounced ? announcing.getContraLevel(team, announcement) : 0);
+				int points = announcement.calculatePoints(game.getCurrentGame(), team, isAnnounced);
+				points *= contraMultiplier;
 				
 				pointsForCallerTeam += points * (team == Team.CALLER ? 1 : -1);
 				
 				if (points != 0)
 				{
-					statEntriesForTeams.get(team).add(new PacketAnnouncementStatistics.Entry(a, isAnnounced, contraLevel, points));
+					AnnouncementContra ac = new AnnouncementContra(announcement, isAnnounced ? announcing.getContraLevel(team, announcement) : -1);
+					statEntriesForTeams.get(team).add(new PacketAnnouncementStatistics.Entry(ac, points));
 				}
-			}
+			}	
 		}
 		
 		for (int p = 0; p < 4; p++)

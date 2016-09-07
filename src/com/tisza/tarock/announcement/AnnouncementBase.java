@@ -54,7 +54,7 @@ public abstract class AnnouncementBase implements Announcement
 		return Announcements.getID(this);
 	}
 	
-	public boolean canAnnounce(Map<Announcement, AnnouncementState> announcementStates, PlayerCards cards, int player, PlayerPairs pp)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
 		return true;
 	}

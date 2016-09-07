@@ -14,7 +14,7 @@ public class PhaseAnnouncing implements GamePhase
 	{
 		game = g;
 		PlayerPairs pp = game.getCurrentGame().calling.getPlayerPairs();
-		Invitation invit = game.getCurrentGame().bidding.getInvitation();
+		Invitation invit = game.getCurrentGame().calling.getInvitationAccepted();
 		announcing = new Announcing(game.getCurrentGame().changing.getCardsAfter(), pp, invit);
 	}
 
@@ -38,18 +38,6 @@ public class PhaseAnnouncing implements GamePhase
 				onAnnounced();
 			}
 		}
-		else if (packet instanceof PacketContra)
-		{
-			PacketContra packetContra = ((PacketContra)packet);
-			if (packetContra.getPlayer() == player)
-			{
-				if (announcing.contra(player, packetContra.getContra()))
-				{
-					game.broadcastPacket(packetContra);
-				}
-				onAnnounced();
-			}
-		}
 	}
 	
 	private void onAnnounced()
@@ -61,7 +49,7 @@ public class PhaseAnnouncing implements GamePhase
 		else
 		{
 			game.broadcastPacket(new PacketTurn(announcing.getNextPlayer(), PacketTurn.Type.ANNOUNCE));
-			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailabeAnnouncements(announcing.getAvailableAnnouncements(), announcing.getAvailableContras()));
+			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailabeAnnouncements(announcing.getAvailableAnnouncements()));
 		}
 	}
 }

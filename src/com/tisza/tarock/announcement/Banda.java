@@ -34,14 +34,16 @@ public class Banda extends TakeCards
 		return result;
 	}
 	
-	public boolean canAnnounce(Map<Announcement, AnnouncementState> announcementStates, PlayerCards cards, int player, PlayerPairs pp)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
-		if (!super.canAnnounce(announcementStates, cards, player, pp))
+		if (!super.canBeAnnounced(announcing))
 			return false;
+		
+		Team playerTeam = announcing.getPlayerPairs().getTeam(announcing.getNextPlayer());
 		
 		for (Banda banda : Announcements.bandak)
 		{
-			if (announcementStates.get(banda).team(pp.getTeam(player)).isAnnounced())
+			if (announcing.isAnnounced(playerTeam, banda))
 			{
 				return false;
 			}

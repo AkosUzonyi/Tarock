@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.*;
 
 import com.tisza.tarock.announcement.*;
-import com.tisza.tarock.announcement.AnnouncementBase.Result;
 import com.tisza.tarock.game.*;
 
 public class PacketAnnouncementStatistics extends Packet

@@ -68,7 +68,6 @@ public class Announcing
 		currentPlayerAnnounced = true;
 		
 		announcementContraLevels.get(ac.getNextTeamToContra(team)).put(ac.getAnnouncement(), ac.getContraLevel());
-		System.out.println(announcementContraLevels.get(team).get(Announcements.trull));
 		return true;
 	}
 	

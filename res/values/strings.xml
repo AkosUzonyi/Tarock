@@ -8,6 +8,7 @@
     <string name="ip">IP address</string>
     <string name="port">Port number</string>
     <string name="ok">OK</string>
+    <string name="throw_cards">Bedob</string>
     <string name="server_start">Start server</string>
     <string name="server_stop">Stop server</string>
     
@@ -21,7 +22,10 @@
     <string name="turn_call">Hívás</string>
     <string name="turn_announce">Bemondások</string>
     
+    <string name="action_throw_cards">bedobta a lapjait</string>
+    <string name="press_ok">Nyomj OK-t a folyatatáshoz</string>
     <string name="action_bid">licitált</string>
+    <string name="action_skart_tarock">tarokkot fektetett</string>
     <string name="action_call">hívott</string>
     <string name="action_announce">bemondta</string>
     

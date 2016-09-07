@@ -22,6 +22,16 @@
             android:layout_alignParentRight="true"
             android:text="@string/ok"
             />
+	    
+        <Button
+            android:id="@+id/throw_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:visibility="gone"
+            android:text="@string/throw_cards"
+            />
         
         <com.tisza.tarock.gui.VerticalTextView
             android:id="@+id/playername_1"

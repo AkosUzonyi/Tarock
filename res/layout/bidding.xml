@@ -17,14 +17,14 @@
 	    >
 	
 	    <ScrollView
-	    android:id="@+id/bidding_scroll"
+	    android:id="@+id/messages_scroll"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:scrollbars="vertical"
 	    android:fillViewport="true">
 	
 	        <TextView
-	        android:id="@+id/bidding_text"
+	        android:id="@+id/messages"
 	        android:layout_width="match_parent"
 	        android:layout_height="match_parent"
 	        android:layout_weight="1.0"/>
@@ -47,7 +47,7 @@
 	    android:fillViewport="true">
 	
 				<LinearLayout
-			        android:id="@+id/available_bids"
+			        android:id="@+id/available_actions"
 				    android:orientation="vertical"
 				    android:layout_width="match_parent"
 				    android:layout_height="match_parent"

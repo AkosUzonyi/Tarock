@@ -3,6 +3,7 @@ package com.tisza.tarock.card;
 import java.util.*;
 
 import com.tisza.tarock.card.filter.*;
+import com.tisza.tarock.card.sort.*;
 
 public class PlayerCards
 {
@@ -40,6 +41,11 @@ public class PlayerCards
 	{
 		return cards;
 	}
+	
+	public void sort()
+	{
+		Collections.sort(cards, new IDSort());
+	}
 
 	public List<Card> getPlaceableCards(Card firstCard)
 	{
@@ -73,8 +79,21 @@ public class PlayerCards
 
 	public boolean canBeThrown(boolean afterChange)
 	{
-		if (!afterChange && filter(new TarockFilter()).size() < 2)
-			return true;
+		
+		if (!afterChange)
+		{
+			List<Card> tarocks = filter(new TarockFilter());
+			
+			if (tarocks.size() < 2)
+				return true;
+			
+			tarocks.remove(new TarockCard(1));
+			tarocks.remove(new TarockCard(2));
+			tarocks.remove(new TarockCard(21));
+			
+			if (tarocks.size() == 0)
+				return true;
+		}
 		
 		if (hasFourKings())
 			return true;

@@ -1,7 +1,6 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
 
 public class TakeRoundWithTarock extends TakeRoundWithCard
 {
@@ -18,5 +17,10 @@ public class TakeRoundWithTarock extends TakeRoundWithCard
 	public boolean canBeSilent()
 	{
 		return getRoundIndex() == 8;
+	}
+	
+	public boolean isShownToUser()
+	{
+		return false;
 	}
 }

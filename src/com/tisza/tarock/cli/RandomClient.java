@@ -5,15 +5,12 @@ import java.util.*;
 
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.card.filter.*;
-import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
 
 public class RandomClient implements PacketHandler
 {
 	private Connection conncection;
-	private Scanner sc = new Scanner(System.in);
-	private List<String> names;
 	private PlayerCards myCards;
 	private Card firstCard = null;
 	private int playedCardCount = 0;
@@ -32,7 +29,6 @@ public class RandomClient implements PacketHandler
 		{
 			PacketStartGame packet = ((PacketStartGame)p);
 			player = packet.getPlayerID();
-			names = packet.getNames();
 		}
 		if (p instanceof PacketPlayerCards)
 		{
@@ -44,10 +40,6 @@ public class RandomClient implements PacketHandler
 			PacketAvailableBids packet = ((PacketAvailableBids)p);
 			List<Integer> bids = packet.getAvailableBids();
 			conncection.sendPacket(new PacketBid(bids.get(bids.size() - 1), player));
-		}
-		if (p instanceof PacketBid)
-		{
-			PacketBid packet = ((PacketBid)p);
 		}
 		if (p instanceof PacketChange)
 		{
@@ -67,10 +59,6 @@ public class RandomClient implements PacketHandler
 			PacketAvailableCalls packet = ((PacketAvailableCalls)p);
 			List<Card> calls = packet.getAvailableCalls();
 			conncection.sendPacket(new PacketCall(calls.get(0), player));
-		}
-		if (p instanceof PacketCall)
-		{
-			PacketCall packet = ((PacketCall)p);
 		}
 		if (p instanceof PacketTurn)
 		{

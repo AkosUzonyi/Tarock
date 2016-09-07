@@ -43,7 +43,7 @@ public class Bidding
 	
 	public List<Integer> getHistory()
 	{
-		return Collections.unmodifiableList(history);
+		return history;
 	}
 
 	private boolean canKeep()

@@ -64,6 +64,11 @@ public abstract class AnnouncementBase implements Announcement
 		return true;
 	}
 	
+	public boolean isShownToUser()
+	{
+		return true;
+	}
+	
 	public static enum Result
 	{
 		SUCCESSFUL, SUCCESSFUL_SILENT, FAILED, FAILED_SILENT, DEACTIVATED;

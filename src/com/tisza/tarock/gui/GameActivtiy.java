@@ -6,7 +6,6 @@ import java.util.*;
 
 import android.app.*;
 import android.graphics.*;
-import android.graphics.drawable.*;
 import android.os.*;
 import android.view.*;
 import android.view.View.OnClickListener;
@@ -29,11 +28,12 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private LinearLayout myCardsView1;
 	private FrameLayout centerSpace;
 	private Button okButton;
+	private Button throwButton;
 	
 	private View biddingView;
-	private ScrollView biddingScrollView;
-	private TextView biddingTextView;
-	private LinearLayout availabeBidsView;
+	private ScrollView messagesScrollView;
+	private TextView messagesView;
+	private LinearLayout availabeActionsView;
 	
 	private RelativeLayout playedCardsView;
 	private PlacedCardView[] playedCardViews;
@@ -41,6 +41,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private LinearLayout statisticsView;
 	private LinearLayout statisticsLinearLayout;	
 	
+	@SuppressWarnings("deprecation")
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -101,7 +102,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		}
 	}
 	
-	private void inflateViews()
+	private void inflateGameViews()
 	{
 		View game = View.inflate(this, R.layout.game, null);
 		
@@ -116,15 +117,23 @@ public class GameActivtiy extends Activity implements PacketHandler
 		};
 		
 		biddingView = View.inflate(this, R.layout.bidding, null);
-		biddingScrollView = (ScrollView)biddingView.findViewById(R.id.bidding_scroll);
-		biddingTextView = (TextView)biddingView.findViewById(R.id.bidding_text);
-		availabeBidsView = (LinearLayout)biddingView.findViewById(R.id.available_bids);
+		messagesScrollView = (ScrollView)biddingView.findViewById(R.id.messages_scroll);
+		messagesView = (TextView)biddingView.findViewById(R.id.messages);
+		availabeActionsView = (LinearLayout)biddingView.findViewById(R.id.available_actions);
 		centerSpace.addView(biddingView);
-				
+		
 		myCardsView0 = (LinearLayout)game.findViewById(R.id.my_cards_0);
 		myCardsView1 = (LinearLayout)game.findViewById(R.id.my_cards_1);
 		
 		okButton = (Button)game.findViewById(R.id.ok_button);
+		throwButton = (Button)game.findViewById(R.id.throw_button);
+		throwButton.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				conncection.sendPacket(new PacketThrowCards(myID));
+			}
+		});
 		
 		playedCardsView = new RelativeLayout(this);
 		playedCardsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
@@ -150,7 +159,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private int cardsPlayed = 0;
 	private Map<Card, View> cardToViewMapping = new HashMap<Card, View>();
 	
-	private String messages = "";
+	private String messages;
 	
 	private List<Card> cardsToSkart = new ArrayList<Card>();
 	private boolean skarting = false;
@@ -158,7 +167,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onStartGame(List<String> playerNames, int myID)
 	{
-		inflateViews();
+		inflateGameViews();
 		
 		this.myID = myID;
 		this.playerNames = playerNames;
@@ -170,18 +179,32 @@ public class GameActivtiy extends Activity implements PacketHandler
 				playerNameViews[pos].setText(playerNames.get(i));
 			}
 		}
+		messages = "";
 		showCenterView(biddingView);
 	}
 	
 	private void setCards(PlayerCards cards)
 	{
 		myCards = cards;
+		throwButton.setVisibility(myCards.canBeThrown(false) ? View.VISIBLE : View.GONE);
 		arrangeCards();
+	}
+
+	private void onCardsThrown(int player, PlayerCards thrownCards)
+	{
+		String msg = "";
+		msg += playerNames.get(player);
+		msg += " ";
+		msg += getResources().getString(R.string.action_throw_cards);
+		msg += "\n";
+		msg += getResources().getString(R.string.press_ok);
+		msg += "\n";
+		displayMessage(msg);
 	}
 	
 	private void showAvailableBids(List<Integer> bids)
 	{
-		availabeBidsView.removeAllViews();
+		availabeActionsView.removeAllViews();
 		for (final int bid : bids)
 		{
 			Button bidButton = new Button(this);
@@ -190,29 +213,30 @@ public class GameActivtiy extends Activity implements PacketHandler
 			{
 				public void onClick(View v)
 				{
-					availabeBidsView.removeAllViews();
+					availabeActionsView.removeAllViews();
 					conncection.sendPacket(new PacketBid(bid, myID));
 				}
 			});
-			availabeBidsView.addView(bidButton);
+			availabeActionsView.addView(bidButton);
 		}
 	}
 	
 	private void onBid(int player, int bid)
 	{
-		messages += playerNames.get(player);
-		messages += " ";
-		messages += getResources().getString(R.string.action_bid);
-		messages += ": ";
-		messages += ResourceMappings.bidToName.get(bid);
-		messages += "\n";
-		biddingTextView.setText(messages);
-		biddingScrollView.fullScroll(View.FOCUS_DOWN);
+		String msg = "";
+		msg += playerNames.get(player);
+		msg += " ";
+		msg += getResources().getString(R.string.action_bid);
+		msg += ": ";
+		msg += ResourceMappings.bidToName.get(bid);
+		msg += "\n";
+		displayMessage(msg);
 	}
 	
 	private void onGotCardsFromTalon(List<Card> cards)
 	{
 		myCards.getCards().addAll(cards);
+		throwButton.setVisibility(myCards.canBeThrown(true) ? View.VISIBLE : View.GONE);
 		skarting = true;
 		arrangeCards();
 		
@@ -234,9 +258,28 @@ public class GameActivtiy extends Activity implements PacketHandler
 		arrangeCards();
 	}
 	
+	private void onSkartTarock(int[] counts)
+	{
+		String msg = "";
+		for (int p = 0; p < 4; p++)
+		{
+			int count = counts[p];
+			if (count > 0)
+			{
+				msg += playerNames.get(p);
+				msg += " ";
+				msg += count;
+				msg += " ";
+				msg += getResources().getString(R.string.action_skart_tarock);
+				msg += "\n";
+			}
+		}
+		displayMessage(msg);
+	}
+
 	private void showAvailableCalls(List<Card> calls)
 	{
-		availabeBidsView.removeAllViews();
+		availabeActionsView.removeAllViews();
 		for (final Card card : calls)
 		{
 			Button callButton = new Button(this);
@@ -245,11 +288,11 @@ public class GameActivtiy extends Activity implements PacketHandler
 			{
 				public void onClick(View v)
 				{
-					availabeBidsView.removeAllViews();
+					availabeActionsView.removeAllViews();
 					conncection.sendPacket(new PacketCall(card, myID));
 				}
 			});
-			availabeBidsView.addView(callButton);
+			availabeActionsView.addView(callButton);
 		}
 	}
 	
@@ -261,33 +304,37 @@ public class GameActivtiy extends Activity implements PacketHandler
 		messages += ": ";
 		messages += ResourceMappings.cardToName.get(card);
 		messages += "\n";
-		biddingTextView.setText(messages);
-		biddingScrollView.scrollTo(0, biddingScrollView.getHeight());
+		messagesView.setText(messages);
+		messagesScrollView.scrollTo(0, messagesScrollView.getHeight());
 	}
 	
-	private void showAnnouncements(List<AnnouncementContra> announcements)
+	private void showAvailableAnnouncements(List<AnnouncementContra> announcements)
 	{
-		availabeBidsView.removeAllViews();
+		Collections.sort(announcements);
+		availabeActionsView.removeAllViews();
 		
 		for (final AnnouncementContra ac : announcements)
 		{
+			//if (!ac.getAnnouncement().isShownToUser()) continue;
+			
 			Button announceButton = new Button(this);
 			announceButton.setText(ResourceMappings.getAnnouncementContraContraName(ac));
 			announceButton.setOnClickListener(new OnClickListener()
 			{
 				public void onClick(View v)
 				{
-					availabeBidsView.removeAllViews();
+					availabeActionsView.removeAllViews();
 					conncection.sendPacket(new PacketAnnounce(ac, myID));
 				}
 			});
-			availabeBidsView.addView(announceButton);
+			availabeActionsView.addView(announceButton);
 		}
 		
 		okButton.setOnClickListener(new OnClickListener()
 		{
 			public void onClick(View v)
 			{
+				availabeActionsView.removeAllViews();
 				conncection.sendPacket(new PacketAnnounce(null, myID));
 			}
 		});
@@ -295,14 +342,14 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void onAnnounce(int player, AnnouncementContra announcement)
 	{
-		messages += playerNames.get(player);
-		messages += " ";
-		messages += getResources().getString(R.string.action_announce);
-		messages += ": ";
-		messages += ResourceMappings.getAnnouncementContraContraName(announcement);
-		messages += "\n";
-		biddingTextView.setText(messages);
-		biddingScrollView.fullScroll(View.FOCUS_DOWN);
+		String msg = "";
+		msg += playerNames.get(player);
+		msg += " ";
+		msg += getResources().getString(R.string.action_announce);
+		msg += ": ";
+		msg += ResourceMappings.getAnnouncementContraContraName(announcement);
+		msg += "\n";
+		displayMessage(msg);
 	}
 
 	private void playCard(int player, Card card)
@@ -457,28 +504,24 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void arrangeCards()
 	{
-		removeAllMyCards();
+		removeAllMyCardsView();
 		
-		int cardsBottom = (int)Math.ceil(myCards.getCards().size() / 2F);
+		myCards.sort();
+		
+		int cardsUp = myCards.getCards().size() / 2;
 		for (int i = 0; i < myCards.getCards().size(); i++)
 		{
 			final Card card = myCards.getCards().get(i);
 			
-			ImageView cardView = new ImageView(this)
-			{
-				protected void onSizeChanged(int w, int h, int oldw, int oldh)
-				{
-					int padding = (int)(getWidth() * 0.1F / 2);
-					//int paddingTB = (int)(getHeight() * 0.1F / 2);
-					setPadding(padding, padding, padding, padding);
-				}
-			};
+			ImageView cardView = new ImageView(this);
 			cardView.setAdjustViewBounds(true);
+			int padding = (int)(cardWidth * 0.1F / 2);
+			cardView.setPadding(padding, padding, padding, padding);
+			cardView.setLayoutParams(new LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
 			if (card != null)
 				cardView.setImageResource(getBitmapResForCard(card));
 			
-			cardView.setLayoutParams(new LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
-			final LinearLayout parentView = i < cardsBottom ? myCardsView0 : myCardsView1;
+			final LinearLayout parentView = i < cardsUp ? myCardsView1 : myCardsView0;
 			parentView.addView(cardView);
 			cardToViewMapping.put(card, cardView);
 			
@@ -516,8 +559,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 			});
 		}
 	}
-	
-	private void removeAllMyCards()
+
+	private void removeAllMyCardsView()
 	{
 		cardToViewMapping.clear();
 		
@@ -542,6 +585,13 @@ public class GameActivtiy extends Activity implements PacketHandler
 			centerSpace.getChildAt(i).setVisibility(View.GONE);
 		}
 		v.setVisibility(View.VISIBLE);
+	}
+	
+	private void displayMessage(String msg)
+	{
+		messages += msg;
+		messagesView.setText(messages);
+		messagesScrollView.fullScroll(View.FOCUS_DOWN);
 	}
 	
 	private int getBitmapResForCard(Card card)
@@ -578,6 +628,12 @@ public class GameActivtiy extends Activity implements PacketHandler
 			setCards(packet.getPlayerCards());
 		}
 		
+		if (p instanceof PacketCardsThrown)
+		{
+			PacketCardsThrown packet = ((PacketCardsThrown)p);
+			onCardsThrown(packet.getPlayer(), packet.getThrownCards());
+		}
+		
 		if (p instanceof PacketAvailableBids)
 		{
 			PacketAvailableBids packet = ((PacketAvailableBids)p);
@@ -605,6 +661,12 @@ public class GameActivtiy extends Activity implements PacketHandler
 			}
 		}
 		
+		if (p instanceof PacketSkartTarock)
+		{
+			PacketSkartTarock packet = ((PacketSkartTarock)p);
+			onSkartTarock(packet.getCounts());
+		}
+		
 		if (p instanceof PacketAvailableCalls)
 		{
 			PacketAvailableCalls packet = ((PacketAvailableCalls)p);
@@ -620,7 +682,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		if (p instanceof PacketAvailabeAnnouncements)
 		{
 			PacketAvailabeAnnouncements packet = ((PacketAvailabeAnnouncements)p);
-			showAnnouncements(packet.getAvailableAnnouncements());
+			showAvailableAnnouncements(packet.getAvailableAnnouncements());
 		}
 		
 		if (p instanceof PacketAnnounce)
@@ -650,10 +712,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 		if (p instanceof PacketPoints)
 		{
 			PacketPoints packet = ((PacketPoints)p);
-		}
-		if (p instanceof PacketSkartTarock)
-		{
-			PacketSkartTarock packet = ((PacketSkartTarock)p);
 		}
 		if (p instanceof PacketReadyForNewGame)
 		{

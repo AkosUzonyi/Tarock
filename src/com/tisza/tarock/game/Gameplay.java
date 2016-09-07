@@ -32,7 +32,6 @@ public class Gameplay
 		if (player != getNextPlayer())
 			return false;
 		
-		//TODO
 		if (!getPlaceableCards().contains(c))
 			return false;
 		

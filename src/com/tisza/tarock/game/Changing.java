@@ -3,10 +3,11 @@ package com.tisza.tarock.game;
 import java.util.*;
 
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.filter.*;
 
 public class Changing
 {
-	private static final List<Card> forbiddenCards = new ArrayList<Card>();
+	private static final SkartableCardFilter cardFilter = new SkartableCardFilter();
 	
 	private final List<Card> talon;
 	private final int winnerPlayer;
@@ -83,8 +84,7 @@ public class Changing
 		List<Card> reviewedSkartCards = new ArrayList<Card>();
 		for (Card c : cardsToSkart)
 		{
-			//TODO
-			if (forbiddenCards.contains(c))
+			if (!cardFilter.match(c))
 				return false;
 			
 			if (reviewedSkartCards.contains(c))
@@ -138,15 +138,5 @@ public class Changing
 			if (!b) return false;
 		}
 		return true;
-	}
-
-	static
-	{
-		for (int s = 0; s < 4; s++)
-		{
-			forbiddenCards.add(new SuitCard(s, 5));
-		}
-		forbiddenCards.addAll(Card.honors);
-		forbiddenCards.add(new TarockCard(2));
 	}
 }

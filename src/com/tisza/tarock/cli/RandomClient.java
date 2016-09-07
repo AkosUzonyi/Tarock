@@ -4,18 +4,22 @@ import java.net.*;
 import java.util.*;
 
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.filter.*;
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
 
-public class CliDumbClient implements PacketHandler
+public class RandomClient implements PacketHandler
 {
 	private Connection conncection;
 	private Scanner sc = new Scanner(System.in);
 	private List<String> names;
-	private PlayerCards pc;
+	private PlayerCards myCards;
+	private Card firstCard = null;
+	private int playedCardCount = 0;
 	int player = -1;
 	
-	public CliDumbClient(String host, int port, String name) throws Exception
+	public RandomClient(String host, int port, String name) throws Exception
 	{
 		conncection = new Connection(new Socket(host, port));
 		conncection.sendPacket(new PacketLogin(name));
@@ -28,21 +32,12 @@ public class CliDumbClient implements PacketHandler
 		{
 			PacketStartGame packet = ((PacketStartGame)p);
 			player = packet.getPlayerID();
-			System.out.println(player);
-			System.out.println("Game started");
-			System.out.println("Players: ");
 			names = packet.getNames();
-			for (String name : names)
-			{
-				System.out.print(name + ", ");
-			}
-			System.out.println();
 		}
 		if (p instanceof PacketPlayerCards)
 		{
 			PacketPlayerCards packet = ((PacketPlayerCards)p);
-			pc = packet.getPlayerCards();
-			System.out.println(pc.getCards());
+			myCards = packet.getPlayerCards();
 		}
 		if (p instanceof PacketAvailableBids)
 		{
@@ -53,14 +48,19 @@ public class CliDumbClient implements PacketHandler
 		if (p instanceof PacketBid)
 		{
 			PacketBid packet = ((PacketBid)p);
-			System.out.println(names.get(packet.getPlayer()) + " bidded: " + packet.getBid());
 		}
 		if (p instanceof PacketChange)
 		{
 			PacketChange packet = ((PacketChange)p);
-			System.out.println("Cards from talon: " + packet.getCards());
-			List<Card> cardsFromTalon = new ArrayList<Card>(packet.getCards());
-			conncection.sendPacket(new PacketChange(cardsFromTalon, player));
+			myCards.getCards().addAll(packet.getCards());
+			List<Card> cardsToSkart = new ArrayList<Card>();
+			List<Card> skartableCards = myCards.filter(new SkartableCardFilter());
+			while (cardsToSkart.size() < packet.getCards().size())
+			{
+				cardsToSkart.add(skartableCards.remove(0));
+			}
+			myCards.getCards().removeAll(cardsToSkart);
+			conncection.sendPacket(new PacketChange(cardsToSkart, player));
 		}
 		if (p instanceof PacketAvailableCalls)
 		{
@@ -71,7 +71,6 @@ public class CliDumbClient implements PacketHandler
 		if (p instanceof PacketCall)
 		{
 			PacketCall packet = ((PacketCall)p);
-			System.out.println(names.get(packet.getPlayer()) + " called: " + packet.getCalledCard());
 		}
 		if (p instanceof PacketTurn)
 		{
@@ -86,13 +85,14 @@ public class CliDumbClient implements PacketHandler
 				{
 					try
 					{
-						Thread.sleep(400);
+						Thread.sleep(1500);
 					}
 					catch (InterruptedException e)
 					{
 						e.printStackTrace();
 					}
-					conncection.sendPacket(new PacketPlayCard(pc.getCards().get(0), player));
+					
+					conncection.sendPacket(new PacketPlayCard(myCards.getPlaceableCards(firstCard).get(0), player));
 				}
 			}
 		}
@@ -100,53 +100,20 @@ public class CliDumbClient implements PacketHandler
 		{
 			PacketPlayCard packet = ((PacketPlayCard)p);
 			
-			if (packet.getPlayer() == player)
+			if (playedCardCount % 4 == 0)
 			{
-				pc.removeCard(packet.getCard());
+				firstCard = packet.getCard();
 			}
 			
-			String name = names.get(packet.getPlayer());
-			Card c = packet.getCard();
-			System.out.println(name + " played: " + c);
-			cardsPlayed++;
-			if (cardsPlayed % 4 == 0)
+			if (packet.getPlayer() == player)
 			{
-				System.out.println("---");
+				myCards.removeCard(packet.getCard());
 			}
-		}
-		if (p instanceof PacketAnnouncementStatistics)
-		{
-			PacketAnnouncementStatistics packet = ((PacketAnnouncementStatistics)p);
-			/*for (PacketAnnouncementStatistics.Entry entry : packet.getEntries())
-			{
-				System.out.println(entry.getAnnouncement().getClass().getSimpleName());
-				System.out.println(entry.getResult());
-				System.out.println(entry.getContraLevel());
-				System.out.println(entry.getPoints());
-			}*/
-		}
-		if (p instanceof PacketPoints)
-		{
-			PacketPoints packet = ((PacketPoints)p);
-			for (int i = 0; i < 4; i++)
-			{
-				System.out.print(packet.getPoints().getPoint(i) + " ");
-			}
-			System.out.println();
-		}
-		if (p instanceof PacketSkartTarock)
-		{
-			PacketSkartTarock packet = ((PacketSkartTarock)p);
-			for (int i = 0; i < 4; i++)
-			{
-				
-				System.out.print(packet.getCounts()[i] + " ");
-			}
-			System.out.println();
+			
+			playedCardCount++;
 		}
 		if (p instanceof PacketReadyForNewGame)
 		{
-			sc.nextLine();
 			conncection.sendPacket(new PacketReadyForNewGame());
 		}
 	}

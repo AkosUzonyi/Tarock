@@ -12,7 +12,7 @@ public class TakeRoundWithSuitCard extends TakeRoundWithCard
 		isKing = cardToTakeWith.getValue() == 5;
 	}
 
-	public int getPoints(int winnerBid)
+	public int getPoints()
 	{
 		if (getRoundIndex() == 8)
 		{
@@ -22,10 +22,5 @@ public class TakeRoundWithSuitCard extends TakeRoundWithCard
 		{
 			return 10 * (9 - getRoundIndex()) + (isKing ? 0 : 10);
 		}
-	}
-	
-	public boolean isShownToUser()
-	{
-		return false;
 	}
 }

@@ -6,16 +6,16 @@ public class Dupla extends GamePoints
 {
 	public boolean canBeAnnounced(Announcing announcing, Team team)
 	{
-		if (!super.canBeAnnounced(announcing, team))
-			return false;
-		
 		if (announcing.isAnnounced(team, Announcements.dupla))
 			return false;
 		
 		if (announcing.isAnnounced(team, Announcements.hosszuDupla))
 			return false;
 		
-		return true;
+		if (announcing.isAnnounced(team, Announcements.volat))
+			return false;
+		
+		return super.canBeAnnounced(announcing, team);
 	}
 
 	protected int getMinPointsRequired()
@@ -23,7 +23,7 @@ public class Dupla extends GamePoints
 		return 71;
 	}
 
-	protected int getDefaultPoints()
+	protected int getPoints()
 	{
 		return 4;
 	}

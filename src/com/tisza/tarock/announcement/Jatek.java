@@ -6,10 +6,10 @@ public class Jatek extends GamePoints
 {
 	public Result isSuccessful(GameInstance gi, Team team)
 	{
-		boolean duplaAnnounced = gi.announcing.isAnnounced(team, Announcements.dupla);
+		int pointsForDupla = Announcements.dupla.calculatePoints(gi, team) + Announcements.hosszuDupla.calculatePoints(gi, team);
 		boolean isContraJatek = gi.announcing.isAnnounced(team, this) && gi.announcing.getContraLevel(team, this) > 0;
 		
-		if (duplaAnnounced && !isContraJatek)
+		if (pointsForDupla > 0 && !isContraJatek)
 			return Result.DEACTIVATED;
 		
 		return super.isSuccessful(gi, team);
@@ -28,7 +28,7 @@ public class Jatek extends GamePoints
 		return 48;
 	}
 
-	protected int getDefaultPoints()
+	protected int getPoints()
 	{
 		return 1;
 	}

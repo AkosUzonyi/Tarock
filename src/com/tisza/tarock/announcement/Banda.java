@@ -11,17 +11,10 @@ public class Banda extends TakeCards
 	
 	Banda(int suit)
 	{
+		if (suit < 0 || suit >= 4)
+			throw new IllegalArgumentException();
+		
 		this.suit = suit;
-	}
-
-	public int getPoints(int winnerBid)
-	{
-		return 4;
-	}
-
-	public boolean canBeSilent()
-	{
-		return false;
 	}
 
 	protected List<Card> getCardsToTake()
@@ -36,9 +29,6 @@ public class Banda extends TakeCards
 	
 	public boolean canBeAnnounced(Announcing announcing, Team team)
 	{
-		if (!super.canBeAnnounced(announcing, team))
-			return false;
-		
 		for (Banda banda : Announcements.bandak)
 		{
 			if (announcing.isAnnounced(team, banda))
@@ -46,6 +36,17 @@ public class Banda extends TakeCards
 				return false;
 			}
 		}
-		return true;
+		
+		return super.canBeAnnounced(announcing, team);
+	}
+
+	public int getPoints()
+	{
+		return 4;
+	}
+
+	public boolean canBeSilent()
+	{
+		return false;
 	}
 }

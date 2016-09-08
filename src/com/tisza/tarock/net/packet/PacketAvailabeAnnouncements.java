@@ -39,7 +39,7 @@ public class PacketAvailabeAnnouncements extends Packet
 		dos.writeShort(announcements.size());
 		for (AnnouncementContra announcement : announcements)
 		{
-			dos.writeShort(announcement.getAnnouncement().getID());
+			dos.writeShort(Announcements.getID(announcement.getAnnouncement()));
 			dos.writeByte(announcement.getContraLevel());
 		}
 	}

@@ -49,7 +49,7 @@ public class PacketAnnounce extends PacketGameAction
 		}
 		else
 		{
-			dos.writeShort(announcementContra.getAnnouncement().getID());
+			dos.writeShort(Announcements.getID(announcementContra.getAnnouncement()));
 			dos.writeByte(announcementContra.getContraLevel());
 		}
 	}

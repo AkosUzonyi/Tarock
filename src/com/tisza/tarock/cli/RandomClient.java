@@ -39,7 +39,7 @@ public class RandomClient implements PacketHandler
 		{
 			PacketAvailableBids packet = ((PacketAvailableBids)p);
 			List<Integer> bids = packet.getAvailableBids();
-			conncection.sendPacket(new PacketBid(bids.get(bids.size() - 1), player));
+			conncection.sendPacket(new PacketBid(bids.get(new Random().nextInt(bids.size())), player));
 		}
 		if (p instanceof PacketChange)
 		{

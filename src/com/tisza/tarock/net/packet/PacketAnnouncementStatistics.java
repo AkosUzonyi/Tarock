@@ -60,7 +60,7 @@ public class PacketAnnouncementStatistics extends Packet
 		dos.writeShort(entries.size());
 		for (Entry e : entries)
 		{
-			dos.writeShort(e.getAnnouncementContra().getAnnouncement().getID());
+			dos.writeShort(Announcements.getID(e.getAnnouncementContra().getAnnouncement()));
 			dos.writeByte(e.getAnnouncementContra().getContraLevel());
 			dos.writeShort(e.getPoints());
 		}

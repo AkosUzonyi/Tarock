@@ -5,28 +5,29 @@ import com.tisza.tarock.game.*;
 public abstract class AnnouncementBase implements Announcement
 {
 	protected abstract Result isSuccessful(GameInstance gi, Team team);
-	protected abstract int getPoints(int winnerBid);
+	protected abstract int getPoints();
 	
 	public int calculatePoints(GameInstance gi, Team team)
 	{
 		Result r = isSuccessful(gi, team);
 		
+		PlayerPairs pp = gi.calling.getPlayerPairs();
+		
 		boolean isAnnounced = gi.announcing.isAnnounced(team, this);
 		int contraMultiplier = (int)Math.pow(2, isAnnounced ? gi.announcing.getContraLevel(team, this) : 0);
-		
-		PlayerPairs pp = gi.calling.getPlayerPairs();
 		int winnerBid = pp.isSolo() && !pp.isSoloIntentional() ? 0 : gi.bidding.getWinnerBid();
+		int winnerBidMultiplier = isMultipliedByWinnerBid() ? (4 - winnerBid) : 1;
 		
 		int points;
 		if (isAnnounced)
 		{
 			if (r == Result.SUCCESSFUL || r == Result.SUCCESSFUL_SILENT)
 			{
-				points = getPoints(winnerBid);
+				points = getPoints();
 			}
 			else if (r == Result.FAILED || r == Result.FAILED_SILENT)
 			{
-				points = -getPoints(winnerBid);
+				points = -getPoints();
 			}
 			else
 			{
@@ -37,11 +38,11 @@ public abstract class AnnouncementBase implements Announcement
 		{
 			if (r == Result.SUCCESSFUL_SILENT)
 			{
-				points = getPoints(winnerBid) / 2;
+				points = getPoints() / 2;
 			}
 			else if (r == Result.FAILED_SILENT)
 			{
-				points = -getPoints(winnerBid) / 2;
+				points = -getPoints() / 2;
 			}
 			else
 			{
@@ -50,18 +51,24 @@ public abstract class AnnouncementBase implements Announcement
 		}
 		
 		points *= contraMultiplier;
+		points *= winnerBidMultiplier;
 		
 		return points;
 	}
 	
-	public final int getID()
+	protected boolean isMultipliedByWinnerBid()
 	{
-		return Announcements.getID(this);
+		return false;
 	}
 	
 	public boolean canBeAnnounced(Announcing announcing, Team team)
 	{
-		return true;
+		return !announcing.isAnnounced(team, this);
+	}
+	
+	public Announcement getAnnouncementOverridden(Announcing announcing, Team team)
+	{
+		return null;
 	}
 	
 	public boolean isShownToUser()

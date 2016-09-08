@@ -63,7 +63,19 @@
     <string name="banda">banda</string>
     <string name="negykiraly">Négykirály</string>
     <string name="dupla">Dupla</string>
+    <string name="szinesites">Szinesítés</string>
+    <string name="volat">Volát</string>
     <string name="hosszuDupla">Hosszú dupla</string>
+    <string name="nyolctarokk">Nyolc tarokk</string>
+    <string name="kilenctarokk">Kilenc tarokk</string>
+    <string name="kiralyultimo">Színtelen király ultimó</string>
+    <string name="ketkiralyok">Kétkirályok játéka</string>
+    <string name="haromkiralyok">Háromkirályok játéka</string>
+    <string name="zaroparos">Zárópáros</string>
+    <string name="kisszincsalad">kisszíncsalád</string>
+    <string name="nagyszincsalad">nagyszíncsalád</string>
+    <string name="pagatfacan">Pagátfácán</string>
+    <string name="sasfacan">Sasfácán</string>
     
     <string name="round8">Ultimó</string>
     <string name="round7">Uhu</string>

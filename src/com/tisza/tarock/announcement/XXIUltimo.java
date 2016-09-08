@@ -24,13 +24,8 @@ public class XXIUltimo extends TakeRoundWithCard
 		return super.isSuccessful(gi, team);
 	}
 
-	public int getPoints(int winnerBid)
+	public int getPoints()
 	{
 		return getRoundIndex() == 8 ? 21 : (10 - getRoundIndex()) * 10;
-	}
-	
-	public boolean isShownToUser()
-	{
-		return false;
 	}
 }

@@ -276,12 +276,12 @@ public class GameSession implements Runnable
 	{
 		synchronized (connectionLock)
 		{
-			System.out.println("Player disconnected: " + playerNames.get(player));
 			if (playerIDToConnection.containsKey(player))
 			{
 				Connection c = playerIDToConnection.remove(player);
 				c.removePacketHandler(handlers.get(player));
 				c.closeRequest();
+				System.out.println("Player disconnected: " + playerNames.get(player));
 			}
 		}
 	}

@@ -9,6 +9,9 @@ public abstract class TakeCards extends AnnouncementBase
 {
 	TakeCards(){}
 	
+	protected abstract Collection<Card> getCardsToTake();
+	public abstract boolean canBeSilent();
+	
 	public Result isSuccessful(GameInstance gi, Team team)
 	{
 		List<Card> wonCards = new ArrayList<Card>();
@@ -21,7 +24,4 @@ public abstract class TakeCards extends AnnouncementBase
 		
 		return wonCards.containsAll(getCardsToTake()) ? (canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL) : Result.FAILED;
 	}
-	
-	public abstract boolean canBeSilent();
-	protected abstract Collection<Card> getCardsToTake();
 }

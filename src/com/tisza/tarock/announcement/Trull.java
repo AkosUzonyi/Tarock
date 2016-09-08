@@ -8,7 +8,12 @@ public class Trull extends TakeCards
 {
 	Trull(){}
 
-	public int getPoints(int winnerBid)
+	protected Collection<Card> getCardsToTake()
+	{
+		return Card.honors;
+	}
+
+	public int getPoints()
 	{
 		return 2;
 	}
@@ -16,10 +21,5 @@ public class Trull extends TakeCards
 	public boolean canBeSilent()
 	{
 		return true;
-	}
-
-	protected Collection<Card> getCardsToTake()
-	{
-		return Card.honors;
 	}
 }

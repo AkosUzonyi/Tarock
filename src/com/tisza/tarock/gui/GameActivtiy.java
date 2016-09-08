@@ -21,6 +21,7 @@ import com.tisza.tarock.net.packet.PacketAnnouncementStatistics.Entry;
 
 public class GameActivtiy extends Activity implements PacketHandler
 {
+	private static final int CARDS_PER_ROW = 6;
 	private int cardWidth;
 	
 	private TextView[] playerNameViews;
@@ -48,7 +49,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		ResourceMappings.init(this);
 			
-		cardWidth = getWindowManager().getDefaultDisplay().getWidth() / 6;
+		cardWidth = getWindowManager().getDefaultDisplay().getWidth() / CARDS_PER_ROW;
 		
 		final String host = getIntent().getStringExtra("host");
 		final int port = getIntent().getIntExtra("port", 8128);
@@ -364,6 +365,11 @@ public class GameActivtiy extends Activity implements PacketHandler
 			View cardView = cardToViewMapping.remove(card);
 			myCardsView0.removeView(cardView);
 			myCardsView1.removeView(cardView);
+			
+			if (myCards.getCards().size() == CARDS_PER_ROW)
+			{
+				arrangeCards();
+			}
 		}
 		
 		playedCardViews[pos].setImageResource(getBitmapResForCard(card));
@@ -508,8 +514,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		myCards.sort();
 		
-		int cardsUp = myCards.getCards().size() / 2;
-		for (int i = 0; i < myCards.getCards().size(); i++)
+		int cardCount = myCards.getCards().size();
+		int cardsUp = cardCount <= CARDS_PER_ROW ? 0 : cardCount / 2;
+		for (int i = 0; i < cardCount; i++)
 		{
 			final Card card = myCards.getCards().get(i);
 			
@@ -737,5 +744,27 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			conncection.closeRequest();
 		}
+	}
+
+	private boolean doubleBackToExitPressedOnce = false;
+
+	public void onBackPressed()
+	{
+		if (doubleBackToExitPressedOnce)
+		{
+			super.onBackPressed();
+			return;
+		}
+
+		this.doubleBackToExitPressedOnce = true;
+		Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+		new Handler().postDelayed(new Runnable()
+		{
+			public void run()
+			{
+				doubleBackToExitPressedOnce = false;
+			}
+		}, 2000);
 	}
 }

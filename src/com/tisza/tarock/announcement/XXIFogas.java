@@ -27,7 +27,7 @@ public class XXIFogas extends AnnouncementBase
 		return Result.FAILED;
 	}
 
-	public int getPoints(int winnerBid)
+	public int getPoints()
 	{
 		return 60;
 	}

@@ -8,16 +8,6 @@ public class Negykiraly extends TakeCards
 {
 	Negykiraly(){}
 
-	public int getPoints(int winnerBid)
-	{
-		return 2;
-	}
-
-	public boolean canBeSilent()
-	{
-		return true;
-	}
-
 	protected List<Card> getCardsToTake()
 	{
 		List<Card> result = new ArrayList<Card>();
@@ -26,5 +16,15 @@ public class Negykiraly extends TakeCards
 			result.add(new SuitCard(s, 5));
 		}
 		return result;
+	}
+
+	public int getPoints()
+	{
+		return 2;
+	}
+
+	public boolean canBeSilent()
+	{
+		return true;
 	}
 }

@@ -50,7 +50,9 @@ public class ResourceMappings
 			result += ResourceMappings.contraLevelToName.get(ac.getContraLevel());
 		}
 		
-		result += " ";
+		if (result.length() > 0)
+			result += " ";
+		
 		result += ResourceMappings.announcementToName.get(ac.getAnnouncement());
 		
 		return result;
@@ -134,18 +136,36 @@ public class ResourceMappings
 		announcementToName.put(Announcements.negykiraly, resources.getString(R.string.negykiraly));
 		announcementToName.put(Announcements.dupla, resources.getString(R.string.dupla));
 		announcementToName.put(Announcements.hosszuDupla, resources.getString(R.string.hosszuDupla));
+		announcementToName.put(Announcements.nyolctarokk, resources.getString(R.string.nyolctarokk));
+		announcementToName.put(Announcements.kilenctarokk, resources.getString(R.string.kilenctarokk));
+		announcementToName.put(Announcements.szinesites, resources.getString(R.string.szinesites));
+		announcementToName.put(Announcements.volat, resources.getString(R.string.volat));
 		announcementToName.put(Announcements.centrum, resources.getString(R.string.round4));
 		announcementToName.put(Announcements.kismadar, resources.getString(R.string.round5));
 		announcementToName.put(Announcements.nagymadar, resources.getString(R.string.round6));
-		for (int roundIndex : Announcements.ultimok.keySet())
+		announcementToName.put(Announcements.kings[0], resources.getString(R.string.kiralyultimo));
+		announcementToName.put(Announcements.kings[1], resources.getString(R.string.ketkiralyok));
+		announcementToName.put(Announcements.kings[2], resources.getString(R.string.haromkiralyok));
+		announcementToName.put(Announcements.zaroparos, resources.getString(R.string.zaroparos));
+		announcementToName.put(Announcements.pagatfacan, resources.getString(R.string.pagatfacan));
+		announcementToName.put(Announcements.sasfacan, resources.getString(R.string.sasfacan));
+		for (int i = 0; i < 4; i++)
 		{
-			Map<Card, TakeRoundWithCard> map = Announcements.ultimok.get(roundIndex);
-			for (Card card : map.keySet())
+			Szincsalad kisszincsalad = Announcements.kisszincsaladok[i];
+			Szincsalad nagyszincsalad = Announcements.nagyszincsaladok[i];
+			announcementToName.put(kisszincsalad, suitToName.get(i) + " " + resources.getString(R.string.kisszincsalad));
+			announcementToName.put(nagyszincsalad, suitToName.get(i) + " " + resources.getString(R.string.nagyszincsalad));
+		}
+		
+		for (Card card : Announcements.ultimok.keySet())
+		{
+			Map<Integer, TakeRoundWithCard> map = Announcements.ultimok.get(card);
+			for (int roundIndex : map.keySet())
 			{
 				String roundResName = "round" + roundIndex;
 				int roundResID = resources.getIdentifier(roundResName, "string", context.getPackageName());
 				String annName = cardToName.get(card) + " " + resources.getString(roundResID);
-				announcementToName.put(map.get(card), annName);
+				announcementToName.put(map.get(roundIndex), annName);
 			}
 		}
 		

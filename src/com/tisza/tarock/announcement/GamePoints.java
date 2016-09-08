@@ -8,12 +8,6 @@ abstract class GamePoints extends AnnouncementBase
 	GamePoints(){}
 	
 	protected abstract int getMinPointsRequired();
-	protected abstract int getDefaultPoints();
-
-	protected boolean canBeSilent()
-	{
-		return true;
-	}
 	
 	public Result isSuccessful(GameInstance gi, Team team)
 	{
@@ -34,8 +28,13 @@ abstract class GamePoints extends AnnouncementBase
 		return points >= getMinPointsRequired() ? (canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL) : Result.FAILED;
 	}
 	
-	public int getPoints(int winnerBid)
+	protected boolean isMultipliedByWinnerBid()
 	{
-		return getDefaultPoints() * (4 - winnerBid);
+		return true;
+	}
+
+	protected boolean canBeSilent()
+	{
+		return true;
 	}
 }

@@ -67,11 +67,10 @@ public class Calling
 			invitAccepted = invit;
 		}
 		
-		boolean isSoloIntentional = false;
+		boolean isSoloIntentional = calledPlayer == callerPlayer;
 		if (calledPlayer < 0)
 		{
 			calledPlayer = callerPlayer;
-			isSoloIntentional = true;
 		}
 		
 		playerPairs = new PlayerPairs(callerPlayer, calledPlayer, isSoloIntentional);
@@ -86,6 +85,17 @@ public class Calling
 		
 		List<Card> callOptions = new ArrayList<Card>();
 		
+		PlayerCards pc = cards.getPlayerCards(callerPlayer);
+		for (int t = 20; t >= 1; t--)
+		{
+			TarockCard c = new TarockCard(t);
+			if (!pc.hasCard(c))
+			{
+				callOptions.add(c);
+				break;
+			}
+		}
+		
 		if (canCallAnyTarock)
 		{
 			CardFilter cf = new CallableCardFilter();
@@ -97,17 +107,6 @@ public class Calling
 				}
 			}
 			return callOptions;
-		}
-		
-		PlayerCards pc = cards.getPlayerCards(callerPlayer);
-		for (int t = 20; t >= 1; t--)
-		{
-			TarockCard c = new TarockCard(t);
-			if (!pc.hasCard(c))
-			{
-				callOptions.add(c);
-				break;
-			}
 		}
 		
 		if (invit == Invitation.XIX)
@@ -129,6 +128,7 @@ public class Calling
 		}
 		
 		callOptions.addAll(pc.filter(new CallableCardFilter()));
+		
 		return callOptions;
 	}
 

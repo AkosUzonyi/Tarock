@@ -67,7 +67,14 @@ public class Announcing
 		idTrack.identityRevealed(player);
 		currentPlayerAnnounced = true;
 		
+		Announcement announcementOverridden = ac.getAnnouncement().getAnnouncementOverridden(this, team);
+		if  (announcementOverridden != null)
+		{
+			announcementContraLevels.get(team).put(announcementOverridden, -1);
+		}
+		
 		announcementContraLevels.get(ac.getNextTeamToContra(team)).put(ac.getAnnouncement(), ac.getContraLevel());
+		
 		return true;
 	}
 	

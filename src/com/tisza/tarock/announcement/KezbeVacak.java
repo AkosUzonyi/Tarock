@@ -3,7 +3,7 @@ package com.tisza.tarock.announcement;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-public abstract class KezbeVacak extends TakeRoundWithCard
+public class KezbeVacak extends TakeRoundWithCard
 {
 	KezbeVacak(int roundIndex, Card cardToTakeWith)
 	{
@@ -26,13 +26,28 @@ public abstract class KezbeVacak extends TakeRoundWithCard
 		return Result.SUCCESSFUL;
 	}
 	
+	public boolean canBeAnnounced(Announcing announcing, Team team)
+	{
+		return true;
+	}
+	
+	public Announcement getAnnouncementOverridden(Announcing announcing, Team team)
+	{
+		return null;
+	}
+	
 	public final boolean canBeSilent()
 	{
 		return false;
 	}
 
-	public int getPoints(int winnerBid)
+	public int getPoints()
 	{
 		return 10;
+	}
+	
+	public boolean isShownToUser()
+	{
+		return true;
 	}
 }

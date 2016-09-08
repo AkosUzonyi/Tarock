@@ -67,8 +67,8 @@ public class AnnouncementContra implements Comparable<AnnouncementContra>
 		if (contraLevel != o.contraLevel)
 			return o.contraLevel - contraLevel;
 		
-		int myAID = announcement.getID();
-		int oAID = o.announcement.getID();
+		int myAID = Announcements.getID(announcement);
+		int oAID = Announcements.getID(o.announcement);
 		if (myAID != oAID)
 			return myAID - oAID;
 		

@@ -15,21 +15,20 @@ import com.tisza.tarock.net.packet.*;
 @SuppressLint("UseSparseArrays")
 public class ResourceMappings
 {
-	public static final Map<Card, Integer> cardToImageResource = new HashMap<Card, Integer>();
+	public static Map<Card, Integer> cardToImageResource = new HashMap<Card, Integer>();
+	public static Map<PacketTurn.Type, String> turnAcitionToMessage = new HashMap<PacketTurn.Type, String>();
+	public static Map<Integer, String> bidToName = new HashMap<Integer, String>();
+	public static Map<Announcement, String> announcementToName = new HashMap<Announcement, String>();
 	
-	public static final Map<PacketTurn.Type, String> turnAcitionToMessage = new HashMap<PacketTurn.Type, String>();
+	public static String[] roundNames;
+	public static String[] contraNames;
+	public static String[] tarockNames;
+	public static String[] suitNames;
+	public static String[] suitcardValueNames;
+	public static Map<Card, String> cardToName = new HashMap<Card, String>();
 	
-	public static final Map<Integer, String> bidToName = new HashMap<Integer, String>();
-	
-	public static final Map<Announcement, String> announcementToName = new HashMap<Announcement, String>();
-	public static final Map<Integer, String> contraLevelToName = new HashMap<Integer, String>();
-	
-	public static final Map<Integer, String> suitToName = new HashMap<Integer, String>();
-	public static final Map<Integer, String> suitcardValueToName = new HashMap<Integer, String>();
-	public static final Map<Card, String> cardToName = new HashMap<Card, String>();
-	
-	public static final Map<AnnouncementBase.Result, Integer> announcementResultToImage = new HashMap<AnnouncementBase.Result, Integer>();
-	public static final Map<PacketLoginFailed.Reason, Integer> failureReasonToMessage = new HashMap<PacketLoginFailed.Reason, Integer>();
+	public static Map<AnnouncementBase.Result, Integer> announcementResultToImage = new HashMap<AnnouncementBase.Result, Integer>();
+	public static Map<PacketLoginFailed.Reason, Integer> failureReasonToMessage = new HashMap<PacketLoginFailed.Reason, Integer>();
 	
 	private static String silent;
 	private static String passz;
@@ -47,7 +46,7 @@ public class ResourceMappings
 		}
 		else
 		{
-			result += ResourceMappings.contraLevelToName.get(ac.getContraLevel());
+			result += ResourceMappings.contraNames[ac.getContraLevel()];
 		}
 		
 		if (result.length() > 0)
@@ -62,31 +61,25 @@ public class ResourceMappings
 	{
 		Resources resources = context.getResources();
 		
-		for (int s = 0; s < 4; s++)
-		{
-			int id = resources.getIdentifier("suits" + s, "string", context.getPackageName());
-			suitToName.put(s, resources.getString(id));
-		}
+		roundNames = resources.getStringArray(R.array.round_array);
+		contraNames = resources.getStringArray(R.array.contra_array);
+		tarockNames = resources.getStringArray(R.array.tarokk_array);
+		suitNames = resources.getStringArray(R.array.suit_array);
+		suitcardValueNames = resources.getStringArray(R.array.suitcard_value_array);
 		
-		for (int v = 1; v <= 5; v++)
-		{
-			int id = resources.getIdentifier("suitv" + v, "string", context.getPackageName());
-			suitcardValueToName.put(v, resources.getString(id));
-		}
-		
-		String[] suitNames = new String[]{"a", "b", "c", "d"};
-		String[] valueNames = new String[]{"1", "2", "3", "4", "5"};
+		String[] suitNamesInFile = new String[]{"a", "b", "c", "d"};
+		String[] valueNamesInFile = new String[]{"1", "2", "3", "4", "5"};
 		for (int s = 0; s < 4; s++)
 		{
 			for (int v = 0; v < 5; v++)
 			{
 				Card card = new SuitCard(s, v + 1);
-				String imaName = suitNames[s] + valueNames[v];
 				
-				int id = resources.getIdentifier(imaName, "drawable", context.getPackageName());
+				String imgName = suitNamesInFile[s] + valueNamesInFile[v];
+				int id = resources.getIdentifier(imgName, "drawable", context.getPackageName());
 				cardToImageResource.put(card, id);
 				
-				String name = suitToName.get(s) + " " + suitcardValueToName.get(v + 1);
+				String name = suitNames[s] + " " + suitcardValueNames[v];
 				cardToName.put(card, name);
 			}
 		}
@@ -94,13 +87,12 @@ public class ResourceMappings
 		for (int i = 1; i <= 22; i++)
 		{
 			Card card = new TarockCard(i);
-			String imgName = "t" + i;
 			
+			String imgName = "t" + i;
 			int drawableID = resources.getIdentifier(imgName, "drawable", context.getPackageName());
 			cardToImageResource.put(card, drawableID);
 			
-			int nameID = resources.getIdentifier(imgName, "string", context.getPackageName());
-			cardToName.put(card, resources.getString(nameID));
+			cardToName.put(card, tarockNames[i - 1]);
 		}
 		
 		announcementResultToImage.put(AnnouncementBase.Result.SUCCESSFUL, R.drawable.successful);
@@ -115,14 +107,7 @@ public class ResourceMappings
 			bidToName.put(i, resources.getString(id));
 		}
 		
-		for (int i = 0; i < 7; i++)
-		{
-			int id = resources.getIdentifier("contra" + i, "string", context.getPackageName());
-			contraLevelToName.put(i, resources.getString(id));
-		}
-		
 		silent = resources.getString(R.string.silent);
-		
 		passz = resources.getString(R.string.passz);
 		
 		announcementToName.put(Announcements.game, resources.getString(R.string.jatek));
@@ -131,7 +116,7 @@ public class ResourceMappings
 		for (int i = 0; i < 4; i++)
 		{
 			Banda banda = Announcements.bandak[i];
-			announcementToName.put(banda, suitToName.get(i) + " " + resources.getString(R.string.banda));
+			announcementToName.put(banda, suitNames[i] + " " + resources.getString(R.string.banda));
 		}
 		announcementToName.put(Announcements.negykiraly, resources.getString(R.string.negykiraly));
 		announcementToName.put(Announcements.dupla, resources.getString(R.string.dupla));
@@ -140,9 +125,9 @@ public class ResourceMappings
 		announcementToName.put(Announcements.kilenctarokk, resources.getString(R.string.kilenctarokk));
 		announcementToName.put(Announcements.szinesites, resources.getString(R.string.szinesites));
 		announcementToName.put(Announcements.volat, resources.getString(R.string.volat));
-		announcementToName.put(Announcements.centrum, resources.getString(R.string.round4));
-		announcementToName.put(Announcements.kismadar, resources.getString(R.string.round5));
-		announcementToName.put(Announcements.nagymadar, resources.getString(R.string.round6));
+		announcementToName.put(Announcements.centrum, roundNames[4]);
+		announcementToName.put(Announcements.kismadar, roundNames[5]);
+		announcementToName.put(Announcements.nagymadar, roundNames[6]);
 		announcementToName.put(Announcements.kings[0], resources.getString(R.string.kiralyultimo));
 		announcementToName.put(Announcements.kings[1], resources.getString(R.string.ketkiralyok));
 		announcementToName.put(Announcements.kings[2], resources.getString(R.string.haromkiralyok));
@@ -153,8 +138,8 @@ public class ResourceMappings
 		{
 			Szincsalad kisszincsalad = Announcements.kisszincsaladok[i];
 			Szincsalad nagyszincsalad = Announcements.nagyszincsaladok[i];
-			announcementToName.put(kisszincsalad, suitToName.get(i) + " " + resources.getString(R.string.kisszincsalad));
-			announcementToName.put(nagyszincsalad, suitToName.get(i) + " " + resources.getString(R.string.nagyszincsalad));
+			announcementToName.put(kisszincsalad, suitNames[i] + " " + resources.getString(R.string.kisszincsalad));
+			announcementToName.put(nagyszincsalad, suitNames[i] + " " + resources.getString(R.string.nagyszincsalad));
 		}
 		
 		for (Card card : Announcements.ultimok.keySet())
@@ -162,9 +147,7 @@ public class ResourceMappings
 			Map<Integer, Ultimo> map = Announcements.ultimok.get(card);
 			for (int roundIndex : map.keySet())
 			{
-				String roundResName = "round" + roundIndex;
-				int roundResID = resources.getIdentifier(roundResName, "string", context.getPackageName());
-				String annName = cardToName.get(card) + " " + resources.getString(roundResID);
+				String annName = cardToName.get(card) + " " + roundNames[roundIndex];
 				announcementToName.put(map.get(roundIndex), annName);
 			}
 		}

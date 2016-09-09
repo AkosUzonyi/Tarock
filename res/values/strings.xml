@@ -7,8 +7,6 @@
     <string name="connect">Connect</string>
     <string name="ip">IP address</string>
     <string name="port">Port number</string>
-    <string name="ok">OK</string>
-    <string name="throw_cards">Bedob</string>
     <string name="server_start">Start server</string>
     <string name="server_stop">Stop server</string>
     
@@ -17,6 +15,11 @@
     <string name="loginfail_server_full">A szerver tele van</string>
     <string name="loginfail_already_logged_in">Ez a játékos már bejelentkezett a játékba</string>
     <string name="loginfail_connection_error">Csatlakozási hiba</string>
+    
+    <string name="ok">OK</string>
+    <string name="throw_cards">Bedob</string>
+    <string name="switch_announcement_view">Másik nézet</string>
+    <string name="takeroundwithcard_announce">Bemond</string>
     
     <string name="turn_bid">Licitálás</string>
     <string name="turn_call">Hívás</string>
@@ -35,26 +38,77 @@
     <string name="bid0">Szóló</string>
     <string name="bid_passz">Passz</string>
     
-    <string name="suits0">Kőr</string>
-    <string name="suits1">Káró</string>
-    <string name="suits2">Pikk</string>
-    <string name="suits3">Treff</string>
+    <string-array name="suit_array">
+        <item>Kőr</item>
+        <item>Káró</item>
+        <item>Pikk</item>
+        <item>Treff</item>
+    </string-array>
     
-    <string name="suitv1">Ász</string>
-    <string name="suitv2">Botos</string>
-    <string name="suitv3">Lovas</string>
-    <string name="suitv4">Dáma</string>
-    <string name="suitv5">Király</string>
+    <string-array name="suitcard_value_array">
+        <item>Ász</item>
+        <item>Botos</item>
+        <item>Lovas</item>
+        <item>Dáma</item>
+        <item>Király</item>
+    </string-array>
+    
+    <string-array name="tarokk_array">
+	    <item>Pagát</item>
+	    <item>Sas</item>
+	    <item>Hármas tarokk</item>
+	    <item>Négyes tarokk</item>
+	    <item>Ötös tarokk</item>
+	    <item>Hatos tarokk</item>
+	    <item>Hetes tarokk</item>
+	    <item>Nyolcas tarokk</item>
+	    <item>Kilences tarokk</item>
+	    <item>Tizes tarokk</item>
+	    <item>Tizenegyes tarokk</item>
+	    <item>Tizenkettes tarokk</item>
+	    <item>Tizenhármas tarokk</item>
+	    <item>Tizennégyes tarokk</item>
+	    <item>Tizenötös tarokk</item>
+	    <item>Tizenhatos tarokk</item>
+	    <item>Tizenhetes tarokk</item>
+	    <item>Tizennyolcas tarokk</item>
+	    <item>Tizenkilences tarokk</item>
+	    <item>Huszas tarokk</item>
+	    <item>Huszonegy</item>
+	    <item>Skíz</item>
+    </string-array>
+    
+    <string-array name="ultimo_type_array">
+        <item>Tarokk</item>
+        <item>Kőr</item>
+        <item>Káró</item>
+        <item>Pikk</item>
+        <item>Treff</item>
+    </string-array>
+    
+    <string-array name="round_array">
+        <item>Fácán</item>
+        <item></item>
+        <item></item>
+        <item></item>
+        <item>Centrum</item>
+        <item>Kismadár</item>
+        <item>Nagymadár</item>
+        <item>Uhu</item>
+        <item>Ultimó</item>
+    </string-array>
+    
+    <string-array name="contra_array">
+        <item></item>
+        <item>Kontra</item>
+        <item>Rekontra</item>
+        <item>Szubkontra</item>
+        <item>Hirskontra</item>
+        <item>Mordkontra</item>
+        <item>Fedák Sári</item>
+    </string-array>
     
     <string name="silent">Csendes</string>
-    
-    <string name="contra0"></string>
-    <string name="contra1">Kontra</string>
-    <string name="contra2">Rekontra</string>
-    <string name="contra3">Szubkontra</string>
-    <string name="contra4">Hirskontra</string>
-    <string name="contra5">Mordkontra</string>
-    <string name="contra6">Fedák Sári</string>
     
     <string name="passz">Passz</string>
     <string name="jatek">Játék</string>
@@ -77,35 +131,7 @@
     <string name="pagatfacan">Pagátfácán</string>
     <string name="sasfacan">Sasfácán</string>
     
-    <string name="round8">Ultimó</string>
-    <string name="round7">Uhu</string>
-    <string name="round6">Nagymadár</string>
-    <string name="round5">Kismadár</string>
-    <string name="round4">Centrum</string>
-    <string name="round0">Fácán</string>
-    
-    <string name="t1">Pagát</string>
-    <string name="t2">Sas</string>
-    <string name="t3">Hármas tarokk</string>
-    <string name="t4">Négyes tarokk</string>
-    <string name="t5">Ötös tarokk</string>
-    <string name="t6">Hatos tarokk</string>
-    <string name="t7">Hetes tarokk</string>
-    <string name="t8">Nyolcas tarokk</string>
-    <string name="t9">Kilences tarokk</string>
-    <string name="t10">Tizes tarokk</string>
-    <string name="t11">Tizenegyes tarokk</string>
-    <string name="t12">Tizenkettes tarokk</string>
-    <string name="t13">Tizenhármas tarokk</string>
-    <string name="t14">Tizennégyes tarokk</string>
-    <string name="t15">Tizenötös tarokk</string>
-    <string name="t16">Tizenhatos tarokk</string>
-    <string name="t17">Tizenhetes tarokk</string>
-    <string name="t18">Tizennyolcas tarokk</string>
-    <string name="t19">Tizenkilences tarokk</string>
-    <string name="t20">Huszas tarokk</string>
-    <string name="t21">Huszonegy</string>
-    <string name="t22">Skíz</string>
+    <string name="tarock">Tarokk</string>
     
     <string name="statictics_self">Saját figurák</string>
     <string name="statictics_opponent">Ellenfél figurái</string>

@@ -119,7 +119,7 @@ public class Announcing
 					if (a.canContra())
 					{
 						AnnouncementContra ac = new AnnouncementContra(a, getContraLevel(t, a) + 1);
-						if (ac.getNextTeamToContra(t) == currentPlayerTeam)
+						if (ac.getContraLevel() < 7 && ac.getNextTeamToContra(t) == currentPlayerTeam)
 						{
 							result.add(ac);
 						}

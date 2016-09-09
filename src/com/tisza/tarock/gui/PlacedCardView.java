@@ -19,22 +19,6 @@ public class PlacedCardView extends ImageView
 		lp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 		setLayoutParams(lp);
 	}
-
-	public PlacedCardView(Context context, AttributeSet attrs)
-	{
-		super(context, attrs);
-		
-		TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.PlacedCardView, 0, 0);
-		
-		try
-		{
-			orientation = a.getInteger(R.styleable.PlacedCardView_orientation, 0);
-		}
-		finally
-		{
-			a.recycle();
-		}
-	}
 	
 	protected void onSizeChanged(int w, int h, int oldw, int oldh)
 	{

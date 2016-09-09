@@ -13,6 +13,7 @@ import android.view.animation.*;
 import android.widget.*;
 
 import com.tisza.tarock.*;
+import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
@@ -317,6 +318,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 		for (final AnnouncementContra ac : announcements)
 		{
 			//if (!ac.getAnnouncement().isShownToUser()) continue;
+			//TODO: debug
+			if (ac.getAnnouncement() instanceof Szinultimo) continue;
 			
 			Button announceButton = new Button(this);
 			announceButton.setText(ResourceMappings.getAnnouncementContraContraName(ac));
@@ -460,7 +463,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 						}
 						canPlaceCard = true;
 					}
-				}, 1300);
+				}, 400);
 			}
 		}
 	}
@@ -765,6 +768,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 			{
 				doubleBackToExitPressedOnce = false;
 			}
-		}, 2000);
+		}, 1000);
 	}
 }

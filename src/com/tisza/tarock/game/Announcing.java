@@ -36,7 +36,12 @@ public class Announcing
 			announcementContraLevels.put(team, map);
 		}
 		
-		announce(playerPairs.getCaller(), new AnnouncementContra(Announcements.game, 0));
+		announce(playerPairs.getCaller(), Announcements.game);
+	}
+
+	public boolean announce(int player, Announcement a)
+	{
+		return announce(player, new AnnouncementContra(a, 0));
 	}
 
 	public boolean announce(int player, AnnouncementContra ac)
@@ -67,15 +72,15 @@ public class Announcing
 		idTrack.identityRevealed(player);
 		currentPlayerAnnounced = true;
 		
-		Announcement announcementOverridden = ac.getAnnouncement().getAnnouncementOverridden(this, team);
-		if  (announcementOverridden != null)
-		{
-			announcementContraLevels.get(team).put(announcementOverridden, -1);
-		}
-		
 		announcementContraLevels.get(ac.getNextTeamToContra(team)).put(ac.getAnnouncement(), ac.getContraLevel());
+		ac.getAnnouncement().onAnnounce(this, team);
 		
 		return true;
+	}
+	
+	public void clearAnnouncement(Team team, Announcement announcement)
+	{
+		announcementContraLevels.get(team).put(announcement, -1);
 	}
 	
 	private boolean requireContra()
@@ -111,10 +116,13 @@ public class Announcing
 			{
 				if (isAnnounced(t, a))
 				{
-					AnnouncementContra ac = new AnnouncementContra(a, getContraLevel(t, a) + 1);
-					if (ac.getNextTeamToContra(t) == currentPlayerTeam)
+					if (a.canContra())
 					{
-						result.add(ac);
+						AnnouncementContra ac = new AnnouncementContra(a, getContraLevel(t, a) + 1);
+						if (ac.getNextTeamToContra(t) == currentPlayerTeam)
+						{
+							result.add(ac);
+						}
 					}
 				}
 				else

@@ -60,17 +60,12 @@ public class Kings extends AnnouncementBase
 		return super.canBeAnnounced(announcing, team);
 	}
 	
-	public Announcement getAnnouncementOverridden(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing, Team team)
 	{
 		for (int i = 1; i < count; i++)
 		{
-			if (announcing.isAnnounced(team, Announcements.kings[i - 1]))
-			{
-				return Announcements.kings[i - 1];
-			}
+			announcing.clearAnnouncement(team, Announcements.kings[i - 1]);
 		}
-		
-		return null;
 	}
 
 	protected int getPoints()

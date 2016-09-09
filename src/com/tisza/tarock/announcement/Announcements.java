@@ -10,13 +10,12 @@ public class Announcements
 	
 	public static final Jatek game = new Jatek();
 	public static final Trull trull = new Trull();
-	public static final XXIFogas xxiFogas = new XXIFogas();
 	public static final Banda[] bandak = new Banda[4];
 	public static final Negykiraly negykiraly = new Negykiraly();
-	public static final Dupla dupla = new Dupla();
-	public static final HosszuDupla hosszuDupla = new HosszuDupla();
 	public static final TarockCount nyolctarokk = new TarockCount(8);
 	public static final TarockCount kilenctarokk = new TarockCount(9);
+	public static final Dupla dupla = new Dupla();
+	public static final HosszuDupla hosszuDupla = new HosszuDupla();
 	public static final KezbeVacak centrum = new KezbeVacak(4, new TarockCard(20));
 	public static final KezbeVacak kismadar = new KezbeVacak(5, new TarockCard(21));
 	public static final KezbeVacak nagymadar = new KezbeVacak(6, new TarockCard(22));
@@ -28,7 +27,8 @@ public class Announcements
 	public static final Szincsalad[] nagyszincsaladok = new Szincsalad[4];
 	public static final Facan pagatfacan = new Facan(new TarockCard(1));
 	public static final Facan sasfacan = new Facan(new TarockCard(2));
-	public static final Map<Card, Map<Integer, TakeRoundWithCard>> ultimok = new HashMap<Card, Map<Integer, TakeRoundWithCard>>();
+	public static final XXIFogas xxiFogas = new XXIFogas();
+	public static final Map<Card, Map<Integer, Ultimo>> ultimok = new HashMap<Card, Map<Integer, Ultimo>>();
 	
 	public static Collection<Announcement> getAll()
 	{
@@ -49,17 +49,16 @@ public class Announcements
 	{
 		all.add(game);
 		all.add(trull);
-		all.add(xxiFogas);
 		for (int s = 0; s < 4; s++)
 		{
 			bandak[s] = new Banda(s);
 			all.add(bandak[s]);
 		}
 		all.add(negykiraly);
-		all.add(dupla);
-		all.add(hosszuDupla);
 		all.add(nyolctarokk);
 		all.add(kilenctarokk);
+		all.add(dupla);
+		all.add(hosszuDupla);
 		all.add(centrum);
 		all.add(kismadar);
 		all.add(nagymadar);
@@ -72,6 +71,7 @@ public class Announcements
 		all.add(kings[1]);
 		kings[2] = new Kings(3);
 		all.add(kings[2]);
+		all.add(xxiFogas);
 		
 		for (boolean big : new boolean[]{false, true})
 		{
@@ -91,10 +91,10 @@ public class Announcements
 			for (int v = 1; v <= 5; v++)
 			{
 				SuitCard card = new SuitCard(s, v);
-				ultimok.put(card, new HashMap<Integer, TakeRoundWithCard>());
+				ultimok.put(card, new HashMap<Integer, Ultimo>());
 				for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
 				{
-					TakeRoundWithCard announcement = new TakeRoundWithSuitCard(roundIndex, card);
+					Ultimo announcement = new Szinultimo(roundIndex, card);
 					ultimok.get(card).put(roundIndex, announcement);
 					all.add(announcement);
 				}
@@ -104,10 +104,10 @@ public class Announcements
 		for (int t = 1; t <= 2; t++)
 		{
 			TarockCard card = new TarockCard(t);
-			ultimok.put(card, new HashMap<Integer, TakeRoundWithCard>());
+			ultimok.put(card, new HashMap<Integer, Ultimo>());
 			for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
 			{
-				TakeRoundWithCard announcement = new TakeRoundWithTarock(roundIndex, card);
+				Ultimo announcement = new PagatSasUltimo(roundIndex, card);
 				ultimok.get(card).put(roundIndex, announcement);
 				all.add(announcement);
 			}
@@ -115,10 +115,10 @@ public class Announcements
 		
 		{
 			Card card = new TarockCard(21);
-			ultimok.put(card, new HashMap<Integer, TakeRoundWithCard>());
+			ultimok.put(card, new HashMap<Integer, Ultimo>());
 			for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
 			{
-				TakeRoundWithCard announcement = new XXIUltimo(roundIndex);
+				Ultimo announcement = new XXIUltimo(roundIndex);
 				ultimok.get(card).put(roundIndex, announcement);
 				all.add(announcement);
 			}

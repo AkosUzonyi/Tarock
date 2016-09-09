@@ -159,7 +159,7 @@ public class ResourceMappings
 		
 		for (Card card : Announcements.ultimok.keySet())
 		{
-			Map<Integer, TakeRoundWithCard> map = Announcements.ultimok.get(card);
+			Map<Integer, Ultimo> map = Announcements.ultimok.get(card);
 			for (int roundIndex : map.keySet())
 			{
 				String roundResName = "round" + roundIndex;

@@ -6,12 +6,6 @@ public class Dupla extends GamePoints
 {
 	public boolean canBeAnnounced(Announcing announcing, Team team)
 	{
-		if (announcing.isAnnounced(team, Announcements.dupla))
-			return false;
-		
-		if (announcing.isAnnounced(team, Announcements.hosszuDupla))
-			return false;
-		
 		if (announcing.isAnnounced(team, Announcements.volat))
 			return false;
 		

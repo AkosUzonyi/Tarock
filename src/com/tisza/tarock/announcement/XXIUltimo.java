@@ -3,7 +3,7 @@ package com.tisza.tarock.announcement;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-public class XXIUltimo extends TakeRoundWithCard
+public class XXIUltimo extends Ultimo
 {
 	XXIUltimo(int roundIndex)
 	{

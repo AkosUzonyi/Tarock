@@ -1,22 +1,33 @@
 package com.tisza.tarock.announcement;
 
-import java.util.*;
-
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-public class TakeRoundWithTarock extends TakeRoundWithCard
+public class PagatSasUltimo extends Ultimo
 {
-	private static final List<Card> cardsRequiresTarockCount = new ArrayList<Card>();
-	
-	TakeRoundWithTarock(int roundIndex, TarockCard cardToTakeWith)
+	PagatSasUltimo(int roundIndex, TarockCard cardToTakeWith)
 	{
 		super(roundIndex, cardToTakeWith);
 	}
 	
+	public Result isSuccessful(GameInstance gi, Team team)
+	{
+		Result zaroparosSuccessful = Announcements.zaroparos.isSuccessful(gi, team);
+		
+		if (zaroparosSuccessful == Result.SUCCESSFUL)
+		{
+			return Result.FAILED;
+		}
+		
+		return super.isSuccessful(gi, team);
+	}
+	
 	public boolean canBeAnnounced(Announcing announcing, Team team)
 	{
-		if (cardsRequiresTarockCount.contains(getCardToTakeWith()) && getRoundIndex() == 8)
+		if (announcing.isAnnounced(team, Announcements.zaroparos))
+			return false;
+		
+		if (getRoundIndex() == 8)
 		{
 			for (TarockCount tc : new TarockCount[]{Announcements.nyolctarokk, Announcements.kilenctarokk})
 			{
@@ -38,11 +49,5 @@ public class TakeRoundWithTarock extends TakeRoundWithCard
 	public boolean canBeSilent()
 	{
 		return getRoundIndex() == 8;
-	}
-	
-	static
-	{
-		cardsRequiresTarockCount.add(new TarockCard(1));
-		cardsRequiresTarockCount.add(new TarockCard(2));
 	}
 }

@@ -66,9 +66,13 @@ public abstract class AnnouncementBase implements Announcement
 		return !announcing.isAnnounced(team, this);
 	}
 	
-	public Announcement getAnnouncementOverridden(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing, Team team)
 	{
-		return null;
+	}
+	
+	public boolean canContra()
+	{
+		return true;
 	}
 	
 	public boolean isShownToUser()

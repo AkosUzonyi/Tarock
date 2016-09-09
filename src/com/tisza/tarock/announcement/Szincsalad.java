@@ -57,13 +57,12 @@ public class Szincsalad extends AnnouncementBase
 		return super.canBeAnnounced(announcing, team);
 	}
 	
-	public Announcement getAnnouncementOverridden(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing, Team team)
 	{
-		Announcement smallPair = Announcements.kisszincsaladok[suit];
-		if (big && announcing.isAnnounced(team, smallPair))
-			return smallPair;
-		
-		return null;
+		if (big)
+		{
+			announcing.clearAnnouncement(team, Announcements.kisszincsaladok[suit]);
+		}
 	}
 
 	protected int getPoints()

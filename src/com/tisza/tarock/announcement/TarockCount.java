@@ -27,9 +27,13 @@ public class TarockCount implements Announcement
 		return cards.filter(new TarockFilter()).size() == count;
 	}
 
-	public Announcement getAnnouncementOverridden(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing, Team team)
 	{
-		return null;
+	}
+	
+	public boolean canContra()
+	{
+		return false;
 	}
 
 	public boolean isShownToUser()

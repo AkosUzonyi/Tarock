@@ -2,11 +2,11 @@ package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.*;
 
-public class TakeRoundWithSuitCard extends TakeRoundWithCard
+public class Szinultimo extends Ultimo
 {
 	private boolean isKing;
 	
-	TakeRoundWithSuitCard(int roundIndex, SuitCard cardToTakeWith)
+	Szinultimo(int roundIndex, SuitCard cardToTakeWith)
 	{
 		super(roundIndex, cardToTakeWith);
 		isKing = cardToTakeWith.getValue() == 5;

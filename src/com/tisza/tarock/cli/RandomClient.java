@@ -73,7 +73,7 @@ public class RandomClient implements PacketHandler
 				{
 					try
 					{
-						Thread.sleep(1500);
+						Thread.sleep(300);
 					}
 					catch (InterruptedException e)
 					{

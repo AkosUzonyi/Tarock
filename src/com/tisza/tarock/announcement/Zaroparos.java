@@ -1,7 +1,5 @@
 package com.tisza.tarock.announcement;
 
-import java.util.*;
-
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
@@ -48,9 +46,16 @@ public class Zaroparos extends AnnouncementBase
 		return super.canBeAnnounced(announcing, team);
 	}
 	
-	public Announcement getAnnouncementOverridden(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing, Team team)
 	{
-		return null;
+		for (int t = 1; t <= 2; t++)
+		{
+			for (int ri = 8; ri > 6; ri--)
+			{
+				Announcement ultimo = Announcements.ultimok.get(new TarockCard(t)).get(ri);
+				announcing.clearAnnouncement(team, ultimo);
+			}
+		}
 	}
 
 	protected int getPoints()

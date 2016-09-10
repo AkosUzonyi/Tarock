@@ -1,6 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:id="@+id/messages_view"
 	>
 	
 	<LinearLayout
@@ -28,7 +29,7 @@
 				>
 		
 				<TextView
-					android:id="@+id/messages"
+					android:id="@+id/messages_text_view"
 					android:layout_width="match_parent"
 					android:layout_height="match_parent"
 					android:layout_weight="1.0"
@@ -91,32 +92,42 @@
 					android:id="@+id/ultimo_back_buton"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/button_margin"
 					android:text="@string/back"
+				    style="@style/button"
 					/>
 				<Spinner
 					android:id="@+id/ultimo_type_spinner"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/button_margin"
 					android:entries="@array/ultimo_type_array"
+				    style="@style/spinner"
 					/>
 				<Spinner
 					android:id="@+id/ultimo_suitvalue_spinner"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
 					android:visibility="gone"
+					android:layout_marginTop="@dimen/button_margin"
 					android:entries="@array/ultimo_suit_array"
+				    style="@style/spinner"
 					/>
 				<Spinner
 					android:id="@+id/ultimo_round_spinner"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/button_margin"
 					android:entries="@array/ultimo_round_array"
+				    style="@style/spinner"
 					/>
 				<Button
 					android:id="@+id/ultimo_announce_button"
 					android:layout_width="match_parent"
 					android:layout_height="wrap_content"
+					android:layout_marginTop="@dimen/button_margin"
 					android:text="@string/announce"
+				    style="@style/button"
 					/>
 						
 		</LinearLayout>

@@ -5,6 +5,7 @@ import java.net.*;
 import java.util.*;
 
 import android.app.*;
+import android.content.*;
 import android.graphics.*;
 import android.os.*;
 import android.view.*;
@@ -25,7 +26,10 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private static final int CARDS_PER_ROW = 6;
 	private int cardWidth;
 	
+	private LayoutInflater layoutInflater;
+	
 	private TextView[] playerNameViews;
+	private LinearLayout myCardsView;
 	private LinearLayout myCardsView0;
 	private LinearLayout myCardsView1;
 	private FrameLayout centerSpace;
@@ -33,7 +37,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private Button throwButton;
 	
 	private View messagesView;
-	private Button switchViewButton;
 	private View messagesDefaultView;
 	private View messagesUltimoView;
 	private ScrollView messagesScrollView;
@@ -60,6 +63,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 		ResourceMappings.init(this);
 			
 		cardWidth = getWindowManager().getDefaultDisplay().getWidth() / CARDS_PER_ROW;
+		
+		layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
 		final String host = getIntent().getStringExtra("host");
 		final int port = getIntent().getIntExtra("port", 8128);
@@ -115,23 +120,25 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void inflateGameViews()
 	{
-		View game = View.inflate(this, R.layout.game, null);
+		View game = layoutInflater.inflate(R.layout.game, null);
+		setContentView(game);
 		
-		centerSpace = (FrameLayout)game.findViewById(R.id.center_space);
+		centerSpace = (FrameLayout)findViewById(R.id.center_space);
 		
 		playerNameViews = new TextView[]
 		{
 				null,
-				(TextView)game.findViewById(R.id.playername_1),
-				(TextView)game.findViewById(R.id.playername_2),
-				(TextView)game.findViewById(R.id.playername_3),
+				(TextView)findViewById(R.id.playername_1),
+				(TextView)findViewById(R.id.playername_2),
+				(TextView)findViewById(R.id.playername_3),
 		};
 		
-		myCardsView0 = (LinearLayout)game.findViewById(R.id.my_cards_0);
-		myCardsView1 = (LinearLayout)game.findViewById(R.id.my_cards_1);
+		myCardsView = (LinearLayout)findViewById(R.id.my_cards);
+		myCardsView0 = (LinearLayout)findViewById(R.id.my_cards_0);
+		myCardsView1 = (LinearLayout)findViewById(R.id.my_cards_1);
 		
-		okButton = (Button)game.findViewById(R.id.ok_button);
-		throwButton = (Button)game.findViewById(R.id.throw_button);
+		okButton = (Button)findViewById(R.id.ok_button);
+		throwButton = (Button)findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(new OnClickListener()
 		{
 			public void onClick(View v)
@@ -140,18 +147,19 @@ public class GameActivtiy extends Activity implements PacketHandler
 			}
 		});
 		
-		messagesView = View.inflate(this, R.layout.messages, null);
-		messagesDefaultView = messagesView.findViewById(R.id.messages_default_view);
-		messagesScrollView = (ScrollView)messagesView.findViewById(R.id.messages_scroll);
-		messagesTextView = (TextView)messagesView.findViewById(R.id.messages);
-		availabeActionsView = (LinearLayout)messagesView.findViewById(R.id.available_actions);
+		layoutInflater.inflate(R.layout.messages, centerSpace);
+		messagesView = findViewById(R.id.messages_view);
+		messagesDefaultView = findViewById(R.id.messages_default_view);
+		messagesScrollView = (ScrollView)findViewById(R.id.messages_scroll);
+		messagesTextView = (TextView)findViewById(R.id.messages_text_view);
+		availabeActionsView = (LinearLayout)findViewById(R.id.available_actions);
 		
-		messagesUltimoView = messagesView.findViewById(R.id.messages_ultimo_view);
-		ultimoBackButton = (Button)messagesView.findViewById(R.id.ultimo_back_buton);
-		ultimoTypeSpinner = (Spinner)messagesView.findViewById(R.id.ultimo_type_spinner);
-		ultimoSuitvalueSpinner = (Spinner)messagesView.findViewById(R.id.ultimo_suitvalue_spinner);
-		ultimoRoundSpinner = (Spinner)messagesView.findViewById(R.id.ultimo_round_spinner);
-		announceButton = (Button)messagesView.findViewById(R.id.ultimo_announce_button);
+		messagesUltimoView = findViewById(R.id.messages_ultimo_view);
+		ultimoBackButton = (Button)findViewById(R.id.ultimo_back_buton);
+		ultimoTypeSpinner = (Spinner)findViewById(R.id.ultimo_type_spinner);
+		ultimoSuitvalueSpinner = (Spinner)findViewById(R.id.ultimo_suitvalue_spinner);
+		ultimoRoundSpinner = (Spinner)findViewById(R.id.ultimo_round_spinner);
+		announceButton = (Button)findViewById(R.id.ultimo_announce_button);
 		
 		ultimoBackButton.setOnClickListener(new OnClickListener()
 		{
@@ -212,8 +220,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 			}
 		});
 		
-		centerSpace.addView(messagesView);
-		
 		playedCardsView = new RelativeLayout(this);
 		playedCardsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 		playedCardViews = new PlacedCardView[4];
@@ -224,11 +230,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 		}
 		centerSpace.addView(playedCardsView);
 		
-		statisticsView = (LinearLayout)View.inflate(this, R.layout.statistics, null);
+		layoutInflater.inflate(R.layout.statistics, centerSpace);
+		statisticsView = (LinearLayout)findViewById(R.id.statistics_view);
 		statisticsLinearLayout = (LinearLayout)statisticsView.findViewById(R.id.statistics_entries_list);
-		centerSpace.addView(statisticsView);
-		
-		setContentView(game);
 	}
 	
 	private ArrayAdapter<CharSequence> createAdapterForSpinner(int arrayResID)
@@ -307,8 +311,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 		availabeActionsView.removeAllViews();
 		for (final int bid : bids)
 		{
-			Button bidButton = new Button(this);
+			Button bidButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			bidButton.setText(ResourceMappings.bidToName.get(bid));
+			
 			bidButton.setOnClickListener(new OnClickListener()
 			{
 				public void onClick(View v)
@@ -382,7 +387,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		availabeActionsView.removeAllViews();
 		for (final Card card : calls)
 		{
-			Button callButton = new Button(this);
+			Button callButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			callButton.setText(ResourceMappings.cardToName.get(card));
 			callButton.setOnClickListener(new OnClickListener()
 			{
@@ -413,7 +418,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		Collections.sort(announcements);
 		availabeActionsView.removeAllViews();
 		
-		Button ultimoButton = new Button(this);
+		Button ultimoButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 		ultimoButton.setText(ResourceMappings.roundNames[8]);
 		ultimoButton.setOnClickListener(new OnClickListener()
 		{
@@ -426,9 +431,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		for (final AnnouncementContra ac : announcements)
 		{
-			if (!ac.getAnnouncement().isShownToUser()) continue;
+			if (ac.getContraLevel() == 0 && !ac.getAnnouncement().isShownToUser()) continue;
 			
-			Button announceButton = new Button(this);
+			Button announceButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			announceButton.setText(ResourceMappings.getAnnouncementContraContraName(ac));
 			announceButton.setOnClickListener(new OnClickListener()
 			{
@@ -493,7 +498,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	{
 		int pos = getPositionFromPlayerID(player);
 		
-		myCardsView0.setBackgroundColor(Color.TRANSPARENT);
+		myCardsView.setBackgroundResource(R.drawable.cards);
 		for (TextView nameView : playerNameViews)
 		{
 			if (nameView == null) continue;
@@ -502,7 +507,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		if (pos == 0)
 		{
-			myCardsView0.setBackgroundColor(Color.MAGENTA);
+			myCardsView.setBackgroundResource(R.drawable.cards_highlight);
 		}
 		else
 		{
@@ -511,7 +516,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 				if (nameView == null) continue;
 				nameView.setBackgroundColor(Color.TRANSPARENT);
 			}
-			playerNameViews[pos].setBackgroundColor(Color.MAGENTA);
+			playerNameViews[pos].setBackgroundResource(R.drawable.name_highlight);
 		}
 
 		
@@ -593,7 +598,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void appendHeaderToStatistics(int res0, int res1)
 	{
-		View headerView = View.inflate(this, R.layout.statistics_header, null);
+		View headerView = layoutInflater.inflate(R.layout.statistics_header, statisticsLinearLayout, false);
 		TextView nameView = (TextView)headerView.findViewById(R.id.statistics_announcement_name);
 		TextView pointsView = (TextView)headerView.findViewById(R.id.statistics_announcement_points);
 		
@@ -607,7 +612,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	{
 		for (PacketAnnouncementStatistics.Entry entry : entries)
 		{
-			View entryView = View.inflate(this, R.layout.statistics_entry, null);
+			View entryView = layoutInflater.inflate(R.layout.statistics_entry, statisticsLinearLayout, false);
 			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
 			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_announcement_points);
 			
@@ -654,7 +659,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 						{
 							cardsToSkart.add(card);
 							selectedForSkart = true;
-							Animation a = new TranslateAnimation(0, 0, 0, -30);
+							Animation a = new TranslateAnimation(0, 0, 0, -v.getHeight() / 5);
 							a.setDuration(300);
 							a.setFillAfter(true);
 							v.startAnimation(a);
@@ -663,7 +668,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 						{
 							cardsToSkart.remove(card);
 							selectedForSkart = false;
-							Animation a = new TranslateAnimation(0, 0, -30, 0);
+							Animation a = new TranslateAnimation(0, 0, -v.getHeight() / 5, 0);
 							a.setDuration(300);
 							a.setFillAfter(true);
 							v.startAnimation(a);

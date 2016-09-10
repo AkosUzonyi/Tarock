@@ -11,6 +11,7 @@ import android.os.*;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.animation.*;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.*;
 
 import com.tisza.tarock.*;
@@ -23,6 +24,7 @@ import com.tisza.tarock.net.packet.PacketAnnouncementStatistics.Entry;
 
 public class GameActivtiy extends Activity implements PacketHandler
 {
+	private static final int DELAY = 1600;
 	private static final int CARDS_PER_ROW = 6;
 	private int cardWidth;
 	
@@ -260,14 +262,15 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private List<String> playerNames;
 	private PlayerCards myCards;
 	private int myID = -1;
-	private int cardsPlayed = 0;
 	private Map<Card, View> cardToViewMapping = new HashMap<Card, View>();
 	
 	private String messages;
 	
 	private List<Card> cardsToSkart = new ArrayList<Card>();
 	private boolean skarting = false;
-	private boolean canPlaceCard = false;
+	
+	private Round currentRound = null;
+	private boolean isPlayedCardsAnimating = false;
 	
 	private void onStartGame(List<String> playerNames, int myID)
 	{
@@ -340,6 +343,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onGotCardsFromTalon(List<Card> cards)
 	{
+		higlightAllName();
+		
 		myCards.getCards().addAll(cards);
 		throwButton.setVisibility(myCards.canBeThrown(true) ? View.VISIBLE : View.GONE);
 		skarting = true;
@@ -354,13 +359,17 @@ public class GameActivtiy extends Activity implements PacketHandler
 		});
 	}
 	
-	private void onSkartAccepted()
+	private void onSkartDone(int player)
 	{
-		okButton.setOnClickListener(null);
-		myCards.getCards().removeAll(cardsToSkart);
-		cardsToSkart.clear();
-		skarting = false;
-		arrangeCards();
+		setHiglighted(player, false);
+		if (player == myID)
+		{
+			okButton.setOnClickListener(null);
+			myCards.getCards().removeAll(cardsToSkart);
+			cardsToSkart.clear();
+			skarting = false;
+			arrangeCards();
+		}
 	}
 	
 	private void onSkartTarock(int[] counts)
@@ -491,100 +500,123 @@ public class GameActivtiy extends Activity implements PacketHandler
 		playedCardViews[pos].setImageResource(getBitmapResForCard(card));
 		playedCardViews[pos].bringToFront();
 		
-		cardsPlayed++;
+		currentRound.placeCard(card);
+		
+		if (currentRound.isFinished())
+		{
+			final int winnerPlayer = currentRound.getWinner();
+			currentRound = null;
+			isPlayedCardsAnimating = true;
+			new Handler().postDelayed(new Runnable()
+			{
+				public void run()
+				{
+					for (PlacedCardView v : playedCardViews)
+					{
+						v.setImageBitmap(null);
+						isPlayedCardsAnimating = false;
+					}
+					//animateCards(winnerPlayer);
+				}
+			}, DELAY);
+		}
+	}
+	
+	private void animateCards(int winnerPlayer)
+	{
+		final int winnerDir = getPositionFromPlayerID(winnerPlayer);
+		
+		for (int p = 0; p < 4; p++)
+		{
+			final int cardPlayer = p;
+			final int cardDir = getPositionFromPlayerID(cardPlayer);
+			final PlacedCardView cardView = playedCardViews[cardDir];
+			
+			final Animation currentAnim = cardView.getAnimation();
+			currentAnim.setInterpolator(ReverseInterpolator.instance);
+			currentAnim.setFillBefore(true);
+			currentAnim.setFillAfter(false);
+			
+			float tx = 0;
+			float ty = 0;
+			if (winnerDir == 0)
+			{
+				ty = playedCardsView.getHeight() / 2;
+			}
+			else if (winnerDir == 1)
+			{
+				tx = playedCardsView.getWidth() / 2;
+			}
+			else if (winnerDir == 2)
+			{
+				ty = -playedCardsView.getHeight() / 2;
+			}
+			else if (winnerDir == 3)
+			{
+				tx = -playedCardsView.getWidth() / 2;
+			}
+			
+			Animation takeAnim = new TranslateAnimation(0, tx, 0, ty);
+			takeAnim.setFillAfter(true);
+			
+			AnimationSet animSet = new AnimationSet(false);
+			animSet.addAnimation(currentAnim);
+			animSet.addAnimation(takeAnim);
+			animSet.setDuration(4000);
+			cardView.startAnimation(animSet);
+			//centerSpace.postInvalidateDelayed(1000);
+			
+			animSet.setAnimationListener(new AnimationListener()
+			{
+				public void onAnimationStart(Animation animation)
+				{
+				}
+				
+				public void onAnimationRepeat(Animation animation)
+				{
+				}
+				
+				public void onAnimationEnd(Animation animation)
+				{
+					Card currentCard = null;
+					
+					if (currentRound != null)
+					{
+						currentCard = currentRound.getCards().get(cardPlayer);
+					}
+					
+					if (currentCard != null)
+					{
+						cardView.setImageResource(getBitmapResForCard(currentCard));
+					}
+					
+					currentAnim.setInterpolator(new LinearInterpolator());
+					
+					isPlayedCardsAnimating = false;
+				}
+			});
+		}
 	}
 	
 	private void onTurn(int player, PacketTurn.Type type)
 	{
-		int pos = getPositionFromPlayerID(player);
-		
-		myCardsView.setBackgroundResource(R.drawable.cards);
-		for (TextView nameView : playerNameViews)
+		if (type != PacketTurn.Type.CHANGE)
 		{
-			if (nameView == null) continue;
-			nameView.setBackgroundColor(Color.TRANSPARENT);
+			highlightName(player);
 		}
-		
-		if (pos == 0)
-		{
-			myCardsView.setBackgroundResource(R.drawable.cards_highlight);
-		}
-		else
-		{
-			for (TextView nameView : playerNameViews)
-			{
-				if (nameView == null) continue;
-				nameView.setBackgroundColor(Color.TRANSPARENT);
-			}
-			playerNameViews[pos].setBackgroundResource(R.drawable.name_highlight);
-		}
-
 		
 		if (type == PacketTurn.Type.PLAY_CARD)
 		{
+			if (currentRound == null)
+			{
+				currentRound = new Round(player);
+			}
 			showCenterView(playedCardsView);
-			
-			canPlaceCard = false;
-			if (cardsPlayed % 4 != 0)
-			{
-				if (player == myID)
-				{
-					canPlaceCard = true;
-				}
-			}
-			else
-			{
-				canPlaceCard = false;
-				final int dir = getPositionFromPlayerID(player);
-				new Handler().postDelayed(new Runnable()
-				{
-					public void run()
-					{
-						for (ImageView cardView : playedCardViews)
-						{
-							/*AnimationSet animSet = new AnimationSet(true);
-							
-							Animation currentAnim = cardView.getAnimation();
-							animSet.addAnimation(currentAnim);
-							
-							float tx = 0;
-							float ty = 0;
-							if (dir == 0)
-							{
-								ty = playedCardsView.getHeight() / 2;
-							}
-							else if (dir == 1)
-							{
-								tx = playedCardsView.getWidth() / 2;
-							}
-							else if (dir == 2)
-							{
-								ty = -playedCardsView.getHeight() / 2;
-							}
-							else if (dir == 3)
-							{
-								tx = -playedCardsView.getWidth() / 2;
-							}
-							Animation takeAnim = new TranslateAnimation(0, tx, 0, ty);
-							animSet.addAnimation(takeAnim);
-							animSet.setDuration(1000);
-							
-							cardView.startAnimation(animSet);*/
-							
-							//((BitmapDrawable)cardView.getDrawable()).getBitmap().recycle();
-							cardView.setImageBitmap(null);
-						}
-						canPlaceCard = true;
-					}
-				}, 400);
-			}
 		}
 	}
 	
 	private void showStatistics(List<PacketAnnouncementStatistics.Entry> selfEntries, List<Entry> opponentEntries)
 	{
-		canPlaceCard = false;
-		
 		statisticsLinearLayout.removeAllViews();
 		
 		appendHeaderToStatistics(R.string.statictics_self, R.string.statictics_points);
@@ -674,7 +706,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 							v.startAnimation(a);
 						}
 					}
-					else if (canPlaceCard)
+					else if (currentRound != null && !isPlayedCardsAnimating)
 					{
 						conncection.sendPacket(new PacketPlayCard(card, myID));
 					}
@@ -700,14 +732,20 @@ public class GameActivtiy extends Activity implements PacketHandler
 		}
 	}
 	
-	private void showCenterView(View v)
+	private void showCenterView(final View v)
 	{
-		int count = centerSpace.getChildCount();
-		for (int i = 0; i < count; i++)
+		new Handler().postDelayed(new Runnable()
 		{
-			centerSpace.getChildAt(i).setVisibility(View.GONE);
-		}
-		v.setVisibility(View.VISIBLE);
+			public void run()
+			{
+				int count = centerSpace.getChildCount();
+				for (int i = 0; i < count; i++)
+				{
+					centerSpace.getChildAt(i).setVisibility(View.GONE);
+				}
+				v.setVisibility(View.VISIBLE);
+			}
+		}, DELAY);
 	}
 	
 	private void displayMessage(String msg)
@@ -715,6 +753,43 @@ public class GameActivtiy extends Activity implements PacketHandler
 		messages += msg;
 		messagesTextView.setText(messages);
 		messagesScrollView.fullScroll(View.FOCUS_DOWN);
+	}
+	
+	private void highlightName(int player)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			setHiglighted(i, player == i);
+		}
+	}
+	
+	private void higlightAllName()
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			setHiglighted(i, true);
+		}
+	}
+	
+	private void setHiglighted(int player, boolean val)
+	{
+		int pos = getPositionFromPlayerID(player);
+		
+		if (pos == 0)
+		{
+			myCardsView.setBackgroundResource(val ? R.drawable.cards_highlight : R.drawable.cards);
+		}
+		else
+		{
+			if (val)
+			{
+				playerNameViews[pos].setBackgroundResource(R.drawable.name_highlight);
+			}
+			else
+			{
+				playerNameViews[pos].setBackgroundColor(Color.TRANSPARENT);
+			}
+		}
 	}
 	
 	private int getBitmapResForCard(Card card)
@@ -778,10 +853,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		if (p instanceof PacketChangeDone)
 		{
 			PacketChangeDone packet = ((PacketChangeDone)p);
-			if (packet.getPlayer() == myID)
-			{
-				onSkartAccepted();
-			}
+			onSkartDone(packet.getPlayer());
 		}
 		
 		if (p instanceof PacketSkartTarock)

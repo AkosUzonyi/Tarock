@@ -10,6 +10,7 @@ import com.tisza.tarock.*;
 public class PlacedCardView extends ImageView
 {
 	private int orientation;
+	private AnimationSet defaultAnimation;
 
 	public PlacedCardView(Context context, int width, int orientation)
 	{
@@ -23,14 +24,8 @@ public class PlacedCardView extends ImageView
 	protected void onSizeChanged(int w, int h, int oldw, int oldh)
 	{
 		super.onSizeChanged(w, h, oldw, oldh);
-		clearAnimation();
 		
-		AnimationSet animSet = new AnimationSet(true);
-		animSet.setDuration(0);
-		animSet.setFillAfter(true);	
-		
-		Animation a = new RotateAnimation(0, orientation * 90, w / 2, h / 2);
-		animSet.addAnimation(a);
+		Animation rotateAnim = new RotateAnimation(0, orientation * 90, w / 2, h / 2);
 		
 		float tx = 0;
 		float ty = 0;
@@ -52,9 +47,20 @@ public class PlacedCardView extends ImageView
 		}
 		tx *= h / 4;
 		ty *= h / 4;
-		a = new TranslateAnimation(0, tx, 0, ty);
-		animSet.addAnimation(a);
+		Animation translateAnim = new TranslateAnimation(0, tx, 0, ty);
 		
+		AnimationSet animSet = new AnimationSet(true);
+		animSet.setDuration(0);
+		animSet.setFillAfter(true);	
+		animSet.addAnimation(rotateAnim);
+		animSet.addAnimation(translateAnim);
 		startAnimation(animSet);
+		
+		defaultAnimation = animSet;
+	}
+	
+	public Animation getDeafaultAnimation()
+	{
+		return defaultAnimation;
 	}
 }

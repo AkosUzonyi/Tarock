@@ -37,7 +37,7 @@ public class Szinesites extends TakeCards
 	
 	protected boolean isMultipliedByWinnerBid()
 	{
-		return false;
+		return true;
 	}
 
 	public boolean canBeSilent()

@@ -190,7 +190,7 @@ public class Announcing
 		
 		public void identityRevealed(int player)
 		{
-			if (player == playerPairs.getCalled())
+			if (player == playerPairs.getCalled() && !playerPairs.isSolo())
 			{
 				Arrays.fill(identityKnown, true);
 			}

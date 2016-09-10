@@ -69,12 +69,12 @@ public abstract class Ultimo extends AnnouncementBase
 		}
 	}
 
-	public final int getRoundIndex()
+	protected final int getRoundIndex()
 	{
 		return roundIndex;
 	}
 
-	public final Card getCardToTakeWith()
+	protected final Card getCardToTakeWith()
 	{
 		return cardToTakeWith;
 	}

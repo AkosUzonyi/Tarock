@@ -23,8 +23,8 @@ public class Announcements
 	public static final Zaroparos zaroparos = new Zaroparos();
 	public static final Szinesites szinesites = new Szinesites();
 	public static final Volat volat = new Volat();
-	public static final Szincsalad[] kisszincsaladok = new Szincsalad[4];
-	public static final Szincsalad[] nagyszincsaladok = new Szincsalad[4];
+	public static final Kisszincsalad[] kisszincsaladok = new Kisszincsalad[4];
+	public static final Nagyszincsalad[] nagyszincsaladok = new Nagyszincsalad[4];
 	public static final Facan pagatfacan = new Facan(new TarockCard(1));
 	public static final Facan sasfacan = new Facan(new TarockCard(2));
 	public static final XXIFogas xxiFogas = new XXIFogas();
@@ -71,20 +71,24 @@ public class Announcements
 		all.add(kings[1]);
 		kings[2] = new Kings(3);
 		all.add(kings[2]);
-		all.add(xxiFogas);
 		
-		for (boolean big : new boolean[]{false, true})
+		for (int s = 0; s < 4; s++)
 		{
-			for (int s = 0; s < 4; s++)
-			{
-				Szincsalad szincsalad = new Szincsalad(s, big);
-				(big ? nagyszincsaladok : kisszincsaladok)[s] = szincsalad;
-				all.add(szincsalad);
-			}
+			Kisszincsalad kisszincsalad = new Kisszincsalad(s);
+			kisszincsaladok[s] = kisszincsalad;
+			all.add(kisszincsalad);
+		}
+		
+		for (int s = 0; s < 4; s++)
+		{
+			Nagyszincsalad nagyszincsalad = new Nagyszincsalad(s);
+			nagyszincsaladok[s] = nagyszincsalad;
+			all.add(nagyszincsalad);
 		}
 		
 		all.add(pagatfacan);
 		all.add(sasfacan);
+		all.add(xxiFogas);
 		
 		for (int s = 0; s < 4; s++)
 		{

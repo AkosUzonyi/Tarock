@@ -10,7 +10,7 @@ public abstract class TakeCards extends AnnouncementBase
 	TakeCards(){}
 	
 	protected abstract Collection<Card> getCardsToTake();
-	public abstract boolean canBeSilent();
+	protected abstract boolean canBeSilent();
 	
 	public Result isSuccessful(GameInstance gi, Team team)
 	{

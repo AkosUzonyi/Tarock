@@ -18,19 +18,19 @@
     
     <string name="ok">OK</string>
     <string name="throw_cards">Bedob</string>
-    <string name="switch_announcement_view">Másik nézet</string>
-    <string name="takeroundwithcard_announce">Bemond</string>
+    <string name="back">Vissza</string>
+    <string name="announce">Bemond</string>
     
     <string name="turn_bid">Licitálás</string>
     <string name="turn_call">Hívás</string>
     <string name="turn_announce">Bemondások</string>
     
-    <string name="action_throw_cards">bedobta a lapjait</string>
+    <string name="message_throw_cards">bedobta a lapjait</string>
     <string name="press_ok">Nyomj OK-t a folyatatáshoz</string>
-    <string name="action_bid">licitált</string>
-    <string name="action_skart_tarock">tarokkot fektetett</string>
-    <string name="action_call">hívott</string>
-    <string name="action_announce">bemondta</string>
+    <string name="message_bid">licitált</string>
+    <string name="message_skart_tarock">tarokkot fektetett</string>
+    <string name="message_call">hívott</string>
+    <string name="message_announce">bemondta</string>
     
     <string name="bid3">3</string>
     <string name="bid2">2</string>
@@ -73,17 +73,9 @@
 	    <item>Tizenhetes tarokk</item>
 	    <item>Tizennyolcas tarokk</item>
 	    <item>Tizenkilences tarokk</item>
-	    <item>Huszas tarokk</item>
+	    <item>Húszas tarokk</item>
 	    <item>Huszonegy</item>
 	    <item>Skíz</item>
-    </string-array>
-    
-    <string-array name="ultimo_type_array">
-        <item>Tarokk</item>
-        <item>Kőr</item>
-        <item>Káró</item>
-        <item>Pikk</item>
-        <item>Treff</item>
     </string-array>
     
     <string-array name="round_array">
@@ -109,8 +101,8 @@
     </string-array>
     
     <string name="silent">Csendes</string>
-    
     <string name="passz">Passz</string>
+    
     <string name="jatek">Játék</string>
     <string name="trull">Trull</string>
     <string name="xxiFogas">XXI fogás</string>
@@ -131,10 +123,35 @@
     <string name="pagatfacan">Pagátfácán</string>
     <string name="sasfacan">Sasfácán</string>
     
-    <string name="tarock">Tarokk</string>
-    
     <string name="statictics_self">Saját figurák</string>
     <string name="statictics_opponent">Ellenfél figurái</string>
     <string name="statictics_points">Pontszám</string>
+    
+    <string-array name="ultimo_type_array">
+        <item>Pagát</item>
+        <item>Sas</item>
+        <item>Huszonegy</item>
+        <item>Király</item>
+        <item>Dáma</item>
+        <item>Lovas</item>
+        <item>Botos</item>
+        <item>Ász</item>
+        <item>Kisszíncsalád</item>
+        <item>Nagyszíncsalád</item>
+	</string-array>
+    
+    <string-array name="ultimo_suit_array">
+        <item>Kőr</item>
+        <item>Káró</item>
+        <item>Pikk</item>
+        <item>Treff</item>
+	</string-array>
+    
+    <string-array name="ultimo_round_array">
+        <item>Ultimó</item>
+        <item>Uhu</item>
+        <item>Nagymadár</item>
+        <item>Kismadár</item>
+    </string-array>
     
 </resources>

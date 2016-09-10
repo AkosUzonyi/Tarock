@@ -32,10 +32,19 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private Button okButton;
 	private Button throwButton;
 	
-	private View biddingView;
+	private View messagesView;
+	private Button switchViewButton;
+	private View messagesDefaultView;
+	private View messagesUltimoView;
 	private ScrollView messagesScrollView;
-	private TextView messagesView;
+	private TextView messagesTextView;
 	private LinearLayout availabeActionsView;
+	
+	private Button ultimoBackButton;
+	private Spinner ultimoTypeSpinner;
+	private Spinner ultimoSuitvalueSpinner;
+	private Spinner ultimoRoundSpinner;
+	private Button announceButton;
 	
 	private RelativeLayout playedCardsView;
 	private PlacedCardView[] playedCardViews;
@@ -118,12 +127,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 				(TextView)game.findViewById(R.id.playername_3),
 		};
 		
-		biddingView = View.inflate(this, R.layout.bidding, null);
-		messagesScrollView = (ScrollView)biddingView.findViewById(R.id.messages_scroll);
-		messagesView = (TextView)biddingView.findViewById(R.id.messages);
-		availabeActionsView = (LinearLayout)biddingView.findViewById(R.id.available_actions);
-		centerSpace.addView(biddingView);
-		
 		myCardsView0 = (LinearLayout)game.findViewById(R.id.my_cards_0);
 		myCardsView1 = (LinearLayout)game.findViewById(R.id.my_cards_1);
 		
@@ -136,6 +139,80 @@ public class GameActivtiy extends Activity implements PacketHandler
 				conncection.sendPacket(new PacketThrowCards(myID));
 			}
 		});
+		
+		messagesView = View.inflate(this, R.layout.messages, null);
+		messagesDefaultView = messagesView.findViewById(R.id.messages_default_view);
+		messagesScrollView = (ScrollView)messagesView.findViewById(R.id.messages_scroll);
+		messagesTextView = (TextView)messagesView.findViewById(R.id.messages);
+		availabeActionsView = (LinearLayout)messagesView.findViewById(R.id.available_actions);
+		
+		messagesUltimoView = messagesView.findViewById(R.id.messages_ultimo_view);
+		ultimoBackButton = (Button)messagesView.findViewById(R.id.ultimo_back_buton);
+		ultimoTypeSpinner = (Spinner)messagesView.findViewById(R.id.ultimo_type_spinner);
+		ultimoSuitvalueSpinner = (Spinner)messagesView.findViewById(R.id.ultimo_suitvalue_spinner);
+		ultimoRoundSpinner = (Spinner)messagesView.findViewById(R.id.ultimo_round_spinner);
+		announceButton = (Button)messagesView.findViewById(R.id.ultimo_announce_button);
+		
+		ultimoBackButton.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				setUltimoViewVisible(false);
+			}
+		});
+		
+		ultimoTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+		{
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+			{
+				ultimoSuitvalueSpinner.setVisibility(position < 3 ? View.GONE : View.VISIBLE);
+				ultimoRoundSpinner.setVisibility(position < 8 ? View.VISIBLE : View.GONE);
+			}
+
+			public void onNothingSelected(AdapterView<?> parent)
+			{
+			}
+		});
+		
+		announceButton.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				Announcement announcement;
+				
+				int roundIndex = 8 - ultimoRoundSpinner.getSelectedItemPosition();
+				
+				int typeSelectedPos = ultimoTypeSpinner.getSelectedItemPosition();
+				if (typeSelectedPos < 2)
+				{
+					announcement = Announcements.ultimok.get(new TarockCard(typeSelectedPos + 1)).get(roundIndex);
+				}
+				else if (typeSelectedPos < 3)
+				{
+					announcement = Announcements.ultimok.get(new TarockCard(21)).get(roundIndex);
+				}
+				else if (typeSelectedPos < 8)
+				{
+					int suit = ultimoSuitvalueSpinner.getSelectedItemPosition();
+					int value = 5 - (typeSelectedPos - 3);
+					announcement = Announcements.ultimok.get(new SuitCard(suit, value)).get(roundIndex);
+				}
+				else if (typeSelectedPos < 10)
+				{
+					boolean small = typeSelectedPos == 8;
+					int suit = ultimoSuitvalueSpinner.getSelectedItemPosition();
+					announcement = (small ? Announcements.kisszincsaladok : Announcements.nagyszincsaladok)[suit];
+				}
+				else
+				{
+					throw new RuntimeException();
+				}
+				
+				conncection.sendPacket(new PacketAnnounce(new AnnouncementContra(announcement, 0), myID));
+			}
+		});
+		
+		centerSpace.addView(messagesView);
 		
 		playedCardsView = new RelativeLayout(this);
 		playedCardsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
@@ -152,6 +229,27 @@ public class GameActivtiy extends Activity implements PacketHandler
 		centerSpace.addView(statisticsView);
 		
 		setContentView(game);
+	}
+	
+	private ArrayAdapter<CharSequence> createAdapterForSpinner(int arrayResID)
+	{
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, arrayResID, android.R.layout.simple_spinner_item);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		return adapter;
+	}
+	
+	private void setUltimoViewVisible(boolean visible)
+	{
+		if (visible)
+		{
+			messagesDefaultView.setVisibility(View.GONE);
+			messagesUltimoView.setVisibility(View.VISIBLE);
+		}
+		else
+		{
+			messagesDefaultView.setVisibility(View.VISIBLE);
+			messagesUltimoView.setVisibility(View.GONE);
+		}
 	}
 	
 	private Connection conncection;
@@ -182,7 +280,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 			}
 		}
 		messages = "";
-		showCenterView(biddingView);
+		showCenterView(messagesView);
 	}
 	
 	private void setCards(PlayerCards cards)
@@ -197,7 +295,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		String msg = "";
 		msg += playerNames.get(player);
 		msg += " ";
-		msg += getResources().getString(R.string.action_throw_cards);
+		msg += getResources().getString(R.string.message_throw_cards);
 		msg += "\n";
 		msg += getResources().getString(R.string.press_ok);
 		msg += "\n";
@@ -228,7 +326,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		String msg = "";
 		msg += playerNames.get(player);
 		msg += " ";
-		msg += getResources().getString(R.string.action_bid);
+		msg += getResources().getString(R.string.message_bid);
 		msg += ": ";
 		msg += ResourceMappings.bidToName.get(bid);
 		msg += "\n";
@@ -272,7 +370,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 				msg += " ";
 				msg += count;
 				msg += " ";
-				msg += getResources().getString(R.string.action_skart_tarock);
+				msg += getResources().getString(R.string.message_skart_tarock);
 				msg += "\n";
 			}
 		}
@@ -302,11 +400,11 @@ public class GameActivtiy extends Activity implements PacketHandler
 	{
 		messages += playerNames.get(player);
 		messages += " ";
-		messages += getResources().getString(R.string.action_call);
+		messages += getResources().getString(R.string.message_call);
 		messages += ": ";
 		messages += ResourceMappings.cardToName.get(card);
 		messages += "\n";
-		messagesView.setText(messages);
+		messagesTextView.setText(messages);
 		messagesScrollView.scrollTo(0, messagesScrollView.getHeight());
 	}
 	
@@ -315,11 +413,20 @@ public class GameActivtiy extends Activity implements PacketHandler
 		Collections.sort(announcements);
 		availabeActionsView.removeAllViews();
 		
+		Button ultimoButton = new Button(this);
+		ultimoButton.setText(ResourceMappings.roundNames[8]);
+		ultimoButton.setOnClickListener(new OnClickListener()
+		{
+			public void onClick(View v)
+			{
+				setUltimoViewVisible(true);
+			}
+		});
+		availabeActionsView.addView(ultimoButton);
+		
 		for (final AnnouncementContra ac : announcements)
 		{
-			//if (!ac.getAnnouncement().isShownToUser()) continue;
-			//TODO: debug
-			if (ac.getAnnouncement() instanceof Szinultimo) continue;
+			if (!ac.getAnnouncement().isShownToUser()) continue;
 			
 			Button announceButton = new Button(this);
 			announceButton.setText(ResourceMappings.getAnnouncementContraContraName(ac));
@@ -327,7 +434,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 			{
 				public void onClick(View v)
 				{
-					availabeActionsView.removeAllViews();
 					conncection.sendPacket(new PacketAnnounce(ac, myID));
 				}
 			});
@@ -346,10 +452,12 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void onAnnounce(int player, AnnouncementContra announcement)
 	{
+		setUltimoViewVisible(false);
+		
 		String msg = "";
 		msg += playerNames.get(player);
 		msg += " ";
-		msg += getResources().getString(R.string.action_announce);
+		msg += getResources().getString(R.string.message_announce);
 		msg += ": ";
 		msg += ResourceMappings.getAnnouncementContraContraName(announcement);
 		msg += "\n";
@@ -600,7 +708,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private void displayMessage(String msg)
 	{
 		messages += msg;
-		messagesView.setText(messages);
+		messagesTextView.setText(messages);
 		messagesScrollView.fullScroll(View.FOCUS_DOWN);
 	}
 	

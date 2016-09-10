@@ -1,0 +1,124 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	>
+	
+	<LinearLayout
+		android:id="@+id/messages_default_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:orientation="horizontal"
+		android:padding="10dp"
+		android:visibility="visible"
+		>
+		
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="0.7"
+			>
+		
+			<ScrollView
+				android:id="@+id/messages_scroll"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:scrollbars="vertical"
+				android:fillViewport="true"
+				>
+		
+				<TextView
+					android:id="@+id/messages"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_weight="1.0"
+					/>
+		
+			</ScrollView>
+		
+		</LinearLayout>
+		
+		<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="0.3"
+			>
+		
+			<ScrollView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:scrollbars="vertical"
+				android:fillViewport="true"
+				>
+		
+				<LinearLayout
+					android:id="@+id/available_actions"
+					android:orientation="vertical"
+					android:layout_width="match_parent"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					/>
+			</ScrollView>
+		</LinearLayout>
+	</LinearLayout>
+	
+	
+	
+	<ScrollView
+		android:id="@+id/messages_ultimo_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:scrollbars="vertical"
+		android:fillViewport="true"
+		android:visibility="gone"
+		>
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:orientation="vertical"
+			>
+
+   			<LinearLayout
+				android:id="@+id/available_actions_big"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="vertical"
+				/>
+				
+				<Button
+					android:id="@+id/ultimo_back_buton"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/back"
+					/>
+				<Spinner
+					android:id="@+id/ultimo_type_spinner"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:entries="@array/ultimo_type_array"
+					/>
+				<Spinner
+					android:id="@+id/ultimo_suitvalue_spinner"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:visibility="gone"
+					android:entries="@array/ultimo_suit_array"
+					/>
+				<Spinner
+					android:id="@+id/ultimo_round_spinner"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:entries="@array/ultimo_round_array"
+					/>
+				<Button
+					android:id="@+id/ultimo_announce_button"
+					android:layout_width="match_parent"
+					android:layout_height="wrap_content"
+					android:text="@string/announce"
+					/>
+						
+		</LinearLayout>
+	</ScrollView>
+</FrameLayout>

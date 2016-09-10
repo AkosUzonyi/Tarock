@@ -45,7 +45,7 @@ public class PlayerPairs
 	
 	public Team getTeam(int player)
 	{
-		if (!checkPlayerIndexValid(caller) || !checkPlayerIndexValid(called))
+		if (!checkPlayerIndexValid(player))
 			throw new IllegalArgumentException();
 		
 		return player == caller || player == called ? Team.CALLER : Team.OPPONENT;

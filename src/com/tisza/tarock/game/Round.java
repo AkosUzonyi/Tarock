@@ -7,14 +7,19 @@ import com.tisza.tarock.card.*;
 public class Round
 {
 	private final int beginnerPlayer;
-	private int nextPlayer;
+	private int currentPlayer;
 	private int winnerPlayer = -1;
 	private Card[] cards = new Card[4];
+	private boolean finished = false;
 	
 	public Round(int bp)
 	{
+		if (bp < 0 || bp >= 4)
+			throw new IllegalArgumentException();
+		
 		beginnerPlayer = bp;
-		nextPlayer = beginnerPlayer;
+		currentPlayer = beginnerPlayer;
+		winnerPlayer = currentPlayer;
 	}
 	
 	public Card getFirstCard()
@@ -29,7 +34,7 @@ public class Round
 	
 	public boolean isFinished()
 	{
-		return winnerPlayer >= 0;
+		return finished;
 	}
 	
 	public int getWinner()
@@ -41,7 +46,7 @@ public class Round
 	
 	public int getNextPlayer()
 	{
-		return nextPlayer;
+		return currentPlayer;
 	}
 	
 	public void placeCard(Card card)
@@ -49,26 +54,20 @@ public class Round
 		if (isFinished())
 			throw new IllegalStateException();
 		
-		cards[nextPlayer++] = card;
-		nextPlayer %= 4;
+		cards[currentPlayer] = card;
 		
-		if (nextPlayer == beginnerPlayer)
+		Card currentWinnerCard = cards[winnerPlayer];
+		if (card.doesBeat(currentWinnerCard))
 		{
-			Card winnerCard = null;
-			int winnerPlayerLocal = -1;
-			for (int i = 0; i < cards.length; i++)
-			{
-				Card c = cards[i];
-				if (winnerCard == null || c.doesBeat(winnerCard))
-				{
-					winnerPlayerLocal = i;
-					winnerCard = c;
-				}
-			}
-			
-			if (winnerPlayerLocal < 0) throw new Error();
-			
-			winnerPlayer = winnerPlayerLocal;
+			winnerPlayer = currentPlayer;
+		}
+		
+		currentPlayer++;
+		currentPlayer %= 4;
+		
+		if (currentPlayer == beginnerPlayer)
+		{
+			finished = true;
 		}
 	}
 }

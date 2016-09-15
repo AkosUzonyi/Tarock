@@ -11,26 +11,24 @@ import com.tisza.tarock.server.*;
 public class PhaseEnd implements GamePhase
 {
 	private GameSession game;
+	private Map<Team, Integer> gamePointsForTeams = new HashMap<Team, Integer>();
+	private Map<Team, List<PacketAnnouncementStatistics.Entry>> statEntriesForTeams = new HashMap<Team, List<PacketAnnouncementStatistics.Entry>>();
+	private int[] points = new int[4];
 	
 	public PhaseEnd(GameSession g)
 	{
 		game = g;
-	}
-	
-	public void start()
-	{
-		int pointsForCallerTeam = 0;
-		
-		PlayerPairs pp = game.getCurrentGame().calling.getPlayerPairs();
-		
-		Map<Team, List<PacketAnnouncementStatistics.Entry>> statEntriesForTeams = new HashMap<Team, List<PacketAnnouncementStatistics.Entry>>();
-		statEntriesForTeams.put(Team.CALLER, new ArrayList<PacketAnnouncementStatistics.Entry>());
-		statEntriesForTeams.put(Team.OPPONENT, new ArrayList<PacketAnnouncementStatistics.Entry>());
 		
 		Announcing announcing = game.getCurrentGame().announcing;
+		int pointsForCallerTeam = 0;
 		
 		for (Team team : Team.values())
 		{
+			gamePointsForTeams.put(team, GamePoints.calculateGamePoints(game.getCurrentGame(), team));
+			
+			ArrayList<Entry> entriesForTeam = new ArrayList<PacketAnnouncementStatistics.Entry>();
+			statEntriesForTeams.put(team, entriesForTeam);
+			
 			for (Announcement announcement : Announcements.getAll())
 			{
 				int points = announcement.calculatePoints(game.getCurrentGame(), team);
@@ -41,22 +39,35 @@ public class PhaseEnd implements GamePhase
 				{
 					int acl = announcing.isAnnounced(team, announcement) ? announcing.getContraLevel(team, announcement) : -1;
 					AnnouncementContra ac = new AnnouncementContra(announcement, acl);
-					statEntriesForTeams.get(team).add(new PacketAnnouncementStatistics.Entry(ac, points));
+					entriesForTeam.add(new PacketAnnouncementStatistics.Entry(ac, points));
 				}
 			}
 		}
 		
-		for (int p = 0; p < 4; p++)
+		for (int i = 0; i < 4; i++)
 		{
-			Team team = pp.getTeam(p);
+			points[i] = -pointsForCallerTeam;
+		}
+		PlayerPairs pp = game.getCurrentGame().calling.getPlayerPairs();
+		points[pp.getCaller()] += pointsForCallerTeam * 2;
+		points[pp.getCalled()] += pointsForCallerTeam * 2;
+	}
+	
+	public void start()
+	{
+		PlayerPairs pp = game.getCurrentGame().calling.getPlayerPairs();
+		
+		game.addPoints(points);
+		
+		for (int i = 0; i < 4; i++)
+		{
+			Team team = pp.getTeam(i);
+			int selfGamePoints = gamePointsForTeams.get(team);
+			int opponentGamePoints = gamePointsForTeams.get(team.getOther());
 			List<Entry> selfEntries = statEntriesForTeams.get(team);
 			List<Entry> opponentEntries = statEntriesForTeams.get(team.getOther());
-			game.sendPacketToPlayer(p, new PacketAnnouncementStatistics(selfEntries, opponentEntries));
+			game.sendPacketToPlayer(i, new PacketAnnouncementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, game.getPoints()));
 		}
-		
-		game.getPoints().addPoints(pointsForCallerTeam, pp.getCaller(), pp.getCalled());
-		game.savePoints();
-		game.broadcastPacket(new PacketPoints(game.getPoints().getCurrentPoints()));
 		
 		game.changeGamePhase(new PhasePendingNewGame(game, false));
 	}

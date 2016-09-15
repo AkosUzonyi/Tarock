@@ -24,7 +24,7 @@ import com.tisza.tarock.net.packet.PacketAnnouncementStatistics.Entry;
 
 public class GameActivtiy extends Activity implements PacketHandler
 {
-	private static final int DELAY = 1600;
+	private static final int DELAY = 120;
 	private static final int CARDS_PER_ROW = 6;
 	private int cardWidth;
 	
@@ -54,8 +54,13 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private RelativeLayout playedCardsView;
 	private PlacedCardView[] playedCardViews;
 	
-	private LinearLayout statisticsView;
-	private LinearLayout statisticsLinearLayout;	
+	private View statisticsView;
+	private LinearLayout statisticsSelfEntriesView;
+	private LinearLayout statisticsOpponentEntriesView;
+	private TextView statisticsGamepointsSelf;
+	private TextView statisticsGamepointsOpponent;
+	private LinearLayout statisticsPointsNames;
+	private LinearLayout statisticsPointsValues;
 	
 	@SuppressWarnings("deprecation")
 	protected void onCreate(Bundle savedInstanceState)
@@ -233,8 +238,13 @@ public class GameActivtiy extends Activity implements PacketHandler
 		centerSpace.addView(playedCardsView);
 		
 		layoutInflater.inflate(R.layout.statistics, centerSpace);
-		statisticsView = (LinearLayout)findViewById(R.id.statistics_view);
-		statisticsLinearLayout = (LinearLayout)statisticsView.findViewById(R.id.statistics_entries_list);
+		statisticsView = findViewById(R.id.statistics_view);
+		statisticsSelfEntriesView = (LinearLayout)findViewById(R.id.statistics_self_entries_list);
+		statisticsOpponentEntriesView = (LinearLayout)findViewById(R.id.statistics_opponent_entries_list);
+		statisticsGamepointsSelf = (TextView)findViewById(R.id.statistics_gamepoints_self);
+		statisticsGamepointsOpponent = (TextView)findViewById(R.id.statistics_gamepoints_opponent);
+		statisticsPointsNames = (LinearLayout)findViewById(R.id.statistics_points_names);
+		statisticsPointsValues = (LinearLayout)findViewById(R.id.statistics_points_values);
 	}
 	
 	private ArrayAdapter<CharSequence> createAdapterForSpinner(int arrayResID)
@@ -269,7 +279,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private List<Card> cardsToSkart = new ArrayList<Card>();
 	private boolean skarting = false;
 	
-	private Round currentRound = null;
 	private boolean isPlayedCardsAnimating = false;
 	
 	private void onStartGame(List<String> playerNames, int myID)
@@ -299,6 +308,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void onCardsThrown(int player, PlayerCards thrownCards)
 	{
+		showCenterView(messagesView);
+		
 		String msg = "";
 		msg += playerNames.get(player);
 		msg += " ";
@@ -311,6 +322,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void showAvailableBids(List<Integer> bids)
 	{
+		showCenterView(messagesView);
+		
 		availabeActionsView.removeAllViews();
 		for (final int bid : bids)
 		{
@@ -331,6 +344,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onBid(int player, int bid)
 	{
+		showCenterView(messagesView);
+		
 		String msg = "";
 		msg += playerNames.get(player);
 		msg += " ";
@@ -374,6 +389,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onSkartTarock(int[] counts)
 	{
+		showCenterView(messagesView);
+		
 		String msg = "";
 		for (int p = 0; p < 4; p++)
 		{
@@ -393,6 +410,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void showAvailableCalls(List<Card> calls)
 	{
+		showCenterView(messagesView);
+		
 		availabeActionsView.removeAllViews();
 		for (final Card card : calls)
 		{
@@ -412,6 +431,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onCall(int player, Card card)
 	{
+		showCenterView(messagesView);
+		
 		messages += playerNames.get(player);
 		messages += " ";
 		messages += getResources().getString(R.string.message_call);
@@ -424,6 +445,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void showAvailableAnnouncements(List<AnnouncementContra> announcements)
 	{
+		showCenterView(messagesView);
+		
 		Collections.sort(announcements);
 		availabeActionsView.removeAllViews();
 		
@@ -443,7 +466,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 			if (ac.getContraLevel() == 0 && !ac.getAnnouncement().isShownToUser()) continue;
 			
 			Button announceButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
-			announceButton.setText(ResourceMappings.getAnnouncementContraContraName(ac));
+			announceButton.setText(ResourceMappings.getAnnouncementContraName(ac));
 			announceButton.setOnClickListener(new OnClickListener()
 			{
 				public void onClick(View v)
@@ -466,6 +489,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void onAnnounce(int player, AnnouncementContra announcement)
 	{
+		showCenterView(messagesView);
+		
 		setUltimoViewVisible(false);
 		
 		String msg = "";
@@ -473,7 +498,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		msg += " ";
 		msg += getResources().getString(R.string.message_announce);
 		msg += ": ";
-		msg += ResourceMappings.getAnnouncementContraContraName(announcement);
+		msg += ResourceMappings.getAnnouncementContraName(announcement);
 		msg += "\n";
 		displayMessage(msg);
 	}
@@ -499,29 +524,25 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		playedCardViews[pos].setImageResource(getBitmapResForCard(card));
 		playedCardViews[pos].bringToFront();
-		
-		currentRound.placeCard(card);
-		
-		if (currentRound.isFinished())
-		{
-			final int winnerPlayer = currentRound.getWinner();
-			currentRound = null;
-			isPlayedCardsAnimating = true;
-			new Handler().postDelayed(new Runnable()
-			{
-				public void run()
-				{
-					for (PlacedCardView v : playedCardViews)
-					{
-						v.setImageBitmap(null);
-						isPlayedCardsAnimating = false;
-					}
-					//animateCards(winnerPlayer);
-				}
-			}, DELAY);
-		}
 	}
 	
+	private void onCardsTaken(int winnerPlayer)
+	{
+		isPlayedCardsAnimating = true;
+		new Handler().postDelayed(new Runnable()
+		{
+			public void run()
+			{
+				for (PlacedCardView v : playedCardViews)
+				{
+					v.setImageBitmap(null);
+					isPlayedCardsAnimating = false;
+				}
+				//animateCards(winnerPlayer);
+			}
+		}, DELAY);
+	}
+
 	private void animateCards(int winnerPlayer)
 	{
 		final int winnerDir = getPositionFromPlayerID(winnerPlayer);
@@ -578,18 +599,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 				
 				public void onAnimationEnd(Animation animation)
 				{
-					Card currentCard = null;
-					
-					if (currentRound != null)
-					{
-						currentCard = currentRound.getCards().get(cardPlayer);
-					}
-					
-					if (currentCard != null)
-					{
-						cardView.setImageResource(getBitmapResForCard(currentCard));
-					}
-					
 					currentAnim.setInterpolator(new LinearInterpolator());
 					
 					isPlayedCardsAnimating = false;
@@ -607,52 +616,68 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		if (type == PacketTurn.Type.PLAY_CARD)
 		{
-			if (currentRound == null)
-			{
-				currentRound = new Round(player);
-			}
 			showCenterView(playedCardsView);
 		}
 	}
 	
-	private void showStatistics(List<PacketAnnouncementStatistics.Entry> selfEntries, List<Entry> opponentEntries)
+	private void showStatistics(int selfGamePoints, int opponentGamePoints, List<PacketAnnouncementStatistics.Entry> selfEntries, List<Entry> opponentEntries, int[] points)
 	{
-		statisticsLinearLayout.removeAllViews();
+		statisticsGamepointsSelf.setText(selfGamePoints + "");
+		statisticsGamepointsOpponent.setText(opponentGamePoints + "");
 		
-		appendHeaderToStatistics(R.string.statictics_self, R.string.statictics_points);
-		appendEntriesToStatistics(selfEntries);
+		statisticsSelfEntriesView.removeAllViews();
+		statisticsOpponentEntriesView.removeAllViews();
 		
-		appendHeaderToStatistics(R.string.statictics_opponent, R.string.statictics_points);
-		appendEntriesToStatistics(opponentEntries);
+		appendHeaderToStatistics(statisticsSelfEntriesView, R.string.statictics_self, R.string.statictics_points);
+		appendEntriesToStatistics(statisticsSelfEntriesView, selfEntries);
+		
+		appendHeaderToStatistics(statisticsOpponentEntriesView, R.string.statictics_opponent, R.string.statictics_points);
+		appendEntriesToStatistics(statisticsOpponentEntriesView, opponentEntries);
+		
+		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
+		lp.weight = 0.25F;
+		for (int i = 0; i < 4; i++)
+		{
+			TextView nameView = new TextView(this);
+			nameView.setText(playerNames.get(i));
+			nameView.setGravity(Gravity.CENTER);
+			
+			TextView pointsView = new TextView(this);
+			pointsView.setText(points[i] + "");
+			pointsView.setGravity(Gravity.CENTER);
+			
+			statisticsPointsNames.addView(nameView, lp);
+			statisticsPointsValues.addView(pointsView, lp);
+		}
 		
 		showCenterView(statisticsView);
 	}
 	
-	private void appendHeaderToStatistics(int res0, int res1)
+	private void appendHeaderToStatistics(ViewGroup viewToAppend, int res0, int res1)
 	{
-		View headerView = layoutInflater.inflate(R.layout.statistics_header, statisticsLinearLayout, false);
-		TextView nameView = (TextView)headerView.findViewById(R.id.statistics_announcement_name);
-		TextView pointsView = (TextView)headerView.findViewById(R.id.statistics_announcement_points);
+		View entryView = layoutInflater.inflate(R.layout.statistics_header, viewToAppend, false);
+		TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
+		TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_announcement_points);
 		
 		nameView.setText(res0);
 		pointsView.setText(res1);
 		
-		statisticsLinearLayout.addView(headerView);
+		viewToAppend.addView(entryView);
 	}
 	
-	private void appendEntriesToStatistics(List<PacketAnnouncementStatistics.Entry> entries)
+	private void appendEntriesToStatistics(ViewGroup viewToAppend, List<PacketAnnouncementStatistics.Entry> entries)
 	{
 		for (PacketAnnouncementStatistics.Entry entry : entries)
 		{
-			View entryView = layoutInflater.inflate(R.layout.statistics_entry, statisticsLinearLayout, false);
+			View entryView = layoutInflater.inflate(R.layout.statistics_entry, viewToAppend, false);
 			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
 			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_announcement_points);
 			
-			nameView.setText(ResourceMappings.getAnnouncementContraContraName(entry.getAnnouncementContra()));
+			nameView.setText(ResourceMappings.getAnnouncementContraName(entry.getAnnouncementContra()));
 			pointsView.setText(entry.getPoints() + "");
 			pointsView.setTextColor(entry.getPoints() > 0 ? Color.BLACK : Color.RED);
 			
-			statisticsLinearLayout.addView(entryView);
+			viewToAppend.addView(entryView);
 		}
 	}
 
@@ -706,7 +731,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 							v.startAnimation(a);
 						}
 					}
-					else if (currentRound != null && !isPlayedCardsAnimating)
+					else if (!isPlayedCardsAnimating)
 					{
 						conncection.sendPacket(new PacketPlayCard(card, myID));
 					}
@@ -732,18 +757,23 @@ public class GameActivtiy extends Activity implements PacketHandler
 		}
 	}
 	
+	private View pendingCenterView;
 	private void showCenterView(final View v)
 	{
+		pendingCenterView = v;
 		new Handler().postDelayed(new Runnable()
 		{
 			public void run()
 			{
+				if (pendingCenterView != v)
+					return;
+				
 				int count = centerSpace.getChildCount();
 				for (int i = 0; i < count; i++)
 				{
 					centerSpace.getChildAt(i).setVisibility(View.GONE);
 				}
-				v.setVisibility(View.VISIBLE);
+				pendingCenterView.setVisibility(View.VISIBLE);
 			}
 		}, DELAY);
 	}
@@ -892,6 +922,12 @@ public class GameActivtiy extends Activity implements PacketHandler
 			playCard(packet.getPlayer(), packet.getCard());
 		}
 		
+		if (p instanceof PacketCardsTaken)
+		{
+			PacketCardsTaken packet = ((PacketCardsTaken)p);
+			onCardsTaken(packet.getWinnerPlayer());
+		}
+		
 		if (p instanceof PacketTurn)
 		{
 			PacketTurn packet = ((PacketTurn)p);
@@ -901,13 +937,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 		if (p instanceof PacketAnnouncementStatistics)
 		{
 			PacketAnnouncementStatistics packet = ((PacketAnnouncementStatistics)p);
-			showStatistics(packet.getSelfEntries(), packet.getOpponentEntries());
+			showStatistics(packet.getSelfGamePoints(), packet.getOpponentGamePoints(), packet.getSelfEntries(), packet.getOpponentEntries(), packet.getPoints());
 		}
 		
-		if (p instanceof PacketPoints)
-		{
-			PacketPoints packet = ((PacketPoints)p);
-		}
 		if (p instanceof PacketReadyForNewGame)
 		{
 			okButton.setOnClickListener(new OnClickListener()
@@ -935,7 +967,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	}
 
 	private boolean doubleBackToExitPressedOnce = false;
-
 	public void onBackPressed()
 	{
 		if (doubleBackToExitPressedOnce)

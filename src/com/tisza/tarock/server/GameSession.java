@@ -25,12 +25,12 @@ public class GameSession implements Runnable
 	
 	private BlockingQueue<PlayerPacket> packetsReceived = new LinkedBlockingQueue<PlayerPacket>();
 	
-	private Points points;
-	private File pointsFile;
+	private File pointsDir;
+	private int[] points = new int[4];
 	
 	private Thread gameThread;
 	
-	public GameSession(int beginnerPlayer, Collection<String> names, File pf)
+	public GameSession(int beginnerPlayer, Collection<String> names, File pointsDir)
 	{
 		if (beginnerPlayer < 0 || beginnerPlayer >= 4 || names.size() != 4)
 			throw new IllegalArgumentException();
@@ -38,8 +38,7 @@ public class GameSession implements Runnable
 		playerNames = new ArrayList<String>(names);
 		Collections.shuffle(playerNames);
 		
-		points = new Points(playerNames);
-		pointsFile = pf;
+		this.pointsDir = pointsDir;
 		
 		nextBeginnerPlayer = beginnerPlayer;
 		
@@ -66,8 +65,7 @@ public class GameSession implements Runnable
 	
 	public void startNewGame(boolean doubleRound)
 	{
-		if (Thread.currentThread() != gameThread)
-			throw new RuntimeException();
+		checkThread();
 		
 		System.out.println("start game");
 		
@@ -84,21 +82,6 @@ public class GameSession implements Runnable
 	
 	public void run()
 	{
-		if (pointsFile != null)
-		{
-			try
-			{
-				pointsFile.createNewFile();
-				FileInputStream fis = new FileInputStream(pointsFile);
-				points.readData(fis);
-				fis.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		
 		try
 		{
 			waitForAllPlayersToConnect();
@@ -129,34 +112,38 @@ public class GameSession implements Runnable
 		}
 	}
 	
-	private void checkThread()
-	{
-		if (Thread.currentThread() != gameThread)
-			throw new RuntimeException();
-	}
-
-	public Points getPoints()
+	public int[] getPoints()
 	{
 		return points;
 	}
 	
-	public void savePoints()
+	public void addPoints(int[] pointsToAdd)
 	{
-		checkThread();
-		
-		if (pointsFile != null)
+		for (int i = 0; i < 4; i++)
 		{
-			try
+			points[i] += pointsToAdd[i];
+			if (pointsDir != null)
 			{
-				FileOutputStream fos = new FileOutputStream(pointsFile, true);
-				points.appendDirtyData(fos);
-				fos.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
+				try
+				{
+					File pointsFile = new File(pointsDir, playerNames.get(i));
+					pointsFile.createNewFile();
+					PrintStream ps = new PrintStream(pointsFile);
+					ps.println(points[i]);
+					ps.close();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
 			}
 		}
+	}
+	
+	private void checkThread()
+	{
+		if (Thread.currentThread() != gameThread)
+			throw new RuntimeException();
 	}
 		
 	public GameInstance getCurrentGame()
@@ -181,8 +168,6 @@ public class GameSession implements Runnable
 	
 	public void sendPacketToPlayer(int player, Packet packet)
 	{
-		checkThread();
-		
 		if (playerIDToConnection.containsKey(player))
 		{
 			playerIDToConnection.get(player).sendPacket(packet);
@@ -191,8 +176,6 @@ public class GameSession implements Runnable
 	
 	public void broadcastPacket(Packet packet)
 	{
-		checkThread();
-		
 		for (Connection c : playerIDToConnection.values())
 		{
 			c.sendPacket(packet);
@@ -230,9 +213,23 @@ public class GameSession implements Runnable
 	private void onSuccessfulLogin(int player)
 	{
 		//sendStatusInfo();
-		if (currentGamePhase != null)
+		
+		if (pointsDir != null)
 		{
-			//currentGamePhase.playerLoggedIn(player);
+			try
+			{
+				File pointsFile = new File(pointsDir, playerNames.get(player));
+				if (pointsFile.exists())
+				{
+					Scanner sc = new Scanner(pointsFile);
+					points[player] = sc.nextInt();
+					sc.close();
+				}
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 	

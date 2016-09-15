@@ -146,15 +146,6 @@ public class CliClient implements PacketHandler
 				System.out.println(entry.getPoints());
 			}*/
 		}
-		if (p instanceof PacketPoints)
-		{
-			PacketPoints packet = ((PacketPoints)p);
-			for (int i = 0; i < 4; i++)
-			{
-				System.out.print(packet.getPoints().getPoint(i) + " ");
-			}
-			System.out.println();
-		}
 		if (p instanceof PacketSkartTarock)
 		{
 			PacketSkartTarock packet = ((PacketSkartTarock)p);

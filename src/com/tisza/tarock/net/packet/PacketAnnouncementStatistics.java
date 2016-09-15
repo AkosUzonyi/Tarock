@@ -8,15 +8,30 @@ import com.tisza.tarock.game.*;
 
 public class PacketAnnouncementStatistics extends Packet
 {
+	private int selfGamePoints, opponentGamePoints;
 	private List<Entry> selfEntries;
 	private List<Entry> opponentEntries;
+	private int[] points;
 	
 	PacketAnnouncementStatistics() {}
 	
-	public PacketAnnouncementStatistics(List<Entry> selfEntries, List<Entry> opponentEntries)
+	public PacketAnnouncementStatistics(int selfGamePoints, int opponentGamePoints, List<Entry> selfEntries, List<Entry> opponentEntries, int[] points)
 	{
+		this.selfGamePoints = selfGamePoints;
+		this.opponentGamePoints = opponentGamePoints;
 		this.selfEntries = selfEntries;
 		this.opponentEntries = opponentEntries;
+		this.points = points;
+	}
+
+	public int getSelfGamePoints()
+	{
+		return selfGamePoints;
+	}
+
+	public int getOpponentGamePoints()
+	{
+		return opponentGamePoints;
 	}
 
 	public List<Entry> getSelfEntries()
@@ -29,10 +44,22 @@ public class PacketAnnouncementStatistics extends Packet
 		return opponentEntries;
 	}
 
+	public int[] getPoints()
+	{
+		return points;
+	}
+
 	protected void readData(DataInputStream dis) throws IOException
 	{
+		selfGamePoints = dis.readByte();
+		opponentGamePoints = dis.readByte();
 		selfEntries = readEntries(dis);
 		opponentEntries = readEntries(dis);
+		points = new int[4];
+		for (int i = 0; i < 4; i++)
+		{
+			points[i] = dis.readInt();
+		}
 	}
 	
 	private List<Entry> readEntries(DataInputStream dis) throws IOException
@@ -51,8 +78,14 @@ public class PacketAnnouncementStatistics extends Packet
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
+		dos.writeByte(selfGamePoints);
+		dos.writeByte(opponentGamePoints);
 		writeEntries(dos, selfEntries);
 		writeEntries(dos, opponentEntries);
+		for (int i = 0; i < 4; i++)
+		{
+			dos.writeInt(points[i]);
+		}
 	}
 	
 	private void writeEntries(DataOutputStream dos, List<Entry> entries) throws IOException

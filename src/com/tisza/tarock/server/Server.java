@@ -10,23 +10,25 @@ public class Server
 {
 	private int port;
 	private List<String> playerNames;
+	private File pointsDir;
 	
 	private LoginManager loginManager;
 	private GameSession gameSession;
 	private Thread listenterThread = null;
 	private ServerSocket ss;
 	
-	public Server(int port, List<String> playerNames)
+	public Server(int port, List<String> playerNames, File pointsDir)
 	{
 		this.port = port;
 		this.playerNames = playerNames;
+		this.pointsDir = pointsDir;
 	}
 	
 	public void start()
 	{
 		if (listenterThread == null)
 		{
-			gameSession = new GameSession(0, playerNames, new File("points"));
+			gameSession = new GameSession(0, playerNames, pointsDir);
 			loginManager = new LoginManager(gameSession);
 			listenterThread = new Thread(new Runnable()
 			{

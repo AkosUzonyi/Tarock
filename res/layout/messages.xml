@@ -12,56 +12,41 @@
 		android:padding="10dp"
 		android:visibility="visible"
 		>
-		
-		<LinearLayout
-			android:orientation="vertical"
+	
+		<ScrollView
+			android:id="@+id/messages_scroll"
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
 			android:layout_weight="0.7"
+			android:scrollbars="vertical"
+			android:fillViewport="true"
 			>
-		
-			<ScrollView
-				android:id="@+id/messages_scroll"
+	
+			<TextView
+				android:id="@+id/messages_text_view"
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:scrollbars="vertical"
-				android:fillViewport="true"
-				>
-		
-				<TextView
-					android:id="@+id/messages_text_view"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:layout_weight="1.0"
-					/>
-		
-			</ScrollView>
-		
-		</LinearLayout>
-		
-		<LinearLayout
-			android:orientation="vertical"
+				android:layout_height="match_parent"
+				android:layout_weight="1.0"
+				/>
+	
+		</ScrollView>
+	
+		<ScrollView
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
 			android:layout_weight="0.3"
+			android:scrollbars="vertical"
+			android:fillViewport="true"
 			>
-		
-			<ScrollView
+	
+			<LinearLayout
+				android:id="@+id/available_actions"
+				android:orientation="vertical"
 				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:scrollbars="vertical"
-				android:fillViewport="true"
-				>
-		
-				<LinearLayout
-					android:id="@+id/available_actions"
-					android:orientation="vertical"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:layout_weight="1"
-					/>
-			</ScrollView>
-		</LinearLayout>
+				android:layout_height="match_parent"
+				android:layout_weight="1"
+				/>
+		</ScrollView>
 	</LinearLayout>
 	
 	
@@ -80,56 +65,48 @@
 			android:layout_height="match_parent"
 			android:orientation="vertical"
 			>
-
-   			<LinearLayout
-				android:id="@+id/available_actions_big"
+			
+			<Button
+				android:id="@+id/ultimo_back_buton"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:orientation="vertical"
+				android:layout_marginTop="@dimen/button_margin"
+				android:text="@string/back"
+			    style="@style/button"
 				/>
-				
-				<Button
-					android:id="@+id/ultimo_back_buton"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/button_margin"
-					android:text="@string/back"
-				    style="@style/button"
-					/>
-				<Spinner
-					android:id="@+id/ultimo_type_spinner"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/button_margin"
-					android:entries="@array/ultimo_type_array"
-				    style="@style/spinner"
-					/>
-				<Spinner
-					android:id="@+id/ultimo_suitvalue_spinner"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:visibility="gone"
-					android:layout_marginTop="@dimen/button_margin"
-					android:entries="@array/ultimo_suit_array"
-				    style="@style/spinner"
-					/>
-				<Spinner
-					android:id="@+id/ultimo_round_spinner"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/button_margin"
-					android:entries="@array/ultimo_round_array"
-				    style="@style/spinner"
-					/>
-				<Button
-					android:id="@+id/ultimo_announce_button"
-					android:layout_width="match_parent"
-					android:layout_height="wrap_content"
-					android:layout_marginTop="@dimen/button_margin"
-					android:text="@string/announce"
-				    style="@style/button"
-					/>
-						
+			<Spinner
+				android:id="@+id/ultimo_type_spinner"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="@dimen/button_margin"
+				android:entries="@array/ultimo_type_array"
+			    style="@style/spinner"
+				/>
+			<Spinner
+				android:id="@+id/ultimo_suitvalue_spinner"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:visibility="gone"
+				android:layout_marginTop="@dimen/button_margin"
+				android:entries="@array/ultimo_suit_array"
+			    style="@style/spinner"
+				/>
+			<Spinner
+				android:id="@+id/ultimo_round_spinner"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="@dimen/button_margin"
+				android:entries="@array/ultimo_round_array"
+			    style="@style/spinner"
+				/>
+			<Button
+				android:id="@+id/ultimo_announce_button"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:layout_marginTop="@dimen/button_margin"
+				android:text="@string/announce"
+			    style="@style/button"
+				/>
 		</LinearLayout>
 	</ScrollView>
 </FrameLayout>

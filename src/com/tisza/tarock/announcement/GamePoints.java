@@ -3,13 +3,24 @@ package com.tisza.tarock.announcement;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-abstract class GamePoints extends AnnouncementBase
+public abstract class GamePoints extends AnnouncementBase
 {
 	GamePoints(){}
 	
 	protected abstract int getMinPointsRequired();
+	protected abstract boolean canBeSilent();
 	
 	public Result isSuccessful(GameInstance gi, Team team)
+	{
+		return calculateGamePoints(gi, team) >= getMinPointsRequired() ? (canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL) : Result.FAILED;
+	}
+	
+	protected boolean isMultipliedByWinnerBid()
+	{
+		return true;
+	}
+	
+	public static int calculateGamePoints(GameInstance gi, Team team)
 	{
 		int points = 0;
 		for (int player : gi.calling.getPlayerPairs().getPlayersInTeam(team))
@@ -23,18 +34,7 @@ abstract class GamePoints extends AnnouncementBase
 		{
 			points += c.getPoints();
 		}
-		System.out.println(points);
 		
-		return points >= getMinPointsRequired() ? (canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL) : Result.FAILED;
-	}
-	
-	protected boolean isMultipliedByWinnerBid()
-	{
-		return true;
-	}
-
-	protected boolean canBeSilent()
-	{
-		return true;
+		return points;
 	}
 }

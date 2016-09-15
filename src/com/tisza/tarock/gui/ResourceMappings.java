@@ -33,7 +33,7 @@ public class ResourceMappings
 	private static String silent;
 	private static String passz;
 	
-	public static String getAnnouncementContraContraName(AnnouncementContra ac)
+	public static String getAnnouncementContraName(AnnouncementContra ac)
 	{
 		if (ac == null)
 			return passz;

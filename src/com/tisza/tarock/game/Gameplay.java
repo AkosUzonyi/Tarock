@@ -59,6 +59,11 @@ public class Gameplay
 		return Collections.unmodifiableCollection(pc.getPlaceableCards(firstCard));
 	}
 	
+	public AllPlayersCards getPlayerCards()
+	{
+		return cards;
+	}
+	
 	public boolean isFinished()
 	{
 		return currentRound == null;
@@ -90,5 +95,10 @@ public class Gameplay
 		if (isFinished())
 			throw new IllegalStateException("Game has finished, no one is the next");
 		return currentRound.getNextPlayer();
+	}
+	
+	public Round getCurrentRound()
+	{
+		return currentRound;
 	}
 }

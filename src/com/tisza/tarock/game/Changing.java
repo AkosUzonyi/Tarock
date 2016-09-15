@@ -131,6 +131,11 @@ public class Changing
 		return tarockCounts;
 	}
 	
+	public boolean isDone(int player)
+	{
+		return donePlayer[player];
+	}
+	
 	public boolean isFinished()
 	{
 		for (boolean b : donePlayer)

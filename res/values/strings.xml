@@ -125,7 +125,7 @@
     
     <string name="statictics_self">Saját figurák</string>
     <string name="statictics_opponent">Ellenfél figurái</string>
-    <string name="statictics_points">Pontszám</string>
+    <string name="statictics_points">Pont</string>
     
     <string-array name="ultimo_type_array">
         <item>Pagát</item>

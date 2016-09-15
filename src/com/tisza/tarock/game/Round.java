@@ -22,6 +22,11 @@ public class Round
 		winnerPlayer = currentPlayer;
 	}
 	
+	public int getBeginnerPlayer()
+	{
+		return beginnerPlayer;
+	}
+	
 	public Card getFirstCard()
 	{
 		return cards[beginnerPlayer];

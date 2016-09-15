@@ -1,5 +1,6 @@
 package com.tisza.tarock.gui;
 
+import java.io.*;
 import java.util.*;
 
 import android.app.*;
@@ -21,7 +22,9 @@ public class ServerService extends Service
 		names.add(intent.getStringExtra("name1"));
 		names.add(intent.getStringExtra("name2"));
 		names.add(intent.getStringExtra("name3"));
-		server = new Server(port, names);
+		File pointsDir = new File(getFilesDir(), "points");
+		pointsDir.mkdir();
+		server = new Server(port, names, pointsDir);
 		server.start();
 		return Service.START_NOT_STICKY;
 	}

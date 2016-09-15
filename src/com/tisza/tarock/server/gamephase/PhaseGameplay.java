@@ -23,17 +23,22 @@ public class PhaseGameplay implements GamePhase
 		game.getCurrentGame().gameplay = gameplay;
 		onSuccessfulPlayCard();
 	}
-
+	
 	public void packetFromPlayer(int player, Packet packet)
 	{
 		if (packet instanceof PacketPlayCard)
 		{
+			Round round = gameplay.getCurrentRound();
 			PacketPlayCard packetPlayCard = ((PacketPlayCard)packet);
 			if (packetPlayCard.getPlayer() == player)
 			{
 				if (gameplay.playCard(packetPlayCard.getCard(), player))
 				{
 					game.broadcastPacket(packetPlayCard);
+					if (round.isFinished())
+					{
+						game.broadcastPacket(new PacketCardsTaken(round.getWinner()));
+					}
 					onSuccessfulPlayCard();
 				}
 				else
@@ -46,6 +51,7 @@ public class PhaseGameplay implements GamePhase
 
 	private void onSuccessfulPlayCard()
 	{
+		
 		if (gameplay.isFinished())
 		{
 			game.changeGamePhase(new PhaseEnd(game));

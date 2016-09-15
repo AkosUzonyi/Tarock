@@ -33,6 +33,28 @@ public class PhaseChanging implements GamePhase
 		}
 	}
 
+	public void playerLoggedIn(int player)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			if (changing.isDone(i))
+			{
+				game.sendPacketToPlayer(player, new PacketChangeDone(i));
+			}
+		}
+		
+		if (changing.isDone(player))
+		{
+			game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().changing.getCardsAfter().getPlayerCards(player)));
+		}
+		else
+		{
+			game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().dealing.getCards().getPlayerCards(player)));
+			game.sendPacketToPlayer(player, new PacketChange(changing.getCardsObtainedFromTalon(player), player));
+			game.sendPacketToPlayer(player, new PacketTurn(player, PacketTurn.Type.CHANGE));
+		}
+	}
+
 	public void packetFromPlayer(int player, Packet packet)
 	{
 		if (packet instanceof PacketChange)
@@ -42,6 +64,7 @@ public class PhaseChanging implements GamePhase
 			{
 				if (changing.skart(player, packetChange.getCards()))
 				{
+					game.sendPacketToPlayer(player, new PacketPlayerCards(changing.getCardsAfter().getPlayerCards(player)));
 					game.broadcastPacket(new PacketChangeDone(player));
 					
 					if (changing.isFinished())

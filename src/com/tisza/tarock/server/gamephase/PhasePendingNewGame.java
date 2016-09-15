@@ -20,6 +20,11 @@ public class PhasePendingNewGame implements GamePhase
 		game.broadcastPacket(new PacketReadyForNewGame());
 	}
 
+	public void playerLoggedIn(int player)
+	{
+		game.sendPacketToPlayer(player, new PacketReadyForNewGame());
+	}
+
 	public void packetFromPlayer(int player, Packet packet)
 	{
 		if (packet instanceof PacketReadyForNewGame)

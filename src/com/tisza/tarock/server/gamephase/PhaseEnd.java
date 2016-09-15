@@ -72,6 +72,10 @@ public class PhaseEnd implements GamePhase
 		game.changeGamePhase(new PhasePendingNewGame(game, false));
 	}
 
+	public void playerLoggedIn(int player)
+	{
+	}
+
 	public void packetFromPlayer(int player, Packet packet)
 	{
 	}

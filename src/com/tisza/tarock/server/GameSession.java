@@ -231,6 +231,12 @@ public class GameSession implements Runnable
 				e.printStackTrace();
 			}
 		}
+		
+		if (currentGamePhase != null)
+		{
+			sendPacketToPlayer(player, new PacketStartGame(playerNames, player));
+			currentGamePhase.playerLoggedIn(player);
+		}
 	}
 	
 	public void loginAuthorized(String name, Connection connection)

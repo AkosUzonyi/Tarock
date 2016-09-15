@@ -23,6 +23,18 @@ public class PhaseGameplay implements GamePhase
 		game.getCurrentGame().gameplay = gameplay;
 		onSuccessfulPlayCard();
 	}
+
+	public void playerLoggedIn(int player)
+	{
+		game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().gameplay.getPlayerCards().getPlayerCards(player)));
+		Round currentRound = gameplay.getCurrentRound();
+		for (int p = currentRound.getBeginnerPlayer(); p < currentRound.getNextPlayer(); p++)
+		{
+			game.sendPacketToPlayer(player, new PacketTurn(gameplay.getNextPlayer(), PacketTurn.Type.PLAY_CARD));
+			game.sendPacketToPlayer(player, new PacketPlayCard(currentRound.getCards().get(p), p));
+		}
+		game.sendPacketToPlayer(player, new PacketTurn(gameplay.getNextPlayer(), PacketTurn.Type.PLAY_CARD));
+	}
 	
 	public void packetFromPlayer(int player, Packet packet)
 	{

@@ -25,12 +25,12 @@ public class PhaseDealing implements GamePhase
 		game.changeGamePhase(new PhaseBidding(game));
 	}
 
-	public void packetFromPlayer(int player, Packet packet)
-	{
-	}
-
 	public void playerLoggedIn(int player)
 	{
 		game.sendPacketToPlayer(player, new PacketPlayerCards(d.getCards().getPlayerCards(player)));
+	}
+
+	public void packetFromPlayer(int player, Packet packet)
+	{
 	}
 }

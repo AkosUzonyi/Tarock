@@ -380,10 +380,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 		if (player == myID)
 		{
 			okButton.setOnClickListener(null);
-			myCards.getCards().removeAll(cardsToSkart);
 			cardsToSkart.clear();
 			skarting = false;
-			arrangeCards();
 		}
 	}
 	

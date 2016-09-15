@@ -6,6 +6,7 @@ import java.util.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
+import com.tisza.tarock.net.packet.PacketPhase.Phase;
 
 public class CliClient implements PacketHandler
 {
@@ -14,6 +15,7 @@ public class CliClient implements PacketHandler
 	private List<String> names;
 	private PlayerCards pc;
 	int player = -1;
+	private Phase gamePhase;
 	List<Card> cardsFromTalon;
 	
 	public CliClient(String host, int port, String name) throws Exception
@@ -43,6 +45,11 @@ public class CliClient implements PacketHandler
 			PacketPlayerCards packet = ((PacketPlayerCards)p);
 			pc = packet.getPlayerCards();
 			System.out.println(pc.getCards());
+		}
+		if (p instanceof PacketPhase)
+		{
+			PacketPhase packet = ((PacketPhase)p);
+			gamePhase = packet.getPhase();
 		}
 		if (p instanceof PacketAvailableBids)
 		{
@@ -77,12 +84,12 @@ public class CliClient implements PacketHandler
 			PacketTurn packet = ((PacketTurn)p);
 			if (packet.getPlayer() == player)
 			{
-				if (packet.getType() == PacketTurn.Type.BID)
+				if (gamePhase == Phase.BIDDING)
 				{
 					System.out.print("Choose bid: ");
 					conncection.sendPacket(new PacketBid(sc.nextInt(), player));
 				}
-				if (packet.getType() == PacketTurn.Type.CHANGE)
+				if (gamePhase == Phase.CHANGING)
 				{
 					List<Card> cardsToSkart = new ArrayList<Card>();
 					for (int i = 0; i < cardsFromTalon.size(); i++)
@@ -96,17 +103,17 @@ public class CliClient implements PacketHandler
 					cardsFromTalon.removeAll(cardsToSkart);
 					pc.getCards().addAll(cardsFromTalon);
 				}
-				if (packet.getType() == PacketTurn.Type.CALL)
+				if (gamePhase == Phase.CALLING)
 				{
 					System.out.print("Choose card to call: ");
 					int tarock = sc.nextInt();
 					conncection.sendPacket(new PacketCall(new TarockCard(tarock), player));
 				}
-				if (packet.getType() == PacketTurn.Type.ANNOUNCE)
+				if (gamePhase == Phase.ANNOUNCING)
 				{
 					conncection.sendPacket(new PacketAnnounce(null, player));
 				}
-				if (packet.getType() == PacketTurn.Type.PLAY_CARD)
+				if (gamePhase == Phase.GAMEPLAY)
 				{
 					//conncection.sendPacket(new PacketPlayCard(pc.getCards().get(0), player));
 					

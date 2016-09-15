@@ -7,6 +7,7 @@ import com.tisza.tarock.card.*;
 import com.tisza.tarock.card.filter.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
+import com.tisza.tarock.net.packet.PacketPhase.Phase;
 
 public class RandomClient implements PacketHandler
 {
@@ -15,6 +16,7 @@ public class RandomClient implements PacketHandler
 	private Card firstCard = null;
 	private int playedCardCount = 0;
 	int player = -1;
+	private Phase gamePhase;
 	
 	public RandomClient(String host, int port, String name) throws Exception
 	{
@@ -34,6 +36,11 @@ public class RandomClient implements PacketHandler
 		{
 			PacketPlayerCards packet = ((PacketPlayerCards)p);
 			myCards = packet.getPlayerCards();
+		}
+		if (p instanceof PacketPhase)
+		{
+			PacketPhase packet = ((PacketPhase)p);
+			gamePhase = packet.getPhase();
 		}
 		if (p instanceof PacketAvailableBids)
 		{
@@ -65,11 +72,11 @@ public class RandomClient implements PacketHandler
 			PacketTurn packet = ((PacketTurn)p);
 			if (packet.getPlayer() == player)
 			{
-				if (packet.getType() == PacketTurn.Type.ANNOUNCE)
+				if (gamePhase == Phase.ANNOUNCING)
 				{
 					conncection.sendPacket(new PacketAnnounce(null, player));
 				}
-				if (packet.getType() == PacketTurn.Type.PLAY_CARD)
+				if (gamePhase == Phase.GAMEPLAY)
 				{
 					try
 					{

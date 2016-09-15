@@ -21,16 +21,18 @@ public class PhaseAnnouncing implements GamePhase
 	public void start()
 	{
 		game.getCurrentGame().announcing = announcing;
+		game.broadcastPacket(new PacketPhase(PacketPhase.Phase.ANNOUNCING));
 		onAnnounced();
 	}
 
 	public void playerLoggedIn(int player)
 	{
 		game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().changing.getCardsAfter().getPlayerCards(player)));
+		game.sendPacketToPlayer(player, new PacketPhase(PacketPhase.Phase.ANNOUNCING));		
 		if (announcing.getNextPlayer() == player)
 		{
 			game.sendPacketToPlayer(player, new PacketAvailabeAnnouncements(announcing.getAvailableAnnouncements()));
-			game.sendPacketToPlayer(player, new PacketTurn(player, PacketTurn.Type.ANNOUNCE));
+			game.sendPacketToPlayer(player, new PacketTurn(player));
 		}
 	}
 
@@ -59,7 +61,7 @@ public class PhaseAnnouncing implements GamePhase
 		else
 		{
 			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailabeAnnouncements(announcing.getAvailableAnnouncements()));
-			game.broadcastPacket(new PacketTurn(announcing.getNextPlayer(), PacketTurn.Type.ANNOUNCE));
+			game.broadcastPacket(new PacketTurn(announcing.getNextPlayer()));
 		}
 	}
 }

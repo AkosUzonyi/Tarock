@@ -18,6 +18,7 @@ public class PhaseEnd implements GamePhase
 	public PhaseEnd(GameSession g)
 	{
 		game = g;
+		game.broadcastPacket(new PacketPhase(PacketPhase.Phase.END));
 		
 		Announcing announcing = game.getCurrentGame().announcing;
 		int pointsForCallerTeam = 0;
@@ -74,6 +75,7 @@ public class PhaseEnd implements GamePhase
 
 	public void playerLoggedIn(int player)
 	{
+		game.sendPacketToPlayer(player, new PacketPhase(PacketPhase.Phase.END));		
 	}
 
 	public void packetFromPlayer(int player, Packet packet)

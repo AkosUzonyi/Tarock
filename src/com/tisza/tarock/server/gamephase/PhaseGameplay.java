@@ -21,19 +21,25 @@ public class PhaseGameplay implements GamePhase
 	public void start()
 	{
 		game.getCurrentGame().gameplay = gameplay;
+		game.broadcastPacket(new PacketPhase(PacketPhase.Phase.GAMEPLAY));
 		onSuccessfulPlayCard();
 	}
 
 	public void playerLoggedIn(int player)
 	{
 		game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().gameplay.getPlayerCards().getPlayerCards(player)));
+		game.sendPacketToPlayer(player, new PacketPhase(PacketPhase.Phase.GAMEPLAY));
+		
 		Round currentRound = gameplay.getCurrentRound();
-		for (int p = currentRound.getBeginnerPlayer(); p < currentRound.getNextPlayer(); p++)
+		int bp = currentRound.getBeginnerPlayer();
+		int np = currentRound.getNextPlayer();
+		for (int i = 0; i < (np + 4 - bp) % 4; i++)
 		{
-			game.sendPacketToPlayer(player, new PacketTurn(gameplay.getNextPlayer(), PacketTurn.Type.PLAY_CARD));
+			int p = (i + bp) % 4;
+			game.sendPacketToPlayer(player, new PacketTurn(gameplay.getNextPlayer()));
 			game.sendPacketToPlayer(player, new PacketPlayCard(currentRound.getCards().get(p), p));
 		}
-		game.sendPacketToPlayer(player, new PacketTurn(gameplay.getNextPlayer(), PacketTurn.Type.PLAY_CARD));
+		game.sendPacketToPlayer(player, new PacketTurn(gameplay.getNextPlayer()));
 	}
 	
 	public void packetFromPlayer(int player, Packet packet)
@@ -55,7 +61,7 @@ public class PhaseGameplay implements GamePhase
 				}
 				else
 				{
-					game.broadcastPacket(new PacketTurn(gameplay.getNextPlayer(), PacketTurn.Type.PLAY_CARD));
+					game.broadcastPacket(new PacketTurn(gameplay.getNextPlayer()));
 				}
 			}
 		}
@@ -63,14 +69,13 @@ public class PhaseGameplay implements GamePhase
 
 	private void onSuccessfulPlayCard()
 	{
-		
 		if (gameplay.isFinished())
 		{
 			game.changeGamePhase(new PhaseEnd(game));
 		}
 		else
 		{
-			game.broadcastPacket(new PacketTurn(gameplay.getNextPlayer(), PacketTurn.Type.PLAY_CARD));
+			game.broadcastPacket(new PacketTurn(gameplay.getNextPlayer()));
 		}
 	}
 }

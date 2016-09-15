@@ -21,6 +21,7 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.net.packet.*;
 import com.tisza.tarock.net.packet.PacketAnnouncementStatistics.Entry;
+import com.tisza.tarock.net.packet.PacketPhase.Phase;
 
 public class GameActivtiy extends Activity implements PacketHandler
 {
@@ -245,6 +246,16 @@ public class GameActivtiy extends Activity implements PacketHandler
 		statisticsGamepointsOpponent = (TextView)findViewById(R.id.statistics_gamepoints_opponent);
 		statisticsPointsNames = (LinearLayout)findViewById(R.id.statistics_points_names);
 		statisticsPointsValues = (LinearLayout)findViewById(R.id.statistics_points_values);
+		
+		
+		phaseToCenterView.clear();
+		phaseToCenterView.put(Phase.BIDDING, messagesView);
+		phaseToCenterView.put(Phase.CHANGING, messagesView);
+		phaseToCenterView.put(Phase.CALLING, messagesView);
+		phaseToCenterView.put(Phase.ANNOUNCING, messagesView);
+		phaseToCenterView.put(Phase.GAMEPLAY, playedCardsView);
+		phaseToCenterView.put(Phase.END, statisticsView);
+		showCenterView(null);
 	}
 	
 	private ArrayAdapter<CharSequence> createAdapterForSpinner(int arrayResID)
@@ -274,6 +285,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private int myID = -1;
 	private Map<Card, View> cardToViewMapping = new HashMap<Card, View>();
 	
+	private Phase gamePhase;
+	private Map<Phase, View> phaseToCenterView = new HashMap<PacketPhase.Phase, View>();
+	
 	private String messages;
 	
 	private List<Card> cardsToSkart = new ArrayList<Card>();
@@ -296,20 +310,40 @@ public class GameActivtiy extends Activity implements PacketHandler
 			}
 		}
 		messages = "";
-		showCenterView(messagesView);
 	}
 	
 	private void setCards(PlayerCards cards)
 	{
 		myCards = cards;
-		throwButton.setVisibility(myCards.canBeThrown(false) ? View.VISIBLE : View.GONE);
 		arrangeCards();
+	}
+
+	private void changePhase(Phase phase)
+	{
+		gamePhase = phase;
+		
+		showCenterView(phaseToCenterView.get(phase));
+		
+		int throwButtonVisibility = View.GONE;
+		if (gamePhase == Phase.BIDDING)
+		{
+			if (myCards.canBeThrown(false))
+			{
+				throwButtonVisibility = View.VISIBLE;
+			}
+		}
+		else if (gamePhase == Phase.CHANGING)
+		{
+			if (myCards.canBeThrown(true))
+			{
+				throwButtonVisibility = View.VISIBLE;
+			}
+		}
+		throwButton.setVisibility(throwButtonVisibility);
 	}
 
 	private void onCardsThrown(int player, PlayerCards thrownCards)
 	{
-		showCenterView(messagesView);
-		
 		String msg = "";
 		msg += playerNames.get(player);
 		msg += " ";
@@ -322,8 +356,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void showAvailableBids(List<Integer> bids)
 	{
-		showCenterView(messagesView);
-		
 		availabeActionsView.removeAllViews();
 		for (final int bid : bids)
 		{
@@ -344,8 +376,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onBid(int player, int bid)
 	{
-		showCenterView(messagesView);
-		
 		String msg = "";
 		msg += playerNames.get(player);
 		msg += " ";
@@ -387,8 +417,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onSkartTarock(int[] counts)
 	{
-		showCenterView(messagesView);
-		
 		String msg = "";
 		for (int p = 0; p < 4; p++)
 		{
@@ -408,8 +436,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void showAvailableCalls(List<Card> calls)
 	{
-		showCenterView(messagesView);
-		
 		availabeActionsView.removeAllViews();
 		for (final Card card : calls)
 		{
@@ -429,8 +455,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onCall(int player, Card card)
 	{
-		showCenterView(messagesView);
-		
 		messages += playerNames.get(player);
 		messages += " ";
 		messages += getResources().getString(R.string.message_call);
@@ -443,8 +467,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void showAvailableAnnouncements(List<AnnouncementContra> announcements)
 	{
-		showCenterView(messagesView);
-		
 		Collections.sort(announcements);
 		availabeActionsView.removeAllViews();
 		
@@ -487,8 +509,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void onAnnounce(int player, AnnouncementContra announcement)
 	{
-		showCenterView(messagesView);
-		
 		setUltimoViewVisible(false);
 		
 		String msg = "";
@@ -503,8 +523,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void playCard(int player, Card card)
 	{
-		showCenterView(playedCardsView);
-		
 		int pos = getPositionFromPlayerID(player);
 		
 		if (player == myID)
@@ -605,16 +623,11 @@ public class GameActivtiy extends Activity implements PacketHandler
 		}
 	}
 	
-	private void onTurn(int player, PacketTurn.Type type)
+	private void onTurn(int player)
 	{
-		if (type != PacketTurn.Type.CHANGE)
+		if (gamePhase != PacketPhase.Phase.CHANGING)
 		{
 			highlightName(player);
-		}
-		
-		if (type == PacketTurn.Type.PLAY_CARD)
-		{
-			showCenterView(playedCardsView);
 		}
 	}
 	
@@ -647,8 +660,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 			statisticsPointsNames.addView(nameView, lp);
 			statisticsPointsValues.addView(pointsView, lp);
 		}
-		
-		showCenterView(statisticsView);
 	}
 	
 	private void appendHeaderToStatistics(ViewGroup viewToAppend, int res0, int res1)
@@ -729,7 +740,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 							v.startAnimation(a);
 						}
 					}
-					else if (!isPlayedCardsAnimating)
+					else if (gamePhase == Phase.GAMEPLAY && !isPlayedCardsAnimating)
 					{
 						conncection.sendPacket(new PacketPlayCard(card, myID));
 					}
@@ -771,7 +782,11 @@ public class GameActivtiy extends Activity implements PacketHandler
 				{
 					centerSpace.getChildAt(i).setVisibility(View.GONE);
 				}
-				pendingCenterView.setVisibility(View.VISIBLE);
+				
+				if (pendingCenterView != null)
+				{
+					pendingCenterView.setVisibility(View.VISIBLE);
+				}
 			}
 		}, DELAY);
 	}
@@ -854,6 +869,18 @@ public class GameActivtiy extends Activity implements PacketHandler
 			setCards(packet.getPlayerCards());
 		}
 		
+		if (p instanceof PacketPhase)
+		{
+			PacketPhase packet = ((PacketPhase)p);
+			changePhase(packet.getPhase());
+		}
+		
+		if (p instanceof PacketTurn)
+		{
+			PacketTurn packet = ((PacketTurn)p);
+			onTurn(packet.getPlayer());
+		}
+		
 		if (p instanceof PacketCardsThrown)
 		{
 			PacketCardsThrown packet = ((PacketCardsThrown)p);
@@ -924,12 +951,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			PacketCardsTaken packet = ((PacketCardsTaken)p);
 			onCardsTaken(packet.getWinnerPlayer());
-		}
-		
-		if (p instanceof PacketTurn)
-		{
-			PacketTurn packet = ((PacketTurn)p);
-			onTurn(packet.getPlayer(), packet.getType());
 		}
 		
 		if (p instanceof PacketAnnouncementStatistics)

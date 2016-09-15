@@ -25,33 +25,37 @@ public class PhaseChanging implements GamePhase
 	public void start()
 	{
 		game.getCurrentGame().changing = changing;
+		game.broadcastPacket(new PacketPhase(PacketPhase.Phase.CHANGING));
+		
 		for (int i = 0; i < 4; i++)
 		{
 			List<Card> cards = changing.getCardsObtainedFromTalon(i);
 			game.sendPacketToPlayer(i, new PacketChange(cards, i));
-			game.sendPacketToPlayer(i, new PacketTurn(i, PacketTurn.Type.CHANGE));
+			game.sendPacketToPlayer(i, new PacketTurn(i));
 		}
 	}
 
 	public void playerLoggedIn(int player)
 	{
+		if (changing.isDone(player))
+		{
+			game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().changing.getCardsAfter().getPlayerCards(player)));
+			game.sendPacketToPlayer(player, new PacketPhase(PacketPhase.Phase.CHANGING));
+		}
+		else
+		{
+			game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().dealing.getCards().getPlayerCards(player)));
+			game.sendPacketToPlayer(player, new PacketPhase(PacketPhase.Phase.CHANGING));
+			game.sendPacketToPlayer(player, new PacketChange(changing.getCardsObtainedFromTalon(player), player));
+			game.sendPacketToPlayer(player, new PacketTurn(player));
+		}
+		
 		for (int i = 0; i < 4; i++)
 		{
 			if (changing.isDone(i))
 			{
 				game.sendPacketToPlayer(player, new PacketChangeDone(i));
 			}
-		}
-		
-		if (changing.isDone(player))
-		{
-			game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().changing.getCardsAfter().getPlayerCards(player)));
-		}
-		else
-		{
-			game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().dealing.getCards().getPlayerCards(player)));
-			game.sendPacketToPlayer(player, new PacketChange(changing.getCardsObtainedFromTalon(player), player));
-			game.sendPacketToPlayer(player, new PacketTurn(player, PacketTurn.Type.CHANGE));
 		}
 	}
 
@@ -75,7 +79,7 @@ public class PhaseChanging implements GamePhase
 				}
 				else
 				{
-					game.sendPacketToPlayer(player, new PacketTurn(player, PacketTurn.Type.CHANGE));
+					game.sendPacketToPlayer(player, new PacketTurn(player));
 				}
 			}
 		}

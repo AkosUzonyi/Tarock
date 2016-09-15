@@ -16,7 +16,6 @@ import com.tisza.tarock.net.packet.*;
 public class ResourceMappings
 {
 	public static Map<Card, Integer> cardToImageResource = new HashMap<Card, Integer>();
-	public static Map<PacketTurn.Type, String> turnAcitionToMessage = new HashMap<PacketTurn.Type, String>();
 	public static Map<Integer, String> bidToName = new HashMap<Integer, String>();
 	public static Map<Announcement, String> announcementToName = new HashMap<Announcement, String>();
 	

@@ -1,5 +1,8 @@
 package com.tisza.tarock.server.gamephase;
 
+import java.util.*;
+
+import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.Bidding.Invitation;
 import com.tisza.tarock.net.packet.*;
@@ -31,7 +34,7 @@ public class PhaseAnnouncing implements GamePhase
 		game.sendPacketToPlayer(player, new PacketPhase(PacketPhase.Phase.ANNOUNCING));		
 		if (announcing.getNextPlayer() == player)
 		{
-			game.sendPacketToPlayer(player, new PacketAvailabeAnnouncements(announcing.getAvailableAnnouncements()));
+			game.sendPacketToPlayer(player, new PacketAvailableAnnouncements(getAvailableAnnouncementsShown()));
 			game.sendPacketToPlayer(player, new PacketTurn(player));
 		}
 	}
@@ -60,8 +63,21 @@ public class PhaseAnnouncing implements GamePhase
 		}
 		else
 		{
-			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailabeAnnouncements(announcing.getAvailableAnnouncements()));
+			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailableAnnouncements(getAvailableAnnouncementsShown()));
 			game.broadcastPacket(new PacketTurn(announcing.getNextPlayer()));
 		}
+	}
+	
+	private List<AnnouncementContra> getAvailableAnnouncementsShown()
+	{
+		List<AnnouncementContra> result = new ArrayList<AnnouncementContra>();
+		for (AnnouncementContra ac : announcing.getAvailableAnnouncements())
+		{
+			if (ac.getAnnouncement().isShownToUser())
+			{
+				result.add(ac);
+			}
+		}
+		return result;
 	}
 }

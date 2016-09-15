@@ -70,7 +70,7 @@ public abstract class Packet
 		register(13, PacketSkartTarock.class);
 		register(14, PacketAvailableCalls.class);
 		register(15, PacketCall.class);
-		register(16, PacketAvailabeAnnouncements.class);
+		register(16, PacketAvailableAnnouncements.class);
 		register(17, PacketAnnounce.class);
 		register(18, PacketPlayCard.class);
 		register(19, PacketCardsTaken.class);

@@ -6,13 +6,13 @@ import java.util.*;
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.game.*;
 
-public class PacketAvailabeAnnouncements extends Packet
+public class PacketAvailableAnnouncements extends Packet
 {
 	private List<AnnouncementContra> announcements;
 	
-	PacketAvailabeAnnouncements() {}
+	PacketAvailableAnnouncements() {}
 	
-	public PacketAvailabeAnnouncements(List<AnnouncementContra> announcements)
+	public PacketAvailableAnnouncements(List<AnnouncementContra> announcements)
 	{
 		this.announcements = announcements;
 	}

@@ -37,10 +37,4 @@ public class PacketAvailableBids extends Packet
 			dos.writeByte(bid);
 		}
 	}
-
-	@Override
-	public String toString()
-	{
-		return "PacketAvailableBids [bids=" + bids + "]";
-	}
 }

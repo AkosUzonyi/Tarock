@@ -929,9 +929,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 			onCall(packet.getPlayer(), packet.getCalledCard());
 		}
 		
-		if (p instanceof PacketAvailabeAnnouncements)
+		if (p instanceof PacketAvailableAnnouncements)
 		{
-			PacketAvailabeAnnouncements packet = ((PacketAvailabeAnnouncements)p);
+			PacketAvailableAnnouncements packet = ((PacketAvailableAnnouncements)p);
 			showAvailableAnnouncements(packet.getAvailableAnnouncements());
 		}
 		

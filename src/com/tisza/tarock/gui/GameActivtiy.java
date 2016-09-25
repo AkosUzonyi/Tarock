@@ -57,10 +57,11 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private PlayedCardView[] playedCardViews;
 	
 	private View statisticsView;
-	private LinearLayout statisticsSelfEntriesView;
-	private LinearLayout statisticsOpponentEntriesView;
 	private TextView statisticsGamepointsSelf;
 	private TextView statisticsGamepointsOpponent;
+	private LinearLayout statisticsSelfEntriesView;
+	private LinearLayout statisticsOpponentEntriesView;
+	private TextView statisticsSumPointsView;
 	private LinearLayout statisticsPointsNames;
 	private LinearLayout statisticsPointsValues;
 	
@@ -242,13 +243,13 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		layoutInflater.inflate(R.layout.statistics, centerSpace);
 		statisticsView = findViewById(R.id.statistics_view);
-		statisticsSelfEntriesView = (LinearLayout)findViewById(R.id.statistics_self_entries_list);
-		statisticsOpponentEntriesView = (LinearLayout)findViewById(R.id.statistics_opponent_entries_list);
 		statisticsGamepointsSelf = (TextView)findViewById(R.id.statistics_gamepoints_self);
 		statisticsGamepointsOpponent = (TextView)findViewById(R.id.statistics_gamepoints_opponent);
+		statisticsSelfEntriesView = (LinearLayout)findViewById(R.id.statistics_self_entries_list);
+		statisticsOpponentEntriesView = (LinearLayout)findViewById(R.id.statistics_opponent_entries_list);
+		statisticsSumPointsView = (TextView)findViewById(R.id.statistics_sum_points);
 		statisticsPointsNames = (LinearLayout)findViewById(R.id.statistics_points_names);
 		statisticsPointsValues = (LinearLayout)findViewById(R.id.statistics_points_values);
-		
 		
 		phaseToCenterView.clear();
 		phaseToCenterView.put(Phase.BIDDING, messagesView);
@@ -287,6 +288,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private List<Card> cardsToSkart = new ArrayList<Card>();
 	private boolean skarting = false;
+
+	private boolean waitingForTakeAnimation;
 	
 	private void onStartGame(List<String> playerNames, int myID)
 	{
@@ -582,6 +585,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onCardsTaken(final int winnerPlayer)
 	{
+		waitingForTakeAnimation = true;
 		new Handler().postDelayed(new Runnable()
 		{
 			public void run()
@@ -589,6 +593,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 				for (PlayedCardView playedCardView : playedCardViews)
 				{
 					playedCardView.animateTake(getPositionFromPlayerID(winnerPlayer));
+					waitingForTakeAnimation = false;
 				}
 			}
 		}, DELAY);
@@ -602,7 +607,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		}
 	}
 	
-	private void showStatistics(int selfGamePoints, int opponentGamePoints, List<PacketAnnouncementStatistics.Entry> selfEntries, List<Entry> opponentEntries, int[] points)
+	private void showStatistics(int selfGamePoints, int opponentGamePoints, List<PacketAnnouncementStatistics.Entry> selfEntries, List<Entry> opponentEntries, int sumPoints, int[] points)
 	{
 		statisticsGamepointsSelf.setText(selfGamePoints + "");
 		statisticsGamepointsOpponent.setText(opponentGamePoints + "");
@@ -615,6 +620,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		appendHeaderToStatistics(statisticsOpponentEntriesView, R.string.statictics_opponent, R.string.statictics_points);
 		appendEntriesToStatistics(statisticsOpponentEntriesView, opponentEntries);
+		
+		statisticsSumPointsView.setText(sumPoints + "");
+		statisticsSumPointsView.setTextColor(sumPoints >= 0 ? Color.BLACK : Color.RED);
 		
 		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
 		lp.weight = 0.25F;
@@ -637,7 +645,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	{
 		View entryView = layoutInflater.inflate(R.layout.statistics_header, viewToAppend, false);
 		TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
-		TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_announcement_points);
+		TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
 		
 		nameView.setText(res0);
 		pointsView.setText(res1);
@@ -651,11 +659,11 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			View entryView = layoutInflater.inflate(R.layout.statistics_entry, viewToAppend, false);
 			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
-			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_announcement_points);
+			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
 			
 			nameView.setText(ResourceMappings.getAnnouncementContraName(entry.getAnnouncementContra()));
 			pointsView.setText(entry.getPoints() + "");
-			pointsView.setTextColor(entry.getPoints() > 0 ? Color.BLACK : Color.RED);
+			pointsView.setTextColor(entry.getPoints() >= 0 ? Color.BLACK : Color.RED);
 			
 			viewToAppend.addView(entryView);
 		}
@@ -711,7 +719,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 							v.startAnimation(a);
 						}
 					}
-					else if (gamePhase == Phase.GAMEPLAY && !playedCardViews[0].isAnimating())
+					else if (gamePhase == Phase.GAMEPLAY && !waitingForTakeAnimation && !playedCardViews[0].isAnimating())
 					{
 						conncection.sendPacket(new PacketPlayCard(card, myID));
 					}
@@ -914,7 +922,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		if (p instanceof PacketAnnouncementStatistics)
 		{
 			PacketAnnouncementStatistics packet = ((PacketAnnouncementStatistics)p);
-			showStatistics(packet.getSelfGamePoints(), packet.getOpponentGamePoints(), packet.getSelfEntries(), packet.getOpponentEntries(), packet.getPoints());
+			showStatistics(packet.getSelfGamePoints(), packet.getOpponentGamePoints(), packet.getSelfEntries(), packet.getOpponentEntries(), packet.getSumPoints(), packet.getPoints());
 		}
 		
 		if (p instanceof PacketReadyForNewGame)

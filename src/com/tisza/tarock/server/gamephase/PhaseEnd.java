@@ -14,6 +14,7 @@ public class PhaseEnd implements GamePhase
 	private Map<Team, Integer> gamePointsForTeams = new HashMap<Team, Integer>();
 	private Map<Team, List<PacketAnnouncementStatistics.Entry>> statEntriesForTeams = new HashMap<Team, List<PacketAnnouncementStatistics.Entry>>();
 	private int[] points = new int[4];
+	private int pointsForCallerTeam;
 	
 	public PhaseEnd(GameSession g)
 	{
@@ -21,7 +22,7 @@ public class PhaseEnd implements GamePhase
 		game.broadcastPacket(new PacketPhase(PacketPhase.Phase.END));
 		
 		Announcing announcing = game.getCurrentGame().announcing;
-		int pointsForCallerTeam = 0;
+		pointsForCallerTeam = 0;
 		
 		for (Team team : Team.values())
 		{
@@ -67,7 +68,8 @@ public class PhaseEnd implements GamePhase
 			int opponentGamePoints = gamePointsForTeams.get(team.getOther());
 			List<Entry> selfEntries = statEntriesForTeams.get(team);
 			List<Entry> opponentEntries = statEntriesForTeams.get(team.getOther());
-			game.sendPacketToPlayer(i, new PacketAnnouncementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, game.getPoints()));
+			int sumPoints = pointsForCallerTeam * (team == Team.CALLER ? 1 : -1);
+			game.sendPacketToPlayer(i, new PacketAnnouncementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, game.getPoints()));
 		}
 		
 		game.changeGamePhase(new PhasePendingNewGame(game, false));

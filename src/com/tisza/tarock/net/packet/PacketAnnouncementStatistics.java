@@ -11,16 +11,18 @@ public class PacketAnnouncementStatistics extends Packet
 	private int selfGamePoints, opponentGamePoints;
 	private List<Entry> selfEntries;
 	private List<Entry> opponentEntries;
+	private int sumPoints;
 	private int[] points;
 	
 	PacketAnnouncementStatistics() {}
 	
-	public PacketAnnouncementStatistics(int selfGamePoints, int opponentGamePoints, List<Entry> selfEntries, List<Entry> opponentEntries, int[] points)
+	public PacketAnnouncementStatistics(int selfGamePoints, int opponentGamePoints, List<Entry> selfEntries, List<Entry> opponentEntries, int sumPoints, int[] points)
 	{
 		this.selfGamePoints = selfGamePoints;
 		this.opponentGamePoints = opponentGamePoints;
 		this.selfEntries = selfEntries;
 		this.opponentEntries = opponentEntries;
+		this.sumPoints = sumPoints;
 		this.points = points;
 	}
 
@@ -44,6 +46,11 @@ public class PacketAnnouncementStatistics extends Packet
 		return opponentEntries;
 	}
 
+	public int getSumPoints()
+	{
+		return sumPoints;
+	}
+
 	public int[] getPoints()
 	{
 		return points;
@@ -55,6 +62,7 @@ public class PacketAnnouncementStatistics extends Packet
 		opponentGamePoints = dis.readByte();
 		selfEntries = readEntries(dis);
 		opponentEntries = readEntries(dis);
+		sumPoints = dis.readInt();
 		points = new int[4];
 		for (int i = 0; i < 4; i++)
 		{
@@ -82,6 +90,7 @@ public class PacketAnnouncementStatistics extends Packet
 		dos.writeByte(opponentGamePoints);
 		writeEntries(dos, selfEntries);
 		writeEntries(dos, opponentEntries);
+		dos.writeInt(sumPoints);
 		for (int i = 0; i < 4; i++)
 		{
 			dos.writeInt(points[i]);

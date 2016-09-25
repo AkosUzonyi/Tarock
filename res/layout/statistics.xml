@@ -13,7 +13,7 @@
     
 	<LinearLayout
 	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
+	    android:layout_height="wrap_content"
 	    android:orientation="vertical"
 	    >
 	    	
@@ -58,7 +58,31 @@
 		    android:layout_marginTop="5dp"
 		    >
 		</LinearLayout>
-					
+	    
+		<LinearLayout
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:orientation="horizontal"
+		    android:layout_marginTop="10dp"
+		    >
+		
+		    <TextView
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="0.7"
+		        android:text="@string/statictics_sum"
+		        android:textSize="16sp"
+		        />	
+		
+		    <TextView
+		        android:id="@+id/statistics_sum_points"
+		        android:layout_width="0dp"
+		        android:layout_height="wrap_content"
+		        android:layout_weight="0.3"
+		        android:textSize="16sp"
+		        />	
+		</LinearLayout>
+
 		<LinearLayout
 		    android:id="@+id/statistics_points_names"
 		    android:layout_width="match_parent"

@@ -11,7 +11,7 @@ import android.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.card.*;
 
-public class PlacedCardView extends ImageView
+public class PlayedCardView extends ImageView
 {
 	private int orientation;
 	
@@ -19,7 +19,7 @@ public class PlacedCardView extends ImageView
 
 	private boolean isAnimating = false;
 
-	public PlacedCardView(Context context, int width, int orientation)
+	public PlayedCardView(Context context, int width, int orientation)
 	{
 		super(context);
 		this.orientation = orientation;

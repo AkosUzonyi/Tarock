@@ -54,7 +54,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private Button announceButton;
 	
 	private RelativeLayout playedCardsView;
-	private PlacedCardView[] playedCardViews;
+	private PlayedCardView[] playedCardViews;
 	
 	private View statisticsView;
 	private LinearLayout statisticsSelfEntriesView;
@@ -232,10 +232,10 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		playedCardsView = new RelativeLayout(this);
 		playedCardsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
-		playedCardViews = new PlacedCardView[4];
+		playedCardViews = new PlayedCardView[4];
 		for (int i = 0; i < 4; i++)
 		{
-			playedCardViews[i] = new PlacedCardView(this, cardWidth, i);
+			playedCardViews[i] = new PlayedCardView(this, cardWidth, i);
 			playedCardsView.addView(playedCardViews[i]);
 		}
 		centerSpace.addView(playedCardsView);
@@ -525,7 +525,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private void playCard(int player, Card card)
 	{
 		int pos = getPositionFromPlayerID(player);
-		final PlacedCardView playedCardView = playedCardViews[pos];
+		final PlayedCardView playedCardView = playedCardViews[pos];
 		
 		playedCardView.addCard(card);
 		playedCardView.bringToFront();
@@ -586,7 +586,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			public void run()
 			{
-				for (PlacedCardView playedCardView : playedCardViews)
+				for (PlayedCardView playedCardView : playedCardViews)
 				{
 					playedCardView.animateTake(getPositionFromPlayerID(winnerPlayer));
 				}
@@ -679,7 +679,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 			cardView.setPadding(padding, padding, padding, padding);
 			cardView.setLayoutParams(new LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
 			if (card != null)
-				cardView.setImageResource(PlacedCardView.getBitmapResForCard(card));
+				cardView.setImageResource(PlayedCardView.getBitmapResForCard(card));
 			
 			final LinearLayout parentView = i < cardsUp ? myCardsView1 : myCardsView0;
 			parentView.addView(cardView);

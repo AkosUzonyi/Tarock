@@ -256,15 +256,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 		statisticsPointsValueViews[1] = (TextView)findViewById(R.id.statistics_points_value_1);
 		statisticsPointsValueViews[2] = (TextView)findViewById(R.id.statistics_points_value_2);
 		statisticsPointsValueViews[3] = (TextView)findViewById(R.id.statistics_points_value_3);
-		
-		phaseToCenterView.clear();
-		phaseToCenterView.put(Phase.BIDDING, messagesView);
-		phaseToCenterView.put(Phase.CHANGING, messagesView);
-		phaseToCenterView.put(Phase.CALLING, messagesView);
-		phaseToCenterView.put(Phase.ANNOUNCING, messagesView);
-		phaseToCenterView.put(Phase.GAMEPLAY, playedCardsView);
-		phaseToCenterView.put(Phase.END, statisticsView);
-		showCenterView(null);
 	}
 	
 	private void setUltimoViewVisible(boolean visible)
@@ -288,7 +279,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private Map<Card, View> cardToViewMapping = new HashMap<Card, View>();
 	
 	private Phase gamePhase;
-	private Map<Phase, View> phaseToCenterView = new HashMap<PacketPhase.Phase, View>();
 	
 	private String messages;
 	
@@ -324,32 +314,47 @@ public class GameActivtiy extends Activity implements PacketHandler
 	{
 		gamePhase = phase;
 		
-		View centerView = phaseToCenterView.get(phase);
+		throwButton.setVisibility(View.GONE);
+		
 		if (phase == Phase.BIDDING)
 		{
-			showCenterView(centerView);
-		}
-		else
-		{
-			showCenterViewDelayed(centerView);
-		}
-		
-		int throwButtonVisibility = View.GONE;
-		if (gamePhase == Phase.BIDDING)
-		{
+			showCenterView(messagesView);
+			
 			if (myCards.canBeThrown(false))
 			{
-				throwButtonVisibility = View.VISIBLE;
+				throwButton.setVisibility(View.VISIBLE);
 			}
 		}
-		else if (gamePhase == Phase.CHANGING)
+		else if (phase == Phase.CALLING)
 		{
+			showCenterView(messagesView);
+			
+			if (myCards.canBeThrown(false))
+			{
+				throwButton.setVisibility(View.VISIBLE);
+			}
+		}
+		else if (phase == Phase.CHANGING)
+		{
+			showCenterView(messagesView);
+			
 			if (myCards.canBeThrown(true))
 			{
-				throwButtonVisibility = View.VISIBLE;
+				throwButton.setVisibility(View.VISIBLE);
 			}
 		}
-		throwButton.setVisibility(throwButtonVisibility);
+		else if (phase == Phase.ANNOUNCING)
+		{
+			showCenterView(messagesView);
+		}
+		else if (phase == Phase.GAMEPLAY)
+		{
+			showCenterViewDelayed(playedCardsView);
+		}
+		else if (phase == Phase.END)
+		{
+			showCenterViewDelayed(statisticsView);
+		}
 	}
 
 	private void onCardsThrown(int player, PlayerCards thrownCards)
@@ -405,6 +410,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		skarting = true;
 		arrangeCards();
 		
+		okButton.setVisibility(View.VISIBLE);
 		okButton.setOnClickListener(new OnClickListener()
 		{
 			public void onClick(View v)
@@ -419,7 +425,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		setHiglighted(player, false);
 		if (player == myID)
 		{
-			okButton.setOnClickListener(null);
+			okButton.setVisibility(View.GONE);
 			cardsToSkart.clear();
 			skarting = false;
 		}
@@ -507,10 +513,12 @@ public class GameActivtiy extends Activity implements PacketHandler
 			availabeActionsView.addView(announceButton);
 		}
 		
+		okButton.setVisibility(View.VISIBLE);
 		okButton.setOnClickListener(new OnClickListener()
 		{
 			public void onClick(View v)
 			{
+				okButton.setVisibility(View.GONE);
 				availabeActionsView.removeAllViews();
 				conncection.sendPacket(new PacketAnnounce(null, myID));
 			}
@@ -928,10 +936,12 @@ public class GameActivtiy extends Activity implements PacketHandler
 		
 		if (p instanceof PacketReadyForNewGame)
 		{
+			okButton.setVisibility(View.VISIBLE);
 			okButton.setOnClickListener(new OnClickListener()
 			{
 				public void onClick(View v)
 				{
+					okButton.setVisibility(View.GONE);
 					conncection.sendPacket(new PacketReadyForNewGame());
 				}
 			});

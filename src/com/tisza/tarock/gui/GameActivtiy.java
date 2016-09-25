@@ -11,7 +11,6 @@ import android.os.*;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.animation.*;
-import android.view.animation.Animation.AnimationListener;
 import android.widget.*;
 
 import com.tisza.tarock.*;
@@ -25,7 +24,9 @@ import com.tisza.tarock.net.packet.PacketPhase.Phase;
 
 public class GameActivtiy extends Activity implements PacketHandler
 {
-	private static final int DELAY = 120;
+	public static final String LOG_TAG = "Tarokk";
+	
+	private static final int DELAY = 1600;
 	private static final int CARDS_PER_ROW = 6;
 	private int cardWidth;
 	
@@ -132,6 +133,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 		setContentView(game);
 		
 		centerSpace = (FrameLayout)findViewById(R.id.center_space);
+		centerSpace.bringToFront();
 		
 		playerNameViews = new TextView[]
 		{
@@ -258,13 +260,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 		showCenterView(null);
 	}
 	
-	private ArrayAdapter<CharSequence> createAdapterForSpinner(int arrayResID)
-	{
-		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, arrayResID, android.R.layout.simple_spinner_item);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-		return adapter;
-	}
-	
 	private void setUltimoViewVisible(boolean visible)
 	{
 		if (visible)
@@ -293,8 +288,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private List<Card> cardsToSkart = new ArrayList<Card>();
 	private boolean skarting = false;
 	
-	private boolean isPlayedCardsAnimating = false;
-	
 	private void onStartGame(List<String> playerNames, int myID)
 	{
 		inflateGameViews();
@@ -322,7 +315,15 @@ public class GameActivtiy extends Activity implements PacketHandler
 	{
 		gamePhase = phase;
 		
-		showCenterView(phaseToCenterView.get(phase));
+		View centerView = phaseToCenterView.get(phase);
+		if (phase == Phase.BIDDING)
+		{
+			showCenterView(centerView);
+		}
+		else
+		{
+			showCenterViewDelayed(centerView);
+		}
 		
 		int throwButtonVisibility = View.GONE;
 		if (gamePhase == Phase.BIDDING)
@@ -524,84 +525,42 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private void playCard(int player, Card card)
 	{
 		int pos = getPositionFromPlayerID(player);
+		final PlacedCardView playedCardView = playedCardViews[pos];
+		
+		playedCardView.addCard(card);
+		playedCardView.bringToFront();
+		//playedCardView.animatePlay();
 		
 		if (player == myID)
 		{
 			myCards.removeCard(card);
-			View cardView = cardToViewMapping.remove(card);
-			myCardsView0.removeView(cardView);
-			myCardsView1.removeView(cardView);
+			
+			View myCardView = cardToViewMapping.remove(card);
+			myCardsView0.removeView(myCardView);
+			myCardsView1.removeView(myCardView);
 			
 			if (myCards.getCards().size() == CARDS_PER_ROW)
 			{
 				arrangeCards();
 			}
-		}
-		
-		playedCardViews[pos].setImageResource(getBitmapResForCard(card));
-		playedCardViews[pos].bringToFront();
-	}
-	
-	private void onCardsTaken(int winnerPlayer)
-	{
-		isPlayedCardsAnimating = true;
-		new Handler().postDelayed(new Runnable()
-		{
-			public void run()
-			{
-				for (PlacedCardView v : playedCardViews)
-				{
-					v.setImageBitmap(null);
-					isPlayedCardsAnimating = false;
-				}
-				//animateCards(winnerPlayer);
-			}
-		}, DELAY);
-	}
-
-	private void animateCards(int winnerPlayer)
-	{
-		final int winnerDir = getPositionFromPlayerID(winnerPlayer);
-		
-		for (int p = 0; p < 4; p++)
-		{
-			final int cardPlayer = p;
-			final int cardDir = getPositionFromPlayerID(cardPlayer);
-			final PlacedCardView cardView = playedCardViews[cardDir];
 			
-			final Animation currentAnim = cardView.getAnimation();
-			currentAnim.setInterpolator(ReverseInterpolator.instance);
-			currentAnim.setFillBefore(true);
-			currentAnim.setFillAfter(false);
+			/*int[] myCardViewLocation = new int[2];
+			myCardView.getLocationOnScreen(myCardViewLocation);
+			int[] playedCardViewLocation = new int[2];
+			playedCardView.getLocationOnScreen(playedCardViewLocation);
 			
-			float tx = 0;
-			float ty = 0;
-			if (winnerDir == 0)
-			{
-				ty = playedCardsView.getHeight() / 2;
-			}
-			else if (winnerDir == 1)
-			{
-				tx = playedCardsView.getWidth() / 2;
-			}
-			else if (winnerDir == 2)
-			{
-				ty = -playedCardsView.getHeight() / 2;
-			}
-			else if (winnerDir == 3)
-			{
-				tx = -playedCardsView.getWidth() / 2;
-			}
+			final Animation currentAnim = playedCardView.createPositionAnimation();
 			
-			Animation takeAnim = new TranslateAnimation(0, tx, 0, ty);
-			takeAnim.setFillAfter(true);
+			float tx = myCardViewLocation[0] - playedCardViewLocation[0];
+			float ty = myCardViewLocation[1] - playedCardViewLocation[1];
+			Animation placeAnim = new TranslateAnimation(-tx, 0, -ty, 0);
 			
 			AnimationSet animSet = new AnimationSet(false);
-			animSet.addAnimation(currentAnim);
-			animSet.addAnimation(takeAnim);
-			animSet.setDuration(4000);
-			cardView.startAnimation(animSet);
-			//centerSpace.postInvalidateDelayed(1000);
+			//animSet.addAnimation(currentAnim);
+			animSet.addAnimation(placeAnim);
+			animSet.setFillAfter(true);
+			animSet.setDuration(800);
+			playedCardView.startAnimation(animSet);
 			
 			animSet.setAnimationListener(new AnimationListener()
 			{
@@ -615,12 +574,24 @@ public class GameActivtiy extends Activity implements PacketHandler
 				
 				public void onAnimationEnd(Animation animation)
 				{
-					currentAnim.setInterpolator(new LinearInterpolator());
-					
-					isPlayedCardsAnimating = false;
+					playedCardView.startAnimation(playedCardView.createPositionAnimation());
 				}
-			});
+			});*/
 		}
+	}
+	
+	private void onCardsTaken(final int winnerPlayer)
+	{
+		new Handler().postDelayed(new Runnable()
+		{
+			public void run()
+			{
+				for (PlacedCardView playedCardView : playedCardViews)
+				{
+					playedCardView.animateTake(getPositionFromPlayerID(winnerPlayer));
+				}
+			}
+		}, DELAY);
 	}
 	
 	private void onTurn(int player)
@@ -708,7 +679,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 			cardView.setPadding(padding, padding, padding, padding);
 			cardView.setLayoutParams(new LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
 			if (card != null)
-				cardView.setImageResource(getBitmapResForCard(card));
+				cardView.setImageResource(PlacedCardView.getBitmapResForCard(card));
 			
 			final LinearLayout parentView = i < cardsUp ? myCardsView1 : myCardsView0;
 			parentView.addView(cardView);
@@ -740,7 +711,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 							v.startAnimation(a);
 						}
 					}
-					else if (gamePhase == Phase.GAMEPLAY && !isPlayedCardsAnimating)
+					else if (gamePhase == Phase.GAMEPLAY && !playedCardViews[0].isAnimating())
 					{
 						conncection.sendPacket(new PacketPlayCard(card, myID));
 					}
@@ -766,8 +737,19 @@ public class GameActivtiy extends Activity implements PacketHandler
 		}
 	}
 	
-	private View pendingCenterView;
 	private void showCenterView(final View v)
+	{
+		pendingCenterView = v;
+		int count = centerSpace.getChildCount();
+		for (int i = 0; i < count; i++)
+		{
+			View child = centerSpace.getChildAt(i);
+			child.setVisibility(child == v ? View.VISIBLE : View.GONE);
+		}
+	}
+	
+	private View pendingCenterView;
+	private void showCenterViewDelayed(final View v)
 	{
 		pendingCenterView = v;
 		new Handler().postDelayed(new Runnable()
@@ -777,16 +759,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 				if (pendingCenterView != v)
 					return;
 				
-				int count = centerSpace.getChildCount();
-				for (int i = 0; i < count; i++)
-				{
-					centerSpace.getChildAt(i).setVisibility(View.GONE);
-				}
-				
-				if (pendingCenterView != null)
-				{
-					pendingCenterView.setVisibility(View.VISIBLE);
-				}
+				showCenterView(pendingCenterView);
 			}
 		}, DELAY);
 	}
@@ -833,21 +806,6 @@ public class GameActivtiy extends Activity implements PacketHandler
 				playerNameViews[pos].setBackgroundColor(Color.TRANSPARENT);
 			}
 		}
-	}
-	
-	private int getBitmapResForCard(Card card)
-	{
-		int id;
-		if (ResourceMappings.cardToImageResource.containsKey(card))
-		{
-			id = ResourceMappings.cardToImageResource.get(card);
-		}
-		else
-		{
-			throw new RuntimeException(card + " has no image");
-		}
-
-		return id;
 	}
 	
 	private int getPositionFromPlayerID(int id)

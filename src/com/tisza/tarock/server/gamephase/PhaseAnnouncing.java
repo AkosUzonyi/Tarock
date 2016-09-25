@@ -2,7 +2,6 @@ package com.tisza.tarock.server.gamephase;
 
 import java.util.*;
 
-import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.Bidding.Invitation;
 import com.tisza.tarock.net.packet.*;

@@ -80,7 +80,7 @@ public class RandomClient implements PacketHandler
 				{
 					try
 					{
-						Thread.sleep(150);
+						Thread.sleep(2500);
 					}
 					catch (InterruptedException e)
 					{

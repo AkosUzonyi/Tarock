@@ -83,7 +83,19 @@ public class Calling
 		if (isFinished())
 			throw new IllegalStateException();
 		
-		List<Card> callOptions = new ArrayList<Card>();
+		Set<Card> callOptions = new LinkedHashSet<Card>();
+		
+		if (invit == Invitation.XIX)
+		{
+			Card c = new TarockCard(19);
+			callOptions.add(c);
+		}
+		
+		if (invit == Invitation.XVIII)
+		{
+			Card c = new TarockCard(18);
+			callOptions.add(c);
+		}
 		
 		PlayerCards pc = cards.getPlayerCards(callerPlayer);
 		for (int t = 20; t >= 1; t--)
@@ -106,30 +118,13 @@ public class Calling
 					callOptions.add(c);
 				}
 			}
-			return callOptions;
 		}
-		
-		if (invit == Invitation.XIX)
+		else
 		{
-			Card c = new TarockCard(19);
-			if (!callOptions.contains(c))
-			{
-				callOptions.add(c);
-			}
+			callOptions.addAll(pc.filter(new CallableCardFilter()));
 		}
 		
-		if (invit == Invitation.XVIII)
-		{
-			Card c = new TarockCard(18);
-			if (!callOptions.contains(c))
-			{
-				callOptions.add(c);
-			}
-		}
-		
-		callOptions.addAll(pc.filter(new CallableCardFilter()));
-		
-		return callOptions;
+		return new ArrayList<Card>(callOptions);
 	}
 
 	public Invitation getInvitationAccepted()

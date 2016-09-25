@@ -62,8 +62,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private LinearLayout statisticsSelfEntriesView;
 	private LinearLayout statisticsOpponentEntriesView;
 	private TextView statisticsSumPointsView;
-	private LinearLayout statisticsPointsNames;
-	private LinearLayout statisticsPointsValues;
+	private TextView[] statisticsPointsNameViews = new TextView[4];
+	private TextView[] statisticsPointsValueViews = new TextView[4];
 	
 	@SuppressWarnings("deprecation")
 	protected void onCreate(Bundle savedInstanceState)
@@ -248,8 +248,14 @@ public class GameActivtiy extends Activity implements PacketHandler
 		statisticsSelfEntriesView = (LinearLayout)findViewById(R.id.statistics_self_entries_list);
 		statisticsOpponentEntriesView = (LinearLayout)findViewById(R.id.statistics_opponent_entries_list);
 		statisticsSumPointsView = (TextView)findViewById(R.id.statistics_sum_points);
-		statisticsPointsNames = (LinearLayout)findViewById(R.id.statistics_points_names);
-		statisticsPointsValues = (LinearLayout)findViewById(R.id.statistics_points_values);
+		statisticsPointsNameViews[0] = (TextView)findViewById(R.id.statistics_points_name_0);
+		statisticsPointsNameViews[1] = (TextView)findViewById(R.id.statistics_points_name_1);
+		statisticsPointsNameViews[2] = (TextView)findViewById(R.id.statistics_points_name_2);
+		statisticsPointsNameViews[3] = (TextView)findViewById(R.id.statistics_points_name_3);
+		statisticsPointsValueViews[0] = (TextView)findViewById(R.id.statistics_points_value_0);
+		statisticsPointsValueViews[1] = (TextView)findViewById(R.id.statistics_points_value_1);
+		statisticsPointsValueViews[2] = (TextView)findViewById(R.id.statistics_points_value_2);
+		statisticsPointsValueViews[3] = (TextView)findViewById(R.id.statistics_points_value_3);
 		
 		phaseToCenterView.clear();
 		phaseToCenterView.put(Phase.BIDDING, messagesView);
@@ -624,20 +630,15 @@ public class GameActivtiy extends Activity implements PacketHandler
 		statisticsSumPointsView.setText(sumPoints + "");
 		statisticsSumPointsView.setTextColor(sumPoints >= 0 ? Color.BLACK : Color.RED);
 		
-		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
-		lp.weight = 0.25F;
 		for (int i = 0; i < 4; i++)
 		{
-			TextView nameView = new TextView(this);
+			TextView nameView = statisticsPointsNameViews[i];
 			nameView.setText(playerNames.get(i));
 			nameView.setGravity(Gravity.CENTER);
 			
-			TextView pointsView = new TextView(this);
+			TextView pointsView = statisticsPointsValueViews[i];
 			pointsView.setText(points[i] + "");
 			pointsView.setGravity(Gravity.CENTER);
-			
-			statisticsPointsNames.addView(nameView, lp);
-			statisticsPointsValues.addView(pointsView, lp);
 		}
 	}
 	

@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.7"
         android:textSize="16sp"
+        style="@style/shadow_text"
         />	
 
     <TextView
@@ -21,5 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.3"
         android:textSize="16sp"
+        style="@style/shadow_text"
         />	
 </LinearLayout>

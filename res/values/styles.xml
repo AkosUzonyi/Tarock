@@ -5,6 +5,14 @@
 	    <item name="android:text">---</item>
     </style>
     
+    <style name="shadow_text">
+        <item name="android:textColor">#DDDDDD</item>
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">1</item>
+	</style>
+    
     <style name="button">
         <item name="android:background">@drawable/button_background</item>
         <item name="android:minHeight">40dp</item>

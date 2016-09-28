@@ -13,14 +13,14 @@
 	    android:layout_weight="1"
 	    android:background="@drawable/wood_texture"
 	    >
-	    
+        	    
         <Button
             android:id="@+id/ok_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
+            android:padding="10dp"
             android:visibility="gone"
             android:text="@string/ok"
             style="@style/button"
@@ -37,44 +37,86 @@
             />
         
         <com.tisza.tarock.gui.VerticalTextView
-            android:id="@+id/playername_1"
-            style="@style/PlayerName"
+            android:id="@+id/player_name_1"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
+		    android:gravity="top"
+            style="@style/player_name"
+        	/>
+        <TextView
+            android:id="@+id/player_name_2"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-		    android:gravity="top"
-        />
-        <TextView
-            android:id="@+id/playername_2"
-            style="@style/PlayerName"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            style="@style/player_name"
+        	/>
+        <com.tisza.tarock.gui.VerticalTextView
+            android:id="@+id/player_name_3"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
-        />
-        <com.tisza.tarock.gui.VerticalTextView
-            android:id="@+id/playername_3"
-            style="@style/PlayerName"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
 		    android:gravity="bottom"
-        />
+            style="@style/player_name"
+        	/>
         
         <FrameLayout
             android:id="@+id/center_space"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/poker_texture"
-            android:layout_toLeftOf="@id/playername_1"
-            android:layout_below="@id/playername_2"
-            android:layout_toRightOf="@id/playername_3"
+            android:layout_toLeftOf="@id/player_name_1"
+            android:layout_below="@id/player_name_2"
+            android:layout_toRightOf="@id/player_name_3"
             android:layout_alignParentBottom="true"
-            >
+            />
             
-        </FrameLayout>
+        <TextView
+            android:id="@+id/player_message_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/center_space"
+            android:layout_marginBottom="@dimen/player_message_margin"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+            style="@style/player_message"
+            />
+            
+        <TextView
+            android:id="@+id/player_message_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/center_space"
+            android:layout_marginRight="@dimen/player_message_margin"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            style="@style/player_message"
+            />
+        
+        <TextView
+            android:id="@+id/player_message_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/center_space"
+            android:layout_marginTop="@dimen/player_message_margin"
+            android:layout_centerHorizontal="true"
+            android:visibility="gone"
+            style="@style/player_message"
+            />
+            
+        <TextView
+            android:id="@+id/player_message_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/center_space"
+            android:layout_marginLeft="@dimen/player_message_margin"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            style="@style/player_message"
+            />
     </RelativeLayout>
     
     <LinearLayout

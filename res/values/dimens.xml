@@ -1,6 +1,4 @@
 <resources>
-
-    <dimen name="player_name_size">30dp</dimen>
     <dimen name="button_margin">4dp</dimen>
-    
+    <dimen name="player_message_margin">10dp</dimen>
 </resources>

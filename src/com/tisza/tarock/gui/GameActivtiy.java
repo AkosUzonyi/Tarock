@@ -11,6 +11,7 @@ import android.os.*;
 import android.view.*;
 import android.view.View.OnClickListener;
 import android.view.animation.*;
+import android.view.animation.Animation.AnimationListener;
 import android.widget.*;
 
 import com.tisza.tarock.*;
@@ -33,6 +34,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	private LayoutInflater layoutInflater;
 	
 	private TextView[] playerNameViews;
+	private TextView[] playerMessageViews;
 	private LinearLayout myCardsView;
 	private LinearLayout myCardsView0;
 	private LinearLayout myCardsView1;
@@ -134,14 +136,21 @@ public class GameActivtiy extends Activity implements PacketHandler
 		setContentView(game);
 		
 		centerSpace = (FrameLayout)findViewById(R.id.center_space);
-		centerSpace.bringToFront();
 		
 		playerNameViews = new TextView[]
 		{
 				null,
-				(TextView)findViewById(R.id.playername_1),
-				(TextView)findViewById(R.id.playername_2),
-				(TextView)findViewById(R.id.playername_3),
+				(TextView)findViewById(R.id.player_name_1),
+				(TextView)findViewById(R.id.player_name_2),
+				(TextView)findViewById(R.id.player_name_3),
+		};
+		
+		playerMessageViews = new TextView[]
+		{
+				(TextView)findViewById(R.id.player_message_0),
+				(TextView)findViewById(R.id.player_message_1),
+				(TextView)findViewById(R.id.player_message_2),
+				(TextView)findViewById(R.id.player_message_3),
 		};
 		
 		myCardsView = (LinearLayout)findViewById(R.id.my_cards);
@@ -359,14 +368,9 @@ public class GameActivtiy extends Activity implements PacketHandler
 
 	private void onCardsThrown(int player, PlayerCards thrownCards)
 	{
-		String msg = "";
-		msg += playerNames.get(player);
-		msg += " ";
-		msg += getResources().getString(R.string.message_throw_cards);
-		msg += "\n";
-		msg += getResources().getString(R.string.press_ok);
-		msg += "\n";
-		displayMessage(msg);
+		String msg = getResources().getString(R.string.message_throw_cards);
+		displayPlayerActionMessage(player, msg);
+		displayMessage(getResources().getString(R.string.press_ok) + "\n");
 	}
 	
 	private void showAvailableBids(List<Integer> bids)
@@ -391,14 +395,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onBid(int player, int bid)
 	{
-		String msg = "";
-		msg += playerNames.get(player);
-		msg += " ";
-		msg += getResources().getString(R.string.message_bid);
-		msg += ": ";
-		msg += ResourceMappings.bidToName.get(bid);
-		msg += "\n";
-		displayMessage(msg);
+		String msg = ResourceMappings.bidToName.get(bid);
+		displayPlayerActionMessage(player, R.string.message_bid, msg);
 	}
 	
 	private void onGotCardsFromTalon(List<Card> cards)
@@ -433,21 +431,18 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void onSkartTarock(int[] counts)
 	{
-		String msg = "";
 		for (int p = 0; p < 4; p++)
 		{
 			int count = counts[p];
 			if (count > 0)
 			{
-				msg += playerNames.get(p);
-				msg += " ";
+				String msg = "";
 				msg += count;
 				msg += " ";
 				msg += getResources().getString(R.string.message_skart_tarock);
-				msg += "\n";
+				displayPlayerActionMessage(p, msg);
 			}
 		}
-		displayMessage(msg);
 	}
 
 	private void showAvailableCalls(List<Card> calls)
@@ -529,14 +524,8 @@ public class GameActivtiy extends Activity implements PacketHandler
 	{
 		setUltimoViewVisible(false);
 		
-		String msg = "";
-		msg += playerNames.get(player);
-		msg += " ";
-		msg += getResources().getString(R.string.message_announce);
-		msg += ": ";
-		msg += ResourceMappings.getAnnouncementContraName(announcement);
-		msg += "\n";
-		displayMessage(msg);
+		String msg = ResourceMappings.getAnnouncementContraName(announcement);
+		displayPlayerActionMessage(player, R.string.message_announce, msg);
 	}
 
 	private void playCard(int player, Card card)
@@ -786,6 +775,45 @@ public class GameActivtiy extends Activity implements PacketHandler
 		messages += msg;
 		messagesTextView.setText(messages);
 		messagesScrollView.fullScroll(View.FOCUS_DOWN);
+	}
+	
+	private void displayPlayerActionMessage(int player, String msg)
+	{
+		displayMessage(playerNames.get(player) + " " + msg + "\n");
+		showPlayerMessageView(player, msg);
+	}
+	
+	private void displayPlayerActionMessage(int player, int actionRes, String msg)
+	{
+		String action = getResources().getString(actionRes);
+		displayMessage(playerNames.get(player) + " " + action + ": " + msg + "\n");
+		showPlayerMessageView(player, msg);
+	}
+	
+	private void showPlayerMessageView(int player, String msg)
+	{
+		final TextView view = playerMessageViews[getPositionFromPlayerID(player)];
+		view.setText(msg);
+		view.setVisibility(View.VISIBLE);
+		Animation fadeAnimation = new AlphaAnimation(1, 0);
+		fadeAnimation.setDuration(500);
+		fadeAnimation.setStartTime(AnimationUtils.currentAnimationTimeMillis() + 2000);
+		fadeAnimation.setAnimationListener(new AnimationListener()
+		{
+			public void onAnimationStart(Animation animation)
+			{
+			}
+			
+			public void onAnimationRepeat(Animation animation)
+			{
+			}
+			
+			public void onAnimationEnd(Animation animation)
+			{
+				view.setVisibility(View.GONE);
+			}
+		});
+		view.setAnimation(fadeAnimation);
 	}
 	
 	private void highlightName(int player)

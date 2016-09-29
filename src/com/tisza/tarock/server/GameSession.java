@@ -200,7 +200,7 @@ public class GameSession implements Runnable
 		}
 	}
 	
-	private void sendStatusInfo()
+	/*private void sendStatusInfo()
 	{
 		List<String> connectedPlayerNames = new ArrayList<String>();
 		for (int player : playerIDToConnection.keySet())
@@ -208,7 +208,7 @@ public class GameSession implements Runnable
 			connectedPlayerNames.add(playerNames.get(player));
 		}
 		broadcastPacket(new PacketServerStatus(connectedPlayerNames));
-	}
+	}*/
 	
 	private void onSuccessfulLogin(int player)
 	{

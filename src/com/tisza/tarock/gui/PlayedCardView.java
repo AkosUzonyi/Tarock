@@ -88,6 +88,7 @@ public class PlayedCardView extends ImageView
 		tx *= h / 4;
 		ty *= h / 4;
 		Animation translateAnim = new TranslateAnimation(0, tx, 0, ty);
+		System.out.println(tx);
 		
 		AnimationSet animSet = new AnimationSet(true);
 		animSet.addAnimation(rotateAnim);
@@ -183,17 +184,14 @@ public class PlayedCardView extends ImageView
 	
 	public static int getBitmapResForCard(Card card)
 	{
-		int id;
 		if (ResourceMappings.cardToImageResource.containsKey(card))
 		{
-			id = ResourceMappings.cardToImageResource.get(card);
+			return ResourceMappings.cardToImageResource.get(card);
 		}
 		else
 		{
 			Log.e(GameActivtiy.LOG_TAG, card + " has no image");
 			return R.drawable.a1;
 		}
-
-		return id;
 	}
 }

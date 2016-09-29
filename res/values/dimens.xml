@@ -1,4 +1,8 @@
 <resources>
+    <dimen name="name_size">30sp</dimen>
+    <dimen name="text_size">14sp</dimen>
+    <dimen name="statistics_header_text_size">14sp</dimen>
+    <dimen name="button_min_height">40dp</dimen>
     <dimen name="button_margin">4dp</dimen>
     <dimen name="player_message_margin">10dp</dimen>
 </resources>

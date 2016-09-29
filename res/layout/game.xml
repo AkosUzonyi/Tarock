@@ -34,6 +34,7 @@
             android:layout_alignParentLeft="true"
             android:visibility="gone"
             android:text="@string/throw_cards"
+            style="@style/button"
             />
         
         <com.tisza.tarock.gui.VerticalTextView

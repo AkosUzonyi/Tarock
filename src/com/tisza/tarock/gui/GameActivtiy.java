@@ -132,8 +132,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 	
 	private void inflateGameViews()
 	{
-		View game = layoutInflater.inflate(R.layout.game, null);
-		setContentView(game);
+		setContentView(R.layout.game);
 		
 		centerSpace = (FrameLayout)findViewById(R.id.center_space);
 		

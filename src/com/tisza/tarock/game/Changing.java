@@ -19,6 +19,7 @@ public class Changing
 	private List<List<Card>> cardsFromTalon = null;
 	private boolean[] donePlayer = new boolean[4];
 	private int[] tarockCounts = new int[4];
+	private int playerSkarted20 = -1;
 	
 	public Changing(AllPlayersCards cards, List<Card> talon, int winnerPlayer, int winnerBid)
 	{
@@ -42,7 +43,6 @@ public class Changing
 	private void dealCardsFromTalon()
 	{
 		cardsFromTalon = new ArrayList<List<Card>>(4);
-		
 		for (int i = 0; i < 4; i++)
 		{
 			cardsFromTalon.add(new ArrayList<Card>());
@@ -102,6 +102,10 @@ public class Changing
 			if (c instanceof TarockCard)
 			{
 				tarockCount++;
+				if (c.equals(new TarockCard(20)))
+				{
+					playerSkarted20 = player;
+				}
 			}
 			
 			skartForTeams.get(player == winnerPlayer ? Team.CALLER : Team.OPPONENT).add(c);
@@ -126,6 +130,11 @@ public class Changing
 		return skartForTeams.get(t);
 	}
 	
+	public int getPlayerSkarted20()
+	{
+		return playerSkarted20;
+	}
+
 	public int[] getTarockCounts()
 	{
 		return tarockCounts;

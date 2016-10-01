@@ -15,12 +15,14 @@ public class Jatek extends GamePoints
 		return super.isSuccessful(gi, team);
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		if (team != Team.CALLER)
 			return false;
 		
-		return super.canBeAnnounced(announcing, team);
+		return super.canBeAnnounced(announcing);
 	}
 
 	protected int getMinPointsRequired()

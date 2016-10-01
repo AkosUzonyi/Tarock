@@ -4,39 +4,19 @@ import com.tisza.tarock.card.*;
 import com.tisza.tarock.card.filter.*;
 import com.tisza.tarock.game.*;
 
-public class HosszuDupla implements Announcement
+public class HosszuDupla extends AnnouncementBridge
 {
-	public int calculatePoints(GameInstance gi, Team team)
+	public HosszuDupla()
 	{
-		return 0;
+		super(Announcements.dupla);
 	}
 
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
-		PlayerCards cards = announcing.getCards().getPlayerCards(announcing.getNextPlayer());
+		PlayerCards cards = announcing.getCards().getPlayerCards(announcing.getCurrentPlayer());
 		if (cards.filter(new TarockFilter()).size() < 7)
 			return false;
 		
-		return Announcements.dupla.canBeAnnounced(announcing, team);
-	}
-
-	protected boolean canBeSilent()
-	{
-		return false;
-	}
-
-	public void onAnnounce(Announcing announcing, Team team)
-	{
-		announcing.announce(announcing.getNextPlayer(), Announcements.dupla);
-	}
-
-	public boolean canContra()
-	{
-		return false;
-	}
-
-	public boolean isShownToUser()
-	{
-		return true;
+		return super.canBeAnnounced(announcing);
 	}
 }

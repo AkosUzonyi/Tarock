@@ -4,12 +4,14 @@ import com.tisza.tarock.game.*;
 
 public class Dupla extends GamePoints
 {
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		if (announcing.isAnnounced(team, Announcements.volat))
 			return false;
 		
-		return super.canBeAnnounced(announcing, team);
+		return super.canBeAnnounced(announcing);
 	}
 
 	protected int getMinPointsRequired()

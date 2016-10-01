@@ -22,8 +22,10 @@ public class Nagyszincsalad extends Szincsalad
 		return Result.FAILED;
 	}
 	
-	public void onAnnounce(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		announcing.clearAnnouncement(team, Announcements.kisszincsaladok[getSuit()]);
 	}
 

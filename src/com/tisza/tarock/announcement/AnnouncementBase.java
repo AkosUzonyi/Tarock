@@ -15,7 +15,7 @@ public abstract class AnnouncementBase implements Announcement
 		
 		boolean isAnnounced = gi.announcing.isAnnounced(team, this);
 		int contraMultiplier = (int)Math.pow(2, isAnnounced ? gi.announcing.getContraLevel(team, this) : 0);
-		int winnerBid = pp.isSolo() && !pp.isSoloIntentional() ? 0 : gi.bidding.getWinnerBid();
+		int winnerBid = pp.isSolo() && !gi.calling.isSoloIntentional() ? 0 : gi.bidding.getWinnerBid();
 		int winnerBidMultiplier = isMultipliedByWinnerBid() ? (4 - winnerBid) : 1;
 		
 		int points;
@@ -61,12 +61,14 @@ public abstract class AnnouncementBase implements Announcement
 		return false;
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		return !announcing.isAnnounced(team, this);
 	}
 	
-	public void onAnnounce(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing)
 	{
 	}
 	
@@ -76,6 +78,11 @@ public abstract class AnnouncementBase implements Announcement
 	}
 	
 	public boolean isShownToUser()
+	{
+		return true;
+	}
+	
+	public boolean requireIdentification()
 	{
 		return true;
 	}

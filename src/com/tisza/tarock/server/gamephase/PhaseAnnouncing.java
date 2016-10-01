@@ -2,6 +2,7 @@ package com.tisza.tarock.server.gamephase;
 
 import java.util.*;
 
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.Bidding.Invitation;
 import com.tisza.tarock.net.packet.*;
@@ -15,9 +16,11 @@ public class PhaseAnnouncing implements GamePhase
 	public PhaseAnnouncing(GameSession g)
 	{
 		game = g;
+		AllPlayersCards cards = game.getCurrentGame().changing.getCardsAfter();
 		PlayerPairs pp = game.getCurrentGame().calling.getPlayerPairs();
-		Invitation invit = game.getCurrentGame().calling.getInvitationAccepted();
-		announcing = new Announcing(game.getCurrentGame().changing.getCardsAfter(), pp, invit);
+		Invitation invitAccepted = game.getCurrentGame().calling.getInvitationAccepted();
+		int playerToAnnounceSolo = game.getCurrentGame().calling.getPlayerToAnnounceSolo();
+		announcing = new Announcing(cards, pp, invitAccepted, playerToAnnounceSolo);
 	}
 
 	public void start()
@@ -31,7 +34,7 @@ public class PhaseAnnouncing implements GamePhase
 	{
 		game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().changing.getCardsAfter().getPlayerCards(player)));
 		game.sendPacketToPlayer(player, new PacketPhase(PacketPhase.Phase.ANNOUNCING));		
-		if (announcing.getNextPlayer() == player)
+		if (announcing.getCurrentPlayer() == player)
 		{
 			game.sendPacketToPlayer(player, new PacketAvailableAnnouncements(getAvailableAnnouncementsShown()));
 			game.sendPacketToPlayer(player, new PacketTurn(player));
@@ -52,6 +55,18 @@ public class PhaseAnnouncing implements GamePhase
 				onAnnounced();
 			}
 		}
+		else if (packet instanceof PacketAnnouncePassz)
+		{
+			PacketAnnouncePassz packetAnnouncePassz = ((PacketAnnouncePassz)packet);
+			if (packetAnnouncePassz.getPlayer() == player)
+			{
+				if (announcing.passz(player))
+				{
+					game.broadcastPacket(packetAnnouncePassz);
+				}
+				onAnnounced();
+			}
+		}
 	}
 	
 	private void onAnnounced()
@@ -62,8 +77,8 @@ public class PhaseAnnouncing implements GamePhase
 		}
 		else
 		{
-			game.sendPacketToPlayer(announcing.getNextPlayer(), new PacketAvailableAnnouncements(getAvailableAnnouncementsShown()));
-			game.broadcastPacket(new PacketTurn(announcing.getNextPlayer()));
+			game.sendPacketToPlayer(announcing.getCurrentPlayer(), new PacketAvailableAnnouncements(getAvailableAnnouncementsShown()));
+			game.broadcastPacket(new PacketTurn(announcing.getCurrentPlayer()));
 		}
 	}
 	

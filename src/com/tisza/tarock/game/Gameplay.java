@@ -29,7 +29,7 @@ public class Gameplay
 		if (isFinished())
 			return false;
 		
-		if (player != getNextPlayer())
+		if (player != getCurrentPlayer())
 			return false;
 		
 		if (!getPlaceableCards().contains(c))
@@ -54,7 +54,7 @@ public class Gameplay
 		if (isFinished())
 			throw new IllegalStateException("Game has finished");
 		
-		PlayerCards pc = cards.getPlayerCards(getNextPlayer());
+		PlayerCards pc = cards.getPlayerCards(getCurrentPlayer());
 		Card firstCard = currentRound.getFirstCard();
 		return Collections.unmodifiableCollection(pc.getPlaceableCards(firstCard));
 	}
@@ -90,11 +90,11 @@ public class Gameplay
 		return roundsPassed;
 	}
 
-	public int getNextPlayer()
+	public int getCurrentPlayer()
 	{
 		if (isFinished())
 			throw new IllegalStateException("Game has finished, no one is the next");
-		return currentRound.getNextPlayer();
+		return currentRound.getCurrentPlayer();
 	}
 	
 	public Round getCurrentRound()

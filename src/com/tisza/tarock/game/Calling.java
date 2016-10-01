@@ -9,19 +9,23 @@ import com.tisza.tarock.game.Bidding.Invitation;
 public class Calling
 {
 	private final int callerPlayer;
+	private final AllPlayersCards cards;
+	private final Invitation invit;
+	private final boolean canCallAnyTarock;
+	private final int playerSkarted20;
 	
-	private AllPlayersCards cards;
 	private PlayerPairs playerPairs = null;
-	private Invitation invit;
+	private boolean isSoloIntentional;
 	private Invitation invitAccepted = null;
-	private boolean canCallAnyTarock;
+	private int playerToAnnounceSolo = -1;
 	
-	public Calling(AllPlayersCards cards, int callerPlayer, Bidding.Invitation invit, int[] tarockSkartedCounts)
+	public Calling(AllPlayersCards cards, int callerPlayer, Bidding.Invitation invit, int[] tarockSkartedCounts, int playerSkarted20)
 	{
 		this.callerPlayer = callerPlayer;
 		this.cards = cards;
 		this.invit = invit;
-		canCallAnyTarock = false;
+		
+		boolean canCallAnyTarock = false;
 		for (int i = 0; i < 4; i++)
 		{
 			if (i != callerPlayer && tarockSkartedCounts[i] > 0)
@@ -29,6 +33,9 @@ public class Calling
 				canCallAnyTarock = true;
 			}
 		}
+		this.canCallAnyTarock = canCallAnyTarock;
+		
+		this.playerSkarted20 = playerSkarted20;
 	}
 	
 	public int getCaller()
@@ -57,6 +64,23 @@ public class Calling
 			}
 		}
 		
+		isSoloIntentional = calledPlayer == callerPlayer;
+		
+		//if the player called a card that had been skarted
+		if (calledPlayer < 0)
+		{
+			calledPlayer = callerPlayer;
+			
+			if (card.equals(new TarockCard(20)) && playerSkarted20 != callerPlayer)
+			{
+				if (playerSkarted20 < 0)
+					throw new RuntimeException();
+				playerToAnnounceSolo = playerSkarted20;
+			}
+		}
+		
+		playerPairs = new PlayerPairs(callerPlayer, calledPlayer);
+		
 		invitAccepted = Invitation.NONE;
 		if (invit == Invitation.XVIII && card.equals(new TarockCard(18)))
 		{
@@ -66,14 +90,6 @@ public class Calling
 		{
 			invitAccepted = invit;
 		}
-		
-		boolean isSoloIntentional = calledPlayer == callerPlayer;
-		if (calledPlayer < 0)
-		{
-			calledPlayer = callerPlayer;
-		}
-		
-		playerPairs = new PlayerPairs(callerPlayer, calledPlayer, isSoloIntentional);
 		
 		return true;
 	}
@@ -126,6 +142,20 @@ public class Calling
 		
 		return new ArrayList<Card>(callOptions);
 	}
+	
+	public PlayerPairs getPlayerPairs()
+	{
+		if (!isFinished())
+			throw new IllegalStateException();
+		return playerPairs;
+	}
+	
+	public boolean isSoloIntentional()
+	{
+		if (!isFinished())
+			throw new IllegalStateException();
+		return isSoloIntentional;
+	}
 
 	public Invitation getInvitationAccepted()
 	{
@@ -134,15 +164,15 @@ public class Calling
 		return invitAccepted;
 	}
 	
-	public boolean isFinished()
-	{
-		return playerPairs != null;
-	}
-	
-	public PlayerPairs getPlayerPairs()
+	public int getPlayerToAnnounceSolo()
 	{
 		if (!isFinished())
 			throw new IllegalStateException();
-		return playerPairs;
+		return playerToAnnounceSolo;
+	}
+
+	public boolean isFinished()
+	{
+		return playerPairs != null;
 	}
 }

@@ -18,7 +18,8 @@ public class PhaseCalling implements GamePhase
 		int callerPlayer = game.getCurrentGame().bidding.getWinnerPlayer();
 		Invitation invit = game.getCurrentGame().bidding.getInvitation();
 		int[] tarockSkartedCount = game.getCurrentGame().changing.getTarockCounts();
-		calling = new Calling(cards, callerPlayer, invit, tarockSkartedCount);
+		int playerSkarted20 = game.getCurrentGame().changing.getPlayerSkarted20();
+		calling = new Calling(cards, callerPlayer, invit, tarockSkartedCount, playerSkarted20);
 	}
 
 	public void start()

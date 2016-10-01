@@ -36,7 +36,7 @@ public class Bidding
 		}
 	}
 	
-	public int getNextPlayer()
+	public int getCurrentPlayer()
 	{
 		return currentPlayer;
 	}

@@ -39,8 +39,10 @@ public abstract class Ultimo extends AnnouncementBase
 		}
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		Map<Integer, Ultimo> ultimokFromMyCard = Announcements.ultimok.get(cardToTakeWith);
 		
 		for (int r = 0; r <= roundIndex; r++)
@@ -52,11 +54,13 @@ public abstract class Ultimo extends AnnouncementBase
 			}
 		}
 		
-		return super.canBeAnnounced(announcing, team);
+		return super.canBeAnnounced(announcing);
 	}
 	
-	public void onAnnounce(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		Map<Integer, Ultimo> ultimokFromMyCard = Announcements.ultimok.get(cardToTakeWith);
 		
 		for (int r = 8; r > roundIndex; r--)

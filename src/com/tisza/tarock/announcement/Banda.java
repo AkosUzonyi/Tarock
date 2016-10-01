@@ -27,8 +27,10 @@ public class Banda extends TakeCards
 		return result;
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		for (Banda banda : Announcements.bandak)
 		{
 			if (announcing.isAnnounced(team, banda))
@@ -37,7 +39,7 @@ public class Banda extends TakeCards
 			}
 		}
 		
-		return super.canBeAnnounced(announcing, team);
+		return super.canBeAnnounced(announcing);
 	}
 
 	public int getPoints()

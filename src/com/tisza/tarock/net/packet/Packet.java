@@ -72,11 +72,10 @@ public abstract class Packet
 		register(15, PacketCall.class);
 		register(16, PacketAvailableAnnouncements.class);
 		register(17, PacketAnnounce.class);
-		register(18, PacketPlayCard.class);
-		register(19, PacketCardsTaken.class);
-		register(20, PacketAnnouncementStatistics.class);
-		register(21, PacketReadyForNewGame.class);
-		
-		register(22, PacketMessage.class);
+		register(18, PacketAnnouncePassz.class);
+		register(19, PacketPlayCard.class);
+		register(20, PacketCardsTaken.class);
+		register(21, PacketAnnouncementStatistics.class);
+		register(22, PacketReadyForNewGame.class);
 	}
 }

@@ -111,7 +111,7 @@ public class CliClient implements PacketHandler
 				}
 				if (gamePhase == Phase.ANNOUNCING)
 				{
-					conncection.sendPacket(new PacketAnnounce(null, player));
+					conncection.sendPacket(new PacketAnnouncePassz(player));
 				}
 				if (gamePhase == Phase.GAMEPLAY)
 				{

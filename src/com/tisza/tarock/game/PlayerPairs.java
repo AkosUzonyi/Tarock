@@ -5,31 +5,21 @@ import java.util.*;
 public class PlayerPairs
 {
 	private int caller, called;
-	private boolean isSoloIntentional;
 	
 	private List<Integer> callerTeam = new ArrayList<Integer>();
 	private List<Integer> opponentTeam = new ArrayList<Integer>();
 
-	public PlayerPairs(int caller, int called, boolean isSoloIntentional)
+	public PlayerPairs(int caller, int called)
 	{
 		if (!checkPlayerIndexValid(caller) || !checkPlayerIndexValid(called))
 			throw new IllegalArgumentException();
 		
 		this.caller = caller;
 		this.called = called;
-		this.isSoloIntentional = isSoloIntentional;
 		
 		for (int i = 0; i < 4; i++)
 		{
-			opponentTeam.add(i);
-		}
-		
-		callerTeam.add((Integer)caller);
-		opponentTeam.remove((Integer)caller);
-		if (!isSolo())
-		{
-			callerTeam.add((Integer)called);
-			opponentTeam.remove((Integer)called);
+			(i == caller || i == called ? callerTeam : opponentTeam).add(i);
 		}
 	}
 	
@@ -59,11 +49,6 @@ public class PlayerPairs
 	public boolean isSolo()
 	{
 		return caller == called;
-	}
-	
-	public boolean isSoloIntentional()
-	{
-		return isSoloIntentional;
 	}
 	
 	private static boolean checkPlayerIndexValid(int p)

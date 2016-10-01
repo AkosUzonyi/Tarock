@@ -22,12 +22,14 @@ public class Kisszincsalad extends Szincsalad
 		return Result.FAILED;
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		if (announcing.isAnnounced(team, Announcements.nagyszincsaladok[getSuit()]))
 			return false;
 		
-		return super.canBeAnnounced(announcing, team);
+		return super.canBeAnnounced(announcing);
 	}
 
 	protected int getPoints()

@@ -22,12 +22,14 @@ public class Szinesites extends TakeCards
 		return result;
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		if (announcing.isAnnounced(team, Announcements.volat))
 			return false;
 		
-		return super.canBeAnnounced(announcing, team);
+		return super.canBeAnnounced(announcing);
 	}
 
 	public int getPoints()

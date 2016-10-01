@@ -22,8 +22,10 @@ public class PagatSasUltimo extends Ultimo
 		return super.isSuccessful(gi, team);
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		if (announcing.isAnnounced(team, Announcements.zaroparos))
 			return false;
 		
@@ -31,14 +33,14 @@ public class PagatSasUltimo extends Ultimo
 		{
 			for (TarockCount tc : new TarockCount[]{Announcements.nyolctarokk, Announcements.kilenctarokk})
 			{
-				if (tc.canBeAnnounced(announcing, team) && !announcing.isAnnounced(team, tc))
+				if (tc.canBeAnnounced(announcing))
 				{
 					return false;
 				}
 			}
 		}
 		
-		return super.canBeAnnounced(announcing, team);
+		return super.canBeAnnounced(announcing);
 	}
 
 	public int getPoints()

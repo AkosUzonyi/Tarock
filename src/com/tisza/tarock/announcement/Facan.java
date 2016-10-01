@@ -51,7 +51,7 @@ public class Facan extends AnnouncementBase
 		return 10;
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
 		return false;
 	}

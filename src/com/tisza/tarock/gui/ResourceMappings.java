@@ -30,13 +30,9 @@ public class ResourceMappings
 	public static Map<PacketLoginFailed.Reason, Integer> failureReasonToMessage = new HashMap<PacketLoginFailed.Reason, Integer>();
 	
 	private static String silent;
-	private static String passz;
 	
 	public static String getAnnouncementContraName(AnnouncementContra ac)
 	{
-		if (ac == null)
-			return passz;
-		
 		String result = "";
 		
 		if (!ac.isAnnounced())
@@ -107,9 +103,9 @@ public class ResourceMappings
 		}
 		
 		silent = resources.getString(R.string.silent);
-		passz = resources.getString(R.string.passz);
 		
-		announcementToName.put(Announcements.game, resources.getString(R.string.jatek));
+		announcementToName.put(Announcements.jatek, resources.getString(R.string.jatek));
+		announcementToName.put(Announcements.hkp, resources.getString(R.string.hkp));
 		announcementToName.put(Announcements.trull, resources.getString(R.string.trull));
 		announcementToName.put(Announcements.xxiFogas, resources.getString(R.string.xxiFogas));
 		for (int i = 0; i < 4; i++)

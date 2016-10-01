@@ -34,20 +34,22 @@ public class Zaroparos extends AnnouncementBase
 		}
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
 		Announcement a0 = Announcements.ultimok.get(new TarockCard(1)).get(6);
 		Announcement a1 = Announcements.ultimok.get(new TarockCard(2)).get(6);
-		if (!a0.canBeAnnounced(announcing, team))
+		if (!a0.canBeAnnounced(announcing))
 			return false;
-		if  (!a1.canBeAnnounced(announcing, team))
+		if  (!a1.canBeAnnounced(announcing))
 			return false;
 		
-		return super.canBeAnnounced(announcing, team);
+		return super.canBeAnnounced(announcing);
 	}
 	
-	public void onAnnounce(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		for (int t = 1; t <= 2; t++)
 		{
 			for (int ri = 8; ri > 6; ri--)

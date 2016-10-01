@@ -8,7 +8,8 @@ public class Announcements
 {
 	private static final List<Announcement> all = new ArrayList<Announcement>();
 	
-	public static final Jatek game = new Jatek();
+	public static final Jatek jatek = new Jatek();
+	public static final HivatalbolKontraParti hkp = new HivatalbolKontraParti();
 	public static final Trull trull = new Trull();
 	public static final Banda[] bandak = new Banda[4];
 	public static final Negykiraly negykiraly = new Negykiraly();
@@ -47,7 +48,8 @@ public class Announcements
 	
 	static
 	{
-		all.add(game);
+		all.add(jatek);
+		all.add(hkp);
 		all.add(trull);
 		for (int s = 0; s < 4; s++)
 		{

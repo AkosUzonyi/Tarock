@@ -26,31 +26,16 @@ public class PacketAnnounce extends PacketGameAction
 	{
 		super.readData(dis);
 		
-		int id = dis.readShort();
-		if (id < 0)
-		{
-			announcementContra = null;
-		}
-		else
-		{
-			Announcement a = Announcements.getFromID(id);
-			int contraLevel = dis.readByte();
-			announcementContra = new AnnouncementContra(a, contraLevel);
-		}
+		Announcement a = Announcements.getFromID(dis.readShort());
+		int contraLevel = dis.readByte();
+		announcementContra = new AnnouncementContra(a, contraLevel);
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
 		super.writeData(dos);
 		
-		if (announcementContra == null)
-		{
-			dos.writeShort(-1);
-		}
-		else
-		{
-			dos.writeShort(Announcements.getID(announcementContra.getAnnouncement()));
-			dos.writeByte(announcementContra.getContraLevel());
-		}
+		dos.writeShort(Announcements.getID(announcementContra.getAnnouncement()));
+		dos.writeByte(announcementContra.getContraLevel());
 	}
 }

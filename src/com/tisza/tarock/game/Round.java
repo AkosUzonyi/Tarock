@@ -49,7 +49,7 @@ public class Round
 		return winnerPlayer;
 	}
 	
-	public int getNextPlayer()
+	public int getCurrentPlayer()
 	{
 		return currentPlayer;
 	}

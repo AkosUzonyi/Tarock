@@ -514,7 +514,7 @@ public class GameActivtiy extends Activity implements PacketHandler
 			{
 				okButton.setVisibility(View.GONE);
 				availabeActionsView.removeAllViews();
-				conncection.sendPacket(new PacketAnnounce(null, myID));
+				conncection.sendPacket(new PacketAnnouncePassz(myID));
 			}
 		});
 	}
@@ -524,6 +524,14 @@ public class GameActivtiy extends Activity implements PacketHandler
 		setUltimoViewVisible(false);
 		
 		String msg = ResourceMappings.getAnnouncementContraName(announcement);
+		displayPlayerActionMessage(player, R.string.message_announce, msg);
+	}
+
+	private void onAnnouncePassz(int player)
+	{
+		setUltimoViewVisible(false);
+		
+		String msg = getResources().getString(R.string.passz);
 		displayPlayerActionMessage(player, R.string.message_announce, msg);
 	}
 
@@ -941,6 +949,12 @@ public class GameActivtiy extends Activity implements PacketHandler
 		{
 			PacketAnnounce packet = ((PacketAnnounce)p);
 			onAnnounce(packet.getPlayer(), packet.getAnnouncement());
+		}
+		
+		if (p instanceof PacketAnnouncePassz)
+		{
+			PacketAnnouncePassz packet = ((PacketAnnouncePassz)p);
+			onAnnouncePassz(packet.getPlayer());
 		}
 		
 		if (p instanceof PacketPlayCard)

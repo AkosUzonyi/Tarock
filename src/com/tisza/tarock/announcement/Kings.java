@@ -47,8 +47,10 @@ public class Kings extends AnnouncementBase
 		return false;
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		for (int i = 3; i >= count; i--)
 		{
 			if (announcing.isAnnounced(team, Announcements.kings[i - 1]))
@@ -57,11 +59,13 @@ public class Kings extends AnnouncementBase
 			}
 		}
 		
-		return super.canBeAnnounced(announcing, team);
+		return super.canBeAnnounced(announcing);
 	}
 	
-	public void onAnnounce(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		for (int i = 1; i < count; i++)
 		{
 			announcing.clearAnnouncement(team, Announcements.kings[i - 1]);

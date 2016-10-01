@@ -32,14 +32,14 @@ public class PhaseGameplay implements GamePhase
 		
 		Round currentRound = gameplay.getCurrentRound();
 		int bp = currentRound.getBeginnerPlayer();
-		int np = currentRound.getNextPlayer();
+		int np = currentRound.getCurrentPlayer();
 		for (int i = 0; i < (np + 4 - bp) % 4; i++)
 		{
 			int p = (i + bp) % 4;
-			game.sendPacketToPlayer(player, new PacketTurn(gameplay.getNextPlayer()));
+			game.sendPacketToPlayer(player, new PacketTurn(gameplay.getCurrentPlayer()));
 			game.sendPacketToPlayer(player, new PacketPlayCard(currentRound.getCards().get(p), p));
 		}
-		game.sendPacketToPlayer(player, new PacketTurn(gameplay.getNextPlayer()));
+		game.sendPacketToPlayer(player, new PacketTurn(gameplay.getCurrentPlayer()));
 	}
 	
 	public void packetFromPlayer(int player, Packet packet)
@@ -61,7 +61,7 @@ public class PhaseGameplay implements GamePhase
 				}
 				else
 				{
-					game.broadcastPacket(new PacketTurn(gameplay.getNextPlayer()));
+					game.broadcastPacket(new PacketTurn(gameplay.getCurrentPlayer()));
 				}
 			}
 		}
@@ -75,7 +75,7 @@ public class PhaseGameplay implements GamePhase
 		}
 		else
 		{
-			game.broadcastPacket(new PacketTurn(gameplay.getNextPlayer()));
+			game.broadcastPacket(new PacketTurn(gameplay.getCurrentPlayer()));
 		}
 	}
 }

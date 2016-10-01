@@ -18,16 +18,18 @@ public class TarockCount implements Announcement
 		return 0;
 	}
 
-	public boolean canBeAnnounced(Announcing announcing, Team team)
+	public boolean canBeAnnounced(Announcing announcing)
 	{
+		Team team = announcing.getCurrentTeam();
+		
 		if (announcing.isAnnounced(team, this))
 			return false;
 		
-		PlayerCards cards = announcing.getCards().getPlayerCards(announcing.getNextPlayer());
+		PlayerCards cards = announcing.getCards().getPlayerCards(announcing.getCurrentPlayer());
 		return cards.filter(new TarockFilter()).size() == count;
 	}
 
-	public void onAnnounce(Announcing announcing, Team team)
+	public void onAnnounce(Announcing announcing)
 	{
 	}
 	
@@ -37,6 +39,11 @@ public class TarockCount implements Announcement
 	}
 
 	public boolean isShownToUser()
+	{
+		return true;
+	}
+
+	public boolean requireIdentification()
 	{
 		return true;
 	}

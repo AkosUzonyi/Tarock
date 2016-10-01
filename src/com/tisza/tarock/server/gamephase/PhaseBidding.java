@@ -29,10 +29,10 @@ public class PhaseBidding implements GamePhase
 	{
 		game.sendPacketToPlayer(player, new PacketPlayerCards(game.getCurrentGame().dealing.getCards().getPlayerCards(player)));
 		game.sendPacketToPlayer(player, new PacketPhase(PacketPhase.Phase.BIDDING));		
-		if (bidding.getNextPlayer() == player)
+		if (bidding.getCurrentPlayer() == player)
 		{
 			game.sendPacketToPlayer(player, new PacketAvailableBids(bidding.getPossibleBids()));
-			game.sendPacketToPlayer(player, new PacketTurn(bidding.getNextPlayer()));
+			game.sendPacketToPlayer(player, new PacketTurn(bidding.getCurrentPlayer()));
 		}
 	}
 
@@ -76,8 +76,8 @@ public class PhaseBidding implements GamePhase
 		}
 		else
 		{
-			game.sendPacketToPlayer(bidding.getNextPlayer(), new PacketAvailableBids(bidding.getPossibleBids()));
-			game.broadcastPacket(new PacketTurn(bidding.getNextPlayer()));
+			game.sendPacketToPlayer(bidding.getCurrentPlayer(), new PacketAvailableBids(bidding.getPossibleBids()));
+			game.broadcastPacket(new PacketTurn(bidding.getCurrentPlayer()));
 		}
 	}
 }

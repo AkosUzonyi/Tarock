@@ -1,6 +1,9 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.AnnouncementContra;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public abstract class AnnouncementBridge implements Announcement
 {
@@ -16,12 +19,12 @@ public abstract class AnnouncementBridge implements Announcement
 		this.bridgedAnnouncement = bridgedAnnouncement;
 	}
 
-	public int calculatePoints(GameInstance gi, Team team)
+	public int calculatePoints(GameState gameState, Team team)
 	{
 		return 0;
 	}
 
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		return announcing.canAnnounce(bridgedAnnouncement);
 	}
@@ -31,9 +34,9 @@ public abstract class AnnouncementBridge implements Announcement
 		return false;
 	}
 
-	public void onAnnounce(Announcing announcing)
+	public void onAnnounce(IAnnouncing announcing)
 	{
-		announcing.announce(announcing.getCurrentPlayer(), bridgedAnnouncement);
+		announcing.setContraLevel(announcing.getCurrentTeam(), bridgedAnnouncement.getAnnouncement(), bridgedAnnouncement.getContraLevel());
 	}
 
 	public boolean canContra()

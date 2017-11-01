@@ -1,20 +1,24 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.PlayerPairs;
+import com.tisza.tarock.game.Round;
+import com.tisza.tarock.game.Team;
 
 public class XXIFogas extends AnnouncementBase
 {
 	XXIFogas(){}
 	
-	public Result isSuccessful(GameInstance gi, Team team)
+	public Result isSuccessful(GameState gameState, Team team)
 	{
-		PlayerPairs pp = gi.calling.getPlayerPairs();
+		PlayerPairs pp = gameState.getPlayerPairs();
 		
-		for (Round r : gi.gameplay.getRoundsPassed())
+		for (int i = 0; i < GameState.ROUND_COUNT; i++)
 		{
-			int skizPlayer = r.getCards().indexOf(new TarockCard(22));
-			int XXIPlayer = r.getCards().indexOf(new TarockCard(21));
+			Round round = gameState.getRound(i);
+			int skizPlayer = round.getPlayerOfCard(new TarockCard(22));
+			int XXIPlayer = round.getPlayerOfCard(new TarockCard(21));
 			if (skizPlayer < 0 || XXIPlayer < 0) continue;
 			
 			Team skizTeam = pp.getTeam(skizPlayer);

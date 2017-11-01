@@ -1,14 +1,17 @@
 package com.tisza.tarock.gui;
 
-import android.app.*;
-import android.content.*;
-import android.content.SharedPreferences.Editor;
-import android.os.*;
-import android.view.*;
-import android.view.View.OnClickListener;
-import android.widget.*;
+import com.tisza.tarock.R;
 
-import com.tisza.tarock.*;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 
 public class ServerActivity extends Activity
 {

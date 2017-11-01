@@ -1,43 +1,46 @@
 package com.tisza.tarock.game;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.card.filter.SkartableCardFilter;
+import com.tisza.tarock.message.event.EventActionFailed;
+import com.tisza.tarock.message.event.EventActionFailed.Reason;
+import com.tisza.tarock.message.event.EventCardsThrown;
+import com.tisza.tarock.message.event.EventChange;
+import com.tisza.tarock.message.event.EventChangeDone;
+import com.tisza.tarock.message.event.EventPlayerCards;
+import com.tisza.tarock.message.event.EventSkartTarock;
 
-public class Changing
+public class Changing extends Phase
 {
 	private static final SkartableCardFilter cardFilter = new SkartableCardFilter();
-	
-	private final List<Card> talon;
-	private final int winnerPlayer;
-	private final int winnerBid;
-	
-	private AllPlayersCards cardsAfter;
-	private Map<Team, List<Card>> skartForTeams = new HashMap<Team, List<Card>>();
 	
 	private List<List<Card>> cardsFromTalon = null;
 	private boolean[] donePlayer = new boolean[4];
 	private int[] tarockCounts = new int[4];
-	private int playerSkarted20 = -1;
 	
-	public Changing(AllPlayersCards cards, List<Card> talon, int winnerPlayer, int winnerBid)
+	public Changing(GameState gs)
 	{
-		this.cardsAfter = cards.clone();
-		this.talon = talon;
-		this.winnerPlayer = winnerPlayer;
-		this.winnerBid = winnerBid;
-		
-		for (Team t : Team.values())
-		{
-			skartForTeams.put(t, new ArrayList<Card>());
-		}
+		super(gs);
 	}
 	
-	public List<Card> getCardsObtainedFromTalon(int player)
+	public PhaseEnum asEnum()
 	{
-		if (cardsFromTalon == null) dealCardsFromTalon();
-		return Collections.unmodifiableList(cardsFromTalon.get(player));
+		return PhaseEnum.CHANGING;
+	}
+	
+	public void onStart()
+	{
+		dealCardsFromTalon();
+		for (int i = 0; i < 4; i++)
+		{
+			gameState.sendEvent(i, new EventChange(cardsFromTalon.get(i)));
+		}
 	}
 	
 	private void dealCardsFromTalon()
@@ -48,15 +51,15 @@ public class Changing
 			cardsFromTalon.add(new ArrayList<Card>());
 		}
 		
-		List<Card> cardsRemaining = new LinkedList<Card>(talon);
+		List<Card> cardsRemaining = new LinkedList<Card>(gameState.getTalon());
 		for (int i = 0; i < 4; i++)
 		{
-			int player = (winnerPlayer + i) % 4;
+			int player = (gameState.getBidWinnerPlayer() + i) % 4;
 			
 			int cardCount;
-			if (player == winnerPlayer)
+			if (player == gameState.getBidWinnerPlayer())
 			{
-				cardCount = winnerBid;
+				cardCount = gameState.getWinnerBid();
 			}
 			else
 			{
@@ -70,30 +73,36 @@ public class Changing
 		}
 	}
 	
-	public boolean skart(int player, List<Card> cardsToSkart)
+	public void change(int player, List<Card> cardsToSkart)
 	{
 		if (donePlayer[player])
-			return false;
+			return;
 		
-		PlayerCards skartingPlayerCards = cardsAfter.getPlayerCards(player);
+		PlayerCards skartingPlayerCards = gameState.getPlayerCards(player);
 		List<Card> cardsFromTalonForPlayer = cardsFromTalon.get(player);
 		
 		if (cardsToSkart.size() != cardsFromTalonForPlayer.size())
-			return false;
+		{
+			gameState.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
+			return;
+		}
 		
-		List<Card> reviewedSkartCards = new ArrayList<Card>();
+		List<Card> checkedSkartCards = new ArrayList<Card>();
 		for (Card c : cardsToSkart)
 		{
 			if (!cardFilter.match(c))
-				return false;
+			{
+				gameState.sendEvent(player, new EventActionFailed(Reason.INVALID_SKART));
+				return;
+			}
 			
-			if (reviewedSkartCards.contains(c))
-				return false;
+			if (checkedSkartCards.contains(c))
+				return;
 			
-			reviewedSkartCards.add(c);
+			checkedSkartCards.add(c);
 			
 			if (!skartingPlayerCards.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
-				return false;
+				return;
 		}
 		
 		int tarockCount = 0;
@@ -104,11 +113,11 @@ public class Changing
 				tarockCount++;
 				if (c.equals(new TarockCard(20)))
 				{
-					playerSkarted20 = player;
+					gameState.setPlayerSkarted20(player);
 				}
 			}
 			
-			skartForTeams.get(player == winnerPlayer ? Team.CALLER : Team.OPPONENT).add(c);
+			gameState.addCardToSkart(player == gameState.getBidWinnerPlayer() ? Team.CALLER : Team.OPPONENT, c);
 		}
 		tarockCounts[player] = tarockCount;
 		
@@ -116,33 +125,25 @@ public class Changing
 		skartingPlayerCards.getCards().removeAll(cardsToSkart);
 		
 		donePlayer[player] = true;
+		
+		gameState.sendEvent(player, new EventPlayerCards(skartingPlayerCards));
+		gameState.broadcastEvent(new EventChangeDone(player));
 
-		return true;
+		if (isFinished())
+		{
+			gameState.broadcastEvent(new EventSkartTarock(tarockCounts));
+			gameState.changePhase(new Calling(gameState));
+		}
 	}
 	
-	public AllPlayersCards getCardsAfter()
+	public void throwCards(int player)
 	{
-		return cardsAfter;
-	}
-	
-	public List<Card> getSkartForTeam(Team t)
-	{
-		return skartForTeams.get(t);
-	}
-	
-	public int getPlayerSkarted20()
-	{
-		return playerSkarted20;
-	}
-
-	public int[] getTarockCounts()
-	{
-		return tarockCounts;
-	}
-	
-	public boolean isDone(int player)
-	{
-		return donePlayer[player];
+		PlayerCards cards = gameState.getPlayerCards(player);
+		if (cards.canBeThrown(true))
+		{
+			gameState.broadcastEvent(new EventCardsThrown(player, cards));
+			gameState.changePhase(new PendingNewGame(gameState, true));
+		}
 	}
 	
 	public boolean isFinished()

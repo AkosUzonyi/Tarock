@@ -1,7 +1,10 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.Round;
+import com.tisza.tarock.game.Team;
 
 public abstract class Szincsalad extends AnnouncementBase
 {
@@ -15,13 +18,13 @@ public abstract class Szincsalad extends AnnouncementBase
 		this.suit = suit;
 	}
 	
-	protected final boolean isRoundOK(GameInstance gi, Team team, int roundIndex)
+	protected final boolean isRoundOK(GameState gameState, Team team, int roundIndex)
 	{
-		Round round = gi.gameplay.getRoundsPassed().get(roundIndex);
+		Round round = gameState.getRound(roundIndex);
 		for (int p = 0; p < 4; p++)
 		{
-			Card card = round.getCards().get(p);
-			boolean isItUs = gi.calling.getPlayerPairs().getTeam(p) == team;
+			Card card = round.getCardByPlayer(p);
+			boolean isItUs = gameState.getPlayerPairs().getTeam(p) == team;
 			boolean isCorrectSuit = card instanceof SuitCard && ((SuitCard)card).getSuit() == suit;
 			boolean isWon = round.getWinner() == p;
 			if (isItUs && isCorrectSuit && isWon)

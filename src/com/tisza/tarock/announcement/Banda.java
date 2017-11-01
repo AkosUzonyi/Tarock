@@ -1,9 +1,12 @@
 package com.tisza.tarock.announcement;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class Banda extends TakeCards
 {
@@ -27,7 +30,7 @@ public class Banda extends TakeCards
 		return result;
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		

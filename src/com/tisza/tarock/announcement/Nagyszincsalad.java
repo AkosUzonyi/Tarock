@@ -1,6 +1,8 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class Nagyszincsalad extends Szincsalad
 {
@@ -9,12 +11,12 @@ public class Nagyszincsalad extends Szincsalad
 		super(suit);
 	}
 
-	protected Result isSuccessful(GameInstance gi, Team team)
+	protected Result isSuccessful(GameState gameState, Team team)
 	{
 		for (int i = 0; i < 3; i++)
 		{
 			int roundIndex = 8 - i;
-			if (isRoundOK(gi, team, roundIndex))
+			if (isRoundOK(gameState, team, roundIndex))
 			{
 				return Result.SUCCESSFUL;
 			}
@@ -22,7 +24,7 @@ public class Nagyszincsalad extends Szincsalad
 		return Result.FAILED;
 	}
 	
-	public void onAnnounce(Announcing announcing)
+	public void onAnnounce(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		

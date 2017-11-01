@@ -1,16 +1,8 @@
 package com.tisza.tarock.cli;
 
-import java.net.*;
-import java.util.*;
-
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.net.*;
-import com.tisza.tarock.net.packet.*;
-import com.tisza.tarock.net.packet.PacketPhase.Phase;
-
-public class CliClient implements PacketHandler
+public class CliClient //implements PacketHandler
 {
-	private Connection conncection;
+	/*private Connection conncection;
 	private Scanner sc = new Scanner(System.in);
 	private List<String> names;
 	private PlayerCards pc;
@@ -145,13 +137,13 @@ public class CliClient implements PacketHandler
 		}
 		if (p instanceof PacketAnnouncementStatistics)
 		{
-			/*PacketAnnouncementStatistics packet = ((PacketAnnouncementStatistics)p);
+			PacketAnnouncementStatistics packet = ((PacketAnnouncementStatistics)p);
 			for (PacketAnnouncementStatistics.Entry entry : packet.getEntries())
 			{
 				System.out.println(entry.getAnnouncement().getClass().getSimpleName());
 				System.out.println(entry.getContraLevel());
 				System.out.println(entry.getPoints());
-			}*/
+			}
 		}
 		if (p instanceof PacketSkartTarock)
 		{
@@ -175,5 +167,5 @@ public class CliClient implements PacketHandler
 
 	public void connectionClosed()
 	{
-	}
+	}*/
 }

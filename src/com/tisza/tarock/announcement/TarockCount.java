@@ -1,8 +1,10 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.filter.TarockFilter;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class TarockCount implements Announcement
 {
@@ -13,23 +15,23 @@ public class TarockCount implements Announcement
 		this.count = count;
 	}
 	
-	public int calculatePoints(GameInstance gi, Team team)
+	public int calculatePoints(GameState gameState, Team team)
 	{
 		return 0;
 	}
 
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		
 		if (announcing.isAnnounced(team, this))
 			return false;
 		
-		PlayerCards cards = announcing.getCards().getPlayerCards(announcing.getCurrentPlayer());
+		PlayerCards cards = announcing.getCards(announcing.getCurrentPlayer());
 		return cards.filter(new TarockFilter()).size() == count;
 	}
 
-	public void onAnnounce(Announcing announcing)
+	public void onAnnounce(IAnnouncing announcing)
 	{
 	}
 	

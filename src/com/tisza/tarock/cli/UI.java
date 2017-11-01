@@ -1,8 +1,9 @@
 package com.tisza.tarock.cli;
 
-import java.util.*;
+import java.util.List;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
 
 public interface UI
 {

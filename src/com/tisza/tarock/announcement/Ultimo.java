@@ -1,9 +1,12 @@
 package com.tisza.tarock.announcement;
 
-import java.util.*;
+import java.util.Map;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Round;
+import com.tisza.tarock.game.Team;
 
 public abstract class Ultimo extends AnnouncementBase
 {
@@ -16,13 +19,13 @@ public abstract class Ultimo extends AnnouncementBase
 		this.cardToTakeWith = cardToTakeWith;
 	}
 
-	public Result isSuccessful(GameInstance gi, Team team)
+	public Result isSuccessful(GameState gameState, Team team)
 	{
-		Round round = gi.gameplay.getRoundsPassed().get(roundIndex);
-		int theCardPlayer = round.getCards().indexOf(cardToTakeWith);
+		Round round = gameState.getRound(roundIndex);
+		int theCardPlayer = round.getPlayerOfCard(cardToTakeWith);
 		if (theCardPlayer < 0) return Result.FAILED;
 		
-		if (gi.calling.getPlayerPairs().getTeam(theCardPlayer) != team)
+		if (gameState.getPlayerPairs().getTeam(theCardPlayer) != team)
 		{
 			return Result.FAILED;
 		}
@@ -39,7 +42,7 @@ public abstract class Ultimo extends AnnouncementBase
 		}
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		
@@ -57,7 +60,7 @@ public abstract class Ultimo extends AnnouncementBase
 		return super.canBeAnnounced(announcing);
 	}
 	
-	public void onAnnounce(Announcing announcing)
+	public void onAnnounce(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		

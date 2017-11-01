@@ -1,7 +1,12 @@
 package com.tisza.tarock.net.packet;
 
-import java.io.*;
-import java.util.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Packet
 {
@@ -56,26 +61,7 @@ public abstract class Packet
 	{
 		register(0, PacketLogin.class);
 		register(1, PacketLoginFailed.class);
-		register(2, PacketServerStatus.class);
-		register(3, PacketStartGame.class);
-		register(4, PacketPlayerCards.class);
-		register(5, PacketPhase.class);
-		register(6, PacketTurn.class);
-		register(7, PacketThrowCards.class);
-		register(8, PacketCardsThrown.class);
-		register(9, PacketAvailableBids.class);
-		register(10, PacketBid.class);
-		register(11, PacketChange.class);
-		register(12, PacketChangeDone.class);
-		register(13, PacketSkartTarock.class);
-		register(14, PacketAvailableCalls.class);
-		register(15, PacketCall.class);
-		register(16, PacketAvailableAnnouncements.class);
-		register(17, PacketAnnounce.class);
-		register(18, PacketAnnouncePassz.class);
-		register(19, PacketPlayCard.class);
-		register(20, PacketCardsTaken.class);
-		register(21, PacketAnnouncementStatistics.class);
-		register(22, PacketReadyForNewGame.class);
+		register(2, PacketAction.class);
+		register(3, PacketEvent.class);
 	}
 }

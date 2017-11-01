@@ -1,104 +1,76 @@
 package com.tisza.tarock.game;
 
-import java.util.*;
+import java.util.Collection;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.message.event.EventActionFailed;
+import com.tisza.tarock.message.event.EventActionFailed.Reason;
+import com.tisza.tarock.message.event.EventCardsTaken;
+import com.tisza.tarock.message.event.EventPlayCard;
+import com.tisza.tarock.message.event.EventTurn;
 
-public class Gameplay
+public class Gameplay extends Phase
 {
-	private List<List<Card>> wonCards = new ArrayList<List<Card>>();
-	
-	private AllPlayersCards cards;
-	private List<Round> roundsPassed = new ArrayList<Round>();
-	private final int beginnerPlayer;
 	private Round currentRound;
 	
-	public Gameplay(AllPlayersCards cards, int bp)
+	public Gameplay(GameState gs)
 	{
-		this.cards = cards.clone();
-		beginnerPlayer = bp;
-		currentRound = new Round(beginnerPlayer);
-		for (int i = 0; i < 4; i++)
-		{
-			wonCards.add(new ArrayList<Card>());
-		}
+		super(gs);
 	}
 	
-	public boolean playCard(Card c, int player)
+	public PhaseEnum asEnum()
 	{
-		if (isFinished())
-			return false;
+		return PhaseEnum.GAMEPLAY;
+	}
+
+	public void onStart()
+	{
+		currentRound = new Round(gameState.getBeginnerPlayer());
+		gameState.broadcastEvent(new EventTurn(currentRound.getCurrentPlayer()));
+	}
+
+	public void playCard(int player, Card card)
+	{
+		if (player != currentRound.getCurrentPlayer())
+			return;
 		
-		if (player != getCurrentPlayer())
-			return false;
+		if (!getPlaceableCards().contains(card))
+		{
+			gameState.sendEvent(player, new EventActionFailed(Reason.INVALID_CARD));
+			return;
+		}
 		
-		if (!getPlaceableCards().contains(c))
-			return false;
+		gameState.getPlayerCards(player).removeCard(card);
+		currentRound.placeCard(card);
 		
-		cards.getPlayerCards(player).removeCard(c);
-		currentRound.placeCard(c);
+		gameState.broadcastEvent(new EventPlayCard(card, player));
 		
 		if (currentRound.isFinished())
 		{
-			roundsPassed.add(currentRound);
+			gameState.addRound(currentRound);
 			int winner = currentRound.getWinner();
-			wonCards.get(winner).addAll(currentRound.getCards());
-			currentRound = roundsPassed.size() >= 9 ? null : new Round(winner);
+			gameState.addWonCards(winner, currentRound.getCards());
+			currentRound = gameState.areAllRoundsPassed() ? null : new Round(winner);
+			
+			gameState.broadcastEvent(new EventCardsTaken(winner));
 		}
 		
-		return true;
+		if (currentRound != null)
+		{
+			gameState.broadcastEvent(new EventTurn(currentRound.getCurrentPlayer()));
+		}
+		else
+		{
+			gameState.changePhase(new PendingNewGame(gameState, false));
+			gameState.sendStatistics();
+		}
 	}
 	
-	public Collection<Card> getPlaceableCards()
+	private Collection<Card> getPlaceableCards()
 	{
-		if (isFinished())
-			throw new IllegalStateException("Game has finished");
-		
-		PlayerCards pc = cards.getPlayerCards(getCurrentPlayer());
+		PlayerCards pc = gameState.getPlayerCards(currentRound.getCurrentPlayer());
 		Card firstCard = currentRound.getFirstCard();
-		return Collections.unmodifiableCollection(pc.getPlaceableCards(firstCard));
-	}
-	
-	public AllPlayersCards getPlayerCards()
-	{
-		return cards;
-	}
-	
-	public boolean isFinished()
-	{
-		return currentRound == null;
-	}
-	
-	public int getBeginnerPlayer()
-	{
-		if (!isFinished())
-			throw new IllegalStateException("Game is in progress");
-		return beginnerPlayer;
-	}
-	
-	public Collection<Card> getWonCards(int player)
-	{
-		if (!isFinished())
-			throw new IllegalStateException("Game is in progress");
-		return wonCards.get(player);
-	}
-
-	public List<Round> getRoundsPassed()
-	{
-		if (!isFinished())
-			throw new IllegalStateException("Game is in progress");
-		return roundsPassed;
-	}
-
-	public int getCurrentPlayer()
-	{
-		if (isFinished())
-			throw new IllegalStateException("Game has finished, no one is the next");
-		return currentRound.getCurrentPlayer();
-	}
-	
-	public Round getCurrentRound()
-	{
-		return currentRound;
+		return pc.getPlaceableCards(firstCard);
 	}
 }

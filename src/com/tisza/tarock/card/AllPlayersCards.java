@@ -1,6 +1,7 @@
 package com.tisza.tarock.card;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AllPlayersCards
 {

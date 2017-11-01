@@ -1,8 +1,8 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.filter.TarockFilter;
+import com.tisza.tarock.game.IAnnouncing;
 
 public class HosszuDupla extends AnnouncementBridge
 {
@@ -11,9 +11,9 @@ public class HosszuDupla extends AnnouncementBridge
 		super(Announcements.dupla);
 	}
 
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
-		PlayerCards cards = announcing.getCards().getPlayerCards(announcing.getCurrentPlayer());
+		PlayerCards cards = announcing.getCards(announcing.getCurrentPlayer());
 		if (cards.filter(new TarockFilter()).size() < 7)
 			return false;
 		

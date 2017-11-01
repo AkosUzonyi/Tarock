@@ -1,21 +1,24 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.PlayerPairs;
+import com.tisza.tarock.game.Team;
 
 public abstract class AnnouncementBase implements Announcement
 {
-	protected abstract Result isSuccessful(GameInstance gi, Team team);
+	protected abstract Result isSuccessful(GameState gameState, Team team);
 	protected abstract int getPoints();
 	
-	public int calculatePoints(GameInstance gi, Team team)
+	public int calculatePoints(GameState gameState, Team team)
 	{
-		Result r = isSuccessful(gi, team);
+		Result r = isSuccessful(gameState, team);
 		
-		PlayerPairs pp = gi.calling.getPlayerPairs();
+		PlayerPairs pp = gameState.getPlayerPairs();
 		
-		boolean isAnnounced = gi.announcing.isAnnounced(team, this);
-		int contraMultiplier = (int)Math.pow(2, isAnnounced ? gi.announcing.getContraLevel(team, this) : 0);
-		int winnerBid = pp.isSolo() && !gi.calling.isSoloIntentional() ? 0 : gi.bidding.getWinnerBid();
+		boolean isAnnounced = gameState.getAnnouncementsState().isAnnounced(team, this);
+		int contraMultiplier = (int)Math.pow(2, isAnnounced ? gameState.getAnnouncementsState().getContraLevel(team, this) : 0);
+		int winnerBid = pp.isSolo() && !gameState.isSoloIntentional() ? 0 : gameState.getWinnerBid();
 		int winnerBidMultiplier = isMultipliedByWinnerBid() ? (4 - winnerBid) : 1;
 		
 		int points;
@@ -61,14 +64,14 @@ public abstract class AnnouncementBase implements Announcement
 		return false;
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		
 		return !announcing.isAnnounced(team, this);
 	}
 	
-	public void onAnnounce(Announcing announcing)
+	public void onAnnounce(IAnnouncing announcing)
 	{
 	}
 	

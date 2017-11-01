@@ -1,21 +1,23 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class Jatek extends GamePoints
 {
-	public Result isSuccessful(GameInstance gi, Team team)
+	public Result isSuccessful(GameState gameState, Team team)
 	{
-		int pointsForDupla = Announcements.dupla.calculatePoints(gi, team) + Announcements.hosszuDupla.calculatePoints(gi, team);
-		boolean isContraJatek = gi.announcing.isAnnounced(team, this) && gi.announcing.getContraLevel(team, this) > 0;
+		int pointsForDupla = Announcements.dupla.calculatePoints(gameState, team);
+		boolean isContraJatek = gameState.getAnnouncementsState().isAnnounced(team, this) && gameState.getAnnouncementsState().getContraLevel(team, this) > 0;
 		
 		if (pointsForDupla > 0 && !isContraJatek)
 			return Result.DEACTIVATED;
 		
-		return super.isSuccessful(gi, team);
+		return super.isSuccessful(gameState, team);
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		

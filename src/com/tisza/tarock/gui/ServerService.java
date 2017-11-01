@@ -1,13 +1,14 @@
 package com.tisza.tarock.gui;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-import android.app.*;
-import android.content.*;
-import android.os.*;
+import com.tisza.tarock.server.Server;
 
-import com.tisza.tarock.server.*;
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
 
 public class ServerService extends Service
 {

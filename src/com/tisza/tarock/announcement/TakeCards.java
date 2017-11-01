@@ -1,9 +1,11 @@
 package com.tisza.tarock.announcement;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.Team;
 
 public abstract class TakeCards extends AnnouncementBase
 {
@@ -12,15 +14,15 @@ public abstract class TakeCards extends AnnouncementBase
 	protected abstract Collection<Card> getCardsToTake();
 	protected abstract boolean canBeSilent();
 	
-	public Result isSuccessful(GameInstance gi, Team team)
+	public Result isSuccessful(GameState gameState, Team team)
 	{
-		List<Card> wonCards = new ArrayList<Card>();
-		for (int player : gi.calling.getPlayerPairs().getPlayersInTeam(team))
+		Collection<Card> wonCards = new ArrayList<Card>();
+		for (int player : gameState.getPlayerPairs().getPlayersInTeam(team))
 		{
-			wonCards.addAll(gi.gameplay.getWonCards(player));
+			wonCards.addAll(gameState.getWonCards(player));
 		}
-		wonCards.addAll(gi.changing.getSkartForTeam(Team.CALLER));
-		wonCards.addAll(gi.changing.getSkartForTeam(Team.OPPONENT));
+		wonCards.addAll(gameState.getSkartForTeam(Team.CALLER));
+		wonCards.addAll(gameState.getSkartForTeam(Team.OPPONENT));
 		
 		return wonCards.containsAll(getCardsToTake()) ? (canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL) : Result.FAILED;
 	}

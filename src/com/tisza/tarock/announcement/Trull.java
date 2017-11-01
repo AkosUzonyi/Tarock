@@ -1,8 +1,8 @@
 package com.tisza.tarock.announcement;
 
-import java.util.*;
+import java.util.Collection;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
 
 public class Trull extends TakeCards
 {

@@ -1,23 +1,31 @@
 package com.tisza.tarock.server;
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import com.tisza.tarock.game.*;
-import com.tisza.tarock.net.*;
-import com.tisza.tarock.net.packet.*;
-import com.tisza.tarock.server.gamephase.*;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.net.Connection;
+import com.tisza.tarock.net.PacketHandler;
+import com.tisza.tarock.net.packet.Packet;
+import com.tisza.tarock.net.packet.PacketAction;
+import com.tisza.tarock.net.packet.PacketLoginFailed;
 
 public class GameSession implements Runnable
 {
-	private int nextBeginnerPlayer;
-	
-	private GamePhase currentGamePhase;
-	private GameInstance currentGame;
+	private GameState currentGame;
 	
 	//sorted by id
-	private List<String> playerNames = new ArrayList<String>();
+	public List<String> playerNames = new ArrayList<String>(); //TODO
 	private List<PacketHandler> handlers = new ArrayList<PacketHandler>();
 	
 	private Map<Integer, Connection> playerIDToConnection = new HashMap<Integer, Connection>();
@@ -35,12 +43,12 @@ public class GameSession implements Runnable
 		if (beginnerPlayer < 0 || beginnerPlayer >= 4 || names.size() != 4)
 			throw new IllegalArgumentException();
 		
+		currentGame = new GameState(this, 0);
+		
 		playerNames = new ArrayList<String>(names);
 		Collections.shuffle(playerNames);
 		
 		this.pointsDir = pointsDir;
-		
-		nextBeginnerPlayer = beginnerPlayer;
 		
 		for (int i = 0; i < 4; i++)
 		{
@@ -63,36 +71,22 @@ public class GameSession implements Runnable
 		gameThread.start();
 	}
 	
-	public void startNewGame(boolean doubleRound)
-	{
-		checkThread();
-		
-		System.out.println("start game");
-		
-		if (doubleRound) nextBeginnerPlayer--;
-		currentGame = new GameInstance(nextBeginnerPlayer);
-		nextBeginnerPlayer = (nextBeginnerPlayer + 1) % 4;
-		
-		for (int i = 0; i < 4; i++)
-		{
-			sendPacketToPlayer(i, new PacketStartGame(playerNames, i));
-		}
-		changeGamePhase(new PhaseDealing(this));
-	}
-	
 	public void run()
 	{
 		try
 		{
 			waitForAllPlayersToConnect();
 			
-			startNewGame(false);
+			currentGame.startNewGame(false);
 			
 			while (!Thread.interrupted())
 			{
 				PlayerPacket pp = packetsReceived.take();
 				waitForAllPlayersToConnect();
-				currentGamePhase.packetFromPlayer(pp.player, pp.packet);
+				if (pp.packet instanceof PacketAction)
+				{
+					currentGame.handleAction(pp.player, ((PacketAction)pp.packet).getAction());
+				}
 			}
 		}
 		catch (InterruptedException e)
@@ -146,19 +140,9 @@ public class GameSession implements Runnable
 			throw new RuntimeException();
 	}
 		
-	public GameInstance getCurrentGame()
+	public GameState getCurrentGame()
 	{
 		return currentGame;
-	}
-
-	public void changeGamePhase(GamePhase newPhase)
-	{
-		checkThread();
-		
-		if (currentGame == null)
-			throw new IllegalStateException();
-		currentGamePhase = newPhase;
-		currentGamePhase.start();
 	}
 
 	public void playerConnectionClosed(int player)
@@ -232,11 +216,11 @@ public class GameSession implements Runnable
 			}
 		}
 		
-		if (currentGamePhase != null)
+		/*if (currentGamePhase != null)
 		{
 			sendPacketToPlayer(player, new PacketStartGame(playerNames, player));
-			currentGamePhase.playerLoggedIn(player);
-		}
+			currenGamePhase.playerLoggedIn(player);
+		}*/
 	}
 	
 	public void loginAuthorized(String name, Connection connection)

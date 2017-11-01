@@ -1,9 +1,10 @@
 package com.tisza.tarock.server;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
-import com.tisza.tarock.net.*;
-import com.tisza.tarock.net.packet.*;
+import com.tisza.tarock.net.Connection;
+import com.tisza.tarock.net.packet.PacketLoginFailed;
 import com.tisza.tarock.net.packet.PacketLoginFailed.Reason;
 
 public class LoginManager

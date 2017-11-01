@@ -1,0 +1,35 @@
+bugs:
+XXIUltimo getPlayerCards after game end
+Kings bug!!!
+pagatsas isSuccessful
+AnnouncementBridge.canBeSilent unused
+GameActivity call displaymessage
+
+renames:
+Tarock->Tarokk
+onAnnnounce->onAnnnounced
+isShownToUser->isShownInList
+AnnouncementBridge->AnnouncementWrapper
+TakeCards.getCardsToTake -> hasToBeTaken
+
+little nice things:
+Math.pow -> 1 <<
+TarockFilter static instance
+Card constructor protected, static instance fields
+IdentityTracker all false default: first announcement (Jatek) will change it
+AnnouncementBridge requireIdentification: contra level > 0
+filter(new TarockFilter()) -> tarockCount()
+
+features:
+handle relogin
+GameType
+error messages
+kiralyultimo
+
+refactorizations:
+Player int->enum
+
+other:
+final classes?
+@ovveride
+visibility (unnecessary public eg. getPoints())

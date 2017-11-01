@@ -1,7 +1,12 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.PlayerPairs;
+import com.tisza.tarock.game.Round;
+import com.tisza.tarock.game.Team;
 
 public class Facan extends AnnouncementBase
 {
@@ -12,13 +17,13 @@ public class Facan extends AnnouncementBase
 		this.card = card;
 	}
 
-	public Result isSuccessful(GameInstance gi, Team team)
+	public Result isSuccessful(GameState gameState, Team team)
 	{
-		Round round = gi.gameplay.getRoundsPassed().get(0);
-		int theCardPlayer = round.getCards().indexOf(card);
+		Round round = gameState.getRound(0);
+		int theCardPlayer = round.getPlayerOfCard(card);
 		if (theCardPlayer < 0) return Result.FAILED;
 		
-		PlayerPairs playerPairs = gi.calling.getPlayerPairs();
+		PlayerPairs playerPairs = gameState.getPlayerPairs();
 		
 		if (playerPairs.getTeam(theCardPlayer) != team)
 		{
@@ -36,7 +41,7 @@ public class Facan extends AnnouncementBase
 			{
 				for (int opponentPlayer : playerPairs.getPlayersInTeam(team.getOther()))
 				{
-					if (round.getCards().get(opponentPlayer) instanceof TarockCard)
+					if (round.getCardByPlayer(opponentPlayer) instanceof TarockCard)
 					{
 						return Result.FAILED_SILENT;
 					}
@@ -51,7 +56,7 @@ public class Facan extends AnnouncementBase
 		return 10;
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		return false;
 	}

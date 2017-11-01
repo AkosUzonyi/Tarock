@@ -1,6 +1,6 @@
 package com.tisza.tarock.server;
 
-import com.tisza.tarock.net.*;
+import com.tisza.tarock.net.Connection;
 
 public class Player
 {

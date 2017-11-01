@@ -1,49 +1,43 @@
 package com.tisza.tarock.game;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.card.filter.TarockFilter;
+import com.tisza.tarock.message.event.EventAvailableBids;
+import com.tisza.tarock.message.event.EventBid;
+import com.tisza.tarock.message.event.EventCardsThrown;
+import com.tisza.tarock.message.event.EventTurn;
 
-public class Bidding
+public class Bidding extends Phase
 {
-	private final int beginnerPlayer;
-	
-	private AllPlayersCards playersCards;
-	
 	private int currentPlayer;
-	
 	private int lastBidValue = 4;
 	private int lastBidPlayer = -1;
 	private boolean isKept = false;
 	
 	private BidState[] playersState = new BidState[4];
 	
-	private Invitation invit = Invitation.NONE;
-	private int invitingPlayer = -1;
-	
-	private List<Integer> history = new ArrayList<Integer>();
-	
-	public Bidding(AllPlayersCards cards, int bp)
+	public Bidding(GameState gs)
 	{
-		playersCards = cards;
-		beginnerPlayer = bp;
-		currentPlayer = beginnerPlayer;
+		super(gs);
 		
-		for (int i = 0; i < playersState.length; i++)
-		{
-			playersState[i] = BidState.INITIAL;
-		}
+		Arrays.fill(playersState, BidState.INITIAL);
 	}
 	
-	public int getCurrentPlayer()
+	public PhaseEnum asEnum()
 	{
-		return currentPlayer;
+		return PhaseEnum.BIDDING;
 	}
 	
-	public List<Integer> getHistory()
+	public void onStart()
 	{
-		return history;
+		currentPlayer = gameState.getBeginnerPlayer();
+		sendAvailableBids();
 	}
 
 	private boolean canKeep()
@@ -56,23 +50,19 @@ public class Bidding
 		return lastBidValue - (canKeep() ? 0 : 1);
 	}
 	
-	public boolean bid(int player, int bid)
+	public void bid(int player, int bid)
 	{
-		if (isFinished())
-			return false;
-		
 		if (player != currentPlayer)
-			return false;
+			return;
 		
-		if (!getPossibleBids().contains(bid))
-			return false;
+		if (!getAvailableBids().contains(bid))
+			return;
 		
 		if (bid == -1)
 		{
 			if (canKeep() && lastBidValue == 2)
 			{
-				invit = Invitation.XX;
-				invitingPlayer = currentPlayer;
+				gameState.setInvitationSent(Invitation.XX, currentPlayer);
 			}
 			
 			playersState[currentPlayer] = BidState.OUT;
@@ -83,14 +73,12 @@ public class Bidding
 			
 			if (jump == 1)
 			{
-				invit = Invitation.XIX;
-				invitingPlayer = currentPlayer;
+				gameState.setInvitationSent(Invitation.XIX, currentPlayer);
 			}
 			
 			if (jump == 2)
 			{
-				invit = Invitation.XVIII;
-				invitingPlayer = currentPlayer;
+				gameState.setInvitationSent(Invitation.XVIII, currentPlayer);
 			}
 			
 			playersState[currentPlayer] = BidState.IN;
@@ -99,13 +87,39 @@ public class Bidding
 			lastBidValue = bid;
 		}
 		
+		gameState.broadcastEvent(new EventBid(player, bid));
+
 		findNextPlayer();
 		
-		history.add(bid);
-		return true;
+		if (!isFinished())
+		{
+			sendAvailableBids();
+		}
+		else
+		{
+			if (lastBidPlayer < 0)
+			{
+				gameState.changePhase(new PendingNewGame(gameState, true));
+			}
+			else
+			{
+				gameState.setBidResult(lastBidPlayer, lastBidValue);
+				gameState.changePhase(new Changing(gameState));
+			}
+		}
 	}
 	
-	public List<Integer> getPossibleBids()
+	public void throwCards(int player)
+	{
+		PlayerCards cards = gameState.getPlayerCards(player);
+		if (cards.canBeThrown(false))
+		{
+			gameState.broadcastEvent(new EventCardsThrown(player, cards));
+			gameState.changePhase(new PendingNewGame(gameState, true));
+		}
+	}
+	
+	private List<Integer> getAvailableBids()
 	{
 		if (isFinished())
 			throw new IllegalStateException();
@@ -117,7 +131,7 @@ public class Bidding
 			int defaultBid = getDefaultBid();
 			result.add(defaultBid);
 			
-			PlayerCards cards = playersCards.getPlayerCards(currentPlayer);
+			PlayerCards cards = gameState.getPlayerCards(currentPlayer);
 			boolean canInvit = checkBaseInvitationRequirements(currentPlayer);
 			
 			if (canKeep() && lastBidValue == 2 && (!canInvit || !cards.hasCard(new TarockCard(20))))
@@ -140,9 +154,15 @@ public class Bidding
 		return result;
 	}
 	
+	private void sendAvailableBids()
+	{
+		gameState.sendEvent(currentPlayer, new EventAvailableBids(getAvailableBids()));
+		gameState.broadcastEvent(new EventTurn(currentPlayer));
+	}
+
 	private boolean checkBiddingRequirements(int player)
 	{
-		for (Card c : playersCards.getPlayerCards(player).getCards())
+		for (Card c : gameState.getPlayerCards(player).getCards())
 		{
 			if (c.isHonor())
 			{
@@ -154,34 +174,13 @@ public class Bidding
 	
 	private boolean checkBaseInvitationRequirements(int player)
 	{
-		PlayerCards h = playersCards.getPlayerCards(player);
+		PlayerCards h = gameState.getPlayerCards(player);
 		return (h.hasCard(new TarockCard(21)) || h.hasCard(new TarockCard(22))) && h.filter(new TarockFilter()).size() >= 5;
 	}
 	
-	public boolean isFinished()
+	private boolean isFinished()
 	{
 		return currentPlayer == lastBidPlayer || lastBidValue == 0 && isKept || playersState[currentPlayer] == BidState.OUT;
-	}
-	
-	public int getWinnerPlayer()
-	{
-		if (!isFinished())
-			throw new IllegalStateException("Bidding is in progress");
-		return lastBidPlayer;
-	}
-	
-	public int getWinnerBid()
-	{
-		if (!isFinished())
-			throw new IllegalStateException("Bidding is in progress");
-		return lastBidValue;
-	}
-	
-	public Invitation getInvitation()
-	{
-		if (!isFinished())
-			throw new IllegalStateException("Bidding is in progress");
-		return invitingPlayer == getWinnerPlayer() ? Invitation.NONE : invit;
 	}
 	
 	private void findNextPlayer()

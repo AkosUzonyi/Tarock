@@ -1,7 +1,9 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class PagatSasUltimo extends Ultimo
 {
@@ -10,19 +12,19 @@ public class PagatSasUltimo extends Ultimo
 		super(roundIndex, cardToTakeWith);
 	}
 	
-	public Result isSuccessful(GameInstance gi, Team team)
+	public Result isSuccessful(GameState gameState, Team team)
 	{
-		Result zaroparosSuccessful = Announcements.zaroparos.isSuccessful(gi, team);
+		Result zaroparosSuccessful = Announcements.zaroparos.isSuccessful(gameState, team);
 		
 		if (zaroparosSuccessful == Result.SUCCESSFUL)
 		{
 			return Result.FAILED;
 		}
 		
-		return super.isSuccessful(gi, team);
+		return super.isSuccessful(gameState, team);
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		

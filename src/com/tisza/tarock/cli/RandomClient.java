@@ -1,17 +1,8 @@
 package com.tisza.tarock.cli;
 
-import java.net.*;
-import java.util.*;
-
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
-import com.tisza.tarock.net.*;
-import com.tisza.tarock.net.packet.*;
-import com.tisza.tarock.net.packet.PacketPhase.Phase;
-
-public class RandomClient implements PacketHandler
+public class RandomClient //implements PacketHandler
 {
-	private Connection conncection;
+	/*private Connection conncection;
 	private PlayerCards myCards;
 	private Card firstCard = null;
 	private int playedCardCount = 0;
@@ -117,5 +108,5 @@ public class RandomClient implements PacketHandler
 
 	public void connectionClosed()
 	{
-	}
+	}*/
 }

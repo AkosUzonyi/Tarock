@@ -1,6 +1,6 @@
 package com.tisza.tarock.gui;
 
-import android.view.animation.*;
+import android.view.animation.Interpolator;
 
 public class ReverseInterpolator implements Interpolator
 {

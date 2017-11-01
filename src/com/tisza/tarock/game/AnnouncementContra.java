@@ -1,6 +1,7 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.announcement.*;
+import com.tisza.tarock.announcement.Announcement;
+import com.tisza.tarock.announcement.Announcements;
 
 public class AnnouncementContra implements Comparable<AnnouncementContra>
 {

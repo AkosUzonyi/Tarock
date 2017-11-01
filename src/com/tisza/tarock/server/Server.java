@@ -1,10 +1,12 @@
 package com.tisza.tarock.server;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.List;
 
-import com.tisza.tarock.net.*;
+import com.tisza.tarock.net.Connection;
 
 public class Server
 {

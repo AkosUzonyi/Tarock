@@ -1,8 +1,9 @@
 package com.tisza.tarock.game;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
 
 public class Round
 {
@@ -27,19 +28,9 @@ public class Round
 		return beginnerPlayer;
 	}
 	
-	public Card getFirstCard()
+	public int getCurrentPlayer()
 	{
-		return cards[beginnerPlayer];
-	}
-	
-	public List<Card> getCards()
-	{
-		return Collections.unmodifiableList(Arrays.asList(cards));
-	}
-	
-	public boolean isFinished()
-	{
-		return finished;
+		return currentPlayer;
 	}
 	
 	public int getWinner()
@@ -49,9 +40,41 @@ public class Round
 		return winnerPlayer;
 	}
 	
-	public int getCurrentPlayer()
+	public Card getFirstCard()
 	{
-		return currentPlayer;
+		return getCardByIndex(0);
+	}
+	
+	public Card getCardByIndex(int n)
+	{
+		return cards[(beginnerPlayer + n) % 4];
+	}
+	
+	public Card getCardByPlayer(int player)
+	{
+		return cards[player];
+	}
+	
+	public int getPlayerOfCard(Card card)
+	{
+		for (int player = 0; player < 4; player++)
+		{
+			if (cards[player].equals(card))
+			{
+				return player;
+			}
+		}
+		return -1;
+	}
+
+	public Collection<Card> getCards()
+	{
+		return Arrays.asList(cards);
+	}
+	
+	public boolean isFinished()
+	{
+		return finished;
 	}
 	
 	public void placeCard(Card card)

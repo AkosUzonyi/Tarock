@@ -1,6 +1,8 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.AnnouncementContra;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class HivatalbolKontraParti extends AnnouncementBridge
 {
@@ -9,7 +11,7 @@ public class HivatalbolKontraParti extends AnnouncementBridge
 		super(new AnnouncementContra(Announcements.jatek, 1));
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		if (announcing.isAnnounced(announcing.getCurrentTeam(), Announcements.hkp))
 			return false;

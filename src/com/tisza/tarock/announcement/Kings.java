@@ -1,7 +1,11 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Round;
+import com.tisza.tarock.game.Team;
 
 public class Kings extends AnnouncementBase
 {
@@ -17,12 +21,12 @@ public class Kings extends AnnouncementBase
 		this.count = count;
 	}
 
-	public Result isSuccessful(GameInstance gi, Team team)
+	public Result isSuccessful(GameState gameState, Team team)
 	{
 		for (int i = 0; i < count; i++)
 		{
 			int roundIndex = 8 - i;
-			if (isRoundOK(gi, team, roundIndex))
+			if (isRoundOK(gameState, team, roundIndex))
 			{
 				return Result.SUCCESSFUL;
 			}
@@ -30,13 +34,13 @@ public class Kings extends AnnouncementBase
 		return Result.FAILED;
 	}
 	
-	private boolean isRoundOK(GameInstance gi, Team team, int roundIndex)
+	private boolean isRoundOK(GameState gameState, Team team, int roundIndex)
 	{
-		Round round = gi.gameplay.getRoundsPassed().get(roundIndex);
+		Round round = gameState.getRound(roundIndex);
 		for (int p = 0; p < 4; p++)
 		{
-			Card card = round.getCards().get(p);
-			boolean isItUs = gi.calling.getPlayerPairs().getTeam(p) == team;
+			Card card = round.getCardByPlayer(p);
+			boolean isItUs = gameState.getPlayerPairs().getTeam(p) == team;
 			boolean isKing = card instanceof SuitCard && ((SuitCard)card).getValue() == 5;
 			boolean isWon = round.getWinner() == p;
 			if (isItUs && isKing && isWon)
@@ -47,7 +51,7 @@ public class Kings extends AnnouncementBase
 		return false;
 	}
 	
-	public boolean canBeAnnounced(Announcing announcing)
+	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		
@@ -62,7 +66,7 @@ public class Kings extends AnnouncementBase
 		return super.canBeAnnounced(announcing);
 	}
 	
-	public void onAnnounce(Announcing announcing)
+	public void onAnnounce(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		

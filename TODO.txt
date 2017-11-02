@@ -4,6 +4,7 @@ Kings bug!!!
 pagatsas isSuccessful
 AnnouncementBridge.canBeSilent unused
 GameActivity call displaymessage
+Kontra announcements invisible when !isShownToUser (ex. ultimos)
 
 renames:
 Tarock->Tarokk

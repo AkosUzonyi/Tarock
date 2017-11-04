@@ -1,2 +1,4 @@
 rootProject.name = 'tarokk'
 
+include ":proto"
+project(":proto").projectDir = file("../proto")

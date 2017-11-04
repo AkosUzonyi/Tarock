@@ -3,6 +3,8 @@ version '1.0'
 
 apply plugin: 'java'
 apply plugin: 'application'
+apply plugin: 'com.google.protobuf'
+apply plugin: 'idea'
 
 mainClassName = "com.tisza.tarock.server.Server"
 
@@ -14,4 +16,48 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
+    compile group: 'com.google.protobuf', name: 'protobuf-java', version: '3.0.0'
+}
+
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.3'
+  }
+}
+
+sourceSets {
+    main {
+        proto {
+            srcDir '../proto'
+        }
+		java {
+			srcDirs 'src/main/java', 'src/main/lite'
+		}
+    }
+}
+
+
+protobuf {
+  protoc {
+    artifact = "com.google.protobuf:protoc:3.0.0"
+  }
+  plugins {
+    lite {
+      artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
+    }
+  }
+  generateProtoTasks.generatedFilesBaseDir = 'src'
+  generateProtoTasks {
+    all().each { task ->
+      task.builtins {
+        remove java
+      }
+      task.plugins {
+        lite { }
+      }
+    }
+  }
 }

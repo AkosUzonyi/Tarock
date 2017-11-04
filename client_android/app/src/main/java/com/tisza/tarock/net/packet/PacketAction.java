@@ -1,10 +1,11 @@
 package com.tisza.tarock.net.packet;
 
-import com.tisza.tarock.message.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+
+import com.tisza.tarock.message.MessageIO;
 import com.tisza.tarock.proto.ActionOuterClass.*;
-
-import java.io.*;
-
 
 public class PacketAction extends Packet
 {
@@ -24,11 +25,11 @@ public class PacketAction extends Packet
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
-		action = Action.parseFrom(dis);
+		action = Action.parseDelimitedFrom(dis);
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
-		action.writeTo(dos);
+		action.writeDelimitedTo(dos);
 	}
 }

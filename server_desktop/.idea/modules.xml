@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/734179737/proto.iml" filepath="$PROJECT_DIR$/.idea/modules/734179737/proto.iml" group="proto" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/tarokk.iml" filepath="$PROJECT_DIR$/.idea/modules/tarokk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tarokk_main.iml" filepath="$PROJECT_DIR$/.idea/modules/tarokk_main.iml" group="tarokk" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tarokk_test.iml" filepath="$PROJECT_DIR$/.idea/modules/tarokk_test.iml" group="tarokk" />
     </modules>
   </component>
 </project>

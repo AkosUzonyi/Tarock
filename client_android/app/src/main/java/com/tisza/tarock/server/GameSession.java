@@ -73,7 +73,7 @@ public class GameSession implements Runnable
 				waitForAllPlayersToConnect();
 				if (pp.packet instanceof PacketAction)
 				{
-					currentGame.handleAction(pp.player, ((PacketAction)pp.packet).getAction());
+					//currentGame.handleAction(pp.player, ((PacketAction)pp.packet).getAction());
 				}
 			}
 		}

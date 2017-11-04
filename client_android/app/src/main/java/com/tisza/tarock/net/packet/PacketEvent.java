@@ -1,9 +1,13 @@
 package com.tisza.tarock.net.packet;
 
-import com.tisza.tarock.message.*;
-import com.tisza.tarock.message.event.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
-import java.io.*;
+import com.tisza.tarock.message.MessageIO;
+import com.tisza.tarock.message.event.Event;
+
+import android.app.Notification.MessagingStyle.Message;
 
 public class PacketEvent extends Packet
 {

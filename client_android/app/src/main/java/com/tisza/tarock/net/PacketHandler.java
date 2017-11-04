@@ -1,6 +1,6 @@
 package com.tisza.tarock.net;
 
-import com.tisza.tarock.net.packet.*;
+import com.tisza.tarock.net.packet.Packet;
 
 
 public interface PacketHandler

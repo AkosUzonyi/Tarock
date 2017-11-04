@@ -1,6 +1,5 @@
 package com.tisza.tarock.message;
 
-import com.tisza.tarock.message.action.*;
 import com.tisza.tarock.message.event.*;
 
 import java.io.*;
@@ -9,7 +8,6 @@ public class MessageIO
 {
 	private MessageIO(){}
 	
-	private static ClassIDMapping<Action> actions = new ClassIDMapping<Action>();
 	private static ClassIDMapping<Event> events = new ClassIDMapping<Event>();
 	
 	public static void writeEvent(Event event, DataOutputStream dos) throws IOException
@@ -24,33 +22,9 @@ public class MessageIO
 		event.readData(dis);
 		return event;
 	}
-	
-	public static void writeAction(Action action, DataOutputStream dos) throws IOException
-	{
-		dos.writeByte(actions.getID(action));
-		action.writeData(dos);
-	}
-	
-	public static Action readAction(DataInputStream dis) throws IOException
-	{
-		byte id = dis.readByte();
-		System.out.println("--------------------id: " + id);
-		Action action = actions.createFromID(id);
-		action.readData(dis);
-		return action;
-	}
-	
+
 	static
 	{
-		actions.register(0, ActionBid.class);
-		actions.register(1, ActionChange.class);
-		actions.register(2, ActionCall.class);
-		actions.register(3, ActionAnnounce.class);
-		actions.register(4, ActionAnnouncePassz.class);
-		actions.register(5, ActionPlayCard.class);
-		actions.register(6, ActionReadyForNewGame.class);
-		actions.register(7, ActionThrowCards.class);
-
 		events.register(0, EventActionFailed.class);
 		events.register(1, EventAnnounce.class);
 		events.register(2, EventAvailableAnnouncements.class);

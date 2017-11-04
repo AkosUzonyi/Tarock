@@ -1,0 +1,51 @@
+syntax = "proto2";
+
+package com.tisza.tarock;
+
+option java_package = "com.tisza.tarock.proto";
+
+message Action
+{
+	oneof action
+	{
+		Bid action_bid = 1;
+		Call action_call = 2;
+		Change action_change = 3;
+		Announce action_announce = 4;
+		AnnouncePassz action_annouce_passz = 5;
+		PlayCard action_play_card = 6;
+		ReadyForNewGame action_ready_for_new_game = 7;
+		ThrowCards action_throw_cards = 8;
+	}
+	message Bid
+	{
+		required int32 bid = 1;
+	}
+	message Call
+	{
+		required int32 cardID = 1;
+	}
+	message Change
+	{
+		repeated int32 cardID = 1;
+	}
+	message Announce
+	{
+		required int32 annoncementID = 1;
+		required int32 contraLevel = 2;
+	}
+	message AnnouncePassz
+	{
+	}
+	message PlayCard
+	{
+		required int32 cardID = 1;
+	}
+	message ReadyForNewGame
+	{
+	}
+	message ThrowCards
+	{
+	}
+}
+

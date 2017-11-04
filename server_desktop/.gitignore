@@ -1,4 +1,14 @@
-/build
+*.iml
+*.iws
+*.ipr
+.gradle
+/local.properties
 /.idea/workspace.xml
 /.idea/libraries
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+
 /out
+/src/main/lite

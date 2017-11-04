@@ -1,4 +1,6 @@
 *.iml
+*.iws
+*.ipr
 .gradle
 /local.properties
 /.idea/workspace.xml

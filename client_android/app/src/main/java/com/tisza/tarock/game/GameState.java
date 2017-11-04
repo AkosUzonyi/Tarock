@@ -6,7 +6,6 @@ import com.tisza.tarock.game.Bidding.*;
 import com.tisza.tarock.message.event.*;
 import com.tisza.tarock.message.event.EventAnnouncementStatistics.*;
 import com.tisza.tarock.net.packet.*;
-import com.tisza.tarock.proto.ActionOuterClass.*;
 import com.tisza.tarock.server.*;
 
 import java.util.*;
@@ -100,7 +99,7 @@ public class GameState
 		gameSession.sendPacketToPlayer(target, new PacketEvent(event));
 	}
 
-	public void handleAction(int player, Action action)
+	/*public void handleAction(int player, Action action)
 	{
 		switch (action.getActionCase())
 		{
@@ -121,7 +120,7 @@ public class GameState
 				currentPhase.readyForNewGame(player);
 			default: System.err.println("unkown action: " + action.getActionCase());
 		}
-	}
+	}*/
 
 	/*public AllPlayersCards getAllPlayersCards()
 	{

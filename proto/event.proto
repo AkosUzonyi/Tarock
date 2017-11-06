@@ -1,0 +1,82 @@
+syntax = "proto2";
+
+package com.tisza.tarock;
+option java_package = "com.tisza.tarock.proto";
+
+import "utils.proto"
+
+message Event
+{
+	oneof event_type
+	{
+		Bid action_bid = 1;
+		Call action_call = 2;
+		Change action_change = 3;
+		Announce action_announce = 4;
+		AnnouncePassz action_annouce_passz = 5;
+		PlayCard action_play_card = 6;
+		ReadyForNewGame action_ready_for_new_game = 7;
+		ThrowCards action_throw_cards = 8;
+	}
+	message PlayerAction
+	{
+		required int32 player = 1;
+		required Action action = 2;
+	}
+	message AnnouncementStatistics
+	{
+		required sint32 self_game_points = 1;
+		required sint32 opponent_game_points = 2;
+		repeated Entry self_entry = 3;
+		repeated Entry opponent_entry = 4;
+		required sint32 sum_points = 5;
+		repeated sint32 player_point = 5;
+		
+		message Entry
+		{
+			required Announcement announcement;
+			required sint32 points;
+		}
+	}
+	message AvailableAnnouncements
+	{
+		repeated Announcement annoncement = 1;
+	}
+	message AvailableBids
+	{
+		repeated sint32 bid = 1;
+	}
+	message AvailableCalls
+	{
+		repeated Card card = 1;
+	}
+	message CardsTaken
+	{
+		required int32 player = 1;
+	}
+	message ChangeDone
+	{
+		required int32 player = 1;
+	}
+	message PendingNewGame
+	{
+	}
+	message PhaseChanged
+	{
+		required Phase phase = 1;
+	}
+	message PlayerCards
+	{
+		repeated Card card = 1;
+	}
+	message SkartTarock
+	{
+		repeated int32 count = 1;
+	}
+	message StartGame
+	{
+		required int32 my_id = 1;
+		repeated string player_name = 2;
+	}
+}
+

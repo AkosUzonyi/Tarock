@@ -1,12 +1,13 @@
 syntax = "proto2";
 
 package com.tisza.tarock;
-
 option java_package = "com.tisza.tarock.proto";
+
+import "utils.proto"
 
 message Action
 {
-	oneof action
+	oneof action_type
 	{
 		Bid action_bid = 1;
 		Call action_call = 2;
@@ -19,27 +20,26 @@ message Action
 	}
 	message Bid
 	{
-		required int32 bid = 1;
+		required sint32 bid = 1;
 	}
 	message Call
 	{
-		required int32 cardID = 1;
+		required Card card = 1;
 	}
 	message Change
 	{
-		repeated int32 cardID = 1;
+		repeated Card card = 1;
 	}
 	message Announce
 	{
-		required int32 annoncementID = 1;
-		required int32 contraLevel = 2;
+		required Announcement annoncement = 1;
 	}
 	message AnnouncePassz
 	{
 	}
 	message PlayCard
 	{
-		required int32 cardID = 1;
+		required Card card = 1;
 	}
 	message ReadyForNewGame
 	{

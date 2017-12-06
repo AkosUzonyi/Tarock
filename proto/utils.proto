@@ -2,13 +2,14 @@ syntax = "proto2";
 
 package com.tisza.tarock;
 option java_package = "com.tisza.tarock.proto";
+option java_outer_classname = "ProtoUtils";
 
 message Card
 {
 	oneof card_type
 	{
 		SuitCard suit_card = 1;
-		TarockCard tarock_card = 1;
+		TarockCard tarock_card = 2;
 	}
 }
 
@@ -25,7 +26,7 @@ message TarockCard
 
 message Announcement
 {
-	required string id = 1;
+	required int32 id = 1;
 	required int32 contra_level = 2;
 	optional int32 suit = 3;
 	optional Card card = 4;

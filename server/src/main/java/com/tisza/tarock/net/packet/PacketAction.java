@@ -1,9 +1,7 @@
 package com.tisza.tarock.net.packet;
 
-import com.tisza.tarock.message.*;
-import com.tisza.tarock.proto.ActionOuterClass.*;
-
 import java.io.*;
+import com.tisza.tarock.proto.ActionProto.*;
 
 
 public class PacketAction extends Packet

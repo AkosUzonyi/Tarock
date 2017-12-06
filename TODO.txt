@@ -5,6 +5,8 @@ pagatsas isSuccessful
 AnnouncementBridge.canBeSilent unused
 GameActivity call displaymessage
 Kontra announcements invisible when !isShownToUser (ex. ultimos)
+TarockCount announcement: no points earned
+TarockCount announcement: per team, not per player
 
 renames:
 Tarock->Tarokk
@@ -20,6 +22,9 @@ Card constructor protected, static instance fields
 IdentityTracker all false default: first announcement (Jatek) will change it
 AnnouncementBridge requireIdentification: contra level > 0
 filter(new TarockFilter()) -> tarockCount()
+move IAnnouncnig to announce package
+PlayerCards.getPlaceableCards end: return Collections.EMPTY_LIST
+make Phase subclasses package private
 
 features:
 handle relogin
@@ -29,6 +34,7 @@ kiralyultimo
 
 refactorizations:
 Player int->enum
+announcement string id
 
 other:
 final classes?

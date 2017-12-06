@@ -2,45 +2,45 @@ syntax = "proto2";
 
 package com.tisza.tarock;
 option java_package = "com.tisza.tarock.proto";
+option java_outer_classname = "EventProto";
 
-import "utils.proto"
+import "action.proto";
+import "utils.proto";
 
 message Event
 {
 	oneof event_type
 	{
-		Bid action_bid = 1;
-		Call action_call = 2;
-		Change action_change = 3;
-		Announce action_announce = 4;
-		AnnouncePassz action_annouce_passz = 5;
-		PlayCard action_play_card = 6;
-		ReadyForNewGame action_ready_for_new_game = 7;
-		ThrowCards action_throw_cards = 8;
+		StartGame start_game = 1;
+		PlayerAction player_action = 2;
+		PlayerCards player_cards = 3;
+		PhaseChanged phase_changed = 4;
+		AvailableBids available_= 5;
+		AvailableCalls available_calls = 6;
+		ChangeDone change_done = 7;
+		SkartTarock skart_tarock = 8;
+		AvailableAnnouncements available_announcements = 9;
+		CardsTaken cards_taken = 10;
+		AnnouncementStatistics announcement_statisics = 11;
+		PendingNewGame pending_new_game = 12;
+	}
+	message StartGame
+	{
+		required int32 my_id = 1;
+		repeated string player_name = 2;
 	}
 	message PlayerAction
 	{
 		required int32 player = 1;
 		required Action action = 2;
 	}
-	message AnnouncementStatistics
+	message PlayerCards
 	{
-		required sint32 self_game_points = 1;
-		required sint32 opponent_game_points = 2;
-		repeated Entry self_entry = 3;
-		repeated Entry opponent_entry = 4;
-		required sint32 sum_points = 5;
-		repeated sint32 player_point = 5;
-		
-		message Entry
-		{
-			required Announcement announcement;
-			required sint32 points;
-		}
+		repeated Card card = 1;
 	}
-	message AvailableAnnouncements
+	message PhaseChanged
 	{
-		repeated Announcement annoncement = 1;
+		required Phase phase = 1;
 	}
 	message AvailableBids
 	{
@@ -50,33 +50,39 @@ message Event
 	{
 		repeated Card card = 1;
 	}
-	message CardsTaken
-	{
-		required int32 player = 1;
-	}
 	message ChangeDone
 	{
 		required int32 player = 1;
-	}
-	message PendingNewGame
-	{
-	}
-	message PhaseChanged
-	{
-		required Phase phase = 1;
-	}
-	message PlayerCards
-	{
-		repeated Card card = 1;
 	}
 	message SkartTarock
 	{
 		repeated int32 count = 1;
 	}
-	message StartGame
+	message AvailableAnnouncements
 	{
-		required int32 my_id = 1;
-		repeated string player_name = 2;
+		repeated Announcement annoncement = 1;
+	}
+	message CardsTaken
+	{
+		required int32 player = 1;
+	}
+	message AnnouncementStatistics
+	{
+		required sint32 self_game_points = 1;
+		required sint32 opponent_game_points = 2;
+		repeated Entry self_entry = 3;
+		repeated Entry opponent_entry = 4;
+		required sint32 sum_points = 5;
+		repeated sint32 player_point = 6;
+		
+		message Entry
+		{
+			required Announcement announcement = 1;
+			required sint32 points = 2;
+		}
+	}
+	message PendingNewGame
+	{
 	}
 }
 

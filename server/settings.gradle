@@ -1,4 +1,4 @@
-rootProject.name = 'tarokk'
+rootProject.name = 'tarock_server'
 
 include ":proto"
 project(":proto").projectDir = file("../proto")

@@ -6,8 +6,9 @@ import com.tisza.tarock.game.Bidding.*;
 import com.tisza.tarock.message.event.*;
 import com.tisza.tarock.message.event.EventAnnouncementStatistics.*;
 import com.tisza.tarock.net.packet.*;
-import com.tisza.tarock.proto.ActionOuterClass.*;
+import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.*;
+import com.tisza.tarock.proto.ActionProto.*;
 
 import java.util.*;
 import java.util.stream.*;
@@ -102,31 +103,6 @@ public class GameState
 
 	public void handleAction(int player, Action action)
 	{
-		switch (action.getActionCase())
-		{
-			case ACTION_BID:
-				currentPhase.bid(player, action.getActionBid().getBid());
-				break;
-			case ACTION_CHANGE:
-				currentPhase.change(player, action.getActionChange().getCardIDList().stream().map(Card::fromId).collect(Collectors.toList()));
-				break;
-			case ACTION_CALL:
-				currentPhase.call(player, Card.fromId(action.getActionCall().getCardID()));
-				break;
-			case ACTION_ANNOUNCE:
-				currentPhase.announce(player, new AnnouncementContra(Announcements.getFromID(action.getActionAnnounce().getAnnoncementID()), action.getActionAnnounce().getContraLevel()));
-				break;
-			case ACTION_ANNOUCE_PASSZ:
-				currentPhase.announcePassz(player);
-				break;
-			case ACTION_PLAY_CARD:
-				currentPhase.playCard(player, Card.fromId(action.getActionPlayCard().getCardID()));
-				break;
-			case ACTION_READY_FOR_NEW_GAME:
-				currentPhase.readyForNewGame(player);
-				break;
-			default: System.err.println("unkown action: " + action.getActionCase());
-		}
 	}
 
 	/*public AllPlayersCards getAllPlayersCards()

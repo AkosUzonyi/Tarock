@@ -21,7 +21,6 @@ android {
 
     sourceSets {
         main {
-            java.srcDirs = ['src/main/java', 'generated/source/proto/debug/lite']
             proto {
                 srcDir '../../proto'
             }
@@ -49,7 +48,7 @@ protobuf {
             artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
         }
     }
-    //generateProtoTasks.generatedFilesBaseDir = 'srcalma'
+    
     generateProtoTasks {
         all().each { task ->
             task.builtins {

@@ -1,6 +1,7 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.TarockCard;
 import com.tisza.tarock.game.*;
 
 public class Facan extends AnnouncementBase
@@ -10,6 +11,16 @@ public class Facan extends AnnouncementBase
 	Facan(Card card)
 	{
 		this.card = card;
+	}
+
+	public String getName()
+	{
+		return "facan";
+	}
+
+	public Card getCard()
+	{
+		return card;
 	}
 
 	public Result isSuccessful(GameState gameState, Team team)

@@ -1,9 +1,9 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.message.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.message.ActionHandler;
 
-import java.util.*;
+import java.util.List;
 
 abstract class Phase implements ActionHandler
 {
@@ -13,52 +13,53 @@ abstract class Phase implements ActionHandler
 	{
 		this.gameState = gameState;
 	}
-	
+
 	public abstract PhaseEnum asEnum();
 	public abstract void onStart();
-	
-	public void announce(int player, AnnouncementContra announcementContra)
+
+	public boolean announce(int player, AnnouncementContra announcementContra)
 	{
-		wrongPhase();
+		return wrongPhase();
 	}
-	
-	public void announcePassz(int player)
+
+	public boolean announcePassz(int player)
 	{
-		wrongPhase();
+		return wrongPhase();
 	}
-	
-	public void bid(int player, int bid)
+
+	public boolean bid(int player, int bid)
 	{
-		wrongPhase();
+		return wrongPhase();
 	}
-	
-	public void call(int player, Card card)
+
+	public boolean call(int player, Card card)
 	{
-		wrongPhase();
+		return wrongPhase();
 	}
-	
-	public void change(int player, List<Card> cards)
+
+	public boolean change(int player, List<Card> cards)
 	{
-		wrongPhase();
+		return wrongPhase();
 	}
-	
-	public void playCard(int player, Card card)
+
+	public boolean playCard(int player, Card card)
 	{
-		wrongPhase();
+		return wrongPhase();
 	}
-	
-	public void readyForNewGame(int player)
+
+	public boolean readyForNewGame(int player)
 	{
-		wrongPhase();
+		return wrongPhase();
 	}
-	
-	public void throwCards(int player)
+
+	public boolean throwCards(int player)
 	{
-		wrongPhase();
+		return wrongPhase();
 	}
-	
-	private void wrongPhase()
+
+	private boolean wrongPhase()
 	{
 		System.err.println("wrong phase");
+		return false;
 	}
 }

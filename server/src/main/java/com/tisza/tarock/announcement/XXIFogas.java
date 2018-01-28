@@ -1,12 +1,20 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.PlayerPairs;
+import com.tisza.tarock.game.Round;
+import com.tisza.tarock.game.Team;
 
 public class XXIFogas extends AnnouncementBase
 {
 	XXIFogas(){}
-	
+
+	public String getName()
+	{
+		return "xxifogas";
+	}
+
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		PlayerPairs pp = gameState.getPlayerPairs();

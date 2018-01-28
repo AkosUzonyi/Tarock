@@ -1,13 +1,24 @@
 package com.tisza.tarock.card;
 
-import com.tisza.tarock.card.filter.*;
-import com.tisza.tarock.card.sort.*;
+import com.tisza.tarock.card.filter.CardFilter;
+import com.tisza.tarock.card.filter.SuitFilter;
+import com.tisza.tarock.card.filter.TarockFilter;
+import com.tisza.tarock.card.sort.IDSort;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class PlayerCards
 {
-	private List<Card> cards = new ArrayList<Card>();
+	private List<Card> cards = new ArrayList<>();
+
+	public PlayerCards() {}
+
+	public PlayerCards(List<Card> cards)
+	{
+		this.cards.addAll(cards);
+	}
 
 	public void addCard(Card c)
 	{

@@ -1,23 +1,25 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.announcement.*;
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.Bidding.*;
-import com.tisza.tarock.message.event.*;
-import com.tisza.tarock.message.event.EventAnnouncementStatistics.*;
-import com.tisza.tarock.net.packet.*;
-import com.tisza.tarock.proto.*;
-import com.tisza.tarock.server.*;
-import com.tisza.tarock.proto.ActionProto.*;
+import com.tisza.tarock.announcement.Announcement;
+import com.tisza.tarock.announcement.Announcements;
+import com.tisza.tarock.card.AllPlayersCards;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.game.Bidding.Invitation;
+import com.tisza.tarock.message.ActionHandler;
+import com.tisza.tarock.message.AnnouncementStaticticsEntry;
+import com.tisza.tarock.message.GameEventQueue;
+import com.tisza.tarock.server.GameSession;
 
 import java.util.*;
-import java.util.stream.*;
 
 public class GameState
 {
 	public static final int ROUND_COUNT = 9;
 	
 	private GameSession gameSession;
+
+	private GameEventQueue eventQueue;
 	
 	private int beginnerPlayer;
 
@@ -54,12 +56,23 @@ public class GameState
 		}
 	}
 
-	public GameState(GameSession gameSession, int beginnerPlayer)
+	public GameState(GameSession gameSession, GameEventQueue eventQueue, int beginnerPlayer)
 	{
 		this.gameSession = gameSession;
+		this.eventQueue = eventQueue;
 		this.beginnerPlayer = beginnerPlayer;
 	}
-	
+
+	public GameEventQueue getEventQueue()
+	{
+		return eventQueue;
+	}
+
+	public ActionHandler getCurrentActionHandler()
+	{
+		return currentPhase;
+	}
+
 	public void startNewGame(boolean doubleRound)
 	{
 		if (!doubleRound)
@@ -78,8 +91,8 @@ public class GameState
 		
 		for (int i = 0; i < 4; i++)
 		{
-			sendEvent(i, new EventStartGame(i, gameSession.playerNames));
-			sendEvent(i, new EventPlayerCards(getPlayerCards(i)));
+			getEventQueue().toPlayer(i).startGame(i, gameSession.playerNames);
+			getEventQueue().toPlayer(i).playerCards(getPlayerCards(i));
 		}
 		changePhase(new Bidding(this));
 	}
@@ -87,22 +100,8 @@ public class GameState
 	void changePhase(Phase p)
 	{
 		currentPhase = p;
-		broadcastEvent(new EventPhase(currentPhase.asEnum()));
+		getEventQueue().broadcast().phaseChanged(p.asEnum());
 		currentPhase.onStart();
-	}
-	
-	void broadcastEvent(Event event)
-	{
-		gameSession.broadcastPacket(new PacketEvent(event));
-	}
-	
-	void sendEvent(int target, Event event)
-	{
-		gameSession.sendPacketToPlayer(target, new PacketEvent(event));
-	}
-
-	public void handleAction(int player, Action action)
-	{
 	}
 
 	/*public AllPlayersCards getAllPlayersCards()
@@ -267,15 +266,15 @@ public class GameState
 	{
 		checkPhasePassed(PhaseEnum.GAMEPLAY);
 				
-		Map<Team, List<Entry>> statEntriesForTeams = new HashMap<Team, List<Entry>>();
-		Map<Team, Integer> gamePointsForTeams = new HashMap<Team, Integer>();
+		Map<Team, List<AnnouncementStaticticsEntry>> statEntriesForTeams = new HashMap<>();
+		Map<Team, Integer> gamePointsForTeams = new HashMap<>();
 		int pointsForCallerTeam = 0;
 		
 		for (Team team : Team.values())
 		{
 			gamePointsForTeams.put(team, calculateGamePoints(team));
 			
-			List<Entry> entriesForTeam = new ArrayList<Entry>();
+			List<AnnouncementStaticticsEntry> entriesForTeam = new ArrayList<>();
 			statEntriesForTeams.put(team, entriesForTeam);
 			
 			for (Announcement announcement : Announcements.getAll())
@@ -288,7 +287,7 @@ public class GameState
 				{
 					int acl = getAnnouncementsState().isAnnounced(team, announcement) ? getAnnouncementsState().getContraLevel(team, announcement) : -1;
 					AnnouncementContra ac = new AnnouncementContra(announcement, acl);
-					entriesForTeam.add(new EventAnnouncementStatistics.Entry(ac, annoucementPoints));
+					entriesForTeam.add(new AnnouncementStaticticsEntry(ac, annoucementPoints));
 				}
 			}
 		}
@@ -307,10 +306,10 @@ public class GameState
 			Team team = playerPairs.getTeam(player);
 			int selfGamePoints = gamePointsForTeams.get(team);
 			int opponentGamePoints = gamePointsForTeams.get(team.getOther());
-			List<Entry> selfEntries = statEntriesForTeams.get(team);
-			List<Entry> opponentEntries = statEntriesForTeams.get(team.getOther());
+			List<AnnouncementStaticticsEntry> selfEntries = statEntriesForTeams.get(team);
+			List<AnnouncementStaticticsEntry> opponentEntries = statEntriesForTeams.get(team.getOther());
 			int sumPoints = pointsForCallerTeam * (team == Team.CALLER ? 1 : -1);
-			sendEvent(player, new EventAnnouncementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, gameSession.getPoints()));
+			getEventQueue().toPlayer(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, gameSession.getPoints());
 		}
 	}
 	

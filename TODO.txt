@@ -25,6 +25,8 @@ filter(new TarockFilter()) -> tarockCount()
 move IAnnouncnig to announce package
 PlayerCards.getPlaceableCards end: return Collections.EMPTY_LIST
 make Phase subclasses package private
+canBeAnnounced: remove AnnouncementBase's implementation
+create AnnouncementInstance class (Announcement, contraLevel, announcerteam)
 
 features:
 handle relogin
@@ -40,3 +42,4 @@ other:
 final classes?
 @ovveride
 visibility (unnecessary public eg. getPoints())
+change minsdkversion

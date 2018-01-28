@@ -1,13 +1,10 @@
 package com.tisza.tarock.net.packet;
 
+import com.tisza.tarock.proto.EventProto.Event;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
-import com.tisza.tarock.message.MessageIO;
-import com.tisza.tarock.message.event.Event;
-
-import android.app.Notification.MessagingStyle.Message;
 
 public class PacketEvent extends Packet
 {
@@ -27,11 +24,11 @@ public class PacketEvent extends Packet
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
-		event = MessageIO.readEvent(dis);
+		event = Event.parseDelimitedFrom(dis);
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
-		MessageIO.writeEvent(event, dos);
+		event.writeDelimitedTo(dos);
 	}
 }

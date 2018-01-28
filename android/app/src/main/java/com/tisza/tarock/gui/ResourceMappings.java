@@ -1,32 +1,25 @@
 package com.tisza.tarock.gui;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.tisza.tarock.R;
-import com.tisza.tarock.announcement.Announcement;
-import com.tisza.tarock.announcement.AnnouncementBase;
-import com.tisza.tarock.announcement.Announcements;
-import com.tisza.tarock.announcement.Banda;
-import com.tisza.tarock.announcement.Szincsalad;
-import com.tisza.tarock.announcement.Ultimo;
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
-import com.tisza.tarock.card.TarockCard;
-import com.tisza.tarock.game.AnnouncementContra;
-import com.tisza.tarock.net.packet.PacketLoginFailed;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import com.tisza.tarock.R;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.net.packet.PacketLoginFailed;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @SuppressLint("UseSparseArrays")
 public class ResourceMappings
 {
+	private static Context context;
+
 	public static Map<Card, Integer> cardToImageResource = new HashMap<Card, Integer>();
 	public static Map<Integer, String> bidToName = new HashMap<Integer, String>();
-	public static Map<Announcement, String> announcementToName = new HashMap<Announcement, String>();
-	
+
 	public static String[] roundNames;
 	public static String[] contraNames;
 	public static String[] tarockNames;
@@ -34,34 +27,14 @@ public class ResourceMappings
 	public static String[] suitcardValueNames;
 	public static Map<Card, String> cardToName = new HashMap<Card, String>();
 	
-	public static Map<AnnouncementBase.Result, Integer> announcementResultToImage = new HashMap<AnnouncementBase.Result, Integer>();
 	public static Map<PacketLoginFailed.Reason, Integer> failureReasonToMessage = new HashMap<PacketLoginFailed.Reason, Integer>();
-	
-	private static String silent;
-	
-	public static String getAnnouncementContraName(AnnouncementContra ac)
+
+	public static String silent;
+
+	public static void init(Context c)
 	{
-		String result = "";
-		
-		if (!ac.isAnnounced())
-		{
-			result += silent;
-		}
-		else
-		{
-			result += ResourceMappings.contraNames[ac.getContraLevel()];
-		}
-		
-		if (result.length() > 0)
-			result += " ";
-		
-		result += ResourceMappings.announcementToName.get(ac.getAnnouncement());
-		
-		return result;
-	}
-	
-	public static void init(Context context)
-	{
+		context = c;
+
 		Resources resources = context.getResources();
 		
 		roundNames = resources.getStringArray(R.array.round_array);
@@ -97,12 +70,7 @@ public class ResourceMappings
 			
 			cardToName.put(card, tarockNames[i - 1]);
 		}
-		
-		announcementResultToImage.put(AnnouncementBase.Result.SUCCESSFUL, R.drawable.successful);
-		announcementResultToImage.put(AnnouncementBase.Result.SUCCESSFUL_SILENT, R.drawable.successful);
-		announcementResultToImage.put(AnnouncementBase.Result.FAILED, R.drawable.failed);
-		announcementResultToImage.put(AnnouncementBase.Result.FAILED_SILENT, R.drawable.failed);
-		
+
 		bidToName.put(-1, resources.getString(R.string.bid_passz));
 		for (int i = 0; i <= 3; i++)
 		{
@@ -111,53 +79,21 @@ public class ResourceMappings
 		}
 		
 		silent = resources.getString(R.string.silent);
-		
-		announcementToName.put(Announcements.jatek, resources.getString(R.string.jatek));
-		announcementToName.put(Announcements.hkp, resources.getString(R.string.hkp));
-		announcementToName.put(Announcements.trull, resources.getString(R.string.trull));
-		announcementToName.put(Announcements.xxiFogas, resources.getString(R.string.xxiFogas));
-		for (int i = 0; i < 4; i++)
+	}
+
+	public static String getAnnouncementNameText(String name)
+	{
+		Resources resources = context.getResources();
+
+		int announcementStringResID = resources.getIdentifier("announcement_" + name, "string", context.getPackageName());
+		try
 		{
-			Banda banda = Announcements.bandak[i];
-			announcementToName.put(banda, suitNames[i] + " " + resources.getString(R.string.banda));
+			return resources.getString(announcementStringResID);
 		}
-		announcementToName.put(Announcements.negykiraly, resources.getString(R.string.negykiraly));
-		announcementToName.put(Announcements.dupla, resources.getString(R.string.dupla));
-		announcementToName.put(Announcements.hosszuDupla, resources.getString(R.string.hosszuDupla));
-		announcementToName.put(Announcements.nyolctarokk, resources.getString(R.string.nyolctarokk));
-		announcementToName.put(Announcements.kilenctarokk, resources.getString(R.string.kilenctarokk));
-		announcementToName.put(Announcements.szinesites, resources.getString(R.string.szinesites));
-		announcementToName.put(Announcements.volat, resources.getString(R.string.volat));
-		announcementToName.put(Announcements.centrum, roundNames[4]);
-		announcementToName.put(Announcements.kismadar, roundNames[5]);
-		announcementToName.put(Announcements.nagymadar, roundNames[6]);
-		announcementToName.put(Announcements.kings[0], resources.getString(R.string.kiralyultimo));
-		announcementToName.put(Announcements.kings[1], resources.getString(R.string.ketkiralyok));
-		announcementToName.put(Announcements.kings[2], resources.getString(R.string.haromkiralyok));
-		announcementToName.put(Announcements.zaroparos, resources.getString(R.string.zaroparos));
-		announcementToName.put(Announcements.pagatfacan, resources.getString(R.string.pagatfacan));
-		announcementToName.put(Announcements.sasfacan, resources.getString(R.string.sasfacan));
-		for (int i = 0; i < 4; i++)
+		catch (Resources.NotFoundException e)
 		{
-			Szincsalad kisszincsalad = Announcements.kisszincsaladok[i];
-			Szincsalad nagyszincsalad = Announcements.nagyszincsaladok[i];
-			announcementToName.put(kisszincsalad, suitNames[i] + " " + resources.getString(R.string.kisszincsalad));
-			announcementToName.put(nagyszincsalad, suitNames[i] + " " + resources.getString(R.string.nagyszincsalad));
-		}
-		
-		for (Card card : Announcements.ultimok.keySet())
-		{
-			Map<Integer, Ultimo> map = Announcements.ultimok.get(card);
-			for (int roundIndex : map.keySet())
-			{
-				String annName = cardToName.get(card) + " " + roundNames[roundIndex];
-				announcementToName.put(map.get(roundIndex), annName);
-			}
-		}
-		
-		for (Announcement a : Announcements.getAll())
-		{
-			if (!announcementToName.containsKey(a)) announcementToName.put(a, a.getClass().getSimpleName());
+			System.err.println(name);
+			return name;
 		}
 	}
 }

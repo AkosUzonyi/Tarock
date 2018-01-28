@@ -1,12 +1,13 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.announcement.*;
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.Bidding.*;
-import com.tisza.tarock.message.event.*;
-import com.tisza.tarock.message.event.EventActionFailed.*;
+import com.tisza.tarock.announcement.Announcement;
+import com.tisza.tarock.announcement.Announcements;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.game.Bidding.Invitation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 class Announcing extends Phase implements IAnnouncing
 {
@@ -35,18 +36,18 @@ class Announcing extends Phase implements IAnnouncing
 		sendAvailableAnnouncements();
 	}
 
-	public void announce(int player, Announcement a)
+	public boolean announce(int player, Announcement a)
 	{
-		announce(player, new AnnouncementContra(a, 0));
+		return announce(player, new AnnouncementContra(a, 0));
 	}
 
-	public void announce(int player, AnnouncementContra ac)
+	public boolean announce(int player, AnnouncementContra ac)
 	{
 		if (player != currentPlayer)
-			return;
+			return false;
 		
 		if (!canAnnounce(ac))
-			return;
+			return false;
 		
 		currentPlayerAnnounced = true;
 		
@@ -63,19 +64,20 @@ class Announcing extends Phase implements IAnnouncing
 		setContraLevel(ac.getNextTeamToContra(team), ac.getAnnouncement(), ac.getContraLevel());
 		ac.getAnnouncement().onAnnounce(this);
 
-		gameState.broadcastEvent(new EventAnnounce(player, ac));
 		sendAvailableAnnouncements();
+
+		return true;
 	}
 	
-	public void announcePassz(int player)
+	public boolean announcePassz(int player)
 	{
 		if (player != currentPlayer)
-			return;
+			return false;
 		
 		if (Announcements.hkp.canBeAnnounced(this))
 		{
-			gameState.sendEvent(player, new EventActionFailed(Reason.CONTRAJATEK_REQUIRED));
-			return;
+			//gameState.sendEvent(player, new EventActionFailed(Reason.CONTRAJATEK_REQUIRED));
+			return false;
 		}
 		
 		if (currentPlayerAnnounced)
@@ -86,8 +88,6 @@ class Announcing extends Phase implements IAnnouncing
 		currentPlayer %= 4;
 		currentPlayerAnnounced = false;
 		
-		gameState.broadcastEvent(new EventAnnouncePassz(player));
-		
 		if (!isFinished())
 		{
 			sendAvailableAnnouncements();
@@ -96,6 +96,8 @@ class Announcing extends Phase implements IAnnouncing
 		{
 			gameState.changePhase(new Gameplay(gameState));
 		}
+
+		return true;
 	}
 	
 	private boolean isFinished()
@@ -114,9 +116,6 @@ class Announcing extends Phase implements IAnnouncing
 		{
 			for (Announcement a : Announcements.getAll())
 			{
-				if (!a.isShownToUser())
-					continue;
-				
 				if (isAnnounced(origAnnouncer, a))
 				{
 					if (a.canContra())
@@ -130,7 +129,7 @@ class Announcing extends Phase implements IAnnouncing
 				}
 				else
 				{
-					if ((!needsIdentification || !a.requireIdentification()) && origAnnouncer == currentPlayerTeam && a.canBeAnnounced(this))
+					if ((!needsIdentification || !a.requireIdentification()) && origAnnouncer == currentPlayerTeam && a.canBeAnnounced(this) && a.isShownToUser())
 					{
 						list.add(new AnnouncementContra(a, 0));
 					}
@@ -143,8 +142,8 @@ class Announcing extends Phase implements IAnnouncing
 			list.remove(new AnnouncementContra(Announcements.jatek, 1));
 		}
 		
-		gameState.sendEvent(currentPlayer, new EventAvailableAnnouncements(list));
-		gameState.broadcastEvent(new EventTurn(currentPlayer));
+		gameState.getEventQueue().toPlayer(currentPlayer).availableAnnouncements(list);
+		gameState.getEventQueue().broadcast().turn(currentPlayer);
 	}
 	
 	public boolean canAnnounce(AnnouncementContra ac)

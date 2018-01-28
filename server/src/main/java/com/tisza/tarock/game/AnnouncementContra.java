@@ -1,6 +1,7 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.announcement.*;
+import com.tisza.tarock.announcement.Announcement;
+import com.tisza.tarock.announcement.Announcements;
 
 public class AnnouncementContra implements Comparable<AnnouncementContra>
 {
@@ -67,10 +68,10 @@ public class AnnouncementContra implements Comparable<AnnouncementContra>
 		if (contraLevel != o.contraLevel)
 			return o.contraLevel - contraLevel;
 		
-		int myAID = Announcements.getID(announcement);
-		int oAID = Announcements.getID(o.announcement);
-		if (myAID != oAID)
-			return myAID - oAID;
+		int myPos = Announcements.getPosition(announcement);
+		int oPos = Announcements.getPosition(o.announcement);
+		if (myPos != oPos)
+			return myPos - oPos;
 		
 		return 0;
 	}

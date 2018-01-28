@@ -2,12 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="tarock_main" target="1.8" />
       <module name="tarock_server_main" target="1.8" />
       <module name="tarock_server_test" target="1.8" />
-      <module name="tarock_test" target="1.8" />
-      <module name="tarokk_main" target="1.8" />
-      <module name="tarokk_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

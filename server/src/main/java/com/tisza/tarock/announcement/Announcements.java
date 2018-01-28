@@ -1,13 +1,16 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.card.TarockCard;
 
 import java.util.*;
 
 public class Announcements
 {
-	private static final List<Announcement> all = new ArrayList<Announcement>();
-	
+	private static final Map<AnnouncementID, Announcement> idmap = new HashMap<>();
+	private static final List<Announcement> list = new ArrayList<>();
+
 	public static final Jatek jatek = new Jatek();
 	public static final HivatalbolKontraParti hkp = new HivatalbolKontraParti();
 	public static final Trull trull = new Trull();
@@ -33,64 +36,70 @@ public class Announcements
 	
 	public static Collection<Announcement> getAll()
 	{
-		return all;
+		return list;
 	}
 	
-	public static Announcement getFromID(int id)
+	public static Announcement getByID(AnnouncementID id)
 	{
-		return all.get(id);
+		return idmap.get(id);
 	}
-	
-	public static int getID(Announcement a)
+
+	public static int getPosition(Announcement a)
 	{
-		return all.indexOf(a);
+		return list.indexOf(a);
 	}
-	
+
+	private static void add(Announcement a)
+	{
+		idmap.put(a.getID(), a);
+		list.add(a);
+	}
+
 	static
 	{
-		all.add(jatek);
-		all.add(hkp);
-		all.add(trull);
+		add(jatek);
+		add(hkp);
+		add(trull);
 		for (int s = 0; s < 4; s++)
 		{
 			bandak[s] = new Banda(s);
-			all.add(bandak[s]);
+			add(bandak[s]);
 		}
-		all.add(negykiraly);
-		all.add(nyolctarokk);
-		all.add(kilenctarokk);
-		all.add(dupla);
-		all.add(hosszuDupla);
-		all.add(centrum);
-		all.add(kismadar);
-		all.add(nagymadar);
+		add(negykiraly);
+		add(nyolctarokk);
+		add(kilenctarokk);
+		add(dupla);
+		add(hosszuDupla);
+		add(centrum);
+		add(kismadar);
+		add(nagymadar);
 		kings[0] = new Kings(1);
-		all.add(kings[0]);
-		all.add(zaroparos);
-		all.add(szinesites);
-		all.add(volat);
+		add(kings[0]);
+		add(zaroparos);
+		add(szinesites);
+		add(volat);
 		kings[1] = new Kings(2);
-		all.add(kings[1]);
+		add(kings[1]);
 		kings[2] = new Kings(3);
-		all.add(kings[2]);
+		add(kings[2]);
 		
 		for (int s = 0; s < 4; s++)
 		{
 			Kisszincsalad kisszincsalad = new Kisszincsalad(s);
 			kisszincsaladok[s] = kisszincsalad;
-			all.add(kisszincsalad);
+			add(kisszincsalad);
 		}
 		
 		for (int s = 0; s < 4; s++)
 		{
 			Nagyszincsalad nagyszincsalad = new Nagyszincsalad(s);
 			nagyszincsaladok[s] = nagyszincsalad;
-			all.add(nagyszincsalad);
+			add(nagyszincsalad);
 		}
 		
-		all.add(pagatfacan);
-		all.add(sasfacan);
-		all.add(xxiFogas);
+		add(pagatfacan);
+		add(sasfacan);
+		add(xxiFogas);
 		
 		for (int s = 0; s < 4; s++)
 		{
@@ -102,7 +111,7 @@ public class Announcements
 				{
 					Ultimo announcement = new Szinultimo(roundIndex, card);
 					ultimok.get(card).put(roundIndex, announcement);
-					all.add(announcement);
+					add(announcement);
 				}
 			}
 		}
@@ -115,7 +124,7 @@ public class Announcements
 			{
 				Ultimo announcement = new PagatSasUltimo(roundIndex, card);
 				ultimok.get(card).put(roundIndex, announcement);
-				all.add(announcement);
+				add(announcement);
 			}
 		}
 		
@@ -126,7 +135,7 @@ public class Announcements
 			{
 				Ultimo announcement = new XXIUltimo(roundIndex);
 				ultimok.get(card).put(roundIndex, announcement);
-				all.add(announcement);
+				add(announcement);
 			}
 		}
 	}

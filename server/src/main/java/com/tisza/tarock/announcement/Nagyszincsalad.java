@@ -1,12 +1,19 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class Nagyszincsalad extends Szincsalad
 {
 	Nagyszincsalad(int suit)
 	{
 		super(suit);
+	}
+
+	public String getName()
+	{
+		return "nagyszincsalad";
 	}
 
 	protected Result isSuccessful(GameState gameState, Team team)

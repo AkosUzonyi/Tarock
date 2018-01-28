@@ -1,7 +1,8 @@
 package com.tisza.tarock.net.packet;
 
 import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class Packet
 {

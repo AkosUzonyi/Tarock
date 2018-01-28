@@ -1,8 +1,9 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 
 public class Round
 {

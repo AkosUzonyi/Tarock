@@ -1,11 +1,17 @@
 package com.tisza.tarock.net;
 
-import com.tisza.tarock.net.packet.*;
+import com.tisza.tarock.net.packet.Packet;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Connection
 {

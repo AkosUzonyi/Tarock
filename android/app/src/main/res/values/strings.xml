@@ -103,27 +103,30 @@
     <string name="silent">Csendes</string>
     <string name="passz">Passz</string>
     
-    <string name="jatek">Játék</string>
-    <string name="hkp">Hivatalból kontra parti</string>
-    <string name="trull">Trull</string>
-    <string name="xxiFogas">XXI fogás</string>
-    <string name="banda">banda</string>
-    <string name="negykiraly">Négykirály</string>
-    <string name="dupla">Dupla</string>
-    <string name="szinesites">Szinesítés</string>
-    <string name="volat">Volát</string>
-    <string name="hosszuDupla">Hosszú dupla</string>
-    <string name="nyolctarokk">Nyolc tarokk</string>
-    <string name="kilenctarokk">Kilenc tarokk</string>
-    <string name="kiralyultimo">Színtelen király ultimó</string>
-    <string name="ketkiralyok">Kétkirályok játéka</string>
-    <string name="haromkiralyok">Háromkirályok játéka</string>
-    <string name="zaroparos">Zárópáros</string>
-    <string name="kisszincsalad">kisszíncsalád</string>
-    <string name="nagyszincsalad">nagyszíncsalád</string>
-    <string name="pagatfacan">Pagátfácán</string>
-    <string name="sasfacan">Sasfácán</string>
-    
+    <string name="announcement_jatek">Játék</string>
+    <string name="announcement_hkp">Hivatalból kontra parti</string>
+    <string name="announcement_trull">Trull</string>
+    <string name="announcement_xxifogas">XXI fogás</string>
+    <string name="announcement_banda">banda</string>
+    <string name="announcement_negykiraly">Négykirály</string>
+    <string name="announcement_dupla">Dupla</string>
+    <string name="announcement_szinesites">Szinesítés</string>
+    <string name="announcement_volat">Volát</string>
+    <string name="announcement_hosszudupla">Hosszú dupla</string>
+    <string name="announcement_kiralyultimo">Színtelen király ultimó</string>
+    <string name="announcement_ketkiralyok">Kétkirályok játéka</string>
+    <string name="announcement_haromkiralyok">Háromkirályok játéka</string>
+    <string name="announcement_zaroparos">Zárópáros</string>
+    <string name="announcement_kisszincsalad">kisszíncsalád</string>
+    <string name="announcement_nagyszincsalad">nagyszíncsalád</string>
+    <string name="announcement_facan">fácán</string>
+    <string name="announcement_kezbevacak">""</string>
+    <string name="announcement_ultimo">""</string>
+    <string name="announcement_unknown">ismeretlen</string>
+
+    <string name="announcement_nyolctarokk">Nyolc tarokk</string>
+    <string name="announcement_kilenctarokk">Kilenc tarokk</string>
+
     <string name="statictics_self">Saját figurák</string>
     <string name="statictics_opponent">Ellenfél figurái</string>
     <string name="statictics_points">Pont</string>

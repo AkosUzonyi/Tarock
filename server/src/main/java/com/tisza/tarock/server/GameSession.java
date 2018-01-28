@@ -1,12 +1,28 @@
 package com.tisza.tarock.server;
 
-import com.tisza.tarock.game.*;
-import com.tisza.tarock.net.*;
-import com.tisza.tarock.net.packet.*;
+import com.tisza.tarock.announcement.Announcement;
+import com.tisza.tarock.announcement.Announcements;
+import com.tisza.tarock.game.AnnouncementContra;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.message.ActionHandler;
+import com.tisza.tarock.message.GameEventQueue;
+import com.tisza.tarock.message.Utils;
+import com.tisza.tarock.net.Connection;
+import com.tisza.tarock.net.PacketHandler;
+import com.tisza.tarock.net.packet.Packet;
+import com.tisza.tarock.net.packet.PacketAction;
+import com.tisza.tarock.net.packet.PacketEvent;
+import com.tisza.tarock.net.packet.PacketLoginFailed;
+import com.tisza.tarock.proto.ActionProto;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
+import com.tisza.tarock.proto.EventProto.*;
 
 public class GameSession implements Runnable
 {
@@ -20,7 +36,8 @@ public class GameSession implements Runnable
 	private Object connectionLock = new Object();
 	
 	private BlockingQueue<PlayerPacket> packetsReceived = new LinkedBlockingQueue<PlayerPacket>();
-	
+	private GameEventQueue eventQueue = new GameEventQueue();
+
 	private File pointsDir;
 	private int[] points = new int[4];
 	
@@ -31,8 +48,8 @@ public class GameSession implements Runnable
 		if (beginnerPlayer < 0 || beginnerPlayer >= 4 || names.size() != 4)
 			throw new IllegalArgumentException();
 		
-		currentGame = new GameState(this, 0);
-		
+		currentGame = new GameState(this, eventQueue, 0);
+
 		playerNames = new ArrayList<String>(names);
 		Collections.shuffle(playerNames);
 		
@@ -66,14 +83,15 @@ public class GameSession implements Runnable
 			waitForAllPlayersToConnect();
 			
 			currentGame.startNewGame(false);
-			
+			flushEventQueue();
+
 			while (!Thread.interrupted())
 			{
 				PlayerPacket pp = packetsReceived.take();
 				waitForAllPlayersToConnect();
 				if (pp.packet instanceof PacketAction)
 				{
-					currentGame.handleAction(pp.player, ((PacketAction)pp.packet).getAction());
+					processAction(pp.player, ((PacketAction)pp.packet).getAction());
 				}
 			}
 		}
@@ -82,7 +100,66 @@ public class GameSession implements Runnable
 			return;
 		}
 	}
-	
+
+	private void processAction(int player, ActionProto.Action action)
+	{
+		ActionHandler actionHandler = currentGame.getCurrentActionHandler();
+		boolean shouldBroadcast;
+
+		switch (action.getActionTypeCase())
+		{
+			case BID:
+				shouldBroadcast = actionHandler.bid(player, action.getBid().getBid());
+				break;
+			case CHANGE:
+				shouldBroadcast = actionHandler.change(player, action.getChange().getCardList().stream().map(Utils::cardFromProto).collect(Collectors.toList()));
+				break;
+			case CALL:
+				shouldBroadcast = actionHandler.call(player, Utils.cardFromProto(action.getCall().getCard()));
+				break;
+			case ANNOUNCE:
+				shouldBroadcast = actionHandler.announce(player, Utils.announcementFromProto(action.getAnnounce().getAnnouncement()));
+				break;
+			case ANNOUCE_PASSZ:
+				shouldBroadcast = actionHandler.announcePassz(player);
+				break;
+			case PLAY_CARD:
+				shouldBroadcast = actionHandler.playCard(player, Utils.cardFromProto(action.getPlayCard().getCard()));
+				break;
+			case READY_FOR_NEW_GAME:
+				shouldBroadcast = actionHandler.readyForNewGame(player);
+				break;
+			default:
+				shouldBroadcast = false;
+				System.err.println("unkown action: " + action.getActionTypeCase());
+		}
+
+		if (shouldBroadcast)
+		{
+			for (int p = 0; p < 4; p++)
+			{
+				Event.PlayerAction actionEvent = Event.PlayerAction.newBuilder()
+						.setPlayer(player)
+						.setAction(action)
+						.build();
+				sendPacketToPlayer(p, new PacketEvent(Event.newBuilder().setPlayerAction(actionEvent).build()));
+			}
+		}
+
+		flushEventQueue();
+	}
+
+	private void flushEventQueue()
+	{
+		for (int p = 0; p < 4; p++)
+		{
+			for (Event e : currentGame.getEventQueue().pollEventsForPlayer(p))
+			{
+				sendPacketToPlayer(p, new PacketEvent(e));
+			}
+		}
+	}
+
 	private void waitForAllPlayersToConnect() throws InterruptedException
 	{
 		while (playerIDToConnection.size() != 4)
@@ -145,15 +222,7 @@ public class GameSession implements Runnable
 			playerIDToConnection.get(player).sendPacket(packet);
 		}
 	}
-	
-	public void broadcastPacket(Packet packet)
-	{
-		for (Connection c : playerIDToConnection.values())
-		{
-			c.sendPacket(packet);
-		}
-	}
-	
+
 	public void close()
 	{
 		gameThread.interrupt();

@@ -1,7 +1,11 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Round;
+import com.tisza.tarock.game.Team;
 
 public class Kings extends AnnouncementBase
 {
@@ -15,6 +19,21 @@ public class Kings extends AnnouncementBase
 			throw new IllegalArgumentException();
 		
 		this.count = count;
+	}
+
+	public String getName()
+	{
+		switch (count)
+		{
+			case 1:
+				return "kiralyultimo";
+			case 2:
+				return "ketkiralyok";
+			case 3:
+				return "haromkiralyok";
+			default:
+				throw new Error();
+		}
 	}
 
 	public Result isSuccessful(GameState gameState, Team team)

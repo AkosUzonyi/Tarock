@@ -1,14 +1,19 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.filter.TarockFilter;
+import com.tisza.tarock.game.IAnnouncing;
 
 public class HosszuDupla extends AnnouncementBridge
 {
 	public HosszuDupla()
 	{
 		super(Announcements.dupla);
+	}
+
+	public String getName()
+	{
+		return "hosszudupla";
 	}
 
 	public boolean canBeAnnounced(IAnnouncing announcing)

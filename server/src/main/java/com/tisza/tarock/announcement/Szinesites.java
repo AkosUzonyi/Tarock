@@ -1,13 +1,21 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class Szinesites extends TakeCards
 {
 	Szinesites(){}
+
+	public String getName()
+	{
+		return "szinesites";
+	}
 
 	protected Collection<Card> getCardsToTake()
 	{

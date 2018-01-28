@@ -1,7 +1,10 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.Round;
+import com.tisza.tarock.game.Team;
 
 public abstract class Szincsalad extends AnnouncementBase
 {
@@ -14,7 +17,7 @@ public abstract class Szincsalad extends AnnouncementBase
 		
 		this.suit = suit;
 	}
-	
+
 	protected final boolean isRoundOK(GameState gameState, Team team, int roundIndex)
 	{
 		Round round = gameState.getRound(roundIndex);
@@ -32,7 +35,7 @@ public abstract class Szincsalad extends AnnouncementBase
 		return false;
 	}
 	
-	protected final int getSuit()
+	public final int getSuit()
 	{
 		return suit;
 	}

@@ -1,9 +1,16 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class Jatek extends GamePoints
 {
+	public String getName()
+	{
+		return "jatek";
+	}
+
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		int pointsForDupla = Announcements.dupla.calculatePoints(gameState, team);

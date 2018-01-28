@@ -1,33 +1,5 @@
 package com.tisza.tarock.gui;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.tisza.tarock.R;
-import com.tisza.tarock.announcement.Announcement;
-import com.tisza.tarock.announcement.Announcements;
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.PlayerCards;
-import com.tisza.tarock.card.SuitCard;
-import com.tisza.tarock.card.TarockCard;
-import com.tisza.tarock.game.AnnouncementContra;
-import com.tisza.tarock.game.PhaseEnum;
-import com.tisza.tarock.message.EventHandler;
-import com.tisza.tarock.message.event.*;
-import com.tisza.tarock.net.Connection;
-import com.tisza.tarock.net.PacketHandler;
-import com.tisza.tarock.net.packet.Packet;
-import com.tisza.tarock.net.packet.PacketAction;
-import com.tisza.tarock.net.packet.PacketEvent;
-import com.tisza.tarock.net.packet.PacketLogin;
-import com.tisza.tarock.proto.ActionOuterClass.*;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -43,17 +15,33 @@ import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
-import com.tisza.tarock.proto.*;
+import android.widget.*;
+import com.tisza.tarock.Announcement;
+import com.tisza.tarock.PhaseEnum;
+import com.tisza.tarock.R;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.message.ActionSender;
+import com.tisza.tarock.message.AnnouncementStaticticsEntry;
+import com.tisza.tarock.message.EventDispatcher;
+import com.tisza.tarock.message.EventHandler;
+import com.tisza.tarock.net.Connection;
+import com.tisza.tarock.net.ConnectionActionSender;
+import com.tisza.tarock.net.PacketHandler;
+import com.tisza.tarock.net.packet.Packet;
+import com.tisza.tarock.net.packet.PacketEvent;
+import com.tisza.tarock.net.packet.PacketLogin;
+import com.tisza.tarock.proto.ActionProto.Action;
+
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GameActivtiy extends Activity implements PacketHandler, EventHandler
 {
@@ -123,6 +111,7 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 					Socket socket = new Socket();
 					socket.connect(new InetSocketAddress(host, port), 1000);
 					conncection = new Connection(socket);
+					actionSender = new ConnectionActionSender(conncection);
 					conncection.sendPacket(new PacketLogin(name));
 					conncection.addPacketHandler(new PacketHandler()
 					{
@@ -242,32 +231,34 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 				int roundIndex = 8 - ultimoRoundSpinner.getSelectedItemPosition();
 				
 				int typeSelectedPos = ultimoTypeSpinner.getSelectedItemPosition();
-				if (typeSelectedPos < 2)
+				if (typeSelectedPos < 3)
 				{
-					announcement = Announcements.ultimok.get(new TarockCard(typeSelectedPos + 1)).get(roundIndex);
-				}
-				else if (typeSelectedPos < 3)
-				{
-					announcement = Announcements.ultimok.get(new TarockCard(21)).get(roundIndex);
+					announcement = new Announcement("ultimo", 0);
+					announcement.setCard(new TarockCard(typeSelectedPos == 2 ? 21 : typeSelectedPos + 1));
+					announcement.setRound(roundIndex);
 				}
 				else if (typeSelectedPos < 8)
 				{
 					int suit = ultimoSuitvalueSpinner.getSelectedItemPosition();
 					int value = 5 - (typeSelectedPos - 3);
-					announcement = Announcements.ultimok.get(new SuitCard(suit, value)).get(roundIndex);
+
+					announcement = new Announcement("ultimo", 0);
+					announcement.setCard(new SuitCard(suit, value));
+					announcement.setRound(roundIndex);
 				}
 				else if (typeSelectedPos < 10)
 				{
 					boolean small = typeSelectedPos == 8;
 					int suit = ultimoSuitvalueSpinner.getSelectedItemPosition();
-					announcement = (small ? Announcements.kisszincsaladok : Announcements.nagyszincsaladok)[suit];
+					announcement = new Announcement(small ? "kisszincsalad" : "nagyszincsalad", 0);
+					announcement.setSuit(suit);
 				}
 				else
 				{
 					throw new RuntimeException();
 				}
 				
-				doAction(Action.newBuilder().setActionAnnounce(Action.Announce.newBuilder().setAnnoncementID(Announcements.getID(announcement)).setContraLevel(0)).build());
+				actionSender.announce(announcement);
 			}
 		});
 		
@@ -344,9 +335,9 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 		messages = "";
 	}
 	
-	public void cardsChanged(PlayerCards cards)
+	public void cardsChanged(List<Card> cards)
 	{
-		myCards = cards;
+		myCards = new PlayerCards(cards);
 		arrangeCards();
 	}
 
@@ -417,7 +408,7 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 				public void onClick(View v)
 				{
 					availabeActionsView.removeAllViews();
-					doAction(Action.newBuilder().setActionBid(Action.Bid.newBuilder().setBid(bid)).build());
+					actionSender.bid(bid);
 				}
 			});
 			availabeActionsView.addView(bidButton);
@@ -444,12 +435,7 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 		{
 			public void onClick(View v)
 			{
-				Action.Change.Builder changeBuilder = Action.Change.newBuilder();
-				for (Card c : cardsToSkart)
-				{
-					changeBuilder.addCardID(c.getID());
-				}
-				doAction(Action.newBuilder().setActionChange(changeBuilder).build());
+				actionSender.change(cardsToSkart);
 			}
 		});
 	}
@@ -465,7 +451,7 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 		}
 	}
 	
-	public void skartTarokk(int[] counts)
+	public void skartTarock(int[] counts)
 	{
 		for (int p = 0; p < 4; p++)
 		{
@@ -493,7 +479,7 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 				public void onClick(View v)
 				{
 					availabeActionsView.removeAllViews();
-					doAction(Action.newBuilder().setActionCall(Action.Call.newBuilder().setCardID(card.getID())).build());
+					actionSender.call(card);
 				}
 			});
 			availabeActionsView.addView(callButton);
@@ -502,19 +488,11 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 	
 	public void call(int player, Card card)
 	{
-		messages += playerNames.get(player);
-		messages += " ";
-		messages += getResources().getString(R.string.message_call);
-		messages += ": ";
-		messages += ResourceMappings.cardToName.get(card);
-		messages += "\n";
-		messagesTextView.setText(messages);
-		messagesScrollView.scrollTo(0, messagesScrollView.getHeight());
+		displayPlayerActionMessage(player, R.string.message_call, ResourceMappings.cardToName.get(card));
 	}
 	
-	public void availableAnnouncements(List<AnnouncementContra> announcements)
+	public void availableAnnouncements(List<Announcement> announcements)
 	{
-		Collections.sort(announcements);
 		availabeActionsView.removeAllViews();
 		
 		Button ultimoButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
@@ -528,17 +506,15 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 		});
 		availabeActionsView.addView(ultimoButton);
 		
-		for (final AnnouncementContra ac : announcements)
+		for (final Announcement announcement : announcements)
 		{
-			if (ac.getContraLevel() == 0 && !ac.getAnnouncement().isShownToUser()) continue;
-			
 			Button announceButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
-			announceButton.setText(ResourceMappings.getAnnouncementContraName(ac));
+			announceButton.setText(announcement.getDisplayText());
 			announceButton.setOnClickListener(new OnClickListener()
 			{
 				public void onClick(View v)
 				{
-					doAction(Action.newBuilder().setActionAnnounce(Action.Announce.newBuilder().setAnnoncementID(Announcements.getID(ac.getAnnouncement())).setContraLevel(ac.getContraLevel())).build());
+					actionSender.announce(announcement);
 				}
 			});
 			availabeActionsView.addView(announceButton);
@@ -551,16 +527,16 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 			{
 				okButton.setVisibility(View.GONE);
 				availabeActionsView.removeAllViews();
-				doAction(Action.newBuilder().setActionAnnoucePassz(Action.AnnouncePassz.getDefaultInstance()).build());
+				actionSender.announcePassz();
 			}
 		});
 	}
 
-	public void announce(int player, AnnouncementContra announcement)
+	public void announce(int player, Announcement announcement)
 	{
 		setUltimoViewVisible(false);
 		
-		String msg = ResourceMappings.getAnnouncementContraName(announcement);
+		String msg = announcement.getDisplayText();
 		displayPlayerActionMessage(player, R.string.message_announce, msg);
 	}
 
@@ -654,7 +630,7 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 		}
 	}
 	
-	public void statistics(int selfGamePoints, int opponentGamePoints, List<EventAnnouncementStatistics.Entry> selfEntries, List<EventAnnouncementStatistics.Entry> opponentEntries, int sumPoints, int[] points)
+	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points)
 	{
 		statisticsGamepointsSelf.setText(selfGamePoints + "");
 		statisticsGamepointsOpponent.setText(opponentGamePoints + "");
@@ -678,7 +654,7 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 			nameView.setGravity(Gravity.CENTER);
 			
 			TextView pointsView = statisticsPointsValueViews[i];
-			pointsView.setText(points[i] + "");
+			pointsView.setText(points.get(i) + "");
 			pointsView.setGravity(Gravity.CENTER);
 		}
 	}
@@ -695,15 +671,15 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 		viewToAppend.addView(entryView);
 	}
 	
-	private void appendEntriesToStatistics(ViewGroup viewToAppend, List<EventAnnouncementStatistics.Entry> entries)
+	private void appendEntriesToStatistics(ViewGroup viewToAppend, List<AnnouncementStaticticsEntry> entries)
 	{
-		for (EventAnnouncementStatistics.Entry entry : entries)
+		for (AnnouncementStaticticsEntry entry : entries)
 		{
 			View entryView = layoutInflater.inflate(R.layout.statistics_entry, viewToAppend, false);
 			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
 			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
 			
-			nameView.setText(ResourceMappings.getAnnouncementContraName(entry.getAnnouncementContra()));
+			nameView.setText(entry.getAnnouncement().getDisplayText());
 			pointsView.setText(entry.getPoints() + "");
 			pointsView.setTextColor(entry.getPoints() >= 0 ? Color.BLACK : Color.RED);
 			
@@ -719,12 +695,12 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 			public void onClick(View v)
 			{
 				okButton.setVisibility(View.GONE);
-				doAction(Action.newBuilder().setActionReadyForNewGame(Action.ReadyForNewGame.newBuilder()).build());
+				actionSender.readyForNewGame();
 			}
 		});
 	}
 	
-	public void wrongAction(EventActionFailed.Reason type)
+	public void wrongAction()
 	{
 		displayMessage("error");
 	}
@@ -781,7 +757,7 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 					}
 					else if (gamePhase == PhaseEnum.GAMEPLAY && !waitingForTakeAnimation && !playedCardViews[0].isAnimating())
 					{
-						doAction(Action.newBuilder().setActionPlayCard(Action.PlayCard.newBuilder().setCardID(card.getID()).build()).build());
+						actionSender.playCard(card);
 					}
 				}
 			});
@@ -920,18 +896,16 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 		return (id - myID + 4) % 4;
 	}
 
+	private EventDispatcher eventDispatcher = new EventDispatcher(this);
 	public void handlePacket(Packet p)
 	{
 		if (p instanceof PacketEvent)
 		{
-			((PacketEvent)p).getEvent().handle(this);
+			eventDispatcher.dispatchEvent(((PacketEvent)p).getEvent());
 		}
 	}
-	
-	private void doAction(Action action)
-	{
-		conncection.sendPacket(new PacketAction(action));
-	}
+
+	private ActionSender actionSender;
 
 	public void connectionClosed()
 	{

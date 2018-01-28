@@ -13,15 +13,17 @@ message Event
 	{
 		StartGame start_game = 1;
 		PlayerAction player_action = 2;
+		Turn turn = 13;
 		PlayerCards player_cards = 3;
 		PhaseChanged phase_changed = 4;
-		AvailableBids available_= 5;
+		AvailableBids available_bids= 5;
 		AvailableCalls available_calls = 6;
+		CardsFromTalon cards_from_talon = 14;
 		ChangeDone change_done = 7;
 		SkartTarock skart_tarock = 8;
 		AvailableAnnouncements available_announcements = 9;
 		CardsTaken cards_taken = 10;
-		AnnouncementStatistics announcement_statisics = 11;
+		AnnouncementStatistics announcement_statistics = 11;
 		PendingNewGame pending_new_game = 12;
 	}
 	message StartGame
@@ -33,6 +35,10 @@ message Event
 	{
 		required int32 player = 1;
 		required Action action = 2;
+	}
+	message Turn
+	{
+		required int32 player = 1;
 	}
 	message PlayerCards
 	{
@@ -50,6 +56,10 @@ message Event
 	{
 		repeated Card card = 1;
 	}
+	message CardsFromTalon
+	{
+		repeated Card card = 1;
+	}
 	message ChangeDone
 	{
 		required int32 player = 1;
@@ -60,7 +70,7 @@ message Event
 	}
 	message AvailableAnnouncements
 	{
-		repeated Announcement annoncement = 1;
+		repeated Announcement announcement = 1;
 	}
 	message CardsTaken
 	{
@@ -78,7 +88,7 @@ message Event
 		message Entry
 		{
 			required Announcement announcement = 1;
-			required sint32 points = 2;
+			required sint32 points = 3;
 		}
 	}
 	message PendingNewGame

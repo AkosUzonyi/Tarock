@@ -1,9 +1,12 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Banda extends TakeCards
 {
@@ -15,6 +18,16 @@ public class Banda extends TakeCards
 			throw new IllegalArgumentException();
 		
 		this.suit = suit;
+	}
+
+	public String getName()
+	{
+		return "banda";
+	}
+
+	public int getSuit()
+	{
+		return suit;
 	}
 
 	protected List<Card> getCardsToTake()

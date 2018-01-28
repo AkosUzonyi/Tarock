@@ -1,7 +1,9 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.Team;
 
 public class XXIUltimo extends Ultimo
 {

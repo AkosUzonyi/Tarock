@@ -1,9 +1,15 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class Dupla extends GamePoints
 {
+	public String getName()
+	{
+		return "dupla";
+	}
+
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();

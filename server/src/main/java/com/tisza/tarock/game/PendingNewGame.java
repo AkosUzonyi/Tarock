@@ -1,7 +1,5 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.message.event.*;
-
 public class PendingNewGame extends Phase
 {
 	private boolean doubleRound;
@@ -20,16 +18,17 @@ public class PendingNewGame extends Phase
 
 	public void onStart()
 	{
-		gameState.broadcastEvent(new EventPendingNewGame());
+		gameState.getEventQueue().broadcast().pendingNewGame();
 	}
 
-	public void readyForNewGame(int player)
+	public boolean readyForNewGame(int player)
 	{
 		ready[player] = true;
 		if (allReady())
 		{
 			gameState.startNewGame(doubleRound);
 		}
+		return true;
 	}
 
 	private boolean allReady()

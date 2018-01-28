@@ -1,10 +1,9 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.message.event.*;
-import com.tisza.tarock.message.event.EventActionFailed.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
 
-import java.util.*;
+import java.util.Collection;
 
 public class Gameplay extends Phase
 {
@@ -23,24 +22,22 @@ public class Gameplay extends Phase
 	public void onStart()
 	{
 		currentRound = new Round(gameState.getBeginnerPlayer());
-		gameState.broadcastEvent(new EventTurn(currentRound.getCurrentPlayer()));
+		gameState.getEventQueue().broadcast().turn(currentRound.getCurrentPlayer());
 	}
 
-	public void playCard(int player, Card card)
+	public boolean playCard(int player, Card card)
 	{
 		if (player != currentRound.getCurrentPlayer())
-			return;
+			return false;
 		
 		if (!getPlaceableCards().contains(card))
 		{
-			gameState.sendEvent(player, new EventActionFailed(Reason.INVALID_CARD));
-			return;
+			//gameState.sendEvent(player, new EventActionFailed(Reason.INVALID_CARD));
+			return false;
 		}
 		
 		gameState.getPlayerCards(player).removeCard(card);
 		currentRound.placeCard(card);
-		
-		gameState.broadcastEvent(new EventPlayCard(card, player));
 		
 		if (currentRound.isFinished())
 		{
@@ -49,18 +46,20 @@ public class Gameplay extends Phase
 			gameState.addWonCards(winner, currentRound.getCards());
 			currentRound = gameState.areAllRoundsPassed() ? null : new Round(winner);
 			
-			gameState.broadcastEvent(new EventCardsTaken(winner));
+			gameState.getEventQueue().broadcast().cardsTaken(winner);
 		}
 		
 		if (currentRound != null)
 		{
-			gameState.broadcastEvent(new EventTurn(currentRound.getCurrentPlayer()));
+			gameState.getEventQueue().broadcast().turn(currentRound.getCurrentPlayer());
 		}
 		else
 		{
 			gameState.changePhase(new PendingNewGame(gameState, false));
 			gameState.sendStatistics();
 		}
+
+		return true;
 	}
 	
 	private Collection<Card> getPlaceableCards()

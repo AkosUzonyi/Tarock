@@ -1,23 +1,23 @@
 package com.tisza.tarock.message;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
-import com.tisza.tarock.message.event.EventActionFailed.*;
-import com.tisza.tarock.message.event.EventAnnouncementStatistics.*;
+import com.tisza.tarock.Announcement;
+import com.tisza.tarock.PhaseEnum;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
 
-import java.util.*;
+import java.util.List;
 
 public interface EventHandler
 {
 	public void startGame(int myID, List<String> playerNames);
 
-	public void statistics(int selfGamePoints, int opponentGamePoints, List<Entry> selfEntries, List<Entry> opponentEntries, int sumPoints, int[] points);
+	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points);
 
-	public void announce(int player, AnnouncementContra announcementContra);
+	public void announce(int player, Announcement announcementContra);
 
 	public void passz(int player);
 
-	public void availableAnnouncements(List<AnnouncementContra> announcements);
+	public void availableAnnouncements(List<Announcement> announcements);
 
 	public void availableBids(List<Integer> bids);
 
@@ -37,13 +37,13 @@ public interface EventHandler
 
 	public void cardPlayed(int player, Card card);
 
-	public void cardsChanged(PlayerCards pc);
+	public void cardsChanged(List<Card> pc);
 
-	public void skartTarokk(int[] counts);
+	public void skartTarock(int[] counts);
 
 	public void turn(int player);
 
-	public void wrongAction(Reason type);
+	public void wrongAction();
 
 	public void cardsFromTalon(List<Card> cards);
 

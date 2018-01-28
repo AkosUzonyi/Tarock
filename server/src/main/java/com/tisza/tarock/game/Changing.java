@@ -1,11 +1,13 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
-import com.tisza.tarock.message.event.*;
-import com.tisza.tarock.message.event.EventActionFailed.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.card.filter.SkartableCardFilter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Changing extends Phase
 {
@@ -30,7 +32,7 @@ public class Changing extends Phase
 		dealCardsFromTalon();
 		for (int i = 0; i < 4; i++)
 		{
-			gameState.sendEvent(i, new EventChange(cardsFromTalon.get(i)));
+			gameState.getEventQueue().toPlayer(i).cardsFromTalon(cardsFromTalon.get(i));
 		}
 	}
 	
@@ -64,18 +66,18 @@ public class Changing extends Phase
 		}
 	}
 	
-	public void change(int player, List<Card> cardsToSkart)
+	public boolean change(int player, List<Card> cardsToSkart)
 	{
 		if (donePlayer[player])
-			return;
+			return false;
 		
 		PlayerCards skartingPlayerCards = gameState.getPlayerCards(player);
 		List<Card> cardsFromTalonForPlayer = cardsFromTalon.get(player);
 		
 		if (cardsToSkart.size() != cardsFromTalonForPlayer.size())
 		{
-			gameState.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
-			return;
+			//gameState.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
+			return false;
 		}
 		
 		List<Card> checkedSkartCards = new ArrayList<Card>();
@@ -83,17 +85,17 @@ public class Changing extends Phase
 		{
 			if (!cardFilter.match(c))
 			{
-				gameState.sendEvent(player, new EventActionFailed(Reason.INVALID_SKART));
-				return;
+				//gameState.sendEvent(player, new EventActionFailed(Reason.INVALID_SKART));
+				return false;
 			}
 			
 			if (checkedSkartCards.contains(c))
-				return;
+				return false;
 			
 			checkedSkartCards.add(c);
 			
 			if (!skartingPlayerCards.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
-				return;
+				return false;
 		}
 		
 		int tarockCount = 0;
@@ -117,24 +119,27 @@ public class Changing extends Phase
 		
 		donePlayer[player] = true;
 		
-		gameState.sendEvent(player, new EventPlayerCards(skartingPlayerCards));
-		gameState.broadcastEvent(new EventChangeDone(player));
+		gameState.getEventQueue().toPlayer(player).playerCards(skartingPlayerCards);
+		gameState.getEventQueue().broadcast().changeDone(player);
 
 		if (isFinished())
 		{
-			gameState.broadcastEvent(new EventSkartTarock(tarockCounts));
+			gameState.getEventQueue().broadcast().skartTarock(tarockCounts);
 			gameState.changePhase(new Calling(gameState));
 		}
+
+		return false; //do not broadcast skarted cards
 	}
 	
-	public void throwCards(int player)
+	public boolean throwCards(int player)
 	{
 		PlayerCards cards = gameState.getPlayerCards(player);
 		if (cards.canBeThrown(true))
 		{
-			gameState.broadcastEvent(new EventCardsThrown(player, cards));
 			gameState.changePhase(new PendingNewGame(gameState, true));
+			return true;
 		}
+		return false;
 	}
 	
 	public boolean isFinished()

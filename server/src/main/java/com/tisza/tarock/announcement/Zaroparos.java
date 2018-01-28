@@ -1,11 +1,20 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Round;
+import com.tisza.tarock.game.Team;
 
 public class Zaroparos extends AnnouncementBase
 {
 	Zaroparos(){}
+
+	public String getName()
+	{
+		return "zaroparos";
+	}
 
 	public Result isSuccessful(GameState gameState, Team team)
 	{

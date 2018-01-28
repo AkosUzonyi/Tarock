@@ -1,11 +1,16 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
-import com.tisza.tarock.game.Bidding.*;
-import com.tisza.tarock.message.event.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.card.filter.CallableCardFilter;
+import com.tisza.tarock.card.filter.CardFilter;
+import com.tisza.tarock.game.Bidding.Invitation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Calling extends Phase
 {
@@ -36,17 +41,17 @@ public class Calling extends Phase
 			}
 		}
 		
-		gameState.sendEvent(callerPlayer, new EventAvailableCalls(getCallableCards()));
-		gameState.broadcastEvent(new EventTurn(callerPlayer));
+		gameState.getEventQueue().toPlayer(callerPlayer).availabeCalls(getCallableCards());
+		gameState.getEventQueue().broadcast().turn(callerPlayer);
 	}
 	
-	public void call(int player, Card card)
+	public boolean call(int player, Card card)
 	{
 		if (player != callerPlayer)
-			return;
+			return false;
 		
 		if (!getCallableCards().contains(card))
-			return;
+			return false;
 		
 		int calledPlayer = -1;
 		for (int i = 0; i < 4; i++)
@@ -80,8 +85,9 @@ public class Calling extends Phase
 			gameState.invitAccepted();
 		}
 		
-		gameState.broadcastEvent(new EventCall(callerPlayer, card));
 		gameState.changePhase(new Announcing(gameState));
+
+		return true;
 	}
 	
 	private List<Card> getCallableCards()

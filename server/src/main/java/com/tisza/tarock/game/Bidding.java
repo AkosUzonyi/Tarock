@@ -1,10 +1,13 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
-import com.tisza.tarock.message.event.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.card.filter.TarockFilter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Bidding extends Phase
 {
@@ -43,13 +46,13 @@ public class Bidding extends Phase
 		return lastBidValue - (canKeep() ? 0 : 1);
 	}
 	
-	public void bid(int player, int bid)
+	public boolean bid(int player, int bid)
 	{
 		if (player != currentPlayer)
-			return;
+			return false;
 		
 		if (!getAvailableBids().contains(bid))
-			return;
+			return false;
 		
 		if (bid == -1)
 		{
@@ -79,8 +82,6 @@ public class Bidding extends Phase
 			lastBidPlayer = currentPlayer;
 			lastBidValue = bid;
 		}
-		
-		gameState.broadcastEvent(new EventBid(player, bid));
 
 		findNextPlayer();
 		
@@ -100,16 +101,19 @@ public class Bidding extends Phase
 				gameState.changePhase(new Changing(gameState));
 			}
 		}
+
+		return true;
 	}
 	
-	public void throwCards(int player)
+	public boolean throwCards(int player)
 	{
 		PlayerCards cards = gameState.getPlayerCards(player);
 		if (cards.canBeThrown(false))
 		{
-			gameState.broadcastEvent(new EventCardsThrown(player, cards));
 			gameState.changePhase(new PendingNewGame(gameState, true));
+			return true;
 		}
+		return false;
 	}
 	
 	private List<Integer> getAvailableBids()
@@ -149,8 +153,8 @@ public class Bidding extends Phase
 	
 	private void sendAvailableBids()
 	{
-		gameState.sendEvent(currentPlayer, new EventAvailableBids(getAvailableBids()));
-		gameState.broadcastEvent(new EventTurn(currentPlayer));
+		gameState.getEventQueue().toPlayer(currentPlayer).availabeBids(getAvailableBids());
+		gameState.getEventQueue().broadcast().turn(currentPlayer);
 	}
 
 	private boolean checkBiddingRequirements(int player)

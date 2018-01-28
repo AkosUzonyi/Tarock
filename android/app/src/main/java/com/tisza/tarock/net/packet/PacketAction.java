@@ -1,11 +1,10 @@
 package com.tisza.tarock.net.packet;
 
+import com.tisza.tarock.proto.ActionProto.Action;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
-import com.tisza.tarock.message.MessageIO;
-import com.tisza.tarock.proto.ActionOuterClass.*;
 
 public class PacketAction extends Packet
 {

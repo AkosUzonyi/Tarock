@@ -1,9 +1,10 @@
 package com.tisza.tarock.net.packet;
 
-import com.tisza.tarock.message.*;
-import com.tisza.tarock.message.event.*;
+import com.tisza.tarock.proto.EventProto.Event;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class PacketEvent extends Packet
 {
@@ -23,11 +24,11 @@ public class PacketEvent extends Packet
 
 	protected void readData(DataInputStream dis) throws IOException
 	{
-		event = MessageIO.readEvent(dis);
+		event = Event.parseDelimitedFrom(dis);
 	}
 
 	protected void writeData(DataOutputStream dos) throws IOException
 	{
-		MessageIO.writeEvent(event, dos);
+		event.writeDelimitedTo(dos);
 	}
 }

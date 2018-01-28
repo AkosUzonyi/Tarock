@@ -1,9 +1,12 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Round;
+import com.tisza.tarock.game.Team;
 
-import java.util.*;
+import java.util.Map;
 
 public abstract class Ultimo extends AnnouncementBase
 {
@@ -14,6 +17,21 @@ public abstract class Ultimo extends AnnouncementBase
 	{
 		this.roundIndex = roundIndex;
 		this.cardToTakeWith = cardToTakeWith;
+	}
+
+	public String getName()
+	{
+		return "ultimo";
+	}
+
+	public Card getCard()
+	{
+		return cardToTakeWith;
+	}
+
+	public int getRound()
+	{
+		return roundIndex;
 	}
 
 	public Result isSuccessful(GameState gameState, Team team)

@@ -1,8 +1,10 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.card.filter.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.filter.TarockFilter;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class TarockCount implements Announcement
 {
@@ -12,7 +14,19 @@ public class TarockCount implements Announcement
 	{
 		this.count = count;
 	}
-	
+
+	public String getName()
+	{
+		switch (count)
+		{
+			case 8:
+				return "nyolctarokk";
+			case 9:
+				return "kilenctarokk";
+		}
+		return "unknown";
+	}
+
 	public int calculatePoints(GameState gameState, Team team)
 	{
 		return 0;

@@ -26,7 +26,7 @@ message TarockCard
 
 message Announcement
 {
-	required int32 id = 1;
+	required string name = 1;
 	required int32 contra_level = 2;
 	optional int32 suit = 3;
 	optional Card card = 4;

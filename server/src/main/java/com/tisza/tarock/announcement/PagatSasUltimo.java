@@ -1,7 +1,9 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
+import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.game.GameState;
+import com.tisza.tarock.game.IAnnouncing;
+import com.tisza.tarock.game.Team;
 
 public class PagatSasUltimo extends Ultimo
 {
@@ -9,7 +11,7 @@ public class PagatSasUltimo extends Ultimo
 	{
 		super(roundIndex, cardToTakeWith);
 	}
-	
+
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Result zaroparosSuccessful = Announcements.zaroparos.isSuccessful(gameState, team);

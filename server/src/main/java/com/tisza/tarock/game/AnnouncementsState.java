@@ -1,8 +1,9 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.announcement.*;
+import com.tisza.tarock.announcement.Announcement;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AnnouncementsState
 {

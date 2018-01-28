@@ -1,8 +1,8 @@
 package com.tisza.tarock.card.sort;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
 
-import java.util.*;
+import java.util.Comparator;
 
 public class IDSort implements Comparator<Card>
 {

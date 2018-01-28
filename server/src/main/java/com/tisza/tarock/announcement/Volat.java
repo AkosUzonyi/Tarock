@@ -1,12 +1,17 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
 
-import java.util.*;
+import java.util.Collection;
 
 public class Volat extends TakeCards
 {
 	Volat(){}
+
+	public String getName()
+	{
+		return "volat";
+	}
 
 	protected Collection<Card> getCardsToTake()
 	{

@@ -1,7 +1,9 @@
 package com.tisza.tarock.server;
 
-import com.tisza.tarock.net.*;
-import com.tisza.tarock.net.packet.*;
+import com.tisza.tarock.net.PacketHandler;
+import com.tisza.tarock.net.packet.Packet;
+import com.tisza.tarock.net.packet.PacketLogin;
+import com.tisza.tarock.net.packet.PacketLoginFailed;
 
 public class LoginHandler implements PacketHandler
 {

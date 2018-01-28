@@ -1,12 +1,19 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Negykiraly extends TakeCards
 {
 	Negykiraly(){}
+
+	public String getName()
+	{
+		return "negykiraly";
+	}
 
 	protected List<Card> getCardsToTake()
 	{

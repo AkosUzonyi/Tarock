@@ -1,30 +1,17 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.announcement.Announcement;
-import com.tisza.tarock.announcement.Announcements;
-import com.tisza.tarock.card.AllPlayersCards;
 import com.tisza.tarock.card.Card;
 import com.tisza.tarock.card.PlayerCards;
 import com.tisza.tarock.game.Bidding.Invitation;
-import com.tisza.tarock.message.ActionHandler;
-import com.tisza.tarock.message.AnnouncementStaticticsEntry;
-import com.tisza.tarock.message.GameEventQueue;
-import com.tisza.tarock.server.GameSession;
 
 import java.util.*;
 
 public class GameState
 {
-	public static final int ROUND_COUNT = 9;
-	
-	private GameSession gameSession;
+	private final int beginnerPlayer;
 
-	private GameEventQueue eventQueue;
-	
-	private int beginnerPlayer;
-
-	private AllPlayersCards playersCards = new AllPlayersCards();
-	private Phase currentPhase;
+	private List<PlayerCards> playersCards = new ArrayList<>();
+	private PhaseEnum currentPhaseEnum;
 	
 	private Invitation invitSent = Invitation.NONE;
 	private int invitingPlayer = -1;
@@ -41,82 +28,45 @@ public class GameState
 
 	private AnnouncementsState announcementsState = new AnnouncementsState();
 
-	private List<Round> roundsPassed = new ArrayList<Round>();
-	private List<Collection<Card>> wonCards = new ArrayList<Collection<Card>>();
+	private List<Round> roundsPassed = new ArrayList<>();
+	private List<Collection<Card>> wonCards = new ArrayList<>();
 	
 	{
 		for (Team t : Team.values())
 		{
-			skartForTeams.put(t, new ArrayList<Card>());
+			skartForTeams.put(t, new ArrayList<>());
 		}
 
 		for (int i = 0; i < 4; i++)
 		{
-			wonCards.add(new ArrayList<Card>());
+			playersCards.add(new PlayerCards());
+			wonCards.add(new ArrayList<>());
 		}
 	}
 
-	public GameState(GameSession gameSession, GameEventQueue eventQueue, int beginnerPlayer)
+	public GameState(int beginnerPlayer)
 	{
-		this.gameSession = gameSession;
-		this.eventQueue = eventQueue;
 		this.beginnerPlayer = beginnerPlayer;
 	}
 
-	public GameEventQueue getEventQueue()
+	void setPhase(PhaseEnum phase)
 	{
-		return eventQueue;
+		currentPhaseEnum = phase;
 	}
-
-	public ActionHandler getCurrentActionHandler()
-	{
-		return currentPhase;
-	}
-
-	public void startNewGame(boolean doubleRound)
-	{
-		if (!doubleRound)
-			beginnerPlayer++;
-		
-		List<Card> cardsToDeal = new ArrayList<Card>(Card.all);
-		Collections.shuffle(cardsToDeal);
-		for (int p = 0; p < 4; p++)
-		{
-			for (int i = 0; i < 9; i++)
-			{
-				playersCards.getPlayerCards(p).addCard(cardsToDeal.remove(0));
-			}
-		}
-		talon = cardsToDeal;
-		
-		for (int i = 0; i < 4; i++)
-		{
-			getEventQueue().toPlayer(i).startGame(i, gameSession.playerNames);
-			getEventQueue().toPlayer(i).playerCards(getPlayerCards(i));
-		}
-		changePhase(new Bidding(this));
-	}
-	
-	void changePhase(Phase p)
-	{
-		currentPhase = p;
-		getEventQueue().broadcast().phaseChanged(p.asEnum());
-		currentPhase.onStart();
-	}
-
-	/*public AllPlayersCards getAllPlayersCards()
-	{
-		return playersCards;
-	}*/
 
 	public PlayerCards getPlayerCards(int player)
 	{
-		return playersCards.getPlayerCards(player);
+		return playersCards.get(player);
 	}
 
 	public int getBeginnerPlayer()
 	{
 		return beginnerPlayer;
+	}
+
+	void setTalon(List<Card> talon)
+	{
+		this.talon = talon;
 	}
 
 	void setInvitationSent(Invitation invitSent, int invitingPlayer)
@@ -241,7 +191,7 @@ public class GameState
 	boolean areAllRoundsPassed()
 	{
 		checkPhasePassed(PhaseEnum.ANNOUNCING);
-		return roundsPassed.size() >= ROUND_COUNT;
+		return roundsPassed.size() >= GameSession.ROUND_COUNT;
 	}
 
 	public Round getRound(int index)
@@ -262,57 +212,6 @@ public class GameState
 		return wonCards.get(player);
 	}
 
-	public void sendStatistics()
-	{
-		checkPhasePassed(PhaseEnum.GAMEPLAY);
-				
-		Map<Team, List<AnnouncementStaticticsEntry>> statEntriesForTeams = new HashMap<>();
-		Map<Team, Integer> gamePointsForTeams = new HashMap<>();
-		int pointsForCallerTeam = 0;
-		
-		for (Team team : Team.values())
-		{
-			gamePointsForTeams.put(team, calculateGamePoints(team));
-			
-			List<AnnouncementStaticticsEntry> entriesForTeam = new ArrayList<>();
-			statEntriesForTeams.put(team, entriesForTeam);
-			
-			for (Announcement announcement : Announcements.getAll())
-			{
-				int annoucementPoints = announcement.calculatePoints(this, team);
-				
-				pointsForCallerTeam += annoucementPoints * (team == Team.CALLER ? 1 : -1);
-				
-				if (annoucementPoints != 0)
-				{
-					int acl = getAnnouncementsState().isAnnounced(team, announcement) ? getAnnouncementsState().getContraLevel(team, announcement) : -1;
-					AnnouncementContra ac = new AnnouncementContra(announcement, acl);
-					entriesForTeam.add(new AnnouncementStaticticsEntry(ac, annoucementPoints));
-				}
-			}
-		}
-		
-		int[] points = new int[4];
-		for (int i = 0; i < 4; i++)
-		{
-			points[i] = -pointsForCallerTeam;
-		}
-		points[playerPairs.getCaller()] += pointsForCallerTeam * 2;
-		points[playerPairs.getCalled()] += pointsForCallerTeam * 2;
-		gameSession.addPoints(points);
-		
-		for (int player = 0; player < 4; player++)
-		{
-			Team team = playerPairs.getTeam(player);
-			int selfGamePoints = gamePointsForTeams.get(team);
-			int opponentGamePoints = gamePointsForTeams.get(team.getOther());
-			List<AnnouncementStaticticsEntry> selfEntries = statEntriesForTeams.get(team);
-			List<AnnouncementStaticticsEntry> opponentEntries = statEntriesForTeams.get(team.getOther());
-			int sumPoints = pointsForCallerTeam * (team == Team.CALLER ? 1 : -1);
-			getEventQueue().toPlayer(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, gameSession.getPoints());
-		}
-	}
-	
 	public int calculateGamePoints(Team team)
 	{
 		checkPhasePassed(PhaseEnum.GAMEPLAY);
@@ -334,9 +233,9 @@ public class GameState
 		return points;
 	}
 	
-	private void checkPhasePassed(PhaseEnum phase)
+	void checkPhasePassed(PhaseEnum phase)
 	{
-		if (!currentPhase.asEnum().isAfter(phase))
+		if (!currentPhaseEnum.isAfter(phase))
 			throw new IllegalStateException();
 	}
 }

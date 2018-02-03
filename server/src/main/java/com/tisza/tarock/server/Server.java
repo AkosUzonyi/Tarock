@@ -16,7 +16,7 @@ public class Server
 	private File pointsDir;
 	
 	private LoginManager loginManager;
-	private GameSession gameSession;
+	private ClientManager gameSession;
 	private Thread listenterThread = null;
 	private ServerSocket ss;
 
@@ -36,7 +36,7 @@ public class Server
 	{
 		if (listenterThread == null)
 		{
-			gameSession = new GameSession(0, playerNames, pointsDir);
+			gameSession = new ClientManager(0, playerNames, pointsDir);
 			loginManager = new LoginManager(gameSession);
 			listenterThread = new Thread(new Runnable()
 			{

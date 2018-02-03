@@ -1,4 +1,4 @@
-package com.tisza.tarock.message;
+package com.tisza.tarock.message.proto;
 
 import com.tisza.tarock.announcement.Announcement;
 import com.tisza.tarock.announcement.AnnouncementID;
@@ -8,6 +8,7 @@ import com.tisza.tarock.card.SuitCard;
 import com.tisza.tarock.card.TarockCard;
 import com.tisza.tarock.game.AnnouncementContra;
 import com.tisza.tarock.game.PhaseEnum;
+import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.EventProto;
 import com.tisza.tarock.proto.ProtoUtils;
 

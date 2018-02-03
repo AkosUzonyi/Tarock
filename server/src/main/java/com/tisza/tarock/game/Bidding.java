@@ -18,9 +18,9 @@ public class Bidding extends Phase
 	
 	private BidState[] playersState = new BidState[4];
 	
-	public Bidding(GameState gs)
+	public Bidding(GameSession gameSession)
 	{
-		super(gs);
+		super(gameSession);
 		
 		Arrays.fill(playersState, BidState.INITIAL);
 	}
@@ -32,7 +32,7 @@ public class Bidding extends Phase
 	
 	public void onStart()
 	{
-		currentPlayer = gameState.getBeginnerPlayer();
+		currentPlayer = currentGame.getBeginnerPlayer();
 		sendAvailableBids();
 	}
 
@@ -46,19 +46,19 @@ public class Bidding extends Phase
 		return lastBidValue - (canKeep() ? 0 : 1);
 	}
 	
-	public boolean bid(int player, int bid)
+	public void bid(int player, int bid)
 	{
 		if (player != currentPlayer)
-			return false;
+			return;
 		
 		if (!getAvailableBids().contains(bid))
-			return false;
+			return;
 		
 		if (bid == -1)
 		{
 			if (canKeep() && lastBidValue == 2)
 			{
-				gameState.setInvitationSent(Invitation.XX, currentPlayer);
+				currentGame.setInvitationSent(Invitation.XX, currentPlayer);
 			}
 			
 			playersState[currentPlayer] = BidState.OUT;
@@ -69,12 +69,12 @@ public class Bidding extends Phase
 			
 			if (jump == 1)
 			{
-				gameState.setInvitationSent(Invitation.XIX, currentPlayer);
+				currentGame.setInvitationSent(Invitation.XIX, currentPlayer);
 			}
 			
 			if (jump == 2)
 			{
-				gameState.setInvitationSent(Invitation.XVIII, currentPlayer);
+				currentGame.setInvitationSent(Invitation.XVIII, currentPlayer);
 			}
 			
 			playersState[currentPlayer] = BidState.IN;
@@ -82,6 +82,8 @@ public class Bidding extends Phase
 			lastBidPlayer = currentPlayer;
 			lastBidValue = bid;
 		}
+
+		gameSession.getBroadcastEventQueue().bid(player, bid);
 
 		findNextPlayer();
 		
@@ -93,27 +95,24 @@ public class Bidding extends Phase
 		{
 			if (lastBidPlayer < 0)
 			{
-				gameState.changePhase(new PendingNewGame(gameState, true));
+				gameSession.changePhase(new PendingNewGame(gameSession, true));
 			}
 			else
 			{
-				gameState.setBidResult(lastBidPlayer, lastBidValue);
-				gameState.changePhase(new Changing(gameState));
+				currentGame.setBidResult(lastBidPlayer, lastBidValue);
+				gameSession.changePhase(new Changing(gameSession));
 			}
 		}
-
-		return true;
 	}
 	
-	public boolean throwCards(int player)
+	public void throwCards(int player)
 	{
-		PlayerCards cards = gameState.getPlayerCards(player);
+		PlayerCards cards = currentGame.getPlayerCards(player);
 		if (cards.canBeThrown(false))
 		{
-			gameState.changePhase(new PendingNewGame(gameState, true));
-			return true;
+			gameSession.getBroadcastEventQueue().throwCards(player);
+			gameSession.changePhase(new PendingNewGame(gameSession, true));
 		}
-		return false;
 	}
 	
 	private List<Integer> getAvailableBids()
@@ -128,7 +127,7 @@ public class Bidding extends Phase
 			int defaultBid = getDefaultBid();
 			result.add(defaultBid);
 			
-			PlayerCards cards = gameState.getPlayerCards(currentPlayer);
+			PlayerCards cards = currentGame.getPlayerCards(currentPlayer);
 			boolean canInvit = checkBaseInvitationRequirements(currentPlayer);
 			
 			if (canKeep() && lastBidValue == 2 && (!canInvit || !cards.hasCard(new TarockCard(20))))
@@ -153,13 +152,13 @@ public class Bidding extends Phase
 	
 	private void sendAvailableBids()
 	{
-		gameState.getEventQueue().toPlayer(currentPlayer).availabeBids(getAvailableBids());
-		gameState.getEventQueue().broadcast().turn(currentPlayer);
+		gameSession.getPlayerEventQueue(currentPlayer).availabeBids(getAvailableBids());
+		gameSession.getBroadcastEventQueue().turn(currentPlayer);
 	}
 
 	private boolean checkBiddingRequirements(int player)
 	{
-		for (Card c : gameState.getPlayerCards(player).getCards())
+		for (Card c : currentGame.getPlayerCards(player).getCards())
 		{
 			if (c.isHonor())
 			{
@@ -171,7 +170,7 @@ public class Bidding extends Phase
 	
 	private boolean checkBaseInvitationRequirements(int player)
 	{
-		PlayerCards h = gameState.getPlayerCards(player);
+		PlayerCards h = currentGame.getPlayerCards(player);
 		return (h.hasCard(new TarockCard(21)) || h.hasCard(new TarockCard(22))) && h.filter(new TarockFilter()).size() >= 5;
 	}
 	

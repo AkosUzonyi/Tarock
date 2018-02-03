@@ -17,9 +17,9 @@ public class Changing extends Phase
 	private boolean[] donePlayer = new boolean[4];
 	private int[] tarockCounts = new int[4];
 	
-	public Changing(GameState gs)
+	public Changing(GameSession gameSession)
 	{
-		super(gs);
+		super(gameSession);
 	}
 	
 	public PhaseEnum asEnum()
@@ -32,7 +32,7 @@ public class Changing extends Phase
 		dealCardsFromTalon();
 		for (int i = 0; i < 4; i++)
 		{
-			gameState.getEventQueue().toPlayer(i).cardsFromTalon(cardsFromTalon.get(i));
+			gameSession.getPlayerEventQueue(i).cardsFromTalon(cardsFromTalon.get(i));
 		}
 	}
 	
@@ -44,15 +44,15 @@ public class Changing extends Phase
 			cardsFromTalon.add(new ArrayList<Card>());
 		}
 		
-		List<Card> cardsRemaining = new LinkedList<Card>(gameState.getTalon());
+		List<Card> cardsRemaining = new LinkedList<Card>(currentGame.getTalon());
 		for (int i = 0; i < 4; i++)
 		{
-			int player = (gameState.getBidWinnerPlayer() + i) % 4;
+			int player = (currentGame.getBidWinnerPlayer() + i) % 4;
 			
 			int cardCount;
-			if (player == gameState.getBidWinnerPlayer())
+			if (player == currentGame.getBidWinnerPlayer())
 			{
-				cardCount = gameState.getWinnerBid();
+				cardCount = currentGame.getWinnerBid();
 			}
 			else
 			{
@@ -66,18 +66,18 @@ public class Changing extends Phase
 		}
 	}
 	
-	public boolean change(int player, List<Card> cardsToSkart)
+	public void change(int player, List<Card> cardsToSkart)
 	{
 		if (donePlayer[player])
-			return false;
+			return;
 		
-		PlayerCards skartingPlayerCards = gameState.getPlayerCards(player);
+		PlayerCards skartingPlayerCards = currentGame.getPlayerCards(player);
 		List<Card> cardsFromTalonForPlayer = cardsFromTalon.get(player);
 		
 		if (cardsToSkart.size() != cardsFromTalonForPlayer.size())
 		{
-			//gameState.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
-			return false;
+			//gameSession.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
+			return;
 		}
 		
 		List<Card> checkedSkartCards = new ArrayList<Card>();
@@ -85,17 +85,17 @@ public class Changing extends Phase
 		{
 			if (!cardFilter.match(c))
 			{
-				//gameState.sendEvent(player, new EventActionFailed(Reason.INVALID_SKART));
-				return false;
+				//gameSession.sendEvent(player, new EventActionFailed(Reason.INVALID_SKART));
+				return;
 			}
 			
 			if (checkedSkartCards.contains(c))
-				return false;
+				return;
 			
 			checkedSkartCards.add(c);
 			
 			if (!skartingPlayerCards.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
-				return false;
+				return;
 		}
 		
 		int tarockCount = 0;
@@ -106,11 +106,11 @@ public class Changing extends Phase
 				tarockCount++;
 				if (c.equals(new TarockCard(20)))
 				{
-					gameState.setPlayerSkarted20(player);
+					currentGame.setPlayerSkarted20(player);
 				}
 			}
-			
-			gameState.addCardToSkart(player == gameState.getBidWinnerPlayer() ? Team.CALLER : Team.OPPONENT, c);
+
+			currentGame.addCardToSkart(player == currentGame.getBidWinnerPlayer() ? Team.CALLER : Team.OPPONENT, c);
 		}
 		tarockCounts[player] = tarockCount;
 		
@@ -119,27 +119,24 @@ public class Changing extends Phase
 		
 		donePlayer[player] = true;
 		
-		gameState.getEventQueue().toPlayer(player).playerCards(skartingPlayerCards);
-		gameState.getEventQueue().broadcast().changeDone(player);
+		gameSession.getPlayerEventQueue(player).playerCards(skartingPlayerCards);
+		gameSession.getBroadcastEventQueue().changeDone(player);
 
 		if (isFinished())
 		{
-			gameState.getEventQueue().broadcast().skartTarock(tarockCounts);
-			gameState.changePhase(new Calling(gameState));
+			gameSession.getBroadcastEventQueue().skartTarock(tarockCounts);
+			gameSession.changePhase(new Calling(gameSession));
 		}
-
-		return false; //do not broadcast skarted cards
 	}
 	
-	public boolean throwCards(int player)
+	public void throwCards(int player)
 	{
-		PlayerCards cards = gameState.getPlayerCards(player);
+		PlayerCards cards = currentGame.getPlayerCards(player);
 		if (cards.canBeThrown(true))
 		{
-			gameState.changePhase(new PendingNewGame(gameState, true));
-			return true;
+			gameSession.getBroadcastEventQueue().throwCards(player);
+			gameSession.changePhase(new PendingNewGame(gameSession, true));
 		}
-		return false;
 	}
 	
 	public boolean isFinished()

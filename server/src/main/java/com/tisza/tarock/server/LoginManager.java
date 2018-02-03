@@ -9,10 +9,10 @@ import java.util.Map;
 
 public class LoginManager
 {
-	private GameSession game;
+	private ClientManager game;
 	private Map<LoginHandler, Connection> pendingLoginHandlers = new HashMap<LoginHandler, Connection>();
 
-	public LoginManager(GameSession g)
+	public LoginManager(ClientManager g)
 	{
 		game = g;
 	}

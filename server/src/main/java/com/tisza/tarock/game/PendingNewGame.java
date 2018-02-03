@@ -5,9 +5,9 @@ public class PendingNewGame extends Phase
 	private boolean doubleRound;
 	private boolean[] ready = new boolean[4];
 
-	public PendingNewGame(GameState gameState, boolean doubleRound)
+	public PendingNewGame(GameSession gameSession, boolean doubleRound)
 	{
-		super(gameState);
+		super(gameSession);
 		this.doubleRound = doubleRound;
 	}
 
@@ -18,17 +18,17 @@ public class PendingNewGame extends Phase
 
 	public void onStart()
 	{
-		gameState.getEventQueue().broadcast().pendingNewGame();
+		gameSession.getBroadcastEventQueue().pendingNewGame();
 	}
 
-	public boolean readyForNewGame(int player)
+	public void readyForNewGame(int player)
 	{
 		ready[player] = true;
 		if (allReady())
 		{
-			gameState.startNewGame(doubleRound);
+			gameSession.startNewGame(doubleRound);
 		}
-		return true;
+		gameSession.getBroadcastEventQueue().readyForNewGame(player);
 	}
 
 	private boolean allReady()

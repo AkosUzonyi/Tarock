@@ -7,59 +7,60 @@ import java.util.List;
 
 abstract class Phase implements ActionHandler
 {
-	protected final GameState gameState;
+	protected final GameSession gameSession;
+	protected final GameState currentGame;
 
-	public Phase(GameState gameState)
+	public Phase(GameSession gameSession)
 	{
-		this.gameState = gameState;
+		this.gameSession = gameSession;
+		currentGame = gameSession.getCurrentGame();
 	}
 
 	public abstract PhaseEnum asEnum();
 	public abstract void onStart();
 
-	public boolean announce(int player, AnnouncementContra announcementContra)
+	public void announce(int player, AnnouncementContra announcementContra)
 	{
-		return wrongPhase();
+		wrongPhase();
 	}
 
-	public boolean announcePassz(int player)
+	public void announcePassz(int player)
 	{
-		return wrongPhase();
+		wrongPhase();
 	}
 
-	public boolean bid(int player, int bid)
+	public void bid(int player, int bid)
 	{
-		return wrongPhase();
+		wrongPhase();
 	}
 
-	public boolean call(int player, Card card)
+	public void call(int player, Card card)
 	{
-		return wrongPhase();
+		wrongPhase();
 	}
 
-	public boolean change(int player, List<Card> cards)
+	public void change(int player, List<Card> cards)
 	{
-		return wrongPhase();
+		wrongPhase();
 	}
 
-	public boolean playCard(int player, Card card)
+	public void playCard(int player, Card card)
 	{
-		return wrongPhase();
+		wrongPhase();
 	}
 
-	public boolean readyForNewGame(int player)
+	public void readyForNewGame(int player)
 	{
-		return wrongPhase();
+		wrongPhase();
 	}
 
-	public boolean throwCards(int player)
+	public void throwCards(int player)
 	{
-		return wrongPhase();
+		wrongPhase();
 	}
 
-	private boolean wrongPhase()
+	private void wrongPhase()
 	{
 		System.err.println("wrong phase");
-		return false;
 	}
 }

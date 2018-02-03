@@ -16,9 +16,9 @@ class Announcing extends Phase implements IAnnouncing
 	private int lastAnnouncer = -1;
 	private IdentityTracker idTrack;
 	
-	public Announcing(GameState gs)
+	public Announcing(GameSession gameSession)
 	{
-		super(gs);
+		super(gameSession);
 	}
 	
 	public PhaseEnum asEnum()
@@ -28,26 +28,26 @@ class Announcing extends Phase implements IAnnouncing
 	
 	public void onStart()
 	{
-		currentPlayer = gameState.getPlayerPairs().getCaller();
-		idTrack = new IdentityTracker(gameState.getPlayerPairs(), gameState.getInvitAccepted());
+		currentPlayer = currentGame.getPlayerPairs().getCaller();
+		idTrack = new IdentityTracker(currentGame.getPlayerPairs(), currentGame.getInvitAccepted());
 		
 		announce(currentPlayer, Announcements.jatek);
 		
 		sendAvailableAnnouncements();
 	}
 
-	public boolean announce(int player, Announcement a)
+	public void announce(int player, Announcement a)
 	{
-		return announce(player, new AnnouncementContra(a, 0));
+		announce(player, new AnnouncementContra(a, 0));
 	}
 
-	public boolean announce(int player, AnnouncementContra ac)
+	public void announce(int player, AnnouncementContra ac)
 	{
 		if (player != currentPlayer)
-			return false;
+			return;
 		
 		if (!canAnnounce(ac))
-			return false;
+			return;
 		
 		currentPlayerAnnounced = true;
 		
@@ -60,24 +60,23 @@ class Announcing extends Phase implements IAnnouncing
 			idTrack.identityRevealed(player);
 		}
 		
-		Team team = gameState.getPlayerPairs().getTeam(player);
+		Team team = currentGame.getPlayerPairs().getTeam(player);
 		setContraLevel(ac.getNextTeamToContra(team), ac.getAnnouncement(), ac.getContraLevel());
 		ac.getAnnouncement().onAnnounce(this);
 
+		gameSession.getBroadcastEventQueue().announce(player, ac);
 		sendAvailableAnnouncements();
-
-		return true;
 	}
 	
-	public boolean announcePassz(int player)
+	public void announcePassz(int player)
 	{
 		if (player != currentPlayer)
-			return false;
+			return;
 		
 		if (Announcements.hkp.canBeAnnounced(this))
 		{
-			//gameState.sendEvent(player, new EventActionFailed(Reason.CONTRAJATEK_REQUIRED));
-			return false;
+			//gameSession.sendEvent(player, new EventActionFailed(Reason.CONTRAJATEK_REQUIRED));
+			return;
 		}
 		
 		if (currentPlayerAnnounced)
@@ -94,10 +93,10 @@ class Announcing extends Phase implements IAnnouncing
 		}
 		else
 		{
-			gameState.changePhase(new Gameplay(gameState));
+			gameSession.changePhase(new Gameplay(gameSession));
 		}
 
-		return true;
+		gameSession.getBroadcastEventQueue().announcePassz(player);
 	}
 	
 	private boolean isFinished()
@@ -109,7 +108,7 @@ class Announcing extends Phase implements IAnnouncing
 	{
 		List<AnnouncementContra> list = new ArrayList<AnnouncementContra>();
 		
-		Team currentPlayerTeam = gameState.getPlayerPairs().getTeam(currentPlayer);
+		Team currentPlayerTeam = currentGame.getPlayerPairs().getTeam(currentPlayer);
 		boolean needsIdentification = needsIdentification();
 		
 		for (Team origAnnouncer : Team.values())
@@ -142,13 +141,13 @@ class Announcing extends Phase implements IAnnouncing
 			list.remove(new AnnouncementContra(Announcements.jatek, 1));
 		}
 		
-		gameState.getEventQueue().toPlayer(currentPlayer).availableAnnouncements(list);
-		gameState.getEventQueue().broadcast().turn(currentPlayer);
+		gameSession.getPlayerEventQueue(currentPlayer).availableAnnouncements(list);
+		gameSession.getBroadcastEventQueue().turn(currentPlayer);
 	}
 	
 	public boolean canAnnounce(AnnouncementContra ac)
 	{
-		Team currentPlayerTeam = gameState.getPlayerPairs().getTeam(currentPlayer);
+		Team currentPlayerTeam = currentGame.getPlayerPairs().getTeam(currentPlayer);
 		Announcement a = ac.getAnnouncement();
 		
 		if (ac.equals(new AnnouncementContra(Announcements.jatek, 1)) && Announcements.hkp.canBeAnnounced(this))
@@ -174,8 +173,8 @@ class Announcing extends Phase implements IAnnouncing
 		if (lastAnnouncer < 0)
 			return false;
 		
-		Team currentPlayerTeam = gameState.getPlayerPairs().getTeam(currentPlayer);
-		Team lastAnnouncerTeam = gameState.getPlayerPairs().getTeam(lastAnnouncer);
+		Team currentPlayerTeam = currentGame.getPlayerPairs().getTeam(currentPlayer);
+		Team lastAnnouncerTeam = currentGame.getPlayerPairs().getTeam(lastAnnouncer);
 		
 		return currentPlayerTeam != lastAnnouncerTeam && !idTrack.isIdentityKnown(currentPlayer);
 	}
@@ -187,37 +186,37 @@ class Announcing extends Phase implements IAnnouncing
 	
 	public Team getCurrentTeam()
 	{
-		return gameState.getPlayerPairs().getTeam(currentPlayer);
+		return currentGame.getPlayerPairs().getTeam(currentPlayer);
 	}
 
 	public boolean isAnnounced(Team team, Announcement a)
 	{
-		return gameState.getAnnouncementsState().isAnnounced(team, a);
+		return currentGame.getAnnouncementsState().isAnnounced(team, a);
 	}
 
 	public void setContraLevel(Team team, Announcement a, int level)
 	{
-		 gameState.getAnnouncementsState().setContraLevel(team, a, level);
+		 currentGame.getAnnouncementsState().setContraLevel(team, a, level);
 	}
 
 	public int getContraLevel(Team team, Announcement a)
 	{
-		 return gameState.getAnnouncementsState().getContraLevel(team, a);
+		 return currentGame.getAnnouncementsState().getContraLevel(team, a);
 	}
 
 	public void clearAnnouncement(Team team, Announcement a)
 	{
-		 gameState.getAnnouncementsState().clearAnnouncement(team, a);
+		 currentGame.getAnnouncementsState().clearAnnouncement(team, a);
 	}
 
 	public PlayerCards getCards(int player)
 	{
-		return gameState.getPlayerCards(player);
+		return currentGame.getPlayerCards(player);
 	}
 
 	public int getPlayerToAnnounceSolo()
 	{
-		return gameState.getPlayerToAnnounceSolo();
+		return currentGame.getPlayerToAnnounceSolo();
 	}
 	
 	private static class IdentityTracker

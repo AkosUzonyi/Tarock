@@ -17,9 +17,9 @@ public class Calling extends Phase
 	private int callerPlayer;
 	private boolean canCallAnyTarock;
 	
-	public Calling(GameState gs)
+	public Calling(GameSession gameSession)
 	{
-		super(gs);
+		super(gameSession);
 	}
 	
 	public PhaseEnum asEnum()
@@ -29,10 +29,10 @@ public class Calling extends Phase
 
 	public void onStart()
 	{
-		callerPlayer = gameState.getBidWinnerPlayer();
+		callerPlayer = currentGame.getBidWinnerPlayer();
 		
 		canCallAnyTarock = false;
-		for (Card c : gameState.getSkartForTeam(Team.OPPONENT))
+		for (Card c : currentGame.getSkartForTeam(Team.OPPONENT))
 		{
 			if (c instanceof TarockCard)
 			{
@@ -41,72 +41,71 @@ public class Calling extends Phase
 			}
 		}
 		
-		gameState.getEventQueue().toPlayer(callerPlayer).availabeCalls(getCallableCards());
-		gameState.getEventQueue().broadcast().turn(callerPlayer);
+		gameSession.getPlayerEventQueue(callerPlayer).availabeCalls(getCallableCards());
+		gameSession.getBroadcastEventQueue().turn(callerPlayer);
 	}
 	
-	public boolean call(int player, Card card)
+	public void call(int player, Card card)
 	{
 		if (player != callerPlayer)
-			return false;
+			return;
 		
 		if (!getCallableCards().contains(card))
-			return false;
+			return;
 		
 		int calledPlayer = -1;
 		for (int i = 0; i < 4; i++)
 		{
-			PlayerCards pc = gameState.getPlayerCards(i);
+			PlayerCards pc = currentGame.getPlayerCards(i);
 			if (pc.hasCard(card))
 			{
 				calledPlayer = i;
 			}
 		}
 		
-		gameState.setSoloIntentional(calledPlayer == callerPlayer);
+		currentGame.setSoloIntentional(calledPlayer == callerPlayer);
 		
 		//if the player called a card that had been skarted
 		if (calledPlayer < 0)
 		{
 			calledPlayer = callerPlayer;
 			
-			if (card.equals(new TarockCard(20)) && gameState.getPlayerSkarted20() != callerPlayer)
+			if (card.equals(new TarockCard(20)) && currentGame.getPlayerSkarted20() != callerPlayer)
 			{
-				if (gameState.getPlayerSkarted20() < 0)
+				if (currentGame.getPlayerSkarted20() < 0)
 					throw new RuntimeException();
-				gameState.setPlayerToAnnounceSolo(gameState.getPlayerSkarted20());
+				currentGame.setPlayerToAnnounceSolo(currentGame.getPlayerSkarted20());
 			}
 		}
-		
-		gameState.setPlayerPairs(new PlayerPairs(callerPlayer, calledPlayer));
-		
-		if (gameState.getInvitSent() == Invitation.XVIII && card.equals(new TarockCard(18)) || gameState.getInvitSent() == Invitation.XIX && card.equals(new TarockCard(19)))
-		{
-			gameState.invitAccepted();
-		}
-		
-		gameState.changePhase(new Announcing(gameState));
 
-		return true;
+		currentGame.setPlayerPairs(new PlayerPairs(callerPlayer, calledPlayer));
+		
+		if (currentGame.getInvitSent() == Invitation.XVIII && card.equals(new TarockCard(18)) || currentGame.getInvitSent() == Invitation.XIX && card.equals(new TarockCard(19)))
+		{
+			currentGame.invitAccepted();
+		}
+
+		gameSession.getBroadcastEventQueue().call(player, card);
+		gameSession.changePhase(new Announcing(gameSession));
 	}
 	
 	private List<Card> getCallableCards()
 	{
 		Set<Card> callOptions = new LinkedHashSet<Card>();
 		
-		if (gameState.getInvitSent() == Invitation.XIX)
+		if (currentGame.getInvitSent() == Invitation.XIX)
 		{
 			Card c = new TarockCard(19);
 			callOptions.add(c);
 		}
 		
-		if (gameState.getInvitSent() == Invitation.XVIII)
+		if (currentGame.getInvitSent() == Invitation.XVIII)
 		{
 			Card c = new TarockCard(18);
 			callOptions.add(c);
 		}
 		
-		PlayerCards pc = gameState.getPlayerCards(callerPlayer);
+		PlayerCards pc = currentGame.getPlayerCards(callerPlayer);
 		for (int t = 20; t >= 1; t--)
 		{
 			TarockCard c = new TarockCard(t);

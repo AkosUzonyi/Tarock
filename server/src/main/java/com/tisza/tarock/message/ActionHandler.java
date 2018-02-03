@@ -7,12 +7,12 @@ import java.util.List;
 
 public interface ActionHandler
 {
-	public boolean announce(int player, AnnouncementContra announcementContra);
-	public boolean announcePassz(int player);
-	public boolean bid(int player, int bid);
-	public boolean call(int player, Card card);
-	public boolean change(int player, List<Card> cards);
-	public boolean playCard(int player, Card card);
-	public boolean readyForNewGame(int player);
-	public boolean throwCards(int player);
+	public void announce(int player, AnnouncementContra announcementContra);
+	public void announcePassz(int player);
+	public void bid(int player, int bid);
+	public void call(int player, Card card);
+	public void change(int player, List<Card> cards);
+	public void playCard(int player, Card card);
+	public void readyForNewGame(int player);
+	public void throwCards(int player);
 }

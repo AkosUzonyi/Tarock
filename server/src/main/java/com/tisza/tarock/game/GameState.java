@@ -11,18 +11,18 @@ public class GameState
 	private final int beginnerPlayer;
 
 	private List<PlayerCards> playersCards = new ArrayList<>();
-	private PhaseEnum currentPhaseEnum;
-	
+	private List<Card> talon;
+
 	private Invitation invitSent = Invitation.NONE;
 	private int invitingPlayer = -1;
-	private int bidWinnerPlayer, winnerBid;
+	private int bidWinnerPlayer = -1;
+	private int winnerBid;
 
-	private List<Card> talon;
 	private Map<Team, List<Card>> skartForTeams = new HashMap<Team, List<Card>>();
 	private int playerSkarted20 = -1;
 	
 	private PlayerPairs playerPairs = null;
-	private boolean isSoloIntentional;
+	private boolean isSoloIntentional = false;
 	private Invitation invitAccepted = Invitation.NONE;
 	private int playerToAnnounceSolo = -1;
 
@@ -49,11 +49,6 @@ public class GameState
 		this.beginnerPlayer = beginnerPlayer;
 	}
 
-	void setPhase(PhaseEnum phase)
-	{
-		currentPhaseEnum = phase;
-	}
-
 	public PlayerCards getPlayerCards(int player)
 	{
 		return playersCards.get(player);
@@ -69,21 +64,27 @@ public class GameState
 		this.talon = talon;
 	}
 
+	public List<Card> getTalon()
+	{
+		return talon;
+	}
+
 	void setInvitationSent(Invitation invitSent, int invitingPlayer)
 	{
+		if (invitSent == null)
+			throw new NullPointerException();
+
 		this.invitSent = invitSent;
 		this.invitingPlayer = invitingPlayer;
 	}
 
 	Invitation getInvitSent()
 	{
-		checkPhasePassed(PhaseEnum.BIDDING);
 		return invitSent;
 	}
 
 	public int getInvitingPlayer()
 	{
-		checkPhasePassed(PhaseEnum.BIDDING);
 		return invitingPlayer;
 	}
 	
@@ -95,21 +96,17 @@ public class GameState
 
 	public int getBidWinnerPlayer()
 	{
-		checkPhasePassed(PhaseEnum.BIDDING);
 		return bidWinnerPlayer;
 	}
 
 	public int getWinnerBid()
 	{
-		checkPhasePassed(PhaseEnum.BIDDING);
+		if (bidWinnerPlayer < 0)
+			throw new IllegalStateException();
+
 		return winnerBid;
 	}
-	
-	public List<Card> getTalon()
-	{
-		return talon;
-	}
-	
+
 	void addCardToSkart(Team team, Card card)
 	{
 		skartForTeams.get(team).add(card);
@@ -117,7 +114,6 @@ public class GameState
 
 	public List<Card> getSkartForTeam(Team team)
 	{
-		checkPhasePassed(PhaseEnum.CHANGING);
 		return skartForTeams.get(team);
 	}
 
@@ -128,7 +124,6 @@ public class GameState
 	
 	public int getPlayerSkarted20()
 	{
-		checkPhasePassed(PhaseEnum.CHANGING);
 		return playerSkarted20;
 	}
 
@@ -139,7 +134,6 @@ public class GameState
 
 	public PlayerPairs getPlayerPairs()
 	{
-		checkPhasePassed(PhaseEnum.CALLING);
 		return playerPairs;
 	}
 
@@ -150,18 +144,16 @@ public class GameState
 
 	public boolean isSoloIntentional()
 	{
-		checkPhasePassed(PhaseEnum.CALLING);
 		return isSoloIntentional;
 	}
 
 	public void invitAccepted()
 	{
-		this.invitAccepted = invitSent;
+		invitAccepted = invitSent;
 	}
 
 	public Invitation getInvitAccepted()
 	{
-		checkPhasePassed(PhaseEnum.CALLING);
 		return invitAccepted;
 	}
 
@@ -172,50 +164,41 @@ public class GameState
 
 	public int getPlayerToAnnounceSolo()
 	{
-		checkPhasePassed(PhaseEnum.CALLING);
 		return playerToAnnounceSolo;
 	}
 	
 	public AnnouncementsState getAnnouncementsState()
 	{
-		checkPhasePassed(PhaseEnum.CALLING);
 		return announcementsState;
 	}
 	
 	void addRound(Round round)
 	{
-		checkPhasePassed(PhaseEnum.ANNOUNCING);
 		roundsPassed.add(round);
 	}
 	
 	boolean areAllRoundsPassed()
 	{
-		checkPhasePassed(PhaseEnum.ANNOUNCING);
 		return roundsPassed.size() >= GameSession.ROUND_COUNT;
 	}
 
 	public Round getRound(int index)
 	{
-		checkPhasePassed(PhaseEnum.ANNOUNCING);
 		return roundsPassed.get(index);
 	}
 	
 	void addWonCards(int player, Collection<Card> collection)
 	{
-		checkPhasePassed(PhaseEnum.ANNOUNCING);
 		wonCards.get(player).addAll(collection);
 	}
 
 	public Collection<Card> getWonCards(int player)
 	{
-		checkPhasePassed(PhaseEnum.GAMEPLAY);
 		return wonCards.get(player);
 	}
 
 	public int calculateGamePoints(Team team)
 	{
-		checkPhasePassed(PhaseEnum.GAMEPLAY);
-		
 		int points = 0;
 		for (int player : playerPairs.getPlayersInTeam(team))
 		{
@@ -231,11 +214,5 @@ public class GameState
 		}
 		
 		return points;
-	}
-	
-	void checkPhasePassed(PhaseEnum phase)
-	{
-		if (!currentPhaseEnum.isAfter(phase))
-			throw new IllegalStateException();
 	}
 }

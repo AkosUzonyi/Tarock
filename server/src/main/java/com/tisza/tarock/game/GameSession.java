@@ -87,7 +87,6 @@ public class GameSession implements Runnable
 	void changePhase(Phase phase)
 	{
 		currentPhase = phase;
-		state.setPhase(currentPhase.asEnum());
 		getBroadcastEventQueue().phaseChanged(currentPhase.asEnum());
 		currentPhase.onStart();
 	}
@@ -136,8 +135,6 @@ public class GameSession implements Runnable
 
 	void sendStatistics()
 	{
-		state.checkPhasePassed(PhaseEnum.GAMEPLAY);
-
 		Map<Team, List<AnnouncementStaticticsEntry>> statEntriesForTeams = new HashMap<>();
 		Map<Team, Integer> gamePointsForTeams = new HashMap<>();
 		int pointsForCallerTeam = 0;

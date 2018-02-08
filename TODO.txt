@@ -30,6 +30,7 @@ make Phase subclasses package private
 canBeAnnounced: remove AnnouncementBase's implementation
 create AnnouncementInstance class (Announcement, contraLevel, announcerteam)
 Szincsalad: common isSuccessful, abstract getSize (2, 3)
+getSilentPoints (default: getPoints()/2, but Facan: 50)
 
 features:
 handle relogin
@@ -44,6 +45,6 @@ announcement string id
 other:
 final classes?
 @ovveride
-visibility (unnecessary public eg. getPoints())
+visibility (unnecessary public eg. getPoints(), ultimo.canbesilent)
 change minsdkversion
 gradlew version

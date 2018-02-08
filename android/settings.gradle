@@ -1,3 +1,6 @@
 rootProject.name = 'tarock_android'
 
 include ':app'
+
+include ":proto"
+project(":proto").projectDir = file("../proto")

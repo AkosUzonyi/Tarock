@@ -4,7 +4,7 @@ public class SuitCard extends Card
 {
 	private int suit, value;
 
-	public SuitCard(int suit, int value)
+	SuitCard(int suit, int value)
 	{
 		if (suit < 0 || suit >= 4 || value < 1 || value >= 6)
 			throw new IllegalArgumentException();
@@ -26,7 +26,12 @@ public class SuitCard extends Card
 	{
 		return value;
 	}
-	
+
+	public boolean isHonor()
+	{
+		return false;
+	}
+
 	public boolean doesBeat(Card otherCard)
 	{
 		if (otherCard instanceof SuitCard)

@@ -1,6 +1,6 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
 public class XXIFogas extends AnnouncementBase
@@ -19,8 +19,8 @@ public class XXIFogas extends AnnouncementBase
 		for (int i = 0; i < GameSession.ROUND_COUNT; i++)
 		{
 			Round round = gameState.getRound(i);
-			int skizPlayer = round.getPlayerOfCard(new TarockCard(22));
-			int XXIPlayer = round.getPlayerOfCard(new TarockCard(21));
+			int skizPlayer = round.getPlayerOfCard(Card.getTarockCard(22));
+			int XXIPlayer = round.getPlayerOfCard(Card.getTarockCard(21));
 			if (skizPlayer < 0 || XXIPlayer < 0) continue;
 			
 			Team skizTeam = pp.getTeam(skizPlayer);

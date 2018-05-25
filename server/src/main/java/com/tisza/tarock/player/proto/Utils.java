@@ -91,10 +91,10 @@ class Utils
 		{
 			case SUIT_CARD:
 				ProtoUtils.SuitCard suitCardProto = cardProto.getSuitCard();
-				return new SuitCard(suitCardProto.getSuit(), suitCardProto.getValue());
+				return Card.getSuitCard(suitCardProto.getSuit(), suitCardProto.getValue());
 			case TAROCK_CARD:
 				ProtoUtils.TarockCard tarockCardProto = cardProto.getTarockCard();
-				return new TarockCard(tarockCardProto.getValue());
+				return Card.getTarockCard(tarockCardProto.getValue());
 			default:
 				throw new IllegalArgumentException();
 		}

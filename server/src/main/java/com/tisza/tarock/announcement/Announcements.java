@@ -20,17 +20,17 @@ public class Announcements
 	public static final TarockCount kilenctarokk = new TarockCount(9);
 	public static final Dupla dupla = new Dupla();
 	public static final HosszuDupla hosszuDupla = new HosszuDupla();
-	public static final KezbeVacak centrum = new KezbeVacak(4, new TarockCard(20));
-	public static final KezbeVacak kismadar = new KezbeVacak(5, new TarockCard(21));
-	public static final KezbeVacak nagymadar = new KezbeVacak(6, new TarockCard(22));
+	public static final KezbeVacak centrum = new KezbeVacak(4, Card.getTarockCard(20));
+	public static final KezbeVacak kismadar = new KezbeVacak(5, Card.getTarockCard(21));
+	public static final KezbeVacak nagymadar = new KezbeVacak(6, Card.getTarockCard(22));
 	public static final Kings[] kings = new Kings[3];
 	public static final Zaroparos zaroparos = new Zaroparos();
 	public static final Szinesites szinesites = new Szinesites();
 	public static final Volat volat = new Volat();
 	public static final Kisszincsalad[] kisszincsaladok = new Kisszincsalad[4];
 	public static final Nagyszincsalad[] nagyszincsaladok = new Nagyszincsalad[4];
-	public static final Facan pagatfacan = new Facan(new TarockCard(1));
-	public static final Facan sasfacan = new Facan(new TarockCard(2));
+	public static final Facan pagatfacan = new Facan(Card.getTarockCard(1));
+	public static final Facan sasfacan = new Facan(Card.getTarockCard(2));
 	public static final XXIFogas xxiFogas = new XXIFogas();
 	public static final Map<Card, Map<Integer, Ultimo>> ultimok = new HashMap<Card, Map<Integer, Ultimo>>();
 	
@@ -105,7 +105,7 @@ public class Announcements
 		{
 			for (int v = 1; v <= 5; v++)
 			{
-				SuitCard card = new SuitCard(s, v);
+				SuitCard card = Card.getSuitCard(s, v);
 				ultimok.put(card, new HashMap<Integer, Ultimo>());
 				for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
 				{
@@ -118,7 +118,7 @@ public class Announcements
 		
 		for (int t = 1; t <= 2; t++)
 		{
-			TarockCard card = new TarockCard(t);
+			TarockCard card = Card.getTarockCard(t);
 			ultimok.put(card, new HashMap<Integer, Ultimo>());
 			for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
 			{
@@ -129,7 +129,7 @@ public class Announcements
 		}
 		
 		{
-			Card card = new TarockCard(21);
+			Card card = Card.getTarockCard(21);
 			ultimok.put(card, new HashMap<Integer, Ultimo>());
 			for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
 			{

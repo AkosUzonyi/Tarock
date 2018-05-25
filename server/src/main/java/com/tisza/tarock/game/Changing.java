@@ -104,7 +104,7 @@ public class Changing extends Phase
 			if (c instanceof TarockCard)
 			{
 				tarockCount++;
-				if (c.equals(new TarockCard(20)))
+				if (c.equals(Card.getTarockCard(20)))
 				{
 					currentGame.setPlayerSkarted20(player);
 				}

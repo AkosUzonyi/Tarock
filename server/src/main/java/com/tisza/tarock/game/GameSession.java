@@ -114,7 +114,7 @@ public class GameSession implements Runnable
 	{
 		state = new GameState(getNextBeginnerPlayer(doubleRound));
 
-		List<Card> cardsToDeal = new ArrayList<>(Card.all);
+		List<Card> cardsToDeal = new ArrayList<>(Card.getAll());
 		Collections.shuffle(cardsToDeal);
 		for (int p = 0; p < 4; p++)
 		{

@@ -105,7 +105,7 @@ public class JatekDuplaVolatPoints
 			@Override
 			public Collection<Card> getWonCards(int player)
 			{
-				return callerGamePoints == 94 && player < 2 || callerGamePoints == 0 && player >= 2 ? Card.all : Collections.EMPTY_LIST;
+				return callerGamePoints == 94 && player < 2 || callerGamePoints == 0 && player >= 2 ? Card.getAll() : Collections.EMPTY_LIST;
 			}
 		};
 	}

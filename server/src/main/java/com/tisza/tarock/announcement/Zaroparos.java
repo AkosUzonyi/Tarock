@@ -18,10 +18,10 @@ public class Zaroparos extends AnnouncementBase
 
 	public Result isSuccessful(GameState gameState, Team team)
 	{
-		if (!isRoundOK(gameState, team, 8, new TarockCard(1)))
+		if (!isRoundOK(gameState, team, 8, Card.getTarockCard(1)))
 			return Result.FAILED;
 		
-		if (!isRoundOK(gameState, team, 7, new TarockCard(2)))
+		if (!isRoundOK(gameState, team, 7, Card.getTarockCard(2)))
 			return Result.FAILED;
 		
 		return Result.SUCCESSFUL;
@@ -45,8 +45,8 @@ public class Zaroparos extends AnnouncementBase
 	
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
-		Announcement a0 = Announcements.ultimok.get(new TarockCard(1)).get(6);
-		Announcement a1 = Announcements.ultimok.get(new TarockCard(2)).get(6);
+		Announcement a0 = Announcements.ultimok.get(Card.getTarockCard(1)).get(6);
+		Announcement a1 = Announcements.ultimok.get(Card.getTarockCard(2)).get(6);
 		if (!a0.canBeAnnounced(announcing))
 			return false;
 		if  (!a1.canBeAnnounced(announcing))
@@ -63,7 +63,7 @@ public class Zaroparos extends AnnouncementBase
 		{
 			for (int ri = 8; ri > 6; ri--)
 			{
-				Announcement ultimo = Announcements.ultimok.get(new TarockCard(t)).get(ri);
+				Announcement ultimo = Announcements.ultimok.get(Card.getTarockCard(t)).get(ri);
 				announcing.clearAnnouncement(team, ultimo);
 			}
 		}

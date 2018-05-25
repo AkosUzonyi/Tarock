@@ -130,18 +130,18 @@ public class Bidding extends Phase
 			PlayerCards cards = currentGame.getPlayerCards(currentPlayer);
 			boolean canInvit = checkBaseInvitationRequirements(currentPlayer);
 			
-			if (canKeep() && lastBidValue == 2 && (!canInvit || !cards.hasCard(new TarockCard(20))))
+			if (canKeep() && lastBidValue == 2 && (!canInvit || !cards.hasCard(Card.getTarockCard(20))))
 			{
 				result.remove((Integer)(-1));
 			}
 			
 			if (canInvit)
 			{
-				if (cards.hasCard(new TarockCard(19)) && defaultBid - 1 >= 0)
+				if (cards.hasCard(Card.getTarockCard(19)) && defaultBid - 1 >= 0)
 				{
 					result.add(defaultBid - 1);
 				}
-				if (cards.hasCard(new TarockCard(18)) && defaultBid - 2 >= 0)
+				if (cards.hasCard(Card.getTarockCard(18)) && defaultBid - 2 >= 0)
 				{
 					result.add(defaultBid - 2);
 				}
@@ -171,7 +171,7 @@ public class Bidding extends Phase
 	private boolean checkBaseInvitationRequirements(int player)
 	{
 		PlayerCards h = currentGame.getPlayerCards(player);
-		return (h.hasCard(new TarockCard(21)) || h.hasCard(new TarockCard(22))) && h.filter(new TarockFilter()).size() >= 5;
+		return (h.hasCard(Card.getTarockCard(21)) || h.hasCard(Card.getTarockCard(22))) && h.filter(new TarockFilter()).size() >= 5;
 	}
 	
 	private boolean isFinished()

@@ -16,7 +16,6 @@ renames:
 little nice things:
 Math.pow -> 1 <<
 TarockFilter static instance
-Card constructor protected, static instance fields
 AnnouncementBridge requireIdentification: contra level > 0
 filter(new TarockFilter()) -> tarockCount()
 move IAnnouncnig to announce package

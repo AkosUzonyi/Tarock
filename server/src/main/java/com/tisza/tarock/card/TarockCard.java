@@ -4,7 +4,7 @@ public class TarockCard extends Card
 {
 	private int value;
 	
-	public TarockCard(int v)
+	TarockCard(int v)
 	{
 		if (v < 1 || v >= 23) throw new IllegalArgumentException();
 		value = v;
@@ -18,6 +18,11 @@ public class TarockCard extends Card
 	public int getPoints()
 	{
 		return isHonor() ? 5 : 1;
+	}
+
+	public boolean isHonor()
+	{
+		return value == 1 || value == 21 || value == 22;
 	}
 
 	public boolean doesBeat(Card otherCard)

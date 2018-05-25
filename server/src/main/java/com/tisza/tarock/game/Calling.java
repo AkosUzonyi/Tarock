@@ -70,7 +70,7 @@ public class Calling extends Phase
 		{
 			calledPlayer = callerPlayer;
 			
-			if (card.equals(new TarockCard(20)) && currentGame.getPlayerSkarted20() != callerPlayer)
+			if (card.equals(Card.getTarockCard(20)) && currentGame.getPlayerSkarted20() != callerPlayer)
 			{
 				if (currentGame.getPlayerSkarted20() < 0)
 					throw new RuntimeException();
@@ -80,7 +80,7 @@ public class Calling extends Phase
 
 		currentGame.setPlayerPairs(new PlayerPairs(callerPlayer, calledPlayer));
 		
-		if (currentGame.getInvitSent() == Invitation.XVIII && card.equals(new TarockCard(18)) || currentGame.getInvitSent() == Invitation.XIX && card.equals(new TarockCard(19)))
+		if (currentGame.getInvitSent() == Invitation.XVIII && card.equals(Card.getTarockCard(18)) || currentGame.getInvitSent() == Invitation.XIX && card.equals(Card.getTarockCard(19)))
 		{
 			currentGame.invitAccepted();
 		}
@@ -95,20 +95,20 @@ public class Calling extends Phase
 		
 		if (currentGame.getInvitSent() == Invitation.XIX)
 		{
-			Card c = new TarockCard(19);
+			Card c = Card.getTarockCard(19);
 			callOptions.add(c);
 		}
 		
 		if (currentGame.getInvitSent() == Invitation.XVIII)
 		{
-			Card c = new TarockCard(18);
+			Card c = Card.getTarockCard(18);
 			callOptions.add(c);
 		}
 		
 		PlayerCards pc = currentGame.getPlayerCards(callerPlayer);
 		for (int t = 20; t >= 1; t--)
 		{
-			TarockCard c = new TarockCard(t);
+			TarockCard c = Card.getTarockCard(t);
 			if (!pc.hasCard(c))
 			{
 				callOptions.add(c);
@@ -119,7 +119,7 @@ public class Calling extends Phase
 		if (canCallAnyTarock)
 		{
 			CardFilter cf = new CallableCardFilter();
-			for (Card c : Card.all)
+			for (Card c : Card.getAll())
 			{
 				if (cf.match(c))
 				{

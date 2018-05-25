@@ -6,18 +6,42 @@ import java.util.Collections;
 
 public abstract class Card
 {
-	public static final Collection<Card> all;
-	public static final Collection<Card> honors;
-	
+	private static final Collection<Card> all = new ArrayList<>();
+	private static final TarockCard[] tarockCards = new TarockCard[22];
+	private static final SuitCard[][] suitCards = new SuitCard[4][5];
+
 	public abstract int getPoints();
 	public abstract int getID();
+	public abstract boolean isHonor();
 	public abstract boolean doesBeat(Card otherCard);
-	
-	public boolean isHonor()
+
+	public int hashCode()
 	{
-		return honors.contains(this);
+		return getID();
 	}
-	
+
+	public boolean equals(Object o)
+	{
+		if (!(o instanceof Card)) return false;
+		Card other = (Card)o;
+		return getID() == other.getID();
+	}
+
+	public static Collection<Card> getAll()
+	{
+		return all;
+	}
+
+	public static TarockCard getTarockCard(int value)
+	{
+		return tarockCards[value - 1];
+	}
+
+	public static SuitCard getSuitCard(int suit, int value)
+	{
+		return suitCards[suit][value - 1];
+	}
+
 	public static Card fromId(int id)
 	{
 		if (!isValidId(id))
@@ -36,43 +60,27 @@ public abstract class Card
 		}
 	}
 	
-	public static boolean isValidId(int id)
+	private static boolean isValidId(int id)
 	{
 		return id >= 0 && id < 42;
 	}
-	
-	public int hashCode()
-	{
-		return getID();
-	}
 
-	public boolean equals(Object o)
-	{
-		if (!(o instanceof Card)) return false;
-		Card other = (Card)o;
-		return getID() == other.getID();
-	}
-	
 	static
 	{
-		Collection<Card> honorsLocal = new ArrayList<Card>();
-		honorsLocal.add(new TarockCard(1));
-		honorsLocal.add(new TarockCard(21));
-		honorsLocal.add(new TarockCard(22));
-		honors = Collections.unmodifiableCollection(honorsLocal);
-		
-		Collection<Card> allLocal = new ArrayList<Card>();
 		for (int s = 0; s < 4; s++)
 		{
 			for (int v = 1; v <= 5; v++)
 			{
-				allLocal.add(new SuitCard(s, v));
+				SuitCard suitCard = new SuitCard(s, v);
+				suitCards[s][v - 1] = suitCard;
+				all.add(suitCard);
 			}
 		}
 		for (int v = 1; v <= 22; v++)
 		{
-			allLocal.add(new TarockCard(v));
+			TarockCard tarockCard = new TarockCard(v);
+			tarockCards[v - 1] = tarockCard;
+			all.add(tarockCard);
 		}
-		all = Collections.unmodifiableCollection(allLocal);
 	}
 }

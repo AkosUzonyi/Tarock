@@ -3,6 +3,7 @@ package com.tisza.tarock.game;
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.message.*;
+import com.tisza.tarock.player.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -51,9 +52,9 @@ public class GameSession implements Runnable
 	public void run()
 	{
 		broadcastEventQueue = new BroadcastEventQueue(players.stream().map(Player::getEventQueue).collect(Collectors.toList()));
-		for (Player p : players)
+		for (int i = 0; i < 4; i++)
 		{
-			p.setActionQueue(actionQueue);
+			players.get(i).onJoinedToGame(actionQueue, i);
 		}
 
 		startNewGame(false);
@@ -75,7 +76,7 @@ public class GameSession implements Runnable
 		broadcastEventQueue = null;
 		for (Player p : players)
 		{
-			p.setActionQueue(null);
+			p.onDisconnectedFromGame();
 		}
 	}
 

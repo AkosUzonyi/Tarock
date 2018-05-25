@@ -1,11 +1,11 @@
-package com.tisza.tarock.message.proto;
+package com.tisza.tarock.player.proto;
 
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 
 import java.util.stream.*;
 
-public class ProtoAction implements Action
+class ProtoAction implements Action
 {
 	private ActionProto.Action actionProto;
 	private int player;

@@ -1,25 +1,21 @@
 package com.tisza.tarock.net;
 
-import com.tisza.tarock.net.packet.Packet;
+import com.tisza.tarock.net.*;
+import com.tisza.tarock.proto.*;
+import com.tisza.tarock.proto.MainProto.*;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.concurrent.*;
 
-public class Connection
+public class ProtoConnection
 {
 	private Socket socket;
 	private InputStream is;
 	private OutputStream os;
-	private List<PacketHandler> packetHandlers = new ArrayList<PacketHandler>();
-	private BlockingQueue<Packet> packetsToSend = new LinkedBlockingQueue<Packet>();
+	private List<MessageHandler> packetHandlers = new ArrayList<>();
+	private BlockingQueue<Message> messagesToSend = new LinkedBlockingQueue<>();
 	private boolean closeRequested = false;
 	
 	private Thread readerThread = new Thread(new Runnable()
@@ -30,10 +26,13 @@ public class Connection
 			{
 				while (!closeRequested)
 				{
-					Packet p = Packet.readPacket(is);
-					for (PacketHandler ph : packetHandlers)
+					MainProto.Message message = Message.parseDelimitedFrom(is);
+					synchronized (packetHandlers)
 					{
-						ph.handlePacket(p);
+						for (MessageHandler handler : packetHandlers)
+						{
+							handler.handleMessage(message);
+						}
 					}
 				}
 			}
@@ -56,12 +55,12 @@ public class Connection
 		{
 			try
 			{
-				while (!closeRequested || !packetsToSend.isEmpty())
+				while (!closeRequested || !messagesToSend.isEmpty())
 				{
 					try
 					{
-						Packet p = packetsToSend.take();
-						p.writePacket(os);
+						Message message = messagesToSend.take();
+						message.writeDelimitedTo(os);
 					}
 					catch (InterruptedException e) {}
 				}
@@ -86,7 +85,7 @@ public class Connection
 		}
 	});
 	
-	public Connection(Socket s) throws IOException
+	public ProtoConnection(Socket s) throws IOException
 	{
 		socket = s;
 		socket.setTcpNoDelay(true);
@@ -104,25 +103,27 @@ public class Connection
 		}
 	}
 	
-	public void addPacketHandler(PacketHandler ph)
+	public void addMessageHandler(MessageHandler handler)
 	{
-		List<PacketHandler> newPacketHandlers = new ArrayList<PacketHandler>(packetHandlers);
-		newPacketHandlers.add(ph);
-		packetHandlers = newPacketHandlers;
+		synchronized (packetHandlers)
+		{
+			packetHandlers.add(handler);
+		}
 	}
 	
-	public void removePacketHandler(PacketHandler ph)
+	public void removeMessageHandler(MessageHandler handler)
 	{
-		List<PacketHandler> newPacketHandlers = new ArrayList<PacketHandler>(packetHandlers);
-		newPacketHandlers.remove(ph);
-		packetHandlers = newPacketHandlers;
+		synchronized (packetHandlers)
+		{
+			packetHandlers.remove(handler);
+		}
 	}
 	
-	public void sendPacket(Packet p)
+	public void sendMessage(Message message)
 	{
 		if (isAlive())
 		{
-			packetsToSend.offer(p);
+			messagesToSend.offer(message);
 		}
 	}
 	
@@ -147,9 +148,12 @@ public class Connection
 		{
 			socket.close();
 			socket = null;
-			for (PacketHandler ph : packetHandlers)
+			synchronized (packetHandlers)
 			{
-				ph.connectionClosed();
+				for (MessageHandler handler : packetHandlers)
+				{
+					handler.connectionClosed();
+				}
 			}
 			packetHandlers = null;
 		}

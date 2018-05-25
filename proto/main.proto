@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package com.tisza.tarock;
+option java_package = "com.tisza.tarock.proto";
+option java_outer_classname = "MainProto";
+
+import "action.proto";
+import "event.proto";
+import "utils.proto";
+
+message Login
+{
+    required string name = 1;
+}
+
+message Message
+{
+    oneof message_type
+    {
+        Login login = 1;
+        Action action = 3;
+        Event event = 2;
+    }
+}

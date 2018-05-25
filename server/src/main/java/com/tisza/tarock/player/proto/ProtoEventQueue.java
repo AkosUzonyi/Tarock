@@ -1,31 +1,28 @@
-package com.tisza.tarock.message.proto;
+package com.tisza.tarock.player.proto;
 
-import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
-import com.tisza.tarock.net.*;
-import com.tisza.tarock.net.packet.*;
 import com.tisza.tarock.proto.*;
 
 import java.util.*;
 import java.util.stream.*;
 
-import static com.tisza.tarock.message.proto.Utils.phaseToProto;
+import static com.tisza.tarock.player.proto.Utils.phaseToProto;
 import static com.tisza.tarock.proto.EventProto.*;
 
 public class ProtoEventQueue implements EventQueue
 {
-	private Connection connection;
+	private ProtoConnection connection;
 
-	public ProtoEventQueue(Connection connection)
+	public ProtoEventQueue(ProtoConnection connection)
 	{
 		this.connection = connection;
 	}
 
 	private void processEvent(Event event)
 	{
-		connection.sendPacket(new PacketEvent(event));
+		connection.sendMessage(MainProto.Message.newBuilder().setEvent(event).build());
 	}
 
 	private void processPlayerActionEvent(int player, ActionProto.Action action)

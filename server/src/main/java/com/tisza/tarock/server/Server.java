@@ -1,80 +1,100 @@
 package com.tisza.tarock.server;
 
-import com.tisza.tarock.net.Connection;
+import com.tisza.tarock.game.*;
+import com.tisza.tarock.player.*;
+import com.tisza.tarock.player.proto.*;
+import com.tisza.tarock.player.random.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-public class Server
+public class Server implements Runnable
 {
 	private int port;
-	private List<String> playerNames;
-	private File pointsDir;
-	
-	private LoginManager loginManager;
-	private ClientManager gameSession;
+
+	private GameSession gameSession = null;
 	private Thread listenterThread = null;
 	private ServerSocket ss;
 
 	public static void main(String[] args)
 	{
-		new Server(8128, Arrays.asList("a", "b", "c", "d"), null).start();
+		new Server(8128).start();
 	}
 
-	public Server(int port, List<String> playerNames, File pointsDir)
+	public Server(int port)
 	{
 		this.port = port;
-		this.playerNames = playerNames;
-		this.pointsDir = pointsDir;
+
+		//joinedPlayers.add(new RandomPlayer("bot0"));
+		//joinedPlayers.add(new RandomPlayer("bot1"));
+		//joinedPlayers.add(new RandomPlayer("bot2"));
 	}
-	
+
+	//TODO: move
+	List<Player> joinedPlayers = new ArrayList<>();
+
+	private void listenLoop() throws IOException
+	{
+		while (!Thread.interrupted())
+		{
+			Socket s = ss.accept();
+			System.out.println(s.getRemoteSocketAddress());
+			ProtoConnection connection = new ProtoConnection(s);
+			ProtoPlayer player = new ProtoPlayer(connection);
+			player.setJoinRequestHandler(gameID ->
+			{
+				joinedPlayers.add(player);
+				if (joinedPlayers.size() == 4)
+				{
+					gameSession = new GameSession(joinedPlayers);
+					gameSession.startSession();
+				}
+			});
+			connection.start();
+		}
+	}
+
+	public void run()
+	{
+		try
+		{
+			ss = new ServerSocket(port);
+			System.out.println(ss.getLocalSocketAddress());
+			listenLoop();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if (ss != null)
+			{
+				try
+				{
+					ss.close();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			if (gameSession != null)
+			{
+				gameSession.stopSession();
+			}
+			listenterThread = null;
+		}
+	}
+
 	public void start()
 	{
 		if (listenterThread == null)
 		{
-			gameSession = new ClientManager(0, playerNames, pointsDir);
-			loginManager = new LoginManager(gameSession);
-			listenterThread = new Thread(new Runnable()
-			{
-				public void run()
-				{
-					try
-					{
-						ss = new ServerSocket(port);
-						System.out.println(ss.getLocalSocketAddress());
-						while (!Thread.interrupted())
-						{
-							Socket s = ss.accept();
-							System.out.println(s.getRemoteSocketAddress());
-							Connection c = new Connection(s);
-							//c.start();
-							loginManager.newConnection(c);
-						}
-					}
-					catch (IOException e)
-					{
-						e.printStackTrace();
-					}
-					finally
-					{
-						if (ss != null)
-						{
-							try
-							{
-								ss.close();
-							}
-							catch (IOException e)
-							{
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-			});
+			listenterThread = new Thread(this);
 			listenterThread.start();
 		}
 	}
@@ -84,17 +104,7 @@ public class Server
 		if (listenterThread != null)
 		{
 			listenterThread.interrupt();
-			try
-			{
-				ss.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
 			listenterThread = null;
-			loginManager.close();
-			gameSession.close();
 		}
 	}
 }

@@ -7,7 +7,6 @@ import com.tisza.tarock.R;
 import com.tisza.tarock.card.Card;
 import com.tisza.tarock.card.SuitCard;
 import com.tisza.tarock.card.TarockCard;
-import com.tisza.tarock.net.packet.PacketLoginFailed;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +25,6 @@ public class ResourceMappings
 	public static String[] suitNames;
 	public static String[] suitcardValueNames;
 	public static Map<Card, String> cardToName = new HashMap<Card, String>();
-	
-	public static Map<PacketLoginFailed.Reason, Integer> failureReasonToMessage = new HashMap<PacketLoginFailed.Reason, Integer>();
 
 	public static String silent;
 

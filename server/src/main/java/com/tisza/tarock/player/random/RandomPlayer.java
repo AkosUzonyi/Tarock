@@ -1,10 +1,11 @@
-package com.tisza.tarock.server;
+package com.tisza.tarock.player.random;
 
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.card.filter.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
+import com.tisza.tarock.player.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -14,8 +15,10 @@ public class RandomPlayer implements Player
 	private final String name;
 	private final int delay;
 	private EventQueue eventQueue = new MyEventQueue();
-	private BlockingQueue<Action> actionQueue;
 	private Random rnd = new Random();
+
+	private int playerID;
+	private BlockingQueue<Action> actionQueue;
 
 	public RandomPlayer(String name)
 	{
@@ -41,13 +44,23 @@ public class RandomPlayer implements Player
 	}
 
 	@Override
-	public void setActionQueue(BlockingQueue<Action> actionQueue)
+	public void onJoinedToGame(BlockingQueue<Action> actionQueue, int playerID)
 	{
 		this.actionQueue = actionQueue;
+		this.playerID = playerID;
+	}
+
+	@Override
+	public void onDisconnectedFromGame()
+	{
+		actionQueue = null;
 	}
 
 	private void enqueueAction(Action action)
 	{
+		if (actionQueue == null)
+			throw new IllegalStateException("no action queue");
+
 		actionQueue.add(action);
 	}
 
@@ -68,7 +81,6 @@ public class RandomPlayer implements Player
 	{
 		private PlayerCards myCards;
 		private PhaseEnum phase;
-		private int myID;
 
 		private <T> T chooseRandom(Collection<T> from)
 		{
@@ -109,17 +121,17 @@ public class RandomPlayer implements Player
 		@Override
 		public void turn(int player)
 		{
-			if (phase == PhaseEnum.GAMEPLAY && player == myID)
+			if (phase == PhaseEnum.GAMEPLAY && player == playerID)
 			{
 				Card cardToPlay = chooseRandom(myCards.getPlaceableCards(currentFirstCard));
 				myCards.removeCard(cardToPlay);
-				enqueueActionDelayed(handler -> handler.playCard(myID, cardToPlay));
+				enqueueActionDelayed(handler -> handler.playCard(playerID, cardToPlay));
 			}
 		}
 
 		@Override public void startGame(int id, List<String> names)
 		{
-			myID = id;
+			playerID = id;
 		}
 
 		@Override
@@ -137,13 +149,13 @@ public class RandomPlayer implements Player
 		@Override
 		public void availabeBids(Collection<Integer> bids)
 		{
-			enqueueActionDelayed(handler -> handler.bid(myID, chooseRandom(bids)));
+			enqueueActionDelayed(handler -> handler.bid(playerID, chooseRandom(bids)));
 		}
 
 		@Override
 		public void availabeCalls(Collection<Card> cards)
 		{
-			enqueueActionDelayed(handler -> handler.call(myID, chooseRandom(cards)));
+			enqueueActionDelayed(handler -> handler.call(playerID, chooseRandom(cards)));
 		}
 
 		@Override
@@ -152,7 +164,7 @@ public class RandomPlayer implements Player
 			List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter()).subList(0, cards.size());
 			myCards.getCards().removeAll(cardsToSkart);
 			myCards.getCards().addAll(cards);
-			enqueueAction(handler -> handler.change(myID, cardsToSkart));
+			enqueueAction(handler -> handler.change(playerID, cardsToSkart));
 		}
 
 		@Override public void changeDone(int player) {}
@@ -161,13 +173,13 @@ public class RandomPlayer implements Player
 		@Override public void availableAnnouncements(List<AnnouncementContra> announcements)
 		{
 			if (announcements.contains(new AnnouncementContra(Announcements.hkp, 0)))
-				enqueueActionDelayed(handler -> handler.announce(myID, new AnnouncementContra(Announcements.hkp, 0)));
+				enqueueActionDelayed(handler -> handler.announce(playerID, new AnnouncementContra(Announcements.hkp, 0)));
 
 			while (!announcements.isEmpty() && rnd.nextFloat() < 0.2)
 			{
-				enqueueActionDelayed(handler -> handler.announce(myID, chooseRandom(announcements)));
+				enqueueActionDelayed(handler -> handler.announce(playerID, chooseRandom(announcements)));
 			}
-			enqueueActionDelayed(handler -> handler.announcePassz(myID));
+			enqueueActionDelayed(handler -> handler.announcePassz(playerID));
 		}
 
 		@Override public void cardsTaken(int player) {}
@@ -176,7 +188,7 @@ public class RandomPlayer implements Player
 		@Override
 		public void pendingNewGame()
 		{
-			enqueueAction(handler -> handler.readyForNewGame(myID));
+			enqueueAction(handler -> handler.readyForNewGame(playerID));
 		}
 	}
 }

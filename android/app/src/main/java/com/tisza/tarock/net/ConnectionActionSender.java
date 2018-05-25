@@ -4,23 +4,23 @@ import com.tisza.tarock.Announcement;
 import com.tisza.tarock.card.Card;
 import com.tisza.tarock.message.ActionSender;
 import com.tisza.tarock.message.Utils;
-import com.tisza.tarock.net.packet.PacketAction;
+import com.tisza.tarock.proto.*;
 import com.tisza.tarock.proto.ActionProto.Action;
 
 import java.util.List;
 
 public class ConnectionActionSender implements ActionSender
 {
-	private Connection connection;
+	private ProtoConnection connection;
 
-	public ConnectionActionSender(Connection connection)
+	public ConnectionActionSender(ProtoConnection connection)
 	{
 		this.connection = connection;
 	}
 
 	private void doAction(Action action)
 	{
-		connection.sendPacket(new PacketAction(action));
+		connection.sendMessage(MainProto.Message.newBuilder().setAction(action).build());
 	}
 
 	public void announce(Announcement announcement)

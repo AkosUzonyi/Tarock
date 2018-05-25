@@ -1,49 +1,26 @@
 package com.tisza.tarock.gui;
 
-import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.os.Handler;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
+import android.app.*;
+import android.content.*;
+import android.graphics.*;
+import android.os.*;
+import android.view.*;
+import android.view.View.*;
+import android.view.animation.*;
+import android.view.animation.Animation.*;
 import android.widget.*;
-import com.tisza.tarock.Announcement;
-import com.tisza.tarock.PhaseEnum;
-import com.tisza.tarock.R;
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.PlayerCards;
-import com.tisza.tarock.card.SuitCard;
-import com.tisza.tarock.card.TarockCard;
-import com.tisza.tarock.message.ActionSender;
-import com.tisza.tarock.message.AnnouncementStaticticsEntry;
-import com.tisza.tarock.message.EventDispatcher;
-import com.tisza.tarock.message.EventHandler;
-import com.tisza.tarock.net.Connection;
-import com.tisza.tarock.net.ConnectionActionSender;
-import com.tisza.tarock.net.PacketHandler;
-import com.tisza.tarock.net.packet.Packet;
-import com.tisza.tarock.net.packet.PacketEvent;
-import com.tisza.tarock.net.packet.PacketLogin;
-import com.tisza.tarock.proto.ActionProto.Action;
+import com.tisza.tarock.*;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.message.*;
+import com.tisza.tarock.net.*;
+import com.tisza.tarock.proto.*;
+import com.tisza.tarock.proto.MainProto.*;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
-public class GameActivtiy extends Activity implements PacketHandler, EventHandler
+public class GameActivtiy extends Activity implements MessageHandler, EventHandler
 {
 	public static final String LOG_TAG = "Tarokk";
 	
@@ -110,22 +87,23 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 				{
 					Socket socket = new Socket();
 					socket.connect(new InetSocketAddress(host, port), 1000);
-					conncection = new Connection(socket);
+					conncection = new ProtoConnection(socket);
 					actionSender = new ConnectionActionSender(conncection);
-					conncection.sendPacket(new PacketLogin(name));
-					conncection.addPacketHandler(new PacketHandler()
+					conncection.sendMessage(MainProto.Message.newBuilder().setLogin(Login.newBuilder().setName(name).build()).build());
+					conncection.addMessageHandler(new MessageHandler()
 					{
-						public void handlePacket(final Packet p)
+						public void handleMessage(final MainProto.Message message)
 						{
+							if (message == null)
+								Thread.dumpStack();
 							runOnUiThread(new Runnable()
 							{
 								public void run()
 								{
-									GameActivtiy.this.handlePacket(p);
+									GameActivtiy.this.handleMessage(message);
 								}
 							});
 						}
-						
 
 						public void connectionClosed()
 						{
@@ -303,7 +281,7 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 		}
 	}
 	
-	private Connection conncection;
+	private ProtoConnection conncection;
 	private List<String> playerNames;
 	private PlayerCards myCards;
 	private int myID = -1;
@@ -897,11 +875,14 @@ public class GameActivtiy extends Activity implements PacketHandler, EventHandle
 	}
 
 	private EventDispatcher eventDispatcher = new EventDispatcher(this);
-	public void handlePacket(Packet p)
+	public void handleMessage(MainProto.Message message)
 	{
-		if (p instanceof PacketEvent)
+		switch (message.getMessageTypeCase())
 		{
-			eventDispatcher.dispatchEvent(((PacketEvent)p).getEvent());
+			case EVENT:
+				eventDispatcher.dispatchEvent(message.getEvent());
+			default:
+				System.err.println("unhandled message type: " + message.getMessageTypeCase());
 		}
 	}
 

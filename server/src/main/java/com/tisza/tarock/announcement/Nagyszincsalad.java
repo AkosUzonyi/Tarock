@@ -29,7 +29,7 @@ public class Nagyszincsalad extends Szincsalad
 		return Result.FAILED;
 	}
 	
-	public void onAnnounce(IAnnouncing announcing)
+	public void onAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		

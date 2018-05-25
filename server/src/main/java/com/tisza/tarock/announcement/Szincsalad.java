@@ -40,7 +40,7 @@ public abstract class Szincsalad extends AnnouncementBase
 		return suit;
 	}
 	
-	public boolean isShownToUser()
+	public boolean isShownInList()
 	{
 		return false;
 	}

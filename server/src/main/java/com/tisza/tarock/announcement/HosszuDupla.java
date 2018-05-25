@@ -4,7 +4,7 @@ import com.tisza.tarock.card.PlayerCards;
 import com.tisza.tarock.card.filter.TarockFilter;
 import com.tisza.tarock.game.IAnnouncing;
 
-public class HosszuDupla extends AnnouncementBridge
+public class HosszuDupla extends AnnouncementWrapper
 {
 	public HosszuDupla()
 	{

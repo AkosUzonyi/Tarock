@@ -9,9 +9,9 @@ public interface Announcement
 {
 	public int calculatePoints(GameState gameState, Team team);
 	public boolean canBeAnnounced(IAnnouncing announcing);
-	public void onAnnounce(IAnnouncing announcing);
+	public void onAnnounced(IAnnouncing announcing);
 	public boolean canContra();
-	public boolean isShownToUser();
+	public boolean isShownInList();
 	public boolean requireIdentification();
 
 	public String getName();

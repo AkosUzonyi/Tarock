@@ -81,7 +81,7 @@ public class Kings extends AnnouncementBase
 		return super.canBeAnnounced(announcing);
 	}
 	
-	public void onAnnounce(IAnnouncing announcing)
+	public void onAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		

@@ -62,7 +62,7 @@ class Announcing extends Phase implements IAnnouncing
 		
 		Team team = currentGame.getPlayerPairs().getTeam(player);
 		setContraLevel(ac.getNextTeamToContra(team), ac.getAnnouncement(), ac.getContraLevel());
-		ac.getAnnouncement().onAnnounce(this);
+		ac.getAnnouncement().onAnnounced(this);
 
 		gameSession.getBroadcastEventSender().announce(player, ac);
 		sendAvailableAnnouncements();
@@ -128,7 +128,7 @@ class Announcing extends Phase implements IAnnouncing
 				}
 				else
 				{
-					if ((!needsIdentification || !a.requireIdentification()) && origAnnouncer == currentPlayerTeam && a.canBeAnnounced(this) && a.isShownToUser())
+					if ((!needsIdentification || !a.requireIdentification()) && origAnnouncer == currentPlayerTeam && a.canBeAnnounced(this) && a.isShownInList())
 					{
 						list.add(new AnnouncementContra(a, 0));
 					}

@@ -43,7 +43,7 @@ public class TarockCount implements Announcement
 		return cards.filter(new TarockFilter()).size() == count;
 	}
 
-	public void onAnnounce(IAnnouncing announcing)
+	public void onAnnounced(IAnnouncing announcing)
 	{
 	}
 	
@@ -52,7 +52,7 @@ public class TarockCount implements Announcement
 		return false;
 	}
 
-	public boolean isShownToUser()
+	public boolean isShownInList()
 	{
 		return true;
 	}

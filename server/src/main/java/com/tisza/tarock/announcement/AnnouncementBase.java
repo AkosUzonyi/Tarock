@@ -71,7 +71,7 @@ public abstract class AnnouncementBase implements Announcement
 		return !announcing.isAnnounced(team, this);
 	}
 	
-	public void onAnnounce(IAnnouncing announcing)
+	public void onAnnounced(IAnnouncing announcing)
 	{
 	}
 	
@@ -80,7 +80,7 @@ public abstract class AnnouncementBase implements Announcement
 		return true;
 	}
 	
-	public boolean isShownToUser()
+	public boolean isShownInList()
 	{
 		return true;
 	}

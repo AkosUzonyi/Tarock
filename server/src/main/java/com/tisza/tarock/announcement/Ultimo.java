@@ -75,7 +75,7 @@ public abstract class Ultimo extends AnnouncementBase
 		return super.canBeAnnounced(announcing);
 	}
 	
-	public void onAnnounce(IAnnouncing announcing)
+	public void onAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		
@@ -106,7 +106,7 @@ public abstract class Ultimo extends AnnouncementBase
 		return false;
 	}
 	
-	public boolean isShownToUser()
+	public boolean isShownInList()
 	{
 		return false;
 	}

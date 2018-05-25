@@ -42,5 +42,3 @@ other:
 final classes?
 @ovveride
 visibility (unnecessary public eg. getPoints(), ultimo.canbesilent)
-change minsdkversion
-gradlew version

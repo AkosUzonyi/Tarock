@@ -1,7 +1,6 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.IAnnouncing;
 import com.tisza.tarock.game.Team;
 
@@ -30,14 +29,9 @@ public class Banda extends TakeCards
 		return suit;
 	}
 
-	protected List<Card> getCardsToTake()
+	protected boolean hasToBeTaken(Card card)
 	{
-		List<Card> result = new ArrayList<Card>();
-		for (int v = 1; v <= 5; v++)
-		{
-			result.add(new SuitCard(suit, v));
-		}
-		return result;
+		return card instanceof SuitCard && ((SuitCard)card).getSuit() == suit;
 	}
 	
 	public boolean canBeAnnounced(IAnnouncing announcing)

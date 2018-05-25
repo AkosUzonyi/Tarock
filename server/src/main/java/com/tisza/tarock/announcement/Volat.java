@@ -2,8 +2,6 @@ package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.Card;
 
-import java.util.Collection;
-
 public class Volat extends TakeCards
 {
 	Volat(){}
@@ -13,9 +11,9 @@ public class Volat extends TakeCards
 		return "volat";
 	}
 
-	protected Collection<Card> getCardsToTake()
+	protected boolean hasToBeTaken(Card card)
 	{
-		return Card.all;
+		return true;
 	}
 
 	public int getPoints()

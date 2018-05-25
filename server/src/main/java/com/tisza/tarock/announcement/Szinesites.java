@@ -1,7 +1,6 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.IAnnouncing;
 import com.tisza.tarock.game.Team;
 
@@ -17,17 +16,9 @@ public class Szinesites extends TakeCards
 		return "szinesites";
 	}
 
-	protected Collection<Card> getCardsToTake()
+	protected boolean hasToBeTaken(Card card)
 	{
-		Collection<Card> result = new ArrayList<Card>();
-		for (int s = 0; s < 4; s++)
-		{
-			for (int v = 1; v <= 5; v++)
-			{
-				result.add(new SuitCard(s, v));
-			}
-		}
-		return result;
+		return card instanceof SuitCard;
 	}
 	
 	public boolean canBeAnnounced(IAnnouncing announcing)

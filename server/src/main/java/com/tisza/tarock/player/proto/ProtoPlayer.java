@@ -9,7 +9,7 @@ import java.util.concurrent.*;
 public class ProtoPlayer implements Player
 {
 	private ProtoConnection connection;
-	private EventQueue eventQueue;
+	private EventSender eventSender;
 
 	private JoinRequestHandler joinRequestHandler = null;
 
@@ -21,7 +21,7 @@ public class ProtoPlayer implements Player
 	public ProtoPlayer(ProtoConnection connection)
 	{
 		this.connection = connection;
-		eventQueue = new ProtoEventQueue(connection);
+		eventSender = new ProtoEventSender(connection);
 		connection.addMessageHandler(new MyMessageHandler());
 	}
 
@@ -30,9 +30,9 @@ public class ProtoPlayer implements Player
 		return name;
 	}
 
-	public EventQueue getEventQueue()
+	public EventSender getEventSender()
 	{
-		return eventQueue;
+		return eventSender;
 	}
 
 	public void setJoinRequestHandler(JoinRequestHandler joinRequestHandler)

@@ -91,7 +91,6 @@ public class ProtoConnection
 		socket.setTcpNoDelay(true);
 		is = socket.getInputStream();
 		os = socket.getOutputStream();
-		start();
 	}
 	
 	public void start()

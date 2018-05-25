@@ -64,7 +64,7 @@ class Announcing extends Phase implements IAnnouncing
 		setContraLevel(ac.getNextTeamToContra(team), ac.getAnnouncement(), ac.getContraLevel());
 		ac.getAnnouncement().onAnnounce(this);
 
-		gameSession.getBroadcastEventQueue().announce(player, ac);
+		gameSession.getBroadcastEventSender().announce(player, ac);
 		sendAvailableAnnouncements();
 	}
 	
@@ -96,7 +96,7 @@ class Announcing extends Phase implements IAnnouncing
 			gameSession.changePhase(new Gameplay(gameSession));
 		}
 
-		gameSession.getBroadcastEventQueue().announcePassz(player);
+		gameSession.getBroadcastEventSender().announcePassz(player);
 	}
 	
 	private boolean isFinished()
@@ -142,7 +142,7 @@ class Announcing extends Phase implements IAnnouncing
 		}
 		
 		gameSession.getPlayerEventQueue(currentPlayer).availableAnnouncements(list);
-		gameSession.getBroadcastEventQueue().turn(currentPlayer);
+		gameSession.getBroadcastEventSender().turn(currentPlayer);
 	}
 	
 	public boolean canAnnounce(AnnouncementContra ac)

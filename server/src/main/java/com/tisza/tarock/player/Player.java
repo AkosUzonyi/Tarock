@@ -7,7 +7,7 @@ import java.util.concurrent.*;
 public interface Player
 {
 	public String getName();
-	public EventQueue getEventQueue();
+	public EventSender getEventSender();
 	public void onJoinedToGame(BlockingQueue<Action> actionQueue, int playerID);
 	public void onDisconnectedFromGame();
 }

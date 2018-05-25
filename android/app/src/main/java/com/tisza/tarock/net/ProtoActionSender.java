@@ -3,17 +3,16 @@ package com.tisza.tarock.net;
 import com.tisza.tarock.Announcement;
 import com.tisza.tarock.card.Card;
 import com.tisza.tarock.message.ActionSender;
-import com.tisza.tarock.message.Utils;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.proto.ActionProto.Action;
 
 import java.util.List;
 
-public class ConnectionActionSender implements ActionSender
+public class ProtoActionSender implements ActionSender
 {
 	private ProtoConnection connection;
 
-	public ConnectionActionSender(ProtoConnection connection)
+	public ProtoActionSender(ProtoConnection connection)
 	{
 		this.connection = connection;
 	}

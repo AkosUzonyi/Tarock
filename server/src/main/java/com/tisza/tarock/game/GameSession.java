@@ -16,7 +16,7 @@ public class GameSession implements Runnable
 	private int[] points = new int[4];
 
 	private List<Player> players;
-	private EventQueue broadcastEventQueue;
+	private EventSender broadcastEventSender;
 	private BlockingQueue<Action> actionQueue = new LinkedBlockingQueue<>();
 
 	private GameState state;
@@ -51,7 +51,7 @@ public class GameSession implements Runnable
 
 	public void run()
 	{
-		broadcastEventQueue = new BroadcastEventQueue(players.stream().map(Player::getEventQueue).collect(Collectors.toList()));
+		broadcastEventSender = new BroadcastEventSender(players.stream().map(Player::getEventSender).collect(Collectors.toList()));
 		for (int i = 0; i < 4; i++)
 		{
 			players.get(i).onJoinedToGame(actionQueue, i);
@@ -73,7 +73,7 @@ public class GameSession implements Runnable
 
 		gameThread = null;
 		state = null;
-		broadcastEventQueue = null;
+		broadcastEventSender = null;
 		for (Player p : players)
 		{
 			p.onDisconnectedFromGame();
@@ -88,18 +88,18 @@ public class GameSession implements Runnable
 	void changePhase(Phase phase)
 	{
 		currentPhase = phase;
-		getBroadcastEventQueue().phaseChanged(currentPhase.asEnum());
+		getBroadcastEventSender().phaseChanged(currentPhase.asEnum());
 		currentPhase.onStart();
 	}
 
-	EventQueue getBroadcastEventQueue()
+	EventSender getBroadcastEventSender()
 	{
-		return broadcastEventQueue;
+		return broadcastEventSender;
 	}
 
-	EventQueue getPlayerEventQueue(int player)
+	EventSender getPlayerEventQueue(int player)
 	{
-		return players.get(player).getEventQueue();
+		return players.get(player).getEventSender();
 	}
 
 	private int getNextBeginnerPlayer(boolean doubleRound)

@@ -120,11 +120,11 @@ public class Changing extends Phase
 		donePlayer[player] = true;
 		
 		gameSession.getPlayerEventQueue(player).playerCards(skartingPlayerCards);
-		gameSession.getBroadcastEventQueue().changeDone(player);
+		gameSession.getBroadcastEventSender().changeDone(player);
 
 		if (isFinished())
 		{
-			gameSession.getBroadcastEventQueue().skartTarock(tarockCounts);
+			gameSession.getBroadcastEventSender().skartTarock(tarockCounts);
 			gameSession.changePhase(new Calling(gameSession));
 		}
 	}
@@ -134,7 +134,7 @@ public class Changing extends Phase
 		PlayerCards cards = currentGame.getPlayerCards(player);
 		if (cards.canBeThrown(true))
 		{
-			gameSession.getBroadcastEventQueue().throwCards(player);
+			gameSession.getBroadcastEventSender().throwCards(player);
 			gameSession.changePhase(new PendingNewGame(gameSession, true));
 		}
 	}

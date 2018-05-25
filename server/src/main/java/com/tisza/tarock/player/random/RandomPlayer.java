@@ -14,7 +14,7 @@ public class RandomPlayer implements Player
 {
 	private final String name;
 	private final int delay;
-	private EventQueue eventQueue = new MyEventQueue();
+	private EventSender eventSender = new MyEventSender();
 	private Random rnd = new Random();
 
 	private int playerID;
@@ -38,9 +38,9 @@ public class RandomPlayer implements Player
 	}
 
 	@Override
-	public EventQueue getEventQueue()
+	public EventSender getEventSender()
 	{
-		return eventQueue;
+		return eventSender;
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class RandomPlayer implements Player
 		enqueueAction(action);
 	}
 
-	private class MyEventQueue implements EventQueue
+	private class MyEventSender implements EventSender
 	{
 		private PlayerCards myCards;
 		private PhaseEnum phase;

@@ -83,7 +83,7 @@ public class Bidding extends Phase
 			lastBidValue = bid;
 		}
 
-		gameSession.getBroadcastEventQueue().bid(player, bid);
+		gameSession.getBroadcastEventSender().bid(player, bid);
 
 		findNextPlayer();
 		
@@ -110,7 +110,7 @@ public class Bidding extends Phase
 		PlayerCards cards = currentGame.getPlayerCards(player);
 		if (cards.canBeThrown(false))
 		{
-			gameSession.getBroadcastEventQueue().throwCards(player);
+			gameSession.getBroadcastEventSender().throwCards(player);
 			gameSession.changePhase(new PendingNewGame(gameSession, true));
 		}
 	}
@@ -153,7 +153,7 @@ public class Bidding extends Phase
 	private void sendAvailableBids()
 	{
 		gameSession.getPlayerEventQueue(currentPlayer).availabeBids(getAvailableBids());
-		gameSession.getBroadcastEventQueue().turn(currentPlayer);
+		gameSession.getBroadcastEventSender().turn(currentPlayer);
 	}
 
 	private boolean checkBiddingRequirements(int player)

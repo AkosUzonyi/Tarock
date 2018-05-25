@@ -22,7 +22,7 @@ public class Gameplay extends Phase
 	public void onStart()
 	{
 		currentRound = new Round(currentGame.getBeginnerPlayer());
-		gameSession.getBroadcastEventQueue().turn(currentRound.getCurrentPlayer());
+		gameSession.getBroadcastEventSender().turn(currentRound.getCurrentPlayer());
 	}
 
 	public void playCard(int player, Card card)
@@ -39,7 +39,7 @@ public class Gameplay extends Phase
 		currentGame.getPlayerCards(player).removeCard(card);
 		currentRound.placeCard(card);
 
-		gameSession.getBroadcastEventQueue().playCard(player, card);
+		gameSession.getBroadcastEventSender().playCard(player, card);
 		
 		if (currentRound.isFinished())
 		{
@@ -48,12 +48,12 @@ public class Gameplay extends Phase
 			currentGame.addWonCards(winner, currentRound.getCards());
 			currentRound = currentGame.areAllRoundsPassed() ? null : new Round(winner);
 			
-			gameSession.getBroadcastEventQueue().cardsTaken(winner);
+			gameSession.getBroadcastEventSender().cardsTaken(winner);
 		}
 		
 		if (currentRound != null)
 		{
-			gameSession.getBroadcastEventQueue().turn(currentRound.getCurrentPlayer());
+			gameSession.getBroadcastEventSender().turn(currentRound.getCurrentPlayer());
 		}
 		else
 		{

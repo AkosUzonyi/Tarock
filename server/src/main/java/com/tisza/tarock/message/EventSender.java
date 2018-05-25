@@ -10,7 +10,7 @@ import com.tisza.tarock.proto.ActionProto;
 import java.util.Collection;
 import java.util.List;
 
-public interface EventQueue
+public interface EventSender
 {
 	void announce(int player, AnnouncementContra announcement);
 	void announcePassz(int player);

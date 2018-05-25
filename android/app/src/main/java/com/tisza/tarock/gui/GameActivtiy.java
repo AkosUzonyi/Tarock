@@ -88,14 +88,12 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 					Socket socket = new Socket();
 					socket.connect(new InetSocketAddress(host, port), 1000);
 					conncection = new ProtoConnection(socket);
-					actionSender = new ConnectionActionSender(conncection);
-					conncection.sendMessage(MainProto.Message.newBuilder().setLogin(Login.newBuilder().setName(name).build()).build());
+					actionSender = new ProtoActionSender(conncection);
+
 					conncection.addMessageHandler(new MessageHandler()
 					{
 						public void handleMessage(final MainProto.Message message)
 						{
-							if (message == null)
-								Thread.dumpStack();
 							runOnUiThread(new Runnable()
 							{
 								public void run()
@@ -110,6 +108,8 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 							GameActivtiy.this.connectionClosed();
 						}
 					});
+					conncection.start();
+					conncection.sendMessage(MainProto.Message.newBuilder().setLogin(Login.newBuilder().setName(name).build()).build());
 				}
 				catch (IOException e)
 				{
@@ -874,13 +874,12 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		return (id - myID + 4) % 4;
 	}
 
-	private EventDispatcher eventDispatcher = new EventDispatcher(this);
 	public void handleMessage(MainProto.Message message)
 	{
 		switch (message.getMessageTypeCase())
 		{
 			case EVENT:
-				eventDispatcher.dispatchEvent(message.getEvent());
+				new ProtoEvent(message.getEvent()).handle(this);
 			default:
 				System.err.println("unhandled message type: " + message.getMessageTypeCase());
 		}

@@ -18,7 +18,7 @@ public class PendingNewGame extends Phase
 
 	public void onStart()
 	{
-		gameSession.getBroadcastEventQueue().pendingNewGame();
+		gameSession.getBroadcastEventSender().pendingNewGame();
 	}
 
 	public void readyForNewGame(int player)
@@ -28,7 +28,7 @@ public class PendingNewGame extends Phase
 		{
 			gameSession.startNewGame(doubleRound);
 		}
-		gameSession.getBroadcastEventQueue().readyForNewGame(player);
+		gameSession.getBroadcastEventSender().readyForNewGame(player);
 	}
 
 	private boolean allReady()

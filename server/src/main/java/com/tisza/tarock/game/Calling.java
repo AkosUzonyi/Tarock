@@ -42,7 +42,7 @@ public class Calling extends Phase
 		}
 		
 		gameSession.getPlayerEventQueue(callerPlayer).availabeCalls(getCallableCards());
-		gameSession.getBroadcastEventQueue().turn(callerPlayer);
+		gameSession.getBroadcastEventSender().turn(callerPlayer);
 	}
 	
 	public void call(int player, Card card)
@@ -85,7 +85,7 @@ public class Calling extends Phase
 			currentGame.invitAccepted();
 		}
 
-		gameSession.getBroadcastEventQueue().call(player, card);
+		gameSession.getBroadcastEventSender().call(player, card);
 		gameSession.changePhase(new Announcing(gameSession));
 	}
 	

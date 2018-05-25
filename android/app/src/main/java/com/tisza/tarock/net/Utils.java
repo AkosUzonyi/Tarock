@@ -1,17 +1,18 @@
-package com.tisza.tarock.message;
+package com.tisza.tarock.net;
 
 import com.tisza.tarock.Announcement;
 import com.tisza.tarock.PhaseEnum;
 import com.tisza.tarock.card.Card;
 import com.tisza.tarock.card.SuitCard;
 import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.EventProto.Event;
 import com.tisza.tarock.proto.ProtoUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Utils
+class Utils
 {
 	public static AnnouncementStaticticsEntry staticticsFromProto(Event.AnnouncementStatistics.Entry entry)
 	{

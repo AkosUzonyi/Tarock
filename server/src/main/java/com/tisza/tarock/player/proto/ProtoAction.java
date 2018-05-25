@@ -7,8 +7,8 @@ import java.util.stream.*;
 
 class ProtoAction implements Action
 {
-	private ActionProto.Action actionProto;
-	private int player;
+	private final ActionProto.Action actionProto;
+	private final int player;
 
 	public ProtoAction(int player, ActionProto.Action actionProto)
 	{

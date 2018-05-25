@@ -1,20 +1,20 @@
-package com.tisza.tarock.message;
+package com.tisza.tarock.net;
 
-import com.tisza.tarock.proto.ActionProto.Action;
-import com.tisza.tarock.proto.EventProto.Event;
+import com.tisza.tarock.message.*;
+import com.tisza.tarock.proto.*;
 
-import java.util.List;
+import java.util.*;
 
-public class EventDispatcher
+public class ProtoEvent implements Event
 {
-	private final EventHandler handler;
+	private final EventProto.Event event;
 
-	public EventDispatcher(EventHandler handler)
+	public ProtoEvent(EventProto.Event event)
 	{
-		this.handler = handler;
+		this.event = event;
 	}
 
-	public void dispatchEvent(Event event)
+	public void handle(EventHandler handler)
 	{
 		switch (event.getEventTypeCase())
 		{
@@ -57,7 +57,7 @@ public class EventDispatcher
 				handler.cardsTaken(event.getCardsTaken().getPlayer());
 				break;
 			case ANNOUNCEMENT_STATISTICS:
-				Event.AnnouncementStatistics statisticsEvent = event.getAnnouncementStatistics();
+				EventProto.Event.AnnouncementStatistics statisticsEvent = event.getAnnouncementStatistics();
 				int selfGamePoints = statisticsEvent.getSelfGamePoints();
 				int opponentGamePoints = statisticsEvent.getOpponentGamePoints();
 				List<AnnouncementStaticticsEntry> selfStatisticsEntries = Utils.staticticsListFromProto(statisticsEvent.getSelfEntryList());
@@ -69,7 +69,7 @@ public class EventDispatcher
 				handler.pendingNewGame();
 				break;
 			case PLAYER_ACTION:
-				dispatchPlayerActionEvent(event.getPlayerAction().getPlayer(), event.getPlayerAction().getAction());
+				handlePlayerAction(handler, event.getPlayerAction().getPlayer(), event.getPlayerAction().getAction());
 				break;
 			default:
 				System.err.println("unhandled event");
@@ -77,7 +77,7 @@ public class EventDispatcher
 		}
 	}
 
-	private void dispatchPlayerActionEvent(int player, Action action)
+	private void handlePlayerAction(EventHandler handler, int player, ActionProto.Action action)
 	{
 		switch (action.getActionTypeCase())
 		{

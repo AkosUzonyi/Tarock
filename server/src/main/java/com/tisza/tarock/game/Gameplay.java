@@ -5,7 +5,7 @@ import com.tisza.tarock.card.PlayerCards;
 
 import java.util.Collection;
 
-public class Gameplay extends Phase
+class Gameplay extends Phase
 {
 	private Round currentRound;
 	

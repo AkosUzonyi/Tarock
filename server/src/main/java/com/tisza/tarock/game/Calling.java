@@ -12,7 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Calling extends Phase
+class Calling extends Phase
 {
 	private int callerPlayer;
 	private boolean canCallAnyTarock;

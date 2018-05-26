@@ -14,7 +14,6 @@ Jatek annoucement sent as event
 renames:
 
 little nice things:
-make Phase subclasses package private
 canBeAnnounced: remove AnnouncementBase's implementation
 create AnnouncementInstance class (Announcement, contraLevel, announcerteam)
 

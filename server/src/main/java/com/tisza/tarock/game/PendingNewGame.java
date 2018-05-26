@@ -1,6 +1,6 @@
 package com.tisza.tarock.game;
 
-public class PendingNewGame extends Phase
+class PendingNewGame extends Phase
 {
 	private boolean doubleRound;
 	private boolean[] ready = new boolean[4];

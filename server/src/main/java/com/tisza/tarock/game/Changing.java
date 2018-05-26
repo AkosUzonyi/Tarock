@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Changing extends Phase
+class Changing extends Phase
 {
 	private static final SkartableCardFilter cardFilter = new SkartableCardFilter();
 	

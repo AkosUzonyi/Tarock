@@ -4,7 +4,7 @@ import com.tisza.tarock.card.*;
 
 import java.util.*;
 
-public class Bidding extends Phase
+class Bidding extends Phase
 {
 	private int currentPlayer;
 	private int lastBidValue = 4;

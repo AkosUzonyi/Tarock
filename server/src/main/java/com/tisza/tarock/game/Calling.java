@@ -82,8 +82,9 @@ class Calling extends Phase
 		}
 
 		currentGame.setPlayerPairs(new PlayerPairs(callerPlayer, calledPlayer));
-		
-		if (currentGame.getInvitSent() == Invitation.XVIII && card.equals(Card.getTarockCard(18)) || currentGame.getInvitSent() == Invitation.XIX && card.equals(Card.getTarockCard(19)))
+
+		Invitation invit = currentGame.getInvitSent();
+		if (invit != Invitation.NONE && card.equals(invit.getCard()))
 		{
 			currentGame.invitAccepted();
 		}

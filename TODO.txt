@@ -6,7 +6,6 @@ GameActivity call displaymessage
 TarockCount announcement: no points earned
 TarockCount announcement: per team, not per player
 Zaroparos: do not require order of pagat and sas
-invitAccepted not set when Invit.XX
 Jatek annoucement sent as event
 
 renames:

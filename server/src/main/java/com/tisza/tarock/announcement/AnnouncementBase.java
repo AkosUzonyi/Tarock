@@ -41,11 +41,11 @@ public abstract class AnnouncementBase implements Announcement
 		{
 			if (r == Result.SUCCESSFUL_SILENT)
 			{
-				points = getPoints() / 2;
+				points = getSilentPoints();
 			}
 			else if (r == Result.FAILED_SILENT)
 			{
-				points = -getPoints() / 2;
+				points = -getSilentPoints();
 			}
 			else
 			{
@@ -57,6 +57,11 @@ public abstract class AnnouncementBase implements Announcement
 		points *= winnerBidMultiplier;
 		
 		return points;
+	}
+
+	protected int getSilentPoints()
+	{
+		return getPoints() / 2;
 	}
 	
 	protected boolean isMultipliedByWinnerBid()

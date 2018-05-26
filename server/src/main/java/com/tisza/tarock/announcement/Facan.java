@@ -63,9 +63,15 @@ public class Facan extends AnnouncementBase
 	@Override
 	protected int getPoints()
 	{
-		return 10;
+		return 50;
 	}
-	
+
+	@Override
+	protected int getSilentPoints()
+	{
+		return 5;
+	}
+
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{

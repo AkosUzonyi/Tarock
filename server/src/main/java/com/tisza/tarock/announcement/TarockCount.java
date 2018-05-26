@@ -1,9 +1,7 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.PlayerCards;
-import com.tisza.tarock.card.filter.TarockFilter;
-import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.Team;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 
 public class TarockCount implements Announcement
 {
@@ -42,7 +40,7 @@ public class TarockCount implements Announcement
 			return false;
 		
 		PlayerCards cards = announcing.getCards(announcing.getCurrentPlayer());
-		return cards.filter(new TarockFilter()).size() == count;
+		return cards.getTarockCount() == count;
 	}
 
 	@Override

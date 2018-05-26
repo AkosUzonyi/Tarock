@@ -41,6 +41,11 @@ public class PlayerCards
 		return result;
 	}
 
+	public int getTarockCount()
+	{
+		return filter(new TarockFilter()).size();
+	}
+
 	public List<Card> getCards()
 	{
 		return cards;

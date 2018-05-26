@@ -1,13 +1,8 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.PlayerCards;
-import com.tisza.tarock.card.TarockCard;
-import com.tisza.tarock.card.filter.TarockFilter;
+import com.tisza.tarock.card.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Bidding extends Phase
 {
@@ -174,8 +169,8 @@ public class Bidding extends Phase
 	
 	private boolean checkBaseInvitationRequirements(int player)
 	{
-		PlayerCards h = currentGame.getPlayerCards(player);
-		return (h.hasCard(Card.getTarockCard(21)) || h.hasCard(Card.getTarockCard(22))) && h.filter(new TarockFilter()).size() >= 5;
+		PlayerCards cards = currentGame.getPlayerCards(player);
+		return (cards.hasCard(Card.getTarockCard(21)) || cards.hasCard(Card.getTarockCard(22))) && cards.getTarockCount() >= 5;
 	}
 	
 	private boolean isFinished()

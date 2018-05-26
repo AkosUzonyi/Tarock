@@ -1,6 +1,5 @@
 bugs:
 XXIUltimo getPlayerCards after game end
-Kings bug!!!
 ? pagatsas isSuccessful
 AnnouncementBridge.canBeSilent unused
 GameActivity call displaymessage

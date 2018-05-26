@@ -42,29 +42,24 @@ public class Kings extends AnnouncementBase
 		for (int i = 0; i < count; i++)
 		{
 			int roundIndex = 8 - i;
-			if (isRoundOK(gameState, team, roundIndex))
+			if (!isRoundOK(gameState, team, roundIndex))
 			{
-				return Result.SUCCESSFUL;
+				return Result.FAILED;
 			}
 		}
-		return Result.FAILED;
+		return Result.SUCCESSFUL;
 	}
 	
 	private boolean isRoundOK(GameState gameState, Team team, int roundIndex)
 	{
 		Round round = gameState.getRound(roundIndex);
-		for (int p = 0; p < 4; p++)
-		{
-			Card card = round.getCardByPlayer(p);
-			boolean isItUs = gameState.getPlayerPairs().getTeam(p) == team;
-			boolean isKing = card instanceof SuitCard && ((SuitCard)card).getValue() == 5;
-			boolean isWon = round.getWinner() == p;
-			if (isItUs && isKing && isWon)
-			{
-				return true;
-			}
-		}
-		return false;
+		int winnerPlayer = round.getWinner();
+		Card winnerCard = round.getCardByPlayer(winnerPlayer);
+
+		boolean isItUs = gameState.getPlayerPairs().getTeam(winnerPlayer) == team;
+		boolean isKing = winnerCard instanceof SuitCard && ((SuitCard)winnerCard).getValue() == 5;
+
+		return isItUs && isKing;
 	}
 	
 	@Override

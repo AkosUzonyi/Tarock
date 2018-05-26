@@ -27,7 +27,7 @@ public abstract class LastRounds extends AnnouncementBase
 	private boolean isRoundOK(GameState gameState, Team team, int roundIndex)
 	{
 		Round round = gameState.getRound(roundIndex);
-		int winnerPlayer = round.getWinner();
+		PlayerSeat winnerPlayer = round.getWinner();
 		Card winnerCard = round.getCardByPlayer(winnerPlayer);
 
 		boolean isItUs = gameState.getPlayerPairs().getTeam(winnerPlayer) == team;

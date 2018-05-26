@@ -8,53 +8,53 @@ import java.util.*;
 
 public class GameState
 {
-	private final int beginnerPlayer;
+	private final PlayerSeat beginnerPlayer;
 
-	private List<PlayerCards> playersCards = new ArrayList<>();
+	private PlayerSeat.Map<PlayerCards> playersCards = new PlayerSeat.Map<>();
 	private List<Card> talon;
 
 	private Invitation invitSent = Invitation.NONE;
-	private int invitingPlayer = -1;
-	private int bidWinnerPlayer = -1;
+	private PlayerSeat invitingPlayer = null;
+	private PlayerSeat bidWinnerPlayer = null;
 	private int winnerBid;
 
 	private Map<Team, List<Card>> skartForTeams = new HashMap<Team, List<Card>>();
-	private int playerSkarted20 = -1;
+	private PlayerSeat playerSkarted20 = null;
 	
 	private PlayerPairs playerPairs = null;
 	private boolean isSoloIntentional = false;
 	private Invitation invitAccepted = Invitation.NONE;
-	private int playerToAnnounceSolo = -1;
+	private PlayerSeat playerToAnnounceSolo = null;
 
 	private AnnouncementsState announcementsState = new AnnouncementsState();
 
 	private List<Round> roundsPassed = new ArrayList<>();
-	private List<Collection<Card>> wonCards = new ArrayList<>();
+	private PlayerSeat.Map<Collection<Card>> wonCards = new PlayerSeat.Map<>();
 	
 	{
+		for (PlayerSeat player : PlayerSeat.getAll())
+		{
+			playersCards.put(player, new PlayerCards());
+			wonCards.put(player, new ArrayList<>());
+		}
+
 		for (Team t : Team.values())
 		{
 			skartForTeams.put(t, new ArrayList<>());
 		}
-
-		for (int i = 0; i < 4; i++)
-		{
-			playersCards.add(new PlayerCards());
-			wonCards.add(new ArrayList<>());
-		}
 	}
 
-	public GameState(int beginnerPlayer)
+	public GameState(PlayerSeat beginnerPlayer)
 	{
 		this.beginnerPlayer = beginnerPlayer;
 	}
 
-	public PlayerCards getPlayerCards(int player)
+	public PlayerCards getPlayerCards(PlayerSeat player)
 	{
 		return playersCards.get(player);
 	}
 
-	public int getBeginnerPlayer()
+	public PlayerSeat getBeginnerPlayer()
 	{
 		return beginnerPlayer;
 	}
@@ -69,7 +69,7 @@ public class GameState
 		return talon;
 	}
 
-	void setInvitationSent(Invitation invitSent, int invitingPlayer)
+	void setInvitationSent(Invitation invitSent, PlayerSeat invitingPlayer)
 	{
 		if (invitSent == null)
 			throw new NullPointerException();
@@ -83,25 +83,25 @@ public class GameState
 		return invitSent;
 	}
 
-	public int getInvitingPlayer()
+	public PlayerSeat getInvitingPlayer()
 	{
 		return invitingPlayer;
 	}
 	
-	void setBidResult(int bidWinnerPlayer, int winnerBid)
+	void setBidResult(PlayerSeat bidWinnerPlayer, int winnerBid)
 	{
 		this.bidWinnerPlayer = bidWinnerPlayer;
 		this.winnerBid = winnerBid;
 	}
 
-	public int getBidWinnerPlayer()
+	public PlayerSeat getBidWinnerPlayer()
 	{
 		return bidWinnerPlayer;
 	}
 
 	public int getWinnerBid()
 	{
-		if (bidWinnerPlayer < 0)
+		if (bidWinnerPlayer == null)
 			throw new IllegalStateException();
 
 		return winnerBid;
@@ -117,12 +117,12 @@ public class GameState
 		return skartForTeams.get(team);
 	}
 
-	void setPlayerSkarted20(int playerSkarted20)
+	void setPlayerSkarted20(PlayerSeat playerSkarted20)
 	{
 		this.playerSkarted20 = playerSkarted20;
 	}
 	
-	public int getPlayerSkarted20()
+	public PlayerSeat getPlayerSkarted20()
 	{
 		return playerSkarted20;
 	}
@@ -157,12 +157,12 @@ public class GameState
 		return invitAccepted;
 	}
 
-	void setPlayerToAnnounceSolo(int playerToAnnounceSolo)
+	void setPlayerToAnnounceSolo(PlayerSeat playerToAnnounceSolo)
 	{
 		this.playerToAnnounceSolo = playerToAnnounceSolo;
 	}
 
-	public int getPlayerToAnnounceSolo()
+	public PlayerSeat getPlayerToAnnounceSolo()
 	{
 		return playerToAnnounceSolo;
 	}
@@ -187,12 +187,12 @@ public class GameState
 		return roundsPassed.get(index);
 	}
 	
-	void addWonCards(int player, Collection<Card> collection)
+	void addWonCards(PlayerSeat player, Collection<Card> collection)
 	{
 		wonCards.get(player).addAll(collection);
 	}
 
-	public Collection<Card> getWonCards(int player)
+	public Collection<Card> getWonCards(PlayerSeat player)
 	{
 		return wonCards.get(player);
 	}
@@ -200,7 +200,7 @@ public class GameState
 	public int calculateGamePoints(Team team)
 	{
 		int points = 0;
-		for (int player : playerPairs.getPlayersInTeam(team))
+		for (PlayerSeat player : playerPairs.getPlayersInTeam(team))
 		{
 			for (Card c : getWonCards(player))
 			{

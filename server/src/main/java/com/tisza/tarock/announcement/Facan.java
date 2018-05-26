@@ -29,8 +29,8 @@ public class Facan extends AnnouncementBase
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Round round = gameState.getRound(0);
-		int theCardPlayer = round.getPlayerOfCard(card);
-		if (theCardPlayer < 0) return Result.FAILED;
+		PlayerSeat theCardPlayer = round.getPlayerOfCard(card);
+		if (theCardPlayer == null) return Result.FAILED;
 		
 		PlayerPairs playerPairs = gameState.getPlayerPairs();
 		
@@ -40,7 +40,7 @@ public class Facan extends AnnouncementBase
 		}
 		else
 		{
-			int winnerPlayer = round.getWinner();
+			PlayerSeat winnerPlayer = round.getWinner();
 			
 			if (winnerPlayer == theCardPlayer)
 			{
@@ -48,7 +48,7 @@ public class Facan extends AnnouncementBase
 			}
 			else
 			{
-				for (int opponentPlayer : playerPairs.getPlayersInTeam(team.getOther()))
+				for (PlayerSeat opponentPlayer : playerPairs.getPlayersInTeam(team.getOther()))
 				{
 					if (round.getCardByPlayer(opponentPlayer) instanceof TarockCard)
 					{

@@ -1,5 +1,6 @@
 package com.tisza.tarock.player.proto;
 
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 
@@ -8,9 +9,9 @@ import java.util.stream.*;
 class ProtoAction implements Action
 {
 	private final ActionProto.Action actionProto;
-	private final int player;
+	private final PlayerSeat player;
 
-	public ProtoAction(int player, ActionProto.Action actionProto)
+	public ProtoAction(PlayerSeat player, ActionProto.Action actionProto)
 	{
 		this.player = player;
 		this.actionProto = actionProto;

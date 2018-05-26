@@ -1,8 +1,7 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.Card;
-import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.Team;
+import com.tisza.tarock.game.*;
 
 import java.util.*;
 
@@ -17,7 +16,7 @@ public abstract class TakeCards extends AnnouncementBase
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Collection<Card> wonCards = new ArrayList<Card>();
-		for (int player : gameState.getPlayerPairs().getPlayersInTeam(team))
+		for (PlayerSeat player : gameState.getPlayerPairs().getPlayersInTeam(team))
 		{
 			wonCards.addAll(gameState.getWonCards(player));
 		}

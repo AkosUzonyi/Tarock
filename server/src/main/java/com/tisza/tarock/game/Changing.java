@@ -13,9 +13,9 @@ class Changing extends Phase
 {
 	private static final SkartableCardFilter cardFilter = new SkartableCardFilter();
 	
-	private List<List<Card>> cardsFromTalon = null;
-	private boolean[] donePlayer = new boolean[4];
-	private int[] tarockCounts = new int[4];
+	private PlayerSeat.Map<List<Card>> cardsFromTalon = new PlayerSeat.Map<>();
+	private PlayerSeat.Map<Boolean> donePlayer = new PlayerSeat.Map<>(false);
+	private PlayerSeat.Map<Integer> tarockCounts = new PlayerSeat.Map<>();
 	
 	public Changing(GameSession gameSession)
 	{
@@ -32,25 +32,24 @@ class Changing extends Phase
 	public void onStart()
 	{
 		dealCardsFromTalon();
-		for (int i = 0; i < 4; i++)
+		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			gameSession.getPlayerEventQueue(i).cardsFromTalon(cardsFromTalon.get(i));
+			gameSession.getPlayerEventQueue(player).cardsFromTalon(cardsFromTalon.get(player));
 		}
 	}
 	
 	private void dealCardsFromTalon()
 	{
-		cardsFromTalon = new ArrayList<List<Card>>(4);
-		for (int i = 0; i < 4; i++)
+		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			cardsFromTalon.add(new ArrayList<Card>());
+			cardsFromTalon.put(player, new ArrayList<Card>());
 		}
 		
-		List<Card> cardsRemaining = new LinkedList<Card>(currentGame.getTalon());
+		List<Card> remainingCards = new LinkedList<Card>(currentGame.getTalon());
+		PlayerSeat player = currentGame.getBidWinnerPlayer();
+
 		for (int i = 0; i < 4; i++)
 		{
-			int player = (currentGame.getBidWinnerPlayer() + i) % 4;
-			
 			int cardCount;
 			if (player == currentGame.getBidWinnerPlayer())
 			{
@@ -58,20 +57,22 @@ class Changing extends Phase
 			}
 			else
 			{
-				cardCount = (int)Math.ceil((float)cardsRemaining.size() / (4 - i));
+				cardCount = (int)Math.ceil((float)remainingCards.size() / (4 - i));
 			}
 			
 			for (int j = 0; j < cardCount; j++)
 			{
-				cardsFromTalon.get(player).add(cardsRemaining.remove(0));
+				cardsFromTalon.get(player).add(remainingCards.remove(0));
 			}
+
+			player = player.nextPlayer();
 		}
 	}
 	
 	@Override
-	public void change(int player, List<Card> cardsToSkart)
+	public void change(PlayerSeat player, List<Card> cardsToSkart)
 	{
-		if (donePlayer[player])
+		if (donePlayer.get(player))
 			return;
 		
 		PlayerCards skartingPlayerCards = currentGame.getPlayerCards(player);
@@ -115,12 +116,12 @@ class Changing extends Phase
 
 			currentGame.addCardToSkart(player == currentGame.getBidWinnerPlayer() ? Team.CALLER : Team.OPPONENT, c);
 		}
-		tarockCounts[player] = tarockCount;
+		tarockCounts.put(player, tarockCount);
 		
 		skartingPlayerCards.getCards().addAll(cardsFromTalonForPlayer);
 		skartingPlayerCards.getCards().removeAll(cardsToSkart);
 		
-		donePlayer[player] = true;
+		donePlayer.put(player, true);
 		
 		gameSession.getPlayerEventQueue(player).playerCards(skartingPlayerCards);
 		gameSession.getBroadcastEventSender().changeDone(player);
@@ -133,7 +134,7 @@ class Changing extends Phase
 	}
 	
 	@Override
-	public void throwCards(int player)
+	public void throwCards(PlayerSeat player)
 	{
 		PlayerCards cards = currentGame.getPlayerCards(player);
 		if (cards.canBeThrown(true))

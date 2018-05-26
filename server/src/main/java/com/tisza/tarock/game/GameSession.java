@@ -13,9 +13,9 @@ public class GameSession implements Runnable
 {
 	public static final int ROUND_COUNT = 9;
 
-	private int[] points = new int[4];
+	private PlayerSeat.Map<Integer> points = new PlayerSeat.Map<>(0);
 
-	private List<Player> players;
+	private PlayerSeat.Map<Player> players = new PlayerSeat.Map<>();
 	private EventSender broadcastEventSender;
 	private BlockingQueue<Action> actionQueue = new LinkedBlockingQueue<>();
 
@@ -24,12 +24,15 @@ public class GameSession implements Runnable
 
 	private Thread gameThread;
 
-	public GameSession(List<Player> players)
+	public GameSession(List<Player> playerList)
 	{
 		if (players.size() != 4)
 			throw new IllegalArgumentException();
 
-		this.players = players;
+		for (int i = 0; i < 4; i++)
+		{
+			players.put(PlayerSeat.fromInt(i), playerList.get(i));
+		}
 	}
 
 	public void startSession()
@@ -52,10 +55,10 @@ public class GameSession implements Runnable
 	@Override
 	public void run()
 	{
-		broadcastEventSender = new BroadcastEventSender(players.stream().map(Player::getEventSender).collect(Collectors.toList()));
-		for (int i = 0; i < 4; i++)
+		broadcastEventSender = new BroadcastEventSender(players.values().stream().map(Player::getEventSender).collect(Collectors.toList()));
+		for (PlayerSeat seat : PlayerSeat.getAll())
 		{
-			players.get(i).onJoinedToGame(actionQueue, i);
+			players.get(seat).onJoinedToGame(actionQueue, seat);
 		}
 
 		startNewGame(false);
@@ -98,17 +101,17 @@ public class GameSession implements Runnable
 		return broadcastEventSender;
 	}
 
-	EventSender getPlayerEventQueue(int player)
+	EventSender getPlayerEventQueue(PlayerSeat player)
 	{
 		return players.get(player).getEventSender();
 	}
 
-	private int getNextBeginnerPlayer(boolean doubleRound)
+	private PlayerSeat getNextBeginnerPlayer(boolean doubleRound)
 	{
 		if (state == null)
-			return 0;
+			return PlayerSeat.SEAT0;
 
-		return (state.getBeginnerPlayer() + (doubleRound ? 0 : 1)) % 4;
+		return doubleRound ? state.getBeginnerPlayer() : state.getBeginnerPlayer().nextPlayer();
 	}
 
 	void startNewGame(boolean doubleRound)
@@ -117,19 +120,19 @@ public class GameSession implements Runnable
 
 		List<Card> cardsToDeal = new ArrayList<>(Card.getAll());
 		Collections.shuffle(cardsToDeal);
-		for (int p = 0; p < 4; p++)
+		for (PlayerSeat player : PlayerSeat.getAll())
 		{
 			for (int i = 0; i < 9; i++)
 			{
-				state.getPlayerCards(p).addCard(cardsToDeal.remove(0));
+				state.getPlayerCards(player).addCard(cardsToDeal.remove(0));
 			}
 		}
 		state.setTalon(cardsToDeal);
 
-		for (int i = 0; i < 4; i++)
+		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			getPlayerEventQueue(i).startGame(i, players.stream().map(Player::getName).collect(Collectors.toList()));
-			getPlayerEventQueue(i).playerCards(state.getPlayerCards(i));
+			getPlayerEventQueue(player).startGame(player, players.values().stream().map(Player::getName).collect(Collectors.toList()));
+			getPlayerEventQueue(player).playerCards(state.getPlayerCards(player));
 		}
 
 		changePhase(new Bidding(this));
@@ -166,13 +169,13 @@ public class GameSession implements Runnable
 		int[] points = new int[4];
 		for (int i = 0; i < 4; i++)
 		{
-			points[i] = -pointsForCallerTeam;
+			points[i] -= pointsForCallerTeam;
 		}
-		points[state.getPlayerPairs().getCaller()] += pointsForCallerTeam * 2;
-		points[state.getPlayerPairs().getCalled()] += pointsForCallerTeam * 2;
+		points[state.getPlayerPairs().getCaller().asInt()] += pointsForCallerTeam * 2;
+		points[state.getPlayerPairs().getCalled().asInt()] += pointsForCallerTeam * 2;
 		addPoints(points);
 
-		for (int player = 0; player < 4; player++)
+		for (PlayerSeat player : PlayerSeat.getAll())
 		{
 			Team team = state.getPlayerPairs().getTeam(player);
 			int selfGamePoints = gamePointsForTeams.get(team);
@@ -186,9 +189,9 @@ public class GameSession implements Runnable
 
 	private void addPoints(int[] pointsToAdd)
 	{
-		for (int i = 0; i < 4; i++)
+		for (PlayerSeat p : PlayerSeat.getAll())
 		{
-			points[i] += pointsToAdd[i];
+			points.compute(p, (k, v) -> v + pointsToAdd[p.asInt()]);
 		}
 	}
 }

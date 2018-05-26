@@ -1,9 +1,8 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.Card;
-import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.Round;
-import com.tisza.tarock.game.Team;
+import com.tisza.tarock.game.*;
+import com.tisza.tarock.player.*;
 
 public class KezbeVacak extends AnnouncementBase
 {
@@ -32,8 +31,8 @@ public class KezbeVacak extends AnnouncementBase
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Round round = gameState.getRound(roundIndex);
-		int theCardPlayer = round.getPlayerOfCard(cardToTakeWith);
-		if (theCardPlayer < 0) return Result.FAILED;
+		PlayerSeat theCardPlayer = round.getPlayerOfCard(cardToTakeWith);
+		if (theCardPlayer == null) return Result.FAILED;
 		
 		if (gameState.getPlayerPairs().getTeam(theCardPlayer) != team)
 			return Result.FAILED;
@@ -44,7 +43,7 @@ public class KezbeVacak extends AnnouncementBase
 		for (int i = 0; i < roundIndex; i++)
 		{
 			round = gameState.getRound(i);
-			int winner = round.getWinner();
+			PlayerSeat winner = round.getWinner();
 			
 			if (gameState.getPlayerPairs().getTeam(winner) != team)
 				return Result.FAILED;

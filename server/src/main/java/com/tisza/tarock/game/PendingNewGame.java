@@ -3,7 +3,7 @@ package com.tisza.tarock.game;
 class PendingNewGame extends Phase
 {
 	private boolean doubleRound;
-	private boolean[] ready = new boolean[4];
+	private PlayerSeat.Map<Boolean> ready = new PlayerSeat.Map<>(false);
 
 	public PendingNewGame(GameSession gameSession, boolean doubleRound)
 	{
@@ -24,9 +24,9 @@ class PendingNewGame extends Phase
 	}
 
 	@Override
-	public void readyForNewGame(int player)
+	public void readyForNewGame(PlayerSeat player)
 	{
-		ready[player] = true;
+		ready.put(player, true);
 		if (allReady())
 		{
 			gameSession.startNewGame(doubleRound);

@@ -82,7 +82,7 @@ public class JatekDuplaVolatPoints
 	@Before
 	public void createGameState()
 	{
-		game = new GameState(0)
+		game = new GameState(PlayerSeat.SEAT0)
 		{
 			@Override
 			public int calculateGamePoints(Team team)
@@ -93,7 +93,7 @@ public class JatekDuplaVolatPoints
 			@Override
 			public PlayerPairs getPlayerPairs()
 			{
-				return new PlayerPairs(0, 1);
+				return new PlayerPairs(PlayerSeat.SEAT0, PlayerSeat.SEAT1);
 			}
 
 			@Override
@@ -103,9 +103,10 @@ public class JatekDuplaVolatPoints
 			}
 
 			@Override
-			public Collection<Card> getWonCards(int player)
+			public Collection<Card> getWonCards(PlayerSeat player)
 			{
-				return callerGamePoints == 94 && player < 2 || callerGamePoints == 0 && player >= 2 ? Card.getAll() : Collections.EMPTY_LIST;
+				boolean callerTeam = player.asInt() < 2;
+				return callerGamePoints == 94 && callerTeam || callerGamePoints == 0 && !callerTeam ? Card.getAll() : Collections.EMPTY_LIST;
 			}
 		};
 	}

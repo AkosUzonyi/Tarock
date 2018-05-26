@@ -1,18 +1,18 @@
 package com.tisza.tarock.message;
 
 import com.tisza.tarock.card.Card;
-import com.tisza.tarock.game.AnnouncementContra;
+import com.tisza.tarock.game.*;
 
 import java.util.List;
 
 public interface ActionHandler
 {
-	public void announce(int player, AnnouncementContra announcementContra);
-	public void announcePassz(int player);
-	public void bid(int player, int bid);
-	public void call(int player, Card card);
-	public void change(int player, List<Card> cards);
-	public void playCard(int player, Card card);
-	public void readyForNewGame(int player);
-	public void throwCards(int player);
+	public void announce(PlayerSeat player, AnnouncementContra announcementContra);
+	public void announcePassz(PlayerSeat player);
+	public void bid(PlayerSeat player, int bid);
+	public void call(PlayerSeat player, Card card);
+	public void change(PlayerSeat player, List<Card> cards);
+	public void playCard(PlayerSeat player, Card card);
+	public void readyForNewGame(PlayerSeat player);
+	public void throwCards(PlayerSeat player);
 }

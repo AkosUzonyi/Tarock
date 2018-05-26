@@ -20,49 +20,49 @@ abstract class Phase implements ActionHandler
 	public abstract void onStart();
 
 	@Override
-	public void announce(int player, AnnouncementContra announcementContra)
+	public void announce(PlayerSeat player, AnnouncementContra announcementContra)
 	{
 		wrongPhase();
 	}
 
 	@Override
-	public void announcePassz(int player)
+	public void announcePassz(PlayerSeat player)
 	{
 		wrongPhase();
 	}
 
 	@Override
-	public void bid(int player, int bid)
+	public void bid(PlayerSeat player, int bid)
 	{
 		wrongPhase();
 	}
 
 	@Override
-	public void call(int player, Card card)
+	public void call(PlayerSeat player, Card card)
 	{
 		wrongPhase();
 	}
 
 	@Override
-	public void change(int player, List<Card> cards)
+	public void change(PlayerSeat player, List<Card> cards)
 	{
 		wrongPhase();
 	}
 
 	@Override
-	public void playCard(int player, Card card)
+	public void playCard(PlayerSeat player, Card card)
 	{
 		wrongPhase();
 	}
 
 	@Override
-	public void readyForNewGame(int player)
+	public void readyForNewGame(PlayerSeat player)
 	{
 		wrongPhase();
 	}
 
 	@Override
-	public void throwCards(int player)
+	public void throwCards(PlayerSeat player)
 	{
 		wrongPhase();
 	}

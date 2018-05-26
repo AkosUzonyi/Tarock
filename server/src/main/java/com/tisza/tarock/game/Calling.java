@@ -14,7 +14,7 @@ import java.util.Set;
 
 class Calling extends Phase
 {
-	private int callerPlayer;
+	private PlayerSeat callerPlayer;
 	private boolean canCallAnyTarock;
 	
 	public Calling(GameSession gameSession)
@@ -48,34 +48,34 @@ class Calling extends Phase
 	}
 	
 	@Override
-	public void call(int player, Card card)
+	public void call(PlayerSeat player, Card card)
 	{
 		if (player != callerPlayer)
 			return;
 		
 		if (!getCallableCards().contains(card))
 			return;
-		
-		int calledPlayer = -1;
-		for (int i = 0; i < 4; i++)
+
+		PlayerSeat calledPlayer = null;
+		for (PlayerSeat p : PlayerSeat.getAll())
 		{
-			PlayerCards pc = currentGame.getPlayerCards(i);
+			PlayerCards pc = currentGame.getPlayerCards(p);
 			if (pc.hasCard(card))
 			{
-				calledPlayer = i;
+				calledPlayer = p;
 			}
 		}
 		
 		currentGame.setSoloIntentional(calledPlayer == callerPlayer);
 		
 		//if the player called a card that had been skarted
-		if (calledPlayer < 0)
+		if (calledPlayer == null)
 		{
 			calledPlayer = callerPlayer;
 			
 			if (card.equals(Card.getTarockCard(20)) && currentGame.getPlayerSkarted20() != callerPlayer)
 			{
-				if (currentGame.getPlayerSkarted20() < 0)
+				if (currentGame.getPlayerSkarted20() == null)
 					throw new RuntimeException();
 				currentGame.setPlayerToAnnounceSolo(currentGame.getPlayerSkarted20());
 			}

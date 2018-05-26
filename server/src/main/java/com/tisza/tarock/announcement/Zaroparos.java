@@ -1,9 +1,7 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.Round;
-import com.tisza.tarock.game.Team;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 
 public class Zaroparos extends AnnouncementBase
 {
@@ -30,8 +28,8 @@ public class Zaroparos extends AnnouncementBase
 	private boolean isRoundOK(GameState gameState, Team team, int roundIndex, Card cardToTakeWith)
 	{
 		Round round = gameState.getRound(roundIndex);
-		int theCardPlayer = round.getPlayerOfCard(cardToTakeWith);
-		if (theCardPlayer < 0) return false;
+		PlayerSeat theCardPlayer = round.getPlayerOfCard(cardToTakeWith);
+		if (theCardPlayer == null) return false;
 		
 		if (gameState.getPlayerPairs().getTeam(theCardPlayer) != team)
 		{

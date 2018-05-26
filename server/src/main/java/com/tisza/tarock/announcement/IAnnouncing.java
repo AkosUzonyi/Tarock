@@ -11,9 +11,9 @@ public interface IAnnouncing
 	public int getContraLevel(Team team, Announcement a);
 	public void clearAnnouncement(Team team, Announcement announcement);
 
-	public int getCurrentPlayer();
+	public PlayerSeat getCurrentPlayer();
 	public Team getCurrentTeam();
 	public boolean canAnnounce(AnnouncementContra a);
-	public PlayerCards getCards(int player);
-	public int getPlayerToAnnounceSolo();
+	public PlayerCards getCards(PlayerSeat player);
+	public PlayerSeat getPlayerToAnnounceSolo();
 }

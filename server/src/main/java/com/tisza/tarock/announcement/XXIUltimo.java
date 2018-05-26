@@ -1,8 +1,7 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.Team;
+import com.tisza.tarock.game.*;
 
 public class XXIUltimo extends Ultimo
 {
@@ -14,9 +13,9 @@ public class XXIUltimo extends Ultimo
 	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
-		for (int p : gameState.getPlayerPairs().getPlayersInTeam(team))
+		for (PlayerSeat player : gameState.getPlayerPairs().getPlayersInTeam(team))
 		{
-			PlayerCards pc = gameState.getPlayerCards(p);
+			PlayerCards pc = gameState.getPlayerCards(player);
 			if (pc.hasCard(Card.getTarockCard(22)))
 			{
 				return Result.DEACTIVATED;

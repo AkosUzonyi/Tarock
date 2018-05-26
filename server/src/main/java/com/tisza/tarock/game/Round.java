@@ -2,38 +2,37 @@ package com.tisza.tarock.game;
 
 import com.tisza.tarock.card.Card;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 public class Round
 {
-	private final int beginnerPlayer;
-	private int currentPlayer;
-	private int winnerPlayer = -1;
-	private Card[] cards = new Card[4];
+	private final PlayerSeat beginnerPlayer;
+	private PlayerSeat currentPlayer;
+	private PlayerSeat winnerPlayer;
+	private PlayerSeat.Map<Card> cards = new PlayerSeat.Map<>();
 	private boolean finished = false;
 	
-	public Round(int bp)
+	public Round(PlayerSeat beginnerPlayer)
 	{
-		if (bp < 0 || bp >= 4)
+		if (beginnerPlayer == null)
 			throw new IllegalArgumentException();
 		
-		beginnerPlayer = bp;
+		this.beginnerPlayer = beginnerPlayer;
 		currentPlayer = beginnerPlayer;
 		winnerPlayer = currentPlayer;
 	}
 	
-	public int getBeginnerPlayer()
+	public PlayerSeat getBeginnerPlayer()
 	{
 		return beginnerPlayer;
 	}
 	
-	public int getCurrentPlayer()
+	public PlayerSeat getCurrentPlayer()
 	{
 		return currentPlayer;
 	}
 	
-	public int getWinner()
+	public PlayerSeat getWinner()
 	{
 		if (!isFinished())
 			throw new IllegalStateException("Round has not finished");
@@ -47,29 +46,30 @@ public class Round
 	
 	public Card getCardByIndex(int n)
 	{
-		return cards[(beginnerPlayer + n) % 4];
+		PlayerSeat player = PlayerSeat.fromInt(beginnerPlayer.asInt() + n);
+		return getCardByPlayer(player);
 	}
 	
-	public Card getCardByPlayer(int player)
+	public Card getCardByPlayer(PlayerSeat player)
 	{
-		return cards[player];
+		return cards.get(player);
 	}
 	
-	public int getPlayerOfCard(Card card)
+	public PlayerSeat getPlayerOfCard(Card card)
 	{
-		for (int player = 0; player < 4; player++)
+		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			if (cards[player].equals(card))
+			if (getCardByPlayer(player).equals(card))
 			{
 				return player;
 			}
 		}
-		return -1;
+		return null;
 	}
 
 	public Collection<Card> getCards()
 	{
-		return Arrays.asList(cards);
+		return cards.values();
 	}
 	
 	public boolean isFinished()
@@ -82,17 +82,16 @@ public class Round
 		if (isFinished())
 			throw new IllegalStateException();
 		
-		cards[currentPlayer] = card;
+		cards.put(currentPlayer, card);
 		
-		Card currentWinnerCard = cards[winnerPlayer];
+		Card currentWinnerCard = cards.get(winnerPlayer);
 		if (card.doesBeat(currentWinnerCard))
 		{
 			winnerPlayer = currentPlayer;
 		}
 		
-		currentPlayer++;
-		currentPlayer %= 4;
-		
+		currentPlayer = currentPlayer.nextPlayer();
+
 		if (currentPlayer == beginnerPlayer)
 		{
 			finished = true;

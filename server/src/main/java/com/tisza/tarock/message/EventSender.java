@@ -1,35 +1,32 @@
 package com.tisza.tarock.message;
 
-import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.Card;
 import com.tisza.tarock.card.PlayerCards;
-import com.tisza.tarock.game.AnnouncementContra;
-import com.tisza.tarock.game.PhaseEnum;
-import com.tisza.tarock.proto.ActionProto;
+import com.tisza.tarock.game.*;
 
 import java.util.Collection;
 import java.util.List;
 
 public interface EventSender
 {
-	void announce(int player, AnnouncementContra announcement);
-	void announcePassz(int player);
-	void bid(int player, int bid);
-	void call(int player, Card card);
-	void playCard(int player, Card card);
-	void readyForNewGame(int player);
-	void throwCards(int player);
-	void turn(int player);
-	void startGame(int id, List<String> names);
+	void announce(PlayerSeat player, AnnouncementContra announcement);
+	void announcePassz(PlayerSeat player);
+	void bid(PlayerSeat player, int bid);
+	void call(PlayerSeat player, Card card);
+	void playCard(PlayerSeat player, Card card);
+	void readyForNewGame(PlayerSeat player);
+	void throwCards(PlayerSeat player);
+	void turn(PlayerSeat player);
+	void startGame(PlayerSeat seat, List<String> names);
 	void playerCards(PlayerCards cards);
 	void phaseChanged(PhaseEnum phase);
 	void availabeBids(Collection<Integer> bids);
 	void availabeCalls(Collection<Card> cards);
 	void cardsFromTalon(List<Card> cards);
-	void changeDone(int player);
-	void skartTarock(int[] counts);
+	void changeDone(PlayerSeat player);
+	void skartTarock(PlayerSeat.Map<Integer> counts);
 	void availableAnnouncements(List<AnnouncementContra> announcements);
-	void cardsTaken(int player);
+	void cardsTaken(PlayerSeat player);
 	void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points);
 	void pendingNewGame();
 }

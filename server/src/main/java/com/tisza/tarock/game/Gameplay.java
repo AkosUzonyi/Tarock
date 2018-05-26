@@ -28,7 +28,7 @@ class Gameplay extends Phase
 	}
 
 	@Override
-	public void playCard(int player, Card card)
+	public void playCard(PlayerSeat player, Card card)
 	{
 		if (player != currentRound.getCurrentPlayer())
 			return;
@@ -47,7 +47,7 @@ class Gameplay extends Phase
 		if (currentRound.isFinished())
 		{
 			currentGame.addRound(currentRound);
-			int winner = currentRound.getWinner();
+			PlayerSeat winner = currentRound.getWinner();
 			currentGame.addWonCards(winner, currentRound.getCards());
 			currentRound = currentGame.areAllRoundsPassed() ? null : new Round(winner);
 			

@@ -21,7 +21,6 @@ GameType
 error messages
 
 refactorizations:
-? Player int->enum
  
 other:
 final classes?

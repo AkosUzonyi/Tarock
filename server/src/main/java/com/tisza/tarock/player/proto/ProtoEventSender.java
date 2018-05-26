@@ -25,69 +25,69 @@ public class ProtoEventSender implements EventSender
 		connection.sendMessage(MainProto.Message.newBuilder().setEvent(event).build());
 	}
 
-	private void sendPlayerActionEvent(int player, ActionProto.Action action)
+	private void sendPlayerActionEvent(PlayerSeat player, ActionProto.Action action)
 	{
 		Event.PlayerAction event = Event.PlayerAction.newBuilder()
-				.setPlayer(player)
+				.setPlayer(player.asInt())
 				.setAction(action)
 				.build();
 		sendEvent(Event.newBuilder().setPlayerAction(event).build());
 	}
 
 	@Override
-	public void announce(int player, AnnouncementContra announcement)
+	public void announce(PlayerSeat player, AnnouncementContra announcement)
 	{
 		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setAnnounce(ActionProto.Action.Announce.newBuilder().setAnnouncement(Utils.announcementToProto(announcement))).build());
 	}
 
 	@Override
-	public void announcePassz(int player)
+	public void announcePassz(PlayerSeat player)
 	{
 		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setAnnoucePassz(ActionProto.Action.AnnouncePassz.newBuilder()).build());
 	}
 
 	@Override
-	public void bid(int player, int bid)
+	public void bid(PlayerSeat player, int bid)
 	{
 		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setBid(ActionProto.Action.Bid.newBuilder().setBid(bid)).build());
 	}
 
 	@Override
-	public void call(int player, Card card)
+	public void call(PlayerSeat player, Card card)
 	{
 		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setCall(ActionProto.Action.Call.newBuilder().setCard(Utils.cardToProto(card))).build());
 	}
 
 	@Override
-	public void playCard(int player, Card card)
+	public void playCard(PlayerSeat player, Card card)
 	{
 		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setPlayCard(ActionProto.Action.PlayCard.newBuilder().setCard(Utils.cardToProto(card))).build());
 	}
 
 	@Override
-	public void readyForNewGame(int player)
+	public void readyForNewGame(PlayerSeat player)
 	{
 		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setReadyForNewGame(ActionProto.Action.ReadyForNewGame.newBuilder()).build());
 	}
 
 	@Override
-	public void throwCards(int player)
+	public void throwCards(PlayerSeat player)
 	{
 		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setThrowCards(ActionProto.Action.ThrowCards.newBuilder()).build());
 	}
 
-	@Override public void turn(int player)
+	@Override public void turn(PlayerSeat player)
 	{
 		Event.Turn e = Event.Turn.newBuilder()
-				.setPlayer(player)
+				.setPlayer(player.asInt())
 				.build();
 		sendEvent(Event.newBuilder().setTurn(e).build());
 	}
 
-	@Override public void startGame(int id, List<String> names)
+	@Override public void startGame(PlayerSeat seat, List<String> names)
 	{
 		Event.StartGame e = Event.StartGame.newBuilder()
-				.setMyId(id)
+				.setMyId(seat.asInt())
 				.addAllPlayerName(names)
 				.build();
 		sendEvent(Event.newBuilder().setStartGame(e).build());
@@ -133,15 +133,15 @@ public class ProtoEventSender implements EventSender
 		sendEvent(Event.newBuilder().setCardsFromTalon(e).build());
 	}
 
-	@Override public void changeDone(int player)
+	@Override public void changeDone(PlayerSeat player)
 	{
 		Event.ChangeDone e = Event.ChangeDone.newBuilder()
-				.setPlayer(player)
+				.setPlayer(player.asInt())
 				.build();
 		sendEvent(Event.newBuilder().setChangeDone(e).build());
 	}
 
-	@Override public void skartTarock(int[] counts)
+	@Override public void skartTarock(PlayerSeat.Map<Integer> counts)
 	{
 		Event.SkartTarock.Builder e = Event.SkartTarock.newBuilder();
 
@@ -161,10 +161,10 @@ public class ProtoEventSender implements EventSender
 		sendEvent(Event.newBuilder().setAvailableAnnouncements(e).build());
 	}
 
-	@Override public void cardsTaken(int player)
+	@Override public void cardsTaken(PlayerSeat player)
 	{
 		Event.CardsTaken e = Event.CardsTaken.newBuilder()
-				.setPlayer(player)
+				.setPlayer(player.asInt())
 				.build();
 		sendEvent(Event.newBuilder().setCardsTaken(e).build());
 	}

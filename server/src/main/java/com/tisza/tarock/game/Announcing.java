@@ -3,6 +3,7 @@ package com.tisza.tarock.game;
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.PlayerCards;
 import com.tisza.tarock.game.Bidding.Invitation;
+import com.tisza.tarock.player.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,9 +11,9 @@ import java.util.List;
 
 class Announcing extends Phase implements IAnnouncing
 {
-	private int currentPlayer;
+	private PlayerSeat currentPlayer;
 	private boolean currentPlayerAnnounced = false;
-	private int lastAnnouncer = -1;
+	private PlayerSeat lastAnnouncer = null;
 	private IdentityTracker idTrack;
 	
 	public Announcing(GameSession gameSession)
@@ -37,13 +38,13 @@ class Announcing extends Phase implements IAnnouncing
 		sendAvailableAnnouncements();
 	}
 
-	public void announce(int player, Announcement a)
+	public void announce(PlayerSeat player, Announcement a)
 	{
 		announce(player, new AnnouncementContra(a, 0));
 	}
 
 	@Override
-	public void announce(int player, AnnouncementContra ac)
+	public void announce(PlayerSeat player, AnnouncementContra ac)
 	{
 		if (player != currentPlayer)
 			return;
@@ -71,7 +72,7 @@ class Announcing extends Phase implements IAnnouncing
 	}
 	
 	@Override
-	public void announcePassz(int player)
+	public void announcePassz(PlayerSeat player)
 	{
 		if (player != currentPlayer)
 			return;
@@ -86,8 +87,7 @@ class Announcing extends Phase implements IAnnouncing
 		{
 			lastAnnouncer = currentPlayer;
 		}
-		currentPlayer++;
-		currentPlayer %= 4;
+		currentPlayer = currentPlayer.nextPlayer();
 		currentPlayerAnnounced = false;
 		
 		if (!isFinished())
@@ -174,7 +174,7 @@ class Announcing extends Phase implements IAnnouncing
 	
 	private boolean needsIdentification()
 	{
-		if (lastAnnouncer < 0)
+		if (lastAnnouncer == null)
 			return false;
 		
 		Team currentPlayerTeam = currentGame.getPlayerPairs().getTeam(currentPlayer);
@@ -184,7 +184,7 @@ class Announcing extends Phase implements IAnnouncing
 	}
 
 	@Override
-	public int getCurrentPlayer()
+	public PlayerSeat getCurrentPlayer()
 	{
 		return currentPlayer;
 	}
@@ -220,13 +220,13 @@ class Announcing extends Phase implements IAnnouncing
 	}
 
 	@Override
-	public PlayerCards getCards(int player)
+	public PlayerCards getCards(PlayerSeat player)
 	{
 		return currentGame.getPlayerCards(player);
 	}
 
 	@Override
-	public int getPlayerToAnnounceSolo()
+	public PlayerSeat getPlayerToAnnounceSolo()
 	{
 		return currentGame.getPlayerToAnnounceSolo();
 	}
@@ -234,35 +234,35 @@ class Announcing extends Phase implements IAnnouncing
 	private static class IdentityTracker
 	{
 		private final PlayerPairs playerPairs;
-		private boolean[] identityKnown = new boolean[4];
+		private PlayerSeat.Map<Boolean> identityKnown = new PlayerSeat.Map<>(false);
 		
 		public IdentityTracker(PlayerPairs pp, Invitation invitAccepted)
 		{
 			playerPairs = pp;
-			identityKnown[playerPairs.getCaller()] = true;
+			identityKnown.put(playerPairs.getCaller(), true);
 			if (invitAccepted != Invitation.NONE)
 			{
 				allIdentityRevealed();
 			}
 		}
 		
-		public void identityRevealed(int player)
+		public void identityRevealed(PlayerSeat player)
 		{
 			if (player == playerPairs.getCalled() && !playerPairs.isSolo())
 			{
-				Arrays.fill(identityKnown, true);
+				identityKnown.fill(true);
 			}
-			identityKnown[player] = true;
+			identityKnown.put(player, true);
 		}
 		
 		public void allIdentityRevealed()
 		{
-			Arrays.fill(identityKnown, true);
+			identityKnown.fill(true);
 		}
 		
-		public boolean isIdentityKnown(int player)
+		public boolean isIdentityKnown(PlayerSeat player)
 		{
-			return identityKnown[player];
+			return identityKnown.get(player);
 		}
 	}
 }

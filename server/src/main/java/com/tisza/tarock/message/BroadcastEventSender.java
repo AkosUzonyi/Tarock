@@ -15,7 +15,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void announce(int player, AnnouncementContra announcement)
+	public void announce(PlayerSeat player, AnnouncementContra announcement)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -24,7 +24,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void announcePassz(int player)
+	public void announcePassz(PlayerSeat player)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -33,7 +33,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void bid(int player, int bid)
+	public void bid(PlayerSeat player, int bid)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -42,7 +42,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void call(int player, Card card)
+	public void call(PlayerSeat player, Card card)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -51,7 +51,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void playCard(int player, Card card)
+	public void playCard(PlayerSeat player, Card card)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -60,7 +60,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void readyForNewGame(int player)
+	public void readyForNewGame(PlayerSeat player)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -69,7 +69,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void throwCards(int player)
+	public void throwCards(PlayerSeat player)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -78,7 +78,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void turn(int player)
+	public void turn(PlayerSeat player)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -87,7 +87,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void startGame(int id, List<String> names)
+	public void startGame(PlayerSeat id, List<String> names)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -141,7 +141,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void changeDone(int player)
+	public void changeDone(PlayerSeat player)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -150,7 +150,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void skartTarock(int[] counts)
+	public void skartTarock(PlayerSeat.Map<Integer> counts)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
@@ -168,7 +168,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void cardsTaken(int player)
+	public void cardsTaken(PlayerSeat player)
 	{
 		for (EventSender eventSender : eventSenders)
 		{

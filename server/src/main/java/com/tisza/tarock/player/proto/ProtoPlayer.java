@@ -1,5 +1,6 @@
 package com.tisza.tarock.player.proto;
 
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.player.*;
 import com.tisza.tarock.proto.*;
@@ -15,7 +16,7 @@ public class ProtoPlayer implements Player
 
 	private String name = null;
 
-	private int playerID;
+	private PlayerSeat seat;
 	private BlockingQueue<Action> actionQueue = null;
 
 	public ProtoPlayer(ProtoConnection connection)
@@ -43,10 +44,10 @@ public class ProtoPlayer implements Player
 	}
 
 	@Override
-	public void onJoinedToGame(BlockingQueue<Action> actionQueue, int playerID)
+	public void onJoinedToGame(BlockingQueue<Action> actionQueue, PlayerSeat seat)
 	{
 		this.actionQueue = actionQueue;
-		this.playerID = playerID;
+		this.seat = seat;
 	}
 
 	@Override
@@ -68,7 +69,7 @@ public class ProtoPlayer implements Player
 					if (actionQueue == null)
 						throw new IllegalStateException("no action queue");
 
-					actionQueue.add(new ProtoAction(playerID, message.getAction()));
+					actionQueue.add(new ProtoAction(seat, message.getAction()));
 					break;
 				case LOGIN:
 					name = message.getLogin().getName();

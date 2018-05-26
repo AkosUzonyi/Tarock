@@ -6,18 +6,16 @@ import java.util.*;
 
 class Bidding extends Phase
 {
-	private int currentPlayer;
+	private PlayerSeat currentPlayer;
+	private PlayerSeat lastBidPlayer = null;
 	private int lastBidValue = 4;
-	private int lastBidPlayer = -1;
 	private boolean isKept = false;
 	
-	private BidState[] playersState = new BidState[4];
+	private PlayerSeat.Map<BidState> playersState = new PlayerSeat.Map<>(BidState.INITIAL);
 	
 	public Bidding(GameSession gameSession)
 	{
 		super(gameSession);
-		
-		Arrays.fill(playersState, BidState.INITIAL);
 	}
 	
 	@Override
@@ -35,7 +33,7 @@ class Bidding extends Phase
 
 	private boolean canKeep()
 	{
-		return !isKept && playersState[currentPlayer] == BidState.IN;
+		return !isKept && playersState.get(currentPlayer) == BidState.IN;
 	}
 	
 	private int getDefaultBid()
@@ -44,7 +42,7 @@ class Bidding extends Phase
 	}
 	
 	@Override
-	public void bid(int player, int bid)
+	public void bid(PlayerSeat player, int bid)
 	{
 		if (player != currentPlayer)
 			return;
@@ -59,7 +57,7 @@ class Bidding extends Phase
 				currentGame.setInvitationSent(Invitation.XX, currentPlayer);
 			}
 			
-			playersState[currentPlayer] = BidState.OUT;
+			playersState.put(currentPlayer, BidState.OUT);
 		}
 		else
 		{
@@ -75,7 +73,7 @@ class Bidding extends Phase
 				currentGame.setInvitationSent(Invitation.XVIII, currentPlayer);
 			}
 			
-			playersState[currentPlayer] = BidState.IN;
+			playersState.put(currentPlayer, BidState.IN);
 			isKept = lastBidValue == bid;
 			lastBidPlayer = currentPlayer;
 			lastBidValue = bid;
@@ -91,7 +89,7 @@ class Bidding extends Phase
 		}
 		else
 		{
-			if (lastBidPlayer < 0)
+			if (lastBidPlayer == null)
 			{
 				gameSession.changePhase(new PendingNewGame(gameSession, true));
 			}
@@ -104,7 +102,7 @@ class Bidding extends Phase
 	}
 	
 	@Override
-	public void throwCards(int player)
+	public void throwCards(PlayerSeat player)
 	{
 		PlayerCards cards = currentGame.getPlayerCards(player);
 		if (cards.canBeThrown(false))
@@ -155,7 +153,7 @@ class Bidding extends Phase
 		gameSession.getBroadcastEventSender().turn(currentPlayer);
 	}
 
-	private boolean checkBiddingRequirements(int player)
+	private boolean checkBiddingRequirements(PlayerSeat player)
 	{
 		for (Card c : currentGame.getPlayerCards(player).getCards())
 		{
@@ -167,7 +165,7 @@ class Bidding extends Phase
 		return false;
 	}
 	
-	private boolean checkBaseInvitationRequirements(int player)
+	private boolean checkBaseInvitationRequirements(PlayerSeat player)
 	{
 		PlayerCards cards = currentGame.getPlayerCards(player);
 		return (cards.hasCard(Card.getTarockCard(21)) || cards.hasCard(Card.getTarockCard(22))) && cards.getTarockCount() >= 5;
@@ -175,15 +173,14 @@ class Bidding extends Phase
 	
 	private boolean isFinished()
 	{
-		return currentPlayer == lastBidPlayer || lastBidValue == 0 && isKept || playersState[currentPlayer] == BidState.OUT;
+		return currentPlayer == lastBidPlayer || lastBidValue == 0 && isKept || playersState.get(currentPlayer) == BidState.OUT;
 	}
 	
 	private void findNextPlayer()
 	{
-		for (int i = 0; i < 4; i++)
+		for (PlayerSeat p = currentPlayer.nextPlayer(); p != currentPlayer; p = p.nextPlayer())
 		{
-			int p = (currentPlayer + i + 1) % 4;
-			if (playersState[p] != BidState.OUT)
+			if (playersState.get(p) != BidState.OUT)
 			{
 				currentPlayer = p;
 				break;

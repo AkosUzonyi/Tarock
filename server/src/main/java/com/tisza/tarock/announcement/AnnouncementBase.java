@@ -17,7 +17,7 @@ public abstract class AnnouncementBase implements Announcement
 		PlayerPairs pp = gameState.getPlayerPairs();
 		
 		boolean isAnnounced = gameState.getAnnouncementsState().isAnnounced(team, this);
-		int contraMultiplier = (int)Math.pow(2, isAnnounced ? gameState.getAnnouncementsState().getContraLevel(team, this) : 0);
+		int contraLevel = isAnnounced ? gameState.getAnnouncementsState().getContraLevel(team, this) : 0;
 		int winnerBid = pp.isSolo() && !gameState.isSoloIntentional() ? 0 : gameState.getWinnerBid();
 		int winnerBidMultiplier = isMultipliedByWinnerBid() ? (4 - winnerBid) : 1;
 		
@@ -53,7 +53,7 @@ public abstract class AnnouncementBase implements Announcement
 			}
 		}
 		
-		points *= contraMultiplier;
+		points <<= contraLevel;
 		points *= winnerBidMultiplier;
 		
 		return points;

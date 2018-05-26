@@ -17,19 +17,11 @@ public class Nagyszincsalad extends Szincsalad
 	}
 
 	@Override
-	protected Result isSuccessful(GameState gameState, Team team)
+	protected int getSize()
 	{
-		for (int i = 0; i < 3; i++)
-		{
-			int roundIndex = 8 - i;
-			if (isRoundOK(gameState, team, roundIndex))
-			{
-				return Result.SUCCESSFUL;
-			}
-		}
-		return Result.FAILED;
+		return 3;
 	}
-	
+
 	@Override
 	public void onAnnounced(IAnnouncing announcing)
 	{

@@ -83,7 +83,7 @@ public class PlayerCards
 			}
 		}
 
-		return new ArrayList<Card>();
+		return Collections.EMPTY_LIST;
 	}
 
 	public boolean canBeThrown(boolean afterChange)

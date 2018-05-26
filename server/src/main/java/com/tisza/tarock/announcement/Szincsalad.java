@@ -18,6 +18,22 @@ public abstract class Szincsalad extends AnnouncementBase
 		this.suit = suit;
 	}
 
+	protected abstract int getSize();
+
+	@Override
+	public Result isSuccessful(GameState gameState, Team team)
+	{
+		for (int i = 0; i < getSize(); i++)
+		{
+			int roundIndex = 8 - i;
+			if (isRoundOK(gameState, team, roundIndex))
+			{
+				return Result.SUCCESSFUL;
+			}
+		}
+		return Result.FAILED;
+	}
+
 	protected final boolean isRoundOK(GameState gameState, Team team, int roundIndex)
 	{
 		Round round = gameState.getRound(roundIndex);

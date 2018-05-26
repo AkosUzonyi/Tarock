@@ -17,19 +17,11 @@ public class Kisszincsalad extends Szincsalad
 	}
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	protected int getSize()
 	{
-		for (int i = 0; i < 2; i++)
-		{
-			int roundIndex = 8 - i;
-			if (isRoundOK(gameState, team, roundIndex))
-			{
-				return Result.SUCCESSFUL;
-			}
-		}
-		return Result.FAILED;
+		return 2;
 	}
-	
+
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{

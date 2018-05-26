@@ -27,10 +27,4 @@ public class HivatalbolKontraParti extends AnnouncementWrapper
 		
 		return announcing.getContraLevel(Team.CALLER, Announcements.jatek) == 0;
 	}
-
-	@Override
-	public boolean requireIdentification()
-	{
-		return false;
-	}
 }

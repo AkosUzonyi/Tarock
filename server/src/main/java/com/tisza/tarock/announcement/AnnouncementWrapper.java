@@ -56,6 +56,6 @@ public abstract class AnnouncementWrapper implements Announcement
 	@Override
 	public boolean requireIdentification()
 	{
-		return true;
+		return wrappedAnnouncement.getContraLevel() == 0;
 	}
 }

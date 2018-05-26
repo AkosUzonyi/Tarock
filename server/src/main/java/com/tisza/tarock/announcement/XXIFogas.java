@@ -7,11 +7,13 @@ public class XXIFogas extends AnnouncementBase
 {
 	XXIFogas(){}
 
+	@Override
 	public String getName()
 	{
 		return "xxifogas";
 	}
 
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		PlayerPairs pp = gameState.getPlayerPairs();
@@ -33,6 +35,7 @@ public class XXIFogas extends AnnouncementBase
 		return Result.FAILED;
 	}
 
+	@Override
 	public int getPoints()
 	{
 		return 60;

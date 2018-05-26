@@ -22,11 +22,13 @@ public class Calling extends Phase
 		super(gameSession);
 	}
 	
+	@Override
 	public PhaseEnum asEnum()
 	{
 		return PhaseEnum.CALLING;
 	}
 
+	@Override
 	public void onStart()
 	{
 		callerPlayer = currentGame.getBidWinnerPlayer();
@@ -45,6 +47,7 @@ public class Calling extends Phase
 		gameSession.getBroadcastEventSender().turn(callerPlayer);
 	}
 	
+	@Override
 	public void call(int player, Card card)
 	{
 		if (player != callerPlayer)

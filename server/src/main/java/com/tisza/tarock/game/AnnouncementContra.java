@@ -63,6 +63,7 @@ public class AnnouncementContra implements Comparable<AnnouncementContra>
 		return true;
 	}
 
+	@Override
 	public int compareTo(AnnouncementContra o)
 	{
 		if (contraLevel != o.contraLevel)

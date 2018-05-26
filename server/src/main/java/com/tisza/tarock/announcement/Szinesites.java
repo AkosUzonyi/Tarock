@@ -11,16 +11,19 @@ public class Szinesites extends TakeCards
 {
 	Szinesites(){}
 
+	@Override
 	public String getName()
 	{
 		return "szinesites";
 	}
 
+	@Override
 	protected boolean hasToBeTaken(Card card)
 	{
 		return card instanceof SuitCard;
 	}
 	
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -31,16 +34,19 @@ public class Szinesites extends TakeCards
 		return super.canBeAnnounced(announcing);
 	}
 
+	@Override
 	public int getPoints()
 	{
 		return 5;
 	}
 	
+	@Override
 	protected boolean isMultipliedByWinnerBid()
 	{
 		return true;
 	}
 
+	@Override
 	public boolean canBeSilent()
 	{
 		return false;

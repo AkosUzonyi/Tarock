@@ -10,6 +10,7 @@ public abstract class AnnouncementBase implements Announcement
 	protected abstract Result isSuccessful(GameState gameState, Team team);
 	protected abstract int getPoints();
 	
+	@Override
 	public int calculatePoints(GameState gameState, Team team)
 	{
 		Result r = isSuccessful(gameState, team);
@@ -64,6 +65,7 @@ public abstract class AnnouncementBase implements Announcement
 		return false;
 	}
 	
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -71,20 +73,24 @@ public abstract class AnnouncementBase implements Announcement
 		return !announcing.isAnnounced(team, this);
 	}
 	
+	@Override
 	public void onAnnounced(IAnnouncing announcing)
 	{
 	}
 	
+	@Override
 	public boolean canContra()
 	{
 		return true;
 	}
 	
+	@Override
 	public boolean isShownInList()
 	{
 		return true;
 	}
 	
+	@Override
 	public boolean requireIdentification()
 	{
 		return true;

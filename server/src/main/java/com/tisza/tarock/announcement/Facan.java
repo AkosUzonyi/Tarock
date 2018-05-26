@@ -13,16 +13,19 @@ public class Facan extends AnnouncementBase
 		this.card = card;
 	}
 
+	@Override
 	public String getName()
 	{
 		return "facan";
 	}
 
+	@Override
 	public Card getCard()
 	{
 		return card;
 	}
 
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Round round = gameState.getRound(0);
@@ -57,11 +60,13 @@ public class Facan extends AnnouncementBase
 		}
 	}
 
+	@Override
 	protected int getPoints()
 	{
 		return 10;
 	}
 	
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		return false;

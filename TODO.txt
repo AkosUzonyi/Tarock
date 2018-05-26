@@ -38,5 +38,4 @@ announcement string id
 
 other:
 final classes?
-@ovveride
 visibility (unnecessary public eg. getPoints(), ultimo.canbesilent)

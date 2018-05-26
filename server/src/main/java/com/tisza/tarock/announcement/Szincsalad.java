@@ -35,11 +35,13 @@ public abstract class Szincsalad extends AnnouncementBase
 		return false;
 	}
 	
+	@Override
 	public final int getSuit()
 	{
 		return suit;
 	}
 	
+	@Override
 	public boolean isShownInList()
 	{
 		return false;

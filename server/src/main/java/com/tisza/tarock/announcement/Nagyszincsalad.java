@@ -11,11 +11,13 @@ public class Nagyszincsalad extends Szincsalad
 		super(suit);
 	}
 
+	@Override
 	public String getName()
 	{
 		return "nagyszincsalad";
 	}
 
+	@Override
 	protected Result isSuccessful(GameState gameState, Team team)
 	{
 		for (int i = 0; i < 3; i++)
@@ -29,6 +31,7 @@ public class Nagyszincsalad extends Szincsalad
 		return Result.FAILED;
 	}
 	
+	@Override
 	public void onAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -36,6 +39,7 @@ public class Nagyszincsalad extends Szincsalad
 		announcing.clearAnnouncement(team, Announcements.kisszincsaladok[getSuit()]);
 	}
 
+	@Override
 	protected int getPoints()
 	{
 		return 100;

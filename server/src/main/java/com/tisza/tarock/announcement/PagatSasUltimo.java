@@ -12,6 +12,7 @@ public class PagatSasUltimo extends Ultimo
 		super(roundIndex, cardToTakeWith);
 	}
 
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Result zaroparosSuccessful = Announcements.zaroparos.isSuccessful(gameState, team);
@@ -24,6 +25,7 @@ public class PagatSasUltimo extends Ultimo
 		return super.isSuccessful(gameState, team);
 	}
 	
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -45,11 +47,13 @@ public class PagatSasUltimo extends Ultimo
 		return super.canBeAnnounced(announcing);
 	}
 
+	@Override
 	public int getPoints()
 	{
 		return 10 * (9 - getRoundIndex());
 	}
 
+	@Override
 	public boolean canBeSilent()
 	{
 		return getRoundIndex() == 8;

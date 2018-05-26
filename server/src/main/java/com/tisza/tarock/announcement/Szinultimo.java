@@ -12,6 +12,7 @@ public class Szinultimo extends Ultimo
 		isKing = cardToTakeWith.getValue() == 5;
 	}
 
+	@Override
 	public int getPoints()
 	{
 		if (getRoundIndex() == 8)

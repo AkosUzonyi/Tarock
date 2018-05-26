@@ -21,11 +21,13 @@ class Announcing extends Phase implements IAnnouncing
 		super(gameSession);
 	}
 	
+	@Override
 	public PhaseEnum asEnum()
 	{
 		return PhaseEnum.ANNOUNCING;
 	}
 	
+	@Override
 	public void onStart()
 	{
 		currentPlayer = currentGame.getPlayerPairs().getCaller();
@@ -41,6 +43,7 @@ class Announcing extends Phase implements IAnnouncing
 		announce(player, new AnnouncementContra(a, 0));
 	}
 
+	@Override
 	public void announce(int player, AnnouncementContra ac)
 	{
 		if (player != currentPlayer)
@@ -68,6 +71,7 @@ class Announcing extends Phase implements IAnnouncing
 		sendAvailableAnnouncements();
 	}
 	
+	@Override
 	public void announcePassz(int player)
 	{
 		if (player != currentPlayer)
@@ -145,6 +149,7 @@ class Announcing extends Phase implements IAnnouncing
 		gameSession.getBroadcastEventSender().turn(currentPlayer);
 	}
 	
+	@Override
 	public boolean canAnnounce(AnnouncementContra ac)
 	{
 		Team currentPlayerTeam = currentGame.getPlayerPairs().getTeam(currentPlayer);
@@ -179,41 +184,49 @@ class Announcing extends Phase implements IAnnouncing
 		return currentPlayerTeam != lastAnnouncerTeam && !idTrack.isIdentityKnown(currentPlayer);
 	}
 
+	@Override
 	public int getCurrentPlayer()
 	{
 		return currentPlayer;
 	}
 	
+	@Override
 	public Team getCurrentTeam()
 	{
 		return currentGame.getPlayerPairs().getTeam(currentPlayer);
 	}
 
+	@Override
 	public boolean isAnnounced(Team team, Announcement a)
 	{
 		return currentGame.getAnnouncementsState().isAnnounced(team, a);
 	}
 
+	@Override
 	public void setContraLevel(Team team, Announcement a, int level)
 	{
 		 currentGame.getAnnouncementsState().setContraLevel(team, a, level);
 	}
 
+	@Override
 	public int getContraLevel(Team team, Announcement a)
 	{
 		 return currentGame.getAnnouncementsState().getContraLevel(team, a);
 	}
 
+	@Override
 	public void clearAnnouncement(Team team, Announcement a)
 	{
 		 currentGame.getAnnouncementsState().clearAnnouncement(team, a);
 	}
 
+	@Override
 	public PlayerCards getCards(int player)
 	{
 		return currentGame.getPlayerCards(player);
 	}
 
+	@Override
 	public int getPlayerToAnnounceSolo()
 	{
 		return currentGame.getPlayerToAnnounceSolo();

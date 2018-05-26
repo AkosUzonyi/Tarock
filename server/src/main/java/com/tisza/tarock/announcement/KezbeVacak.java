@@ -16,16 +16,19 @@ public class KezbeVacak extends AnnouncementBase
 		this.cardToTakeWith = cardToTakeWith;
 	}
 
+	@Override
 	public String getName()
 	{
 		return "kezbevacak";
 	}
 
+	@Override
 	public int getRound()
 	{
 		return roundIndex;
 	}
 
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Round round = gameState.getRound(roundIndex);
@@ -50,6 +53,7 @@ public class KezbeVacak extends AnnouncementBase
 		return Result.SUCCESSFUL;
 	}
 
+	@Override
 	public int getPoints()
 	{
 		return 10;

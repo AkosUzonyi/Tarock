@@ -22,11 +22,13 @@ public class Changing extends Phase
 		super(gameSession);
 	}
 	
+	@Override
 	public PhaseEnum asEnum()
 	{
 		return PhaseEnum.CHANGING;
 	}
 	
+	@Override
 	public void onStart()
 	{
 		dealCardsFromTalon();
@@ -66,6 +68,7 @@ public class Changing extends Phase
 		}
 	}
 	
+	@Override
 	public void change(int player, List<Card> cardsToSkart)
 	{
 		if (donePlayer[player])
@@ -129,6 +132,7 @@ public class Changing extends Phase
 		}
 	}
 	
+	@Override
 	public void throwCards(int player)
 	{
 		PlayerCards cards = currentGame.getPlayerCards(player);

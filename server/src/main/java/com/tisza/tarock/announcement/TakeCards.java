@@ -13,6 +13,7 @@ public abstract class TakeCards extends AnnouncementBase
 	protected abstract boolean hasToBeTaken(Card card);
 	protected abstract boolean canBeSilent();
 	
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Collection<Card> wonCards = new ArrayList<Card>();

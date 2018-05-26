@@ -6,6 +6,7 @@ import com.tisza.tarock.card.TarockCard;
 
 public class SkartableCardFilter implements CardFilter
 {
+	@Override
 	public boolean match(Card c)
 	{
 		if (c instanceof TarockCard)

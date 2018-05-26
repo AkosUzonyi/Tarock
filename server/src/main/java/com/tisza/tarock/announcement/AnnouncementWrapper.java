@@ -19,11 +19,13 @@ public abstract class AnnouncementWrapper implements Announcement
 		this.wrappedAnnouncement = wrappedAnnouncement;
 	}
 
+	@Override
 	public int calculatePoints(GameState gameState, Team team)
 	{
 		return 0;
 	}
 
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		return announcing.canAnnounce(wrappedAnnouncement);
@@ -34,21 +36,25 @@ public abstract class AnnouncementWrapper implements Announcement
 		return false;
 	}
 
+	@Override
 	public void onAnnounced(IAnnouncing announcing)
 	{
 		announcing.setContraLevel(announcing.getCurrentTeam(), wrappedAnnouncement.getAnnouncement(), wrappedAnnouncement.getContraLevel());
 	}
 
+	@Override
 	public boolean canContra()
 	{
 		return false;
 	}
 
+	@Override
 	public boolean isShownInList()
 	{
 		return true;
 	}
 
+	@Override
 	public boolean requireIdentification()
 	{
 		return true;

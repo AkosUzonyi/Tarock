@@ -11,16 +11,19 @@ public class PendingNewGame extends Phase
 		this.doubleRound = doubleRound;
 	}
 
+	@Override
 	public PhaseEnum asEnum()
 	{
 		return doubleRound ? PhaseEnum.INTERRUPTED : PhaseEnum.END;
 	}
 
+	@Override
 	public void onStart()
 	{
 		gameSession.getBroadcastEventSender().pendingNewGame();
 	}
 
+	@Override
 	public void readyForNewGame(int player)
 	{
 		ready[player] = true;

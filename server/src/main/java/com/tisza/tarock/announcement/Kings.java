@@ -21,6 +21,7 @@ public class Kings extends AnnouncementBase
 		this.count = count;
 	}
 
+	@Override
 	public String getName()
 	{
 		switch (count)
@@ -36,6 +37,7 @@ public class Kings extends AnnouncementBase
 		}
 	}
 
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		for (int i = 0; i < count; i++)
@@ -66,6 +68,7 @@ public class Kings extends AnnouncementBase
 		return false;
 	}
 	
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -81,6 +84,7 @@ public class Kings extends AnnouncementBase
 		return super.canBeAnnounced(announcing);
 	}
 	
+	@Override
 	public void onAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -91,6 +95,7 @@ public class Kings extends AnnouncementBase
 		}
 	}
 
+	@Override
 	protected int getPoints()
 	{
 		return points[count - 1];

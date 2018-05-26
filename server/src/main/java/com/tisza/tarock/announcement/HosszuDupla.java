@@ -11,11 +11,13 @@ public class HosszuDupla extends AnnouncementWrapper
 		super(Announcements.dupla);
 	}
 
+	@Override
 	public String getName()
 	{
 		return "hosszudupla";
 	}
 
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		PlayerCards cards = announcing.getCards(announcing.getCurrentPlayer());

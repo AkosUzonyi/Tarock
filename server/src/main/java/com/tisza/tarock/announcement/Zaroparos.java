@@ -11,11 +11,13 @@ public class Zaroparos extends AnnouncementBase
 {
 	Zaroparos(){}
 
+	@Override
 	public String getName()
 	{
 		return "zaroparos";
 	}
 
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		if (!isRoundOK(gameState, team, 8, Card.getTarockCard(1)))
@@ -43,6 +45,7 @@ public class Zaroparos extends AnnouncementBase
 		}
 	}
 	
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Announcement a0 = Announcements.ultimok.get(Card.getTarockCard(1)).get(6);
@@ -55,6 +58,7 @@ public class Zaroparos extends AnnouncementBase
 		return super.canBeAnnounced(announcing);
 	}
 	
+	@Override
 	public void onAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -69,6 +73,7 @@ public class Zaroparos extends AnnouncementBase
 		}
 	}
 
+	@Override
 	protected int getPoints()
 	{
 		return 40;

@@ -5,6 +5,7 @@ import com.tisza.tarock.card.TarockCard;
 
 public class TarockFilter implements CardFilter
 {
+	@Override
 	public boolean match(Card c)
 	{
 		return c instanceof TarockCard;

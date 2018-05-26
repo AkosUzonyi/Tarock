@@ -19,21 +19,25 @@ public abstract class Ultimo extends AnnouncementBase
 		this.cardToTakeWith = cardToTakeWith;
 	}
 
+	@Override
 	public String getName()
 	{
 		return "ultimo";
 	}
 
+	@Override
 	public Card getCard()
 	{
 		return cardToTakeWith;
 	}
 
+	@Override
 	public int getRound()
 	{
 		return roundIndex;
 	}
 
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Round round = gameState.getRound(roundIndex);
@@ -57,6 +61,7 @@ public abstract class Ultimo extends AnnouncementBase
 		}
 	}
 	
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -75,6 +80,7 @@ public abstract class Ultimo extends AnnouncementBase
 		return super.canBeAnnounced(announcing);
 	}
 	
+	@Override
 	public void onAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -106,6 +112,7 @@ public abstract class Ultimo extends AnnouncementBase
 		return false;
 	}
 	
+	@Override
 	public boolean isShownInList()
 	{
 		return false;

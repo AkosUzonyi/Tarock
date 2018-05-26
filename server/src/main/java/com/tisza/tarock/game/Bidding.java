@@ -25,11 +25,13 @@ public class Bidding extends Phase
 		Arrays.fill(playersState, BidState.INITIAL);
 	}
 	
+	@Override
 	public PhaseEnum asEnum()
 	{
 		return PhaseEnum.BIDDING;
 	}
 	
+	@Override
 	public void onStart()
 	{
 		currentPlayer = currentGame.getBeginnerPlayer();
@@ -46,6 +48,7 @@ public class Bidding extends Phase
 		return lastBidValue - (canKeep() ? 0 : 1);
 	}
 	
+	@Override
 	public void bid(int player, int bid)
 	{
 		if (player != currentPlayer)
@@ -105,6 +108,7 @@ public class Bidding extends Phase
 		}
 	}
 	
+	@Override
 	public void throwCards(int player)
 	{
 		PlayerCards cards = currentGame.getPlayerCards(player);

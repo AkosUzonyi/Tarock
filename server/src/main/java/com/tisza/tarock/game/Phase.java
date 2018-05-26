@@ -19,41 +19,49 @@ abstract class Phase implements ActionHandler
 	public abstract PhaseEnum asEnum();
 	public abstract void onStart();
 
+	@Override
 	public void announce(int player, AnnouncementContra announcementContra)
 	{
 		wrongPhase();
 	}
 
+	@Override
 	public void announcePassz(int player)
 	{
 		wrongPhase();
 	}
 
+	@Override
 	public void bid(int player, int bid)
 	{
 		wrongPhase();
 	}
 
+	@Override
 	public void call(int player, Card card)
 	{
 		wrongPhase();
 	}
 
+	@Override
 	public void change(int player, List<Card> cards)
 	{
 		wrongPhase();
 	}
 
+	@Override
 	public void playCard(int player, Card card)
 	{
 		wrongPhase();
 	}
 
+	@Override
 	public void readyForNewGame(int player)
 	{
 		wrongPhase();
 	}
 
+	@Override
 	public void throwCards(int player)
 	{
 		wrongPhase();

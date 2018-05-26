@@ -22,16 +22,19 @@ public class SuitCard extends Card
 		return value;
 	}
 
+	@Override
 	public int getPoints()
 	{
 		return value;
 	}
 
+	@Override
 	public boolean isHonor()
 	{
 		return false;
 	}
 
+	@Override
 	public boolean doesBeat(Card otherCard)
 	{
 		if (otherCard instanceof SuitCard)
@@ -49,6 +52,7 @@ public class SuitCard extends Card
 		}
 	}
 
+	@Override
 	public int getID()
 	{
 		return suit * 5 + value - 1;

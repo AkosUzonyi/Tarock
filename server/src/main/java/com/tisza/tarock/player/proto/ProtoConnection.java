@@ -24,6 +24,7 @@ public class ProtoConnection
 	
 	private Thread readerThread = new Thread(new Runnable()
 	{
+		@Override
 		public void run()
 		{
 			try
@@ -55,6 +56,7 @@ public class ProtoConnection
 	
 	private Thread writerThread = new Thread(new Runnable()
 	{
+		@Override
 		public void run()
 		{
 			try

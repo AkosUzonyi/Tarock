@@ -16,6 +16,7 @@ class ProtoAction implements Action
 		this.actionProto = actionProto;
 	}
 
+	@Override
 	public void handle(ActionHandler handler)
 	{
 		switch (actionProto.getActionTypeCase())

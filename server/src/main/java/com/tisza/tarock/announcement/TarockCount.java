@@ -15,6 +15,7 @@ public class TarockCount implements Announcement
 		this.count = count;
 	}
 
+	@Override
 	public String getName()
 	{
 		switch (count)
@@ -27,11 +28,13 @@ public class TarockCount implements Announcement
 		return "unknown";
 	}
 
+	@Override
 	public int calculatePoints(GameState gameState, Team team)
 	{
 		return 0;
 	}
 
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -43,20 +46,24 @@ public class TarockCount implements Announcement
 		return cards.filter(new TarockFilter()).size() == count;
 	}
 
+	@Override
 	public void onAnnounced(IAnnouncing announcing)
 	{
 	}
 	
+	@Override
 	public boolean canContra()
 	{
 		return false;
 	}
 
+	@Override
 	public boolean isShownInList()
 	{
 		return true;
 	}
 
+	@Override
 	public boolean requireIdentification()
 	{
 		return true;

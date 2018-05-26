@@ -11,11 +11,13 @@ public class Kisszincsalad extends Szincsalad
 		super(suit);
 	}
 
+	@Override
 	public String getName()
 	{
 		return "kisszincsalad";
 	}
 
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		for (int i = 0; i < 2; i++)
@@ -29,6 +31,7 @@ public class Kisszincsalad extends Szincsalad
 		return Result.FAILED;
 	}
 	
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -39,6 +42,7 @@ public class Kisszincsalad extends Szincsalad
 		return super.canBeAnnounced(announcing);
 	}
 
+	@Override
 	protected int getPoints()
 	{
 		return 60;

@@ -25,11 +25,13 @@ public class ProtoPlayer implements Player
 		connection.addMessageHandler(new MyMessageHandler());
 	}
 
+	@Override
 	public String getName()
 	{
 		return name;
 	}
 
+	@Override
 	public EventSender getEventSender()
 	{
 		return eventSender;
@@ -40,12 +42,14 @@ public class ProtoPlayer implements Player
 		this.joinRequestHandler = joinRequestHandler;
 	}
 
+	@Override
 	public void onJoinedToGame(BlockingQueue<Action> actionQueue, int playerID)
 	{
 		this.actionQueue = actionQueue;
 		this.playerID = playerID;
 	}
 
+	@Override
 	public void onDisconnectedFromGame()
 	{
 		actionQueue = null;
@@ -55,6 +59,7 @@ public class ProtoPlayer implements Player
 
 	private class MyMessageHandler implements MessageHandler
 	{
+		@Override
 		public void handleMessage(MainProto.Message message)
 		{
 			switch (message.getMessageTypeCase())
@@ -75,6 +80,7 @@ public class ProtoPlayer implements Player
 			}
 		}
 
+		@Override
 		public void connectionClosed()
 		{
 			System.out.println(name + " disconnected.");

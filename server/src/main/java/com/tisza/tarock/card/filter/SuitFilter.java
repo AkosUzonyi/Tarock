@@ -17,6 +17,7 @@ public class SuitFilter implements CardFilter
 		suit = s;
 	}
 	
+	@Override
 	public boolean match(Card c)
 	{
 		if (c instanceof SuitCard)

@@ -11,6 +11,7 @@ public class XXIUltimo extends Ultimo
 		super(roundIndex, Card.getTarockCard(21));
 	}
 
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		for (int p : gameState.getPlayerPairs().getPlayersInTeam(team))
@@ -25,6 +26,7 @@ public class XXIUltimo extends Ultimo
 		return super.isSuccessful(gameState, team);
 	}
 
+	@Override
 	public int getPoints()
 	{
 		return getRoundIndex() == 8 ? 21 : (10 - getRoundIndex()) * 10;

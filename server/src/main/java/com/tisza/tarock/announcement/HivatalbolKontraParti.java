@@ -11,11 +11,13 @@ public class HivatalbolKontraParti extends AnnouncementWrapper
 		super(new AnnouncementContra(Announcements.jatek, 1));
 	}
 
+	@Override
 	public String getName()
 	{
 		return "hkp";
 	}
 
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		if (announcing.isAnnounced(announcing.getCurrentTeam(), Announcements.hkp))
@@ -27,6 +29,7 @@ public class HivatalbolKontraParti extends AnnouncementWrapper
 		return announcing.getContraLevel(Team.CALLER, Announcements.jatek) == 0;
 	}
 
+	@Override
 	public boolean requireIdentification()
 	{
 		return false;

@@ -49,6 +49,7 @@ public class GameSession implements Runnable
 		gameThread.interrupt();
 	}
 
+	@Override
 	public void run()
 	{
 		broadcastEventSender = new BroadcastEventSender(players.stream().map(Player::getEventSender).collect(Collectors.toList()));

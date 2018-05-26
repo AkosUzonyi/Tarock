@@ -14,17 +14,20 @@ public class Gameplay extends Phase
 		super(gameSession);
 	}
 	
+	@Override
 	public PhaseEnum asEnum()
 	{
 		return PhaseEnum.GAMEPLAY;
 	}
 
+	@Override
 	public void onStart()
 	{
 		currentRound = new Round(currentGame.getBeginnerPlayer());
 		gameSession.getBroadcastEventSender().turn(currentRound.getCurrentPlayer());
 	}
 
+	@Override
 	public void playCard(int player, Card card)
 	{
 		if (player != currentRound.getCurrentPlayer())

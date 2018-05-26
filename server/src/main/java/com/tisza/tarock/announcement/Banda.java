@@ -19,21 +19,25 @@ public class Banda extends TakeCards
 		this.suit = suit;
 	}
 
+	@Override
 	public String getName()
 	{
 		return "banda";
 	}
 
+	@Override
 	public int getSuit()
 	{
 		return suit;
 	}
 
+	@Override
 	protected boolean hasToBeTaken(Card card)
 	{
 		return card instanceof SuitCard && ((SuitCard)card).getSuit() == suit;
 	}
 	
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -49,11 +53,13 @@ public class Banda extends TakeCards
 		return super.canBeAnnounced(announcing);
 	}
 
+	@Override
 	public int getPoints()
 	{
 		return 4;
 	}
 
+	@Override
 	public boolean canBeSilent()
 	{
 		return false;

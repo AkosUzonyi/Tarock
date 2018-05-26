@@ -4,11 +4,13 @@ import com.tisza.tarock.game.*;
 
 public class Dupla extends AnnouncementBase
 {
+	@Override
 	public String getName()
 	{
 		return "dupla";
 	}
 
+	@Override
 	protected Result isSuccessful(GameState gameState, Team team)
 	{
 		if (gameState.calculateGamePoints(team) < 71)
@@ -19,6 +21,7 @@ public class Dupla extends AnnouncementBase
 		return canBeSilent ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 	}
 
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
@@ -29,11 +32,13 @@ public class Dupla extends AnnouncementBase
 		return super.canBeAnnounced(announcing);
 	}
 
+	@Override
 	protected boolean isMultipliedByWinnerBid()
 	{
 		return true;
 	}
 
+	@Override
 	protected int getPoints()
 	{
 		return 4;

@@ -2,7 +2,6 @@ package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.game.AnnouncementContra;
 import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.IAnnouncing;
 import com.tisza.tarock.game.Team;
 
 public abstract class AnnouncementWrapper implements Announcement

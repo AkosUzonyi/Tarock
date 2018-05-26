@@ -18,7 +18,6 @@ Math.pow -> 1 <<
 TarockFilter static instance
 AnnouncementBridge requireIdentification: contra level > 0
 filter(new TarockFilter()) -> tarockCount()
-move IAnnouncnig to announce package
 PlayerCards.getPlaceableCards end: return Collections.EMPTY_LIST
 make Phase subclasses package private
 canBeAnnounced: remove AnnouncementBase's implementation

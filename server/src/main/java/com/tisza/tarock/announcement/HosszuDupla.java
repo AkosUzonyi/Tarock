@@ -2,7 +2,6 @@ package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.PlayerCards;
 import com.tisza.tarock.card.filter.TarockFilter;
-import com.tisza.tarock.game.IAnnouncing;
 
 public class HosszuDupla extends AnnouncementWrapper
 {

@@ -1,11 +1,7 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.IAnnouncing;
 import com.tisza.tarock.game.Team;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class Banda extends TakeCards
 {

@@ -3,7 +3,6 @@ package com.tisza.tarock.announcement;
 import com.tisza.tarock.card.PlayerCards;
 import com.tisza.tarock.card.filter.TarockFilter;
 import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.IAnnouncing;
 import com.tisza.tarock.game.Team;
 
 public class TarockCount implements Announcement

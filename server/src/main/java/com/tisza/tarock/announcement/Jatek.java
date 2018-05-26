@@ -1,7 +1,6 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.IAnnouncing;
 import com.tisza.tarock.game.Team;
 
 public class Jatek extends AnnouncementBase

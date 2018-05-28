@@ -8,6 +8,8 @@ public class AnnouncementsState
 {
 	private Map<Team, Map<Announcement, Integer>> announcementContraLevels = new HashMap<Team, Map<Announcement, Integer>>();
 
+	private boolean callerXXIUltimoDeactivated = false, opponentXIUltimoDeactivated = false;
+
 	public AnnouncementsState()
 	{
 		for (Team team : Team.values())
@@ -39,4 +41,29 @@ public class AnnouncementsState
 	{
 		announcementContraLevels.get(team).remove(announcement);
 	}
+
+	public void setXXIUltimoDeactivated(Team team)
+	{
+		if (team == Team.CALLER)
+		{
+			callerXXIUltimoDeactivated = true;
+		}
+		else
+		{
+			opponentXIUltimoDeactivated = true;
+		}
+	}
+
+	public boolean getXXIUltimoDeactivated(Team team)
+	{
+		if (team == Team.CALLER)
+		{
+			return callerXXIUltimoDeactivated;
+		}
+		else
+		{
+			return opponentXIUltimoDeactivated;
+		}
+	}
+
 }

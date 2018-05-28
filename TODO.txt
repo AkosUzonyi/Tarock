@@ -1,5 +1,4 @@
 bugs:
-XXIUltimo getPlayerCards after game end
 ? pagatsas isSuccessful
 AnnouncementBridge.canBeSilent unused
 GameActivity call displaymessage
@@ -7,6 +6,7 @@ TarockCount announcement: no points earned
 TarockCount announcement: per team, not per player
 Zaroparos: do not require order of pagat and sas
 Jatek annoucement sent as event
+Csendes space after
 
 needs fix:
 ultimo button in GameTypes

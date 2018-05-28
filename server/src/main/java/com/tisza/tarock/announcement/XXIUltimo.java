@@ -19,16 +19,26 @@ public class XXIUltimo extends Ultimo
 	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
-		for (PlayerSeat player : gameState.getPlayerPairs().getPlayersInTeam(team))
-		{
-			PlayerCards pc = gameState.getPlayerCards(player);
-			if (pc.hasCard(Card.getTarockCard(22)))
-			{
-				return Result.DEACTIVATED;
-			}
-		}
+		if (gameState.getAnnouncementsState().getXXIUltimoDeactivated(team))
+			return Result.DEACTIVATED;
 		
 		return super.isSuccessful(gameState, team);
+	}
+
+	@Override
+	public void onAnnounced(IAnnouncing announcing)
+	{
+		super.onAnnounced(announcing);
+
+		Team team = announcing.getCurrentTeam();
+
+		for (PlayerSeat player : announcing.getPlayerPairs().getPlayersInTeam(team))
+		{
+			if (announcing.getCards(player).hasCard(Card.getTarockCard(22)))
+			{
+				announcing.setXXIUltimoDeactivated(team);
+			}
+		}
 	}
 
 	@Override

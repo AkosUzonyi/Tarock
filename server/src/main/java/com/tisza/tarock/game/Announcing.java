@@ -12,7 +12,7 @@ class Announcing extends Phase implements IAnnouncing
 	private boolean currentPlayerAnnounced = false;
 	private PlayerSeat lastAnnouncer = null;
 	private IdentityTracker idTrack;
-	
+
 	public Announcing(GameSession gameSession)
 	{
 		super(gameSession);
@@ -198,6 +198,12 @@ class Announcing extends Phase implements IAnnouncing
 	}
 
 	@Override
+	public PlayerPairs getPlayerPairs()
+	{
+		return currentGame.getPlayerPairs();
+	}
+
+	@Override
 	public boolean isAnnounced(Team team, Announcement a)
 	{
 		return currentGame.getAnnouncementsState().isAnnounced(team, a);
@@ -219,6 +225,18 @@ class Announcing extends Phase implements IAnnouncing
 	public void clearAnnouncement(Team team, Announcement a)
 	{
 		 currentGame.getAnnouncementsState().clearAnnouncement(team, a);
+	}
+
+	@Override
+	public void setXXIUltimoDeactivated(Team team)
+	{
+		currentGame.getAnnouncementsState().setXXIUltimoDeactivated(team);
+	}
+
+	@Override
+	public boolean getXXIUltimoDeactivated(Team team)
+	{
+		return currentGame.getAnnouncementsState().getXXIUltimoDeactivated(team);
 	}
 
 	@Override

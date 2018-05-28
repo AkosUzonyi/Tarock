@@ -32,6 +32,10 @@ public class ProtoConnection
 				while (!closeRequested)
 				{
 					Message message = Message.parseDelimitedFrom(is);
+
+					if (message == null)
+						break;
+
 					synchronized (packetHandlers)
 					{
 						for (MessageHandler handler : packetHandlers)

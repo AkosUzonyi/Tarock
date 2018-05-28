@@ -37,6 +37,7 @@ public abstract class AnnouncementWrapper implements Announcement
 	public void onAnnounced(IAnnouncing announcing)
 	{
 		announcing.setContraLevel(announcing.getCurrentTeam(), wrappedAnnouncement.getAnnouncement(), wrappedAnnouncement.getContraLevel());
+		wrappedAnnouncement.getAnnouncement().onAnnounced(announcing);
 	}
 
 	@Override

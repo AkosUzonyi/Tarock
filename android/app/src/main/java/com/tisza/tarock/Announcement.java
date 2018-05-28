@@ -19,43 +19,26 @@ public class Announcement
 
 	public String getDisplayText()
 	{
-		StringBuilder stringBuilder = new StringBuilder();
+		SentenceBuilder builder = new SentenceBuilder();
+
+		if (isSilent())
+			builder.appendWord(ResourceMappings.silent);
+		else
+			builder.appendWord(ResourceMappings.contraNames[getContraLevel()]);
+
+		if (hasSuit())
+			builder.appendWord(ResourceMappings.suitNames[getSuit()]);
+		if (hasCard())
+			builder.appendWord(ResourceMappings.cardToName.get(getCard()));
+		if (hasRound())
+			builder.appendWord(ResourceMappings.roundNames[getRound()]);
 
 		String nameText = ResourceMappings.getAnnouncementNameText(getName());
 		if (nameText == null)
 			nameText = "[" + getName() + "]";
+		builder.appendWord(nameText);
 
-		if (isSilent())
-		{
-			stringBuilder.append(ResourceMappings.silent);
-		}
-		else
-		{
-			stringBuilder.append(ResourceMappings.contraNames[getContraLevel()]);
-			if (getContraLevel() != 0)
-				stringBuilder.append(" ");
-		}
-
-		if (hasSuit())
-		{
-			stringBuilder.append(ResourceMappings.suitNames[getSuit()]);
-			stringBuilder.append(" ");
-		}
-		if (hasCard())
-		{
-			stringBuilder.append(ResourceMappings.cardToName.get(getCard()));
-			stringBuilder.append(" ");
-		}
-		if (hasRound())
-		{
-			stringBuilder.append(ResourceMappings.roundNames[getRound()]);
-			if (nameText.length() > 0)
-				stringBuilder.append(" ");
-		}
-
-		stringBuilder.append(nameText);
-
-		return stringBuilder.toString();
+		return builder.toString();
 	}
 
 	public String getName()

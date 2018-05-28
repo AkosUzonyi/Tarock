@@ -451,7 +451,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		for (final Card card : calls)
 		{
 			Button callButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
-			callButton.setText(ResourceMappings.cardToName.get(card));
+			callButton.setText(ResourceMappings.uppercaseCardName(card));
 			callButton.setOnClickListener(new OnClickListener()
 			{
 				public void onClick(View v)
@@ -466,7 +466,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	
 	public void call(int player, Card card)
 	{
-		displayPlayerActionMessage(player, R.string.message_call, ResourceMappings.cardToName.get(card));
+		displayPlayerActionMessage(player, R.string.message_call, ResourceMappings.uppercaseCardName(card));
 	}
 	
 	public void availableAnnouncements(List<Announcement> announcements)

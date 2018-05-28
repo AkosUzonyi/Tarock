@@ -78,6 +78,12 @@ public class ResourceMappings
 		silent = resources.getString(R.string.silent);
 	}
 
+	public static String uppercaseCardName(Card card)
+	{
+		String name = cardToName.get(card);
+		return name.substring(0, 1).toUpperCase() + name.substring(1);
+	}
+
 	public static String getAnnouncementNameText(String name)
 	{
 		Resources resources = context.getResources();

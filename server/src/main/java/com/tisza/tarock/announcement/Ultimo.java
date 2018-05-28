@@ -94,16 +94,6 @@ public abstract class Ultimo extends AnnouncementBase
 		}
 	}
 
-	protected final int getRoundIndex()
-	{
-		return roundIndex;
-	}
-
-	protected final Card getCardToTakeWith()
-	{
-		return cardToTakeWith;
-	}
-
 	protected boolean canBeSilent()
 	{
 		return false;

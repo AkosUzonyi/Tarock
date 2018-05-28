@@ -175,11 +175,14 @@ public class RandomPlayer implements Player
 			if (announcements.contains(new AnnouncementContra(Announcements.hkp, 0)))
 				enqueueActionDelayed(handler -> handler.announce(seat, new AnnouncementContra(Announcements.hkp, 0)));
 
-			while (!announcements.isEmpty() && rnd.nextFloat() < 0.2)
+			if (!announcements.isEmpty() && rnd.nextFloat() < 0.3)
 			{
 				enqueueActionDelayed(handler -> handler.announce(seat, chooseRandom(announcements)));
 			}
-			enqueueActionDelayed(handler -> handler.announcePassz(seat));
+			else
+			{
+				enqueueActionDelayed(handler -> handler.announcePassz(seat));
+			}
 		}
 
 		@Override public void cardsTaken(PlayerSeat player) {}

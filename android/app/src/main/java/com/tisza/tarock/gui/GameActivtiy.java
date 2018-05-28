@@ -880,8 +880,10 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		{
 			case EVENT:
 				new ProtoEvent(message.getEvent()).handle(this);
+				break;
 			default:
 				System.err.println("unhandled message type: " + message.getMessageTypeCase());
+				break;
 		}
 	}
 

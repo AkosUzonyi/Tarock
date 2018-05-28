@@ -6,7 +6,7 @@ import com.tisza.tarock.game.GameState;
 import com.tisza.tarock.game.Round;
 import com.tisza.tarock.game.Team;
 
-public class Kings extends AnnouncementBase
+public class Kings extends LastRounds
 {
 	private static final int[] points = new int[]{8, 60, 100};
 	
@@ -37,31 +37,17 @@ public class Kings extends AnnouncementBase
 	}
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	protected int getRoundCount()
 	{
-		for (int i = 0; i < count; i++)
-		{
-			int roundIndex = 8 - i;
-			if (!isRoundOK(gameState, team, roundIndex))
-			{
-				return Result.FAILED;
-			}
-		}
-		return Result.SUCCESSFUL;
+		return count;
 	}
-	
-	private boolean isRoundOK(GameState gameState, Team team, int roundIndex)
+
+	@Override
+	protected boolean isValidCard(Card card)
 	{
-		Round round = gameState.getRound(roundIndex);
-		int winnerPlayer = round.getWinner();
-		Card winnerCard = round.getCardByPlayer(winnerPlayer);
-
-		boolean isItUs = gameState.getPlayerPairs().getTeam(winnerPlayer) == team;
-		boolean isKing = winnerCard instanceof SuitCard && ((SuitCard)winnerCard).getValue() == 5;
-
-		return isItUs && isKing;
+		return card instanceof SuitCard && ((SuitCard)card).getValue() == 5;
 	}
-	
+
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{

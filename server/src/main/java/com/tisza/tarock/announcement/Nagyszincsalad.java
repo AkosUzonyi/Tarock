@@ -17,7 +17,7 @@ public class Nagyszincsalad extends Szincsalad
 	}
 
 	@Override
-	protected int getSize()
+	protected int getRoundCount()
 	{
 		return 3;
 	}

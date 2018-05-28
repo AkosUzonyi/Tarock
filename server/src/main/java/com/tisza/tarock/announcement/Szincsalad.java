@@ -6,7 +6,7 @@ import com.tisza.tarock.game.GameState;
 import com.tisza.tarock.game.Round;
 import com.tisza.tarock.game.Team;
 
-public abstract class Szincsalad extends AnnouncementBase
+public abstract class Szincsalad extends LastRounds
 {
 	private int suit;
 		
@@ -18,34 +18,12 @@ public abstract class Szincsalad extends AnnouncementBase
 		this.suit = suit;
 	}
 
-	protected abstract int getSize();
-
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	protected boolean isValidCard(Card card)
 	{
-		for (int i = 0; i < getSize(); i++)
-		{
-			int roundIndex = 8 - i;
-			if (!isRoundOK(gameState, team, roundIndex))
-			{
-				return Result.FAILED;
-			}
-		}
-		return Result.SUCCESSFUL;
+		return card instanceof SuitCard && ((SuitCard)card).getSuit() == suit;
 	}
 
-	protected final boolean isRoundOK(GameState gameState, Team team, int roundIndex)
-	{
-		Round round = gameState.getRound(roundIndex);
-		int winnerPlayer = round.getWinner();
-		Card winnerCard = round.getCardByPlayer(winnerPlayer);
-
-		boolean isItUs = gameState.getPlayerPairs().getTeam(winnerPlayer) == team;
-		boolean isCorrectSuit = winnerCard instanceof SuitCard && ((SuitCard)winnerCard).getSuit() == suit;
-
-		return isItUs && isCorrectSuit;
-	}
-	
 	@Override
 	public final int getSuit()
 	{

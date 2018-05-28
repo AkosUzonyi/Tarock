@@ -17,7 +17,7 @@ public class Kisszincsalad extends Szincsalad
 	}
 
 	@Override
-	protected int getSize()
+	protected int getRoundCount()
 	{
 		return 2;
 	}

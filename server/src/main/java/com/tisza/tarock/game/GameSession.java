@@ -108,7 +108,7 @@ public class GameSession implements Runnable
 		if (state == null)
 			return 0;
 
-		return state.getBeginnerPlayer() + (doubleRound ? 0 : 1);
+		return (state.getBeginnerPlayer() + (doubleRound ? 0 : 1)) % 4;
 	}
 
 	void startNewGame(boolean doubleRound)

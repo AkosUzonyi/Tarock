@@ -26,29 +26,24 @@ public abstract class Szincsalad extends AnnouncementBase
 		for (int i = 0; i < getSize(); i++)
 		{
 			int roundIndex = 8 - i;
-			if (isRoundOK(gameState, team, roundIndex))
+			if (!isRoundOK(gameState, team, roundIndex))
 			{
-				return Result.SUCCESSFUL;
+				return Result.FAILED;
 			}
 		}
-		return Result.FAILED;
+		return Result.SUCCESSFUL;
 	}
 
 	protected final boolean isRoundOK(GameState gameState, Team team, int roundIndex)
 	{
 		Round round = gameState.getRound(roundIndex);
-		for (int p = 0; p < 4; p++)
-		{
-			Card card = round.getCardByPlayer(p);
-			boolean isItUs = gameState.getPlayerPairs().getTeam(p) == team;
-			boolean isCorrectSuit = card instanceof SuitCard && ((SuitCard)card).getSuit() == suit;
-			boolean isWon = round.getWinner() == p;
-			if (isItUs && isCorrectSuit && isWon)
-			{
-				return true;
-			}
-		}
-		return false;
+		int winnerPlayer = round.getWinner();
+		Card winnerCard = round.getCardByPlayer(winnerPlayer);
+
+		boolean isItUs = gameState.getPlayerPairs().getTeam(winnerPlayer) == team;
+		boolean isCorrectSuit = winnerCard instanceof SuitCard && ((SuitCard)winnerCard).getSuit() == suit;
+
+		return isItUs && isCorrectSuit;
 	}
 	
 	@Override

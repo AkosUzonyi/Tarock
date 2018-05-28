@@ -3,12 +3,9 @@ package com.tisza.tarock.server;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.player.*;
 import com.tisza.tarock.player.proto.*;
-import com.tisza.tarock.player.random.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 import java.util.*;
 
 public class Server implements Runnable

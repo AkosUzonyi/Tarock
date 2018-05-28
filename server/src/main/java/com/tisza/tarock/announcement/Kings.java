@@ -1,10 +1,7 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
-import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.Round;
-import com.tisza.tarock.game.Team;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 
 public class Kings extends LastRounds
 {

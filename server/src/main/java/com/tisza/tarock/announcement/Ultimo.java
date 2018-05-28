@@ -1,9 +1,9 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-import java.util.Map;
+import java.util.*;
 
 public abstract class Ultimo extends AnnouncementBase
 {

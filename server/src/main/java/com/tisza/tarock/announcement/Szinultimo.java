@@ -1,6 +1,6 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.card.*;
 
 public class Szinultimo extends Ultimo
 {

@@ -1,8 +1,8 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.*;
 
-import java.util.Objects;
+import java.util.*;
 
 public class AnnouncementID
 {

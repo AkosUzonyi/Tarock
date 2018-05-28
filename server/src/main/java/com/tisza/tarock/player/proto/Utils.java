@@ -1,13 +1,8 @@
 package com.tisza.tarock.player.proto;
 
-import com.tisza.tarock.announcement.Announcement;
-import com.tisza.tarock.announcement.AnnouncementID;
-import com.tisza.tarock.announcement.Announcements;
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
-import com.tisza.tarock.card.TarockCard;
-import com.tisza.tarock.game.AnnouncementContra;
-import com.tisza.tarock.game.PhaseEnum;
+import com.tisza.tarock.announcement.*;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 

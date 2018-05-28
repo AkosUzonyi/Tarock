@@ -1,16 +1,10 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.PlayerCards;
-import com.tisza.tarock.card.TarockCard;
-import com.tisza.tarock.card.filter.CallableCardFilter;
-import com.tisza.tarock.card.filter.CardFilter;
-import com.tisza.tarock.game.Bidding.Invitation;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.filter.*;
+import com.tisza.tarock.game.Bidding.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 class Calling extends Phase
 {

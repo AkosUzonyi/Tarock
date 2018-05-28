@@ -1,7 +1,6 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
 public class Facan extends AnnouncementBase

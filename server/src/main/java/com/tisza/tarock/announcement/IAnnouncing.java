@@ -1,7 +1,6 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.announcement.Announcement;
-import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
 public interface IAnnouncing

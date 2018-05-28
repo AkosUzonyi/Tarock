@@ -1,8 +1,6 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
-import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.card.*;
 
 import java.util.*;
 

@@ -1,8 +1,6 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.PlayerPairs;
-import com.tisza.tarock.game.Team;
+import com.tisza.tarock.game.*;
 
 public abstract class AnnouncementBase implements Announcement
 {

@@ -1,8 +1,7 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.PlayerCards;
-import com.tisza.tarock.game.Bidding.Invitation;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.Bidding.*;
 
 import java.util.*;
 

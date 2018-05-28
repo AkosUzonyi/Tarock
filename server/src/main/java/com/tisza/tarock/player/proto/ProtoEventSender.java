@@ -8,7 +8,7 @@ import com.tisza.tarock.proto.*;
 import java.util.*;
 import java.util.stream.*;
 
-import static com.tisza.tarock.player.proto.Utils.phaseToProto;
+import static com.tisza.tarock.player.proto.Utils.*;
 import static com.tisza.tarock.proto.EventProto.*;
 
 public class ProtoEventSender implements EventSender

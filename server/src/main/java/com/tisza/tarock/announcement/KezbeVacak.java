@@ -1,8 +1,7 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.player.*;
 
 public class KezbeVacak extends AnnouncementBase
 {

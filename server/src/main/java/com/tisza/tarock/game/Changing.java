@@ -1,13 +1,9 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.PlayerCards;
-import com.tisza.tarock.card.TarockCard;
-import com.tisza.tarock.card.filter.SkartableCardFilter;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.filter.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 class Changing extends Phase
 {

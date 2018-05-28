@@ -1,7 +1,6 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.game.AnnouncementContra;
-import com.tisza.tarock.game.Team;
+import com.tisza.tarock.game.*;
 
 public class HivatalbolKontraParti extends AnnouncementWrapper
 {

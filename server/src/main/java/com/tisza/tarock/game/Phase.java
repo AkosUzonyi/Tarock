@@ -1,9 +1,9 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.message.ActionHandler;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.message.*;
 
-import java.util.List;
+import java.util.*;
 
 abstract class Phase implements ActionHandler
 {

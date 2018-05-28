@@ -1,8 +1,7 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.TarockCard;
-import com.tisza.tarock.game.GameState;
-import com.tisza.tarock.game.Team;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 
 public class PagatSasUltimo extends Ultimo
 {

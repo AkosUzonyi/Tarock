@@ -1,9 +1,8 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.*;
 
-import java.util.Collection;
+import java.util.*;
 
 class Gameplay extends Phase
 {

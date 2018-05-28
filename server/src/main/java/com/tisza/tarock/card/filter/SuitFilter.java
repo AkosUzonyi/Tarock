@@ -1,7 +1,6 @@
 package com.tisza.tarock.card.filter;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.card.*;
 
 public class SuitFilter implements CardFilter
 {

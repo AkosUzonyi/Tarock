@@ -1,11 +1,9 @@
 package com.tisza.tarock.message;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.PlayerCards;
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public interface EventSender
 {

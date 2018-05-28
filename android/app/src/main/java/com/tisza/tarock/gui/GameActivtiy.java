@@ -512,6 +512,9 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 
 	public void announce(int player, Announcement announcement)
 	{
+		if (announcement.getName().equals("jatek"))
+			return;
+
 		setUltimoViewVisible(false);
 		
 		String msg = announcement.getDisplayText();

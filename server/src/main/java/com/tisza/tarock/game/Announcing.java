@@ -31,8 +31,6 @@ class Announcing extends Phase implements IAnnouncing
 		idTrack = new IdentityTracker(currentGame.getPlayerPairs(), currentGame.getInvitAccepted());
 		
 		announce(currentPlayer, Announcements.jatek);
-		
-		sendAvailableAnnouncements();
 	}
 
 	public void announce(PlayerSeat player, Announcement a)
@@ -259,7 +257,6 @@ class Announcing extends Phase implements IAnnouncing
 		public IdentityTracker(PlayerPairs pp, Invitation invitAccepted)
 		{
 			playerPairs = pp;
-			identityKnown.put(playerPairs.getCaller(), true);
 			if (invitAccepted != Invitation.NONE)
 			{
 				allIdentityRevealed();

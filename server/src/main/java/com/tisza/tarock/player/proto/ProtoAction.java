@@ -42,6 +42,8 @@ class ProtoAction implements Action
 			case READY_FOR_NEW_GAME:
 				handler.readyForNewGame(player);
 				break;
+			case THROW_CARDS:
+				handler.throwCards(player);
 			default:
 				System.err.println("unkown action: " + actionProto.getActionTypeCase());
 				break;

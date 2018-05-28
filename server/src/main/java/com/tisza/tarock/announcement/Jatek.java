@@ -11,6 +11,12 @@ public class Jatek extends AnnouncementBase
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return GameType.PASKIEVICS;
+	}
+
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Team teamEarningPoints = gameState.calculateGamePoints(team) >= 48 ? team : team.getOther();

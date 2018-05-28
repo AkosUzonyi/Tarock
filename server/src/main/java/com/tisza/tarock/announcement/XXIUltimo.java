@@ -11,6 +11,12 @@ public class XXIUltimo extends Ultimo
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return GameType.ZEBI;
+	}
+
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		for (PlayerSeat player : gameState.getPlayerPairs().getPlayersInTeam(team))
@@ -28,6 +34,6 @@ public class XXIUltimo extends Ultimo
 	@Override
 	public int getPoints()
 	{
-		return getRoundIndex() == 8 ? 21 : (10 - getRoundIndex()) * 10;
+		return getRound() == 8 ? 21 : (10 - getRound()) * 10;
 	}
 }

@@ -16,6 +16,12 @@ public class HivatalbolKontraParti extends AnnouncementWrapper
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return GameType.PASKIEVICS;
+	}
+
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		if (announcing.isAnnounced(announcing.getCurrentTeam(), Announcements.hkp))

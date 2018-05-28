@@ -16,6 +16,12 @@ public class Kisszincsalad extends Szincsalad
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return GameType.ZEBI;
+	}
+
+	@Override
 	protected int getRoundCount()
 	{
 		return 2;

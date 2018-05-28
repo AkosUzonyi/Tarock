@@ -1,6 +1,8 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.SuitCard;
+import com.tisza.tarock.card.TarockCard;
 
 import java.util.*;
 
@@ -113,7 +115,7 @@ public class Announcements
 				}
 			}
 		}
-		
+
 		for (int t = 1; t <= 2; t++)
 		{
 			TarockCard card = Card.getTarockCard(t);

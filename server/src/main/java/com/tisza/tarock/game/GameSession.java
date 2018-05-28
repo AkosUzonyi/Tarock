@@ -22,12 +22,16 @@ public class GameSession implements Runnable
 	private GameState state;
 	private Phase currentPhase;
 
+	private GameType gameType;
+
 	private Thread gameThread;
 
-	public GameSession(List<Player> playerList)
+	public GameSession(GameType gameType, List<Player> playerList)
 	{
 		if (players.size() != 4)
 			throw new IllegalArgumentException();
+
+		this.gameType = gameType;
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -50,6 +54,11 @@ public class GameSession implements Runnable
 			throw new IllegalArgumentException();
 
 		gameThread.interrupt();
+	}
+
+	public GameType getGameType()
+	{
+		return gameType;
 	}
 
 	@Override
@@ -116,7 +125,7 @@ public class GameSession implements Runnable
 
 	void startNewGame(boolean doubleRound)
 	{
-		state = new GameState(getNextBeginnerPlayer(doubleRound));
+		state = new GameState(gameType, getNextBeginnerPlayer(doubleRound));
 
 		List<Card> cardsToDeal = new ArrayList<>(Card.getAll());
 		Collections.shuffle(cardsToDeal);

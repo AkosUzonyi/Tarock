@@ -6,6 +6,7 @@ import com.tisza.tarock.game.*;
 public interface Announcement
 {
 	public int calculatePoints(GameState gameState, Team team);
+	public GameType getGameType();
 	public boolean canBeAnnounced(IAnnouncing announcing);
 	public void onAnnounced(IAnnouncing announcing);
 	public boolean canContra();

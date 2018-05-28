@@ -82,7 +82,7 @@ public class JatekDuplaVolatPoints
 	@Before
 	public void createGameState()
 	{
-		game = new GameState(PlayerSeat.SEAT0)
+		game = new GameState(GameType.PASKIEVICS, PlayerSeat.SEAT0)
 		{
 			@Override
 			public int calculateGamePoints(Team team)

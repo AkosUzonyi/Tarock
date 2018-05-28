@@ -1,6 +1,7 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 
 public class Szinultimo extends Ultimo
 {
@@ -13,15 +14,30 @@ public class Szinultimo extends Ultimo
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		if (!isKing)
+			return GameType.ZEBI;
+
+		switch (getRound())
+		{
+			case 8: case 7: return GameType.ILLUSZTRALT;
+			case 6: case 5: return GameType.MAGAS;
+		}
+
+		throw new RuntimeException();
+	}
+
+	@Override
 	public int getPoints()
 	{
-		if (getRoundIndex() == 8)
+		if (getRound() == 8)
 		{
 			return isKing ? 15 : 20;
 		}
 		else
 		{
-			return 10 * (9 - getRoundIndex()) + (isKing ? 0 : 10);
+			return 10 * (9 - getRound()) + (isKing ? 0 : 10);
 		}
 	}
 }

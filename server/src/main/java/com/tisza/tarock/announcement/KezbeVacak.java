@@ -27,6 +27,12 @@ public class KezbeVacak extends AnnouncementBase
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return GameType.ILLUSZTRALT;
+	}
+
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Round round = gameState.getRound(roundIndex);

@@ -3,6 +3,7 @@ package com.tisza.tarock.server;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.player.*;
 import com.tisza.tarock.player.proto.*;
+import com.tisza.tarock.player.random.*;
 
 import java.io.*;
 import java.net.*;
@@ -46,7 +47,7 @@ public class Server implements Runnable
 				joinedPlayers.add(player);
 				if (joinedPlayers.size() == 4)
 				{
-					gameSession = new GameSession(joinedPlayers);
+					gameSession = new GameSession(GameType.PASKIEVICS, joinedPlayers);
 					gameSession.startSession();
 				}
 			});

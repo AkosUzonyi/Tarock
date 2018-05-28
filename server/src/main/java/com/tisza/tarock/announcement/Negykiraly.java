@@ -1,6 +1,7 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 
 public class Negykiraly extends TakeCards
 {
@@ -10,6 +11,12 @@ public class Negykiraly extends TakeCards
 	public String getName()
 	{
 		return "negykiraly";
+	}
+
+	@Override
+	public GameType getGameType()
+	{
+		return GameType.PASKIEVICS;
 	}
 
 	@Override

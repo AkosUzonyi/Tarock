@@ -11,6 +11,21 @@ public class PagatSasUltimo extends Ultimo
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		if (getCard().equals(Card.getTarockCard(2)))
+			return GameType.MAGAS;
+
+		switch (getRound())
+		{
+			case 8:         return GameType.PASKIEVICS;
+			case 7:         return GameType.ILLUSZTRALT;
+			case 6: case 5: return GameType.MAGAS;
+		}
+		throw new RuntimeException();
+	}
+
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		Result zaroparosSuccessful = Announcements.zaroparos.isSuccessful(gameState, team);
@@ -31,7 +46,7 @@ public class PagatSasUltimo extends Ultimo
 		if (announcing.isAnnounced(team, Announcements.zaroparos))
 			return false;
 		
-		if (getRoundIndex() == 8)
+		if (getRound() == 8)
 		{
 			for (TarockCount tc : new TarockCount[]{Announcements.nyolctarokk, Announcements.kilenctarokk})
 			{
@@ -48,12 +63,12 @@ public class PagatSasUltimo extends Ultimo
 	@Override
 	public int getPoints()
 	{
-		return 10 * (9 - getRoundIndex());
+		return 10 * (9 - getRound());
 	}
 
 	@Override
 	public boolean canBeSilent()
 	{
-		return getRoundIndex() == 8;
+		return getRound() == 8;
 	}
 }

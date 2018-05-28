@@ -7,6 +7,8 @@ import java.util.*;
 
 public class GameState
 {
+	private final GameType gameType;
+
 	private final PlayerSeat beginnerPlayer;
 
 	private PlayerSeat.Map<PlayerCards> playersCards = new PlayerSeat.Map<>();
@@ -43,9 +45,15 @@ public class GameState
 		}
 	}
 
-	public GameState(PlayerSeat beginnerPlayer)
+	public GameState(GameType gameType, PlayerSeat beginnerPlayer)
 	{
+		this.gameType = gameType;
 		this.beginnerPlayer = beginnerPlayer;
+	}
+
+	public GameType getGameType()
+	{
+		return gameType;
 	}
 
 	public PlayerCards getPlayerCards(PlayerSeat player)

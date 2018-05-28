@@ -128,10 +128,13 @@ class Announcing extends Phase implements IAnnouncing
 				}
 				else
 				{
-					if ((!needsIdentification || !a.requireIdentification()) && origAnnouncer == currentPlayerTeam && a.canBeAnnounced(this) && a.isShownInList())
-					{
+					if ((!needsIdentification || !a.requireIdentification()) &&
+							origAnnouncer == currentPlayerTeam &&
+							a.canBeAnnounced(this) &&
+							a.isShownInList() &&
+							gameSession.getGameType().hasParent(a.getGameType())
+						)
 						list.add(new AnnouncementContra(a, 0));
-					}
 				}
 			}
 		}
@@ -156,7 +159,9 @@ class Announcing extends Phase implements IAnnouncing
 		
 		if (ac.getContraLevel() == 0)
 		{
-			return (!needsIdentification() || !a.requireIdentification()) && a.canBeAnnounced(this);
+			return (!needsIdentification() || !a.requireIdentification()) &&
+					a.canBeAnnounced(this) &&
+					gameSession.getGameType().hasParent(a.getGameType());
 		}
 		else
 		{

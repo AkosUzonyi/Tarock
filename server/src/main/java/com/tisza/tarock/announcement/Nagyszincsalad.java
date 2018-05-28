@@ -16,6 +16,12 @@ public class Nagyszincsalad extends Szincsalad
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return GameType.MAGAS;
+	}
+
+	@Override
 	protected int getRoundCount()
 	{
 		return 3;

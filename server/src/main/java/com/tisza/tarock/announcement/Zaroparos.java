@@ -14,6 +14,12 @@ public class Zaroparos extends AnnouncementBase
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return GameType.ILLUSZTRALT;
+	}
+
+	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
 		if (!isRoundOK(gameState, team, 8, Card.getTarockCard(1)))

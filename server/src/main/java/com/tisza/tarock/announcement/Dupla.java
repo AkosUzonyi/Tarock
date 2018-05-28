@@ -11,6 +11,12 @@ public class Dupla extends AnnouncementBase
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return GameType.PASKIEVICS;
+	}
+
+	@Override
 	protected Result isSuccessful(GameState gameState, Team team)
 	{
 		if (gameState.calculateGamePoints(team) < 71)

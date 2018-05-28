@@ -22,15 +22,22 @@ public class Kings extends LastRounds
 	{
 		switch (count)
 		{
-			case 1:
-				return "kiralyultimo";
-			case 2:
-				return "ketkiralyok";
-			case 3:
-				return "haromkiralyok";
-			default:
-				throw new Error();
+			case 1: return "kiralyultimo";
+			case 2: return "ketkiralyok";
+			case 3: return "haromkiralyok";
 		}
+		throw new RuntimeException();
+	}
+
+	@Override
+	public GameType getGameType()
+	{
+		switch (count)
+		{
+			case 1: case 2: return GameType.ZEBI;
+			case 3:         return GameType.MAGAS;
+		}
+		throw new RuntimeException();
 	}
 
 	@Override

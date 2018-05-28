@@ -57,4 +57,10 @@ public abstract class AnnouncementWrapper implements Announcement
 	{
 		return wrappedAnnouncement.getContraLevel() == 0;
 	}
+
+	@Override
+	public GameType getGameType()
+	{
+		return wrappedAnnouncement.getAnnouncement().getGameType();
+	}
 }

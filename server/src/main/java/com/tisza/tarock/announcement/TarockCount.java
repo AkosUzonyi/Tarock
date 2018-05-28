@@ -32,6 +32,12 @@ public class TarockCount implements Announcement
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return GameType.PASKIEVICS;
+	}
+
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();

@@ -14,6 +14,12 @@ public class Szinesites extends TakeCards
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return GameType.ZEBI;
+	}
+
+	@Override
 	protected boolean hasToBeTaken(Card card)
 	{
 		return card instanceof SuitCard;

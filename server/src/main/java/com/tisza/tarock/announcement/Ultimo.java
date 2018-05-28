@@ -37,7 +37,7 @@ public abstract class Ultimo extends AnnouncementBase
 	}
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	protected Result isSuccessful(GameState gameState, Team team)
 	{
 		Round round = gameState.getRound(roundIndex);
 		int theCardPlayer = round.getPlayerOfCard(cardToTakeWith);
@@ -106,7 +106,7 @@ public abstract class Ultimo extends AnnouncementBase
 		return cardToTakeWith;
 	}
 
-	public boolean canBeSilent()
+	protected boolean canBeSilent()
 	{
 		return false;
 	}

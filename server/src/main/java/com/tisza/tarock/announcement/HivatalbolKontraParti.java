@@ -5,7 +5,7 @@ import com.tisza.tarock.game.Team;
 
 public class HivatalbolKontraParti extends AnnouncementWrapper
 {
-	public HivatalbolKontraParti()
+	HivatalbolKontraParti()
 	{
 		super(new AnnouncementContra(Announcements.jatek, 1));
 	}

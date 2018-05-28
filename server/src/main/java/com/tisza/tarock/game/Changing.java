@@ -143,7 +143,7 @@ class Changing extends Phase
 		}
 	}
 	
-	public boolean isFinished()
+	private boolean isFinished()
 	{
 		for (boolean b : donePlayer)
 		{

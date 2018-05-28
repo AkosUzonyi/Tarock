@@ -78,7 +78,7 @@ public class GameState
 		this.invitingPlayer = invitingPlayer;
 	}
 
-	Invitation getInvitSent()
+	public Invitation getInvitSent()
 	{
 		return invitSent;
 	}

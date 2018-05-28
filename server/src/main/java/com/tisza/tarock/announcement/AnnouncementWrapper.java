@@ -8,12 +8,12 @@ public abstract class AnnouncementWrapper implements Announcement
 {
 	private final AnnouncementContra wrappedAnnouncement;
 	
-	public AnnouncementWrapper(Announcement wrappedAnnouncement)
+	AnnouncementWrapper(Announcement wrappedAnnouncement)
 	{
 		this(new AnnouncementContra(wrappedAnnouncement, 0));
 	}
 	
-	public AnnouncementWrapper(AnnouncementContra wrappedAnnouncement)
+	AnnouncementWrapper(AnnouncementContra wrappedAnnouncement)
 	{
 		this.wrappedAnnouncement = wrappedAnnouncement;
 	}

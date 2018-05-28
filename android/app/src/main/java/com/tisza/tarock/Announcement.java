@@ -1,9 +1,12 @@
 package com.tisza.tarock;
 
+import android.support.annotation.*;
 import com.tisza.tarock.card.Card;
 import com.tisza.tarock.gui.ResourceMappings;
 
-public class Announcement
+import java.util.*;
+
+public class Announcement implements Comparable<Announcement>
 {
 	private String name;
 	private int suit = -1;
@@ -13,6 +16,9 @@ public class Announcement
 
 	public Announcement(String name, int contraLevel)
 	{
+		if (name == null)
+			throw new NullPointerException();
+
 		this.name = name;
 		this.contraLevel = contraLevel;
 	}
@@ -99,5 +105,90 @@ public class Announcement
 	public void setRound(int round)
 	{
 		this.round = round;
+	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+
+		Announcement that = (Announcement)o;
+
+		if (suit != that.suit)
+			return false;
+		if (round != that.round)
+			return false;
+		if (contraLevel != that.contraLevel)
+			return false;
+		if (name != null ? !name.equals(that.name) : that.name != null)
+			return false;
+		return card != null ? card.equals(that.card) : that.card == null;
+	}
+
+	@Override
+	public int hashCode()
+	{
+		int result = name != null ? name.hashCode() : 0;
+		result = 31 * result + suit;
+		result = 31 * result + (card != null ? card.hashCode() : 0);
+		result = 31 * result + round;
+		result = 31 * result + contraLevel;
+		return result;
+	}
+
+	private static final List<String> order = Arrays.asList(
+		"jatek",
+		"hkp",
+		"trull",
+		"negykiraly",
+		"nyolctarokk",
+		"kilenctarokk",
+		"banda",
+		"dupla",
+		"hosszudupla",
+		"kezbevacak",
+		"szinesites",
+		"volat",
+		"kiralyultimo",
+		"ketkiralyok",
+		"haromkiralyok",
+		"zaroparos",
+		"kisszincsalad",
+		"nagyszincsalad",
+		"facan",
+		"xxifogas",
+		"ultimo"
+	);
+
+	@Override
+	public int compareTo(Announcement other)
+	{
+		if (contraLevel != other.contraLevel)
+			return other.contraLevel - contraLevel;
+
+		if (!name.equals(other.name))
+		{
+			int myIndex = order.indexOf(name);
+			int otherIndex = order.indexOf(other.name);
+
+			if (myIndex < 0 || otherIndex < 0)
+				return name.compareTo(other.name);
+
+			return myIndex - otherIndex;
+		}
+
+		if (hasSuit() && other.hasSuit() && suit != other.suit)
+			return suit - other.suit;
+
+		if (hasCard() && other.hasCard() && !card.equals(other.card))
+			return card.getID() - other.card.getID();
+
+		if (hasRound() && other.hasRound() && round != other.round)
+			return round - other.round;
+
+		return 0;
 	}
 }

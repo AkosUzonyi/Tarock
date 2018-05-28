@@ -483,7 +483,8 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 			}
 		});
 		availabeActionsView.addView(ultimoButton);
-		
+
+		Collections.sort(announcements);
 		for (final Announcement announcement : announcements)
 		{
 			Button announceButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);

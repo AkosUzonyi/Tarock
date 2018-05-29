@@ -1,111 +1,43 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/messages_view"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:id="@+id/messages_view"
+	android:orientation="horizontal"
+	android:padding="10dp"
+	android:baselineAligned="false"
 	>
-	
-	<LinearLayout
-		android:id="@+id/messages_default_view"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:orientation="horizontal"
-		android:padding="10dp"
-		android:baselineAligned="false"
-		>
-	
-		<ScrollView
-			android:id="@+id/messages_scroll"
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="0.7"
-			android:scrollbars="vertical"
-			android:fillViewport="true"
-			>
-	
-			<TextView
-				android:id="@+id/messages_text_view"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-		        style="@style/shadow_text"
-				/>
-	
-		</ScrollView>
-	
-		<ScrollView
-			android:layout_width="0dp"
-			android:layout_height="match_parent"
-			android:layout_weight="0.3"
-			android:scrollbars="vertical"
-			android:fillViewport="true"
-			>
-	
-			<LinearLayout
-				android:id="@+id/available_actions"
-				android:orientation="vertical"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				/>
-		</ScrollView>
-	</LinearLayout>
-	
-	
-	
+
 	<ScrollView
-		android:id="@+id/messages_ultimo_view"
-		android:layout_width="match_parent"
+		android:id="@+id/messages_scroll"
+		android:layout_width="0dp"
 		android:layout_height="match_parent"
+		android:layout_weight="0.7"
 		android:scrollbars="vertical"
 		android:fillViewport="true"
-		android:visibility="gone"
+		>
+
+		<TextView
+			android:id="@+id/messages_text_view"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			style="@style/shadow_text"
+			/>
+
+	</ScrollView>
+
+	<ScrollView
+		android:layout_width="0dp"
+		android:layout_height="match_parent"
+		android:layout_weight="0.3"
+		android:scrollbars="vertical"
+		android:fillViewport="true"
 		>
 
 		<LinearLayout
+			android:id="@+id/available_actions"
+			android:orientation="vertical"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:orientation="vertical"
-			>
-			
-			<Button
-				android:id="@+id/ultimo_back_buton"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/button_margin"
-				android:text="@string/back"
-			    style="@style/button"
-				/>
-			<Spinner
-				android:id="@+id/ultimo_type_spinner"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/button_margin"
-				android:entries="@array/ultimo_type_array"
-			    style="@style/spinner"
-				/>
-			<Spinner
-				android:id="@+id/ultimo_suitvalue_spinner"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:visibility="gone"
-				android:layout_marginTop="@dimen/button_margin"
-				android:entries="@array/ultimo_suit_array"
-			    style="@style/spinner"
-				/>
-			<Spinner
-				android:id="@+id/ultimo_round_spinner"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/button_margin"
-				android:entries="@array/ultimo_round_array"
-			    style="@style/spinner"
-				/>
-			<Button
-				android:id="@+id/ultimo_announce_button"
-				android:layout_width="match_parent"
-				android:layout_height="wrap_content"
-				android:layout_marginTop="@dimen/button_margin"
-				android:text="@string/announce"
-			    style="@style/button"
-				/>
-		</LinearLayout>
+			/>
 	</ScrollView>
-</FrameLayout>
+</LinearLayout>

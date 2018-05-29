@@ -40,8 +40,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	private Button throwButton;
 	
 	private View messagesView;
-	private View messagesDefaultView;
-	private View messagesUltimoView;
+	private View ultimoView;
 	private ScrollView messagesScrollView;
 	private TextView messagesTextView;
 	private LinearLayout availabeActionsView;
@@ -167,12 +166,12 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		
 		layoutInflater.inflate(R.layout.messages, centerSpace);
 		messagesView = findViewById(R.id.messages_view);
-		messagesDefaultView = findViewById(R.id.messages_default_view);
 		messagesScrollView = (ScrollView)findViewById(R.id.messages_scroll);
 		messagesTextView = (TextView)findViewById(R.id.messages_text_view);
 		availabeActionsView = (LinearLayout)findViewById(R.id.available_actions);
-		
-		messagesUltimoView = findViewById(R.id.messages_ultimo_view);
+
+		layoutInflater.inflate(R.layout.ultimo, centerSpace);
+		ultimoView = findViewById(R.id.ultimo_view);
 		ultimoBackButton = (Button)findViewById(R.id.ultimo_back_buton);
 		ultimoTypeSpinner = (Spinner)findViewById(R.id.ultimo_type_spinner);
 		ultimoSuitvalueSpinner = (Spinner)findViewById(R.id.ultimo_suitvalue_spinner);
@@ -183,7 +182,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		{
 			public void onClick(View v)
 			{
-				setUltimoViewVisible(false);
+				showCenterView(messagesView);
 			}
 		});
 		
@@ -207,7 +206,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 				Announcement announcement;
 				
 				int roundIndex = 8 - ultimoRoundSpinner.getSelectedItemPosition();
-				
+
 				int typeSelectedPos = ultimoTypeSpinner.getSelectedItemPosition();
 				if (typeSelectedPos < 3)
 				{
@@ -266,21 +265,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		statisticsPointsValueViews[2] = (TextView)findViewById(R.id.statistics_points_value_2);
 		statisticsPointsValueViews[3] = (TextView)findViewById(R.id.statistics_points_value_3);
 	}
-	
-	private void setUltimoViewVisible(boolean visible)
-	{
-		if (visible)
-		{
-			messagesDefaultView.setVisibility(View.GONE);
-			messagesUltimoView.setVisibility(View.VISIBLE);
-		}
-		else
-		{
-			messagesDefaultView.setVisibility(View.VISIBLE);
-			messagesUltimoView.setVisibility(View.GONE);
-		}
-	}
-	
+
 	private ProtoConnection conncection;
 	private List<String> playerNames;
 	private PlayerCards myCards;
@@ -479,7 +464,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		{
 			public void onClick(View v)
 			{
-				setUltimoViewVisible(true);
+				showCenterView(ultimoView);
 			}
 		});
 		availabeActionsView.addView(ultimoButton);
@@ -516,7 +501,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		if (announcement.getName().equals("jatek") && announcement.getContraLevel() == 0)
 			return;
 
-		setUltimoViewVisible(false);
+		showCenterView(messagesView);
 		
 		String msg = announcement.getDisplayText();
 		displayPlayerActionMessage(player, R.string.message_announce, msg);
@@ -524,7 +509,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 
 	public void passz(int player)
 	{
-		setUltimoViewVisible(false);
+		showCenterView(messagesView);
 		
 		String msg = getResources().getString(R.string.passz);
 		displayPlayerActionMessage(player, R.string.message_announce, msg);

@@ -4,7 +4,7 @@ import com.tisza.tarock.card.*;
 
 public abstract class Szincsalad extends LastRounds
 {
-	private int suit;
+	private final int suit;
 		
 	Szincsalad(int suit)
 	{

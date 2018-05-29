@@ -5,8 +5,8 @@ import com.tisza.tarock.game.*;
 
 public class KezbeVacak extends AnnouncementBase
 {
-	private int roundIndex;
-	private Card cardToTakeWith;
+	private final int roundIndex;
+	private final Card cardToTakeWith;
 		
 	KezbeVacak(int roundIndex, Card cardToTakeWith)
 	{

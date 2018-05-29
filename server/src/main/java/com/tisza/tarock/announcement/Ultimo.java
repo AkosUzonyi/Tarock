@@ -7,8 +7,8 @@ import java.util.*;
 
 public abstract class Ultimo extends AnnouncementBase
 {
-	private int roundIndex;
-	private Card cardToTakeWith;
+	private final int roundIndex;
+	private final Card cardToTakeWith;
 		
 	Ultimo(int roundIndex, Card cardToTakeWith)
 	{

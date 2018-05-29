@@ -2,7 +2,7 @@ package com.tisza.tarock.card;
 
 public class TarockCard extends Card
 {
-	private int value;
+	private final int value;
 	
 	TarockCard(int v)
 	{

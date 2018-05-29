@@ -2,7 +2,7 @@ package com.tisza.tarock.card;
 
 public class SuitCard extends Card
 {
-	private int suit, value;
+	private final int suit, value;
 
 	SuitCard(int suit, int value)
 	{

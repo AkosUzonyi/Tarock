@@ -7,7 +7,7 @@ public class Kings extends LastRounds
 {
 	private static final int[] points = new int[]{8, 60, 100};
 	
-	private int count;
+	private final int count;
 		
 	Kings(int count)
 	{

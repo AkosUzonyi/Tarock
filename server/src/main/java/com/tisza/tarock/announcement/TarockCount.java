@@ -5,7 +5,7 @@ import com.tisza.tarock.game.*;
 
 public class TarockCount implements Announcement
 {
-	private int count;
+	private final int count;
 	
 	TarockCount(int count)
 	{

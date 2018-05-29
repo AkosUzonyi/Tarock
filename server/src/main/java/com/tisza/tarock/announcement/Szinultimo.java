@@ -5,7 +5,7 @@ import com.tisza.tarock.game.*;
 
 public class Szinultimo extends Ultimo
 {
-	private boolean isKing;
+	private final boolean isKing;
 	
 	Szinultimo(int roundIndex, SuitCard cardToTakeWith)
 	{

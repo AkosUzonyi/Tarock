@@ -5,7 +5,7 @@ import com.tisza.tarock.game.*;
 
 public class Facan extends AnnouncementBase
 {
-	private Card card;
+	private final Card card;
 
 	Facan(Card card)
 	{

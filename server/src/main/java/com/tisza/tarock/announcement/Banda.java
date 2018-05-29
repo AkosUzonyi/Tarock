@@ -5,7 +5,7 @@ import com.tisza.tarock.game.*;
 
 public class Banda extends TakeCards
 {
-	private int suit;
+	private final int suit;
 	
 	Banda(int suit)
 	{

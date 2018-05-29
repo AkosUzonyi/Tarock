@@ -1,6 +1,7 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 
 public class HosszuDupla extends AnnouncementWrapper
 {
@@ -13,6 +14,12 @@ public class HosszuDupla extends AnnouncementWrapper
 	public String getName()
 	{
 		return "hosszudupla";
+	}
+
+	@Override
+	public GameType getGameType()
+	{
+		return GameType.ZEBI;
 	}
 
 	@Override

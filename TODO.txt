@@ -2,7 +2,6 @@ bugs:
 ? pagatsas isSuccessful
 AnnouncementBridge.canBeSilent unused
 GameActivity call displaymessage
-Zaroparos: do not require order of pagat and sas
 
 needs fix:
 ultimo button in GameTypes

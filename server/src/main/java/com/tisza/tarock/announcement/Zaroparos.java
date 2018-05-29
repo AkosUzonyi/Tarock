@@ -3,7 +3,7 @@ package com.tisza.tarock.announcement;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-public class Zaroparos extends AnnouncementBase
+public class Zaroparos extends LastRounds
 {
 	Zaroparos(){}
 
@@ -16,37 +16,25 @@ public class Zaroparos extends AnnouncementBase
 	@Override
 	public GameType getGameType()
 	{
-		return GameType.ILLUSZTRALT;
+		return GameType.MAGAS;
 	}
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	protected int getRoundCount()
 	{
-		if (!isRoundOK(gameState, team, 8, Card.getTarockCard(1)))
-			return Result.FAILED;
-		
-		if (!isRoundOK(gameState, team, 7, Card.getTarockCard(2)))
-			return Result.FAILED;
-		
-		return Result.SUCCESSFUL;
+		return 2;
 	}
-	
-	private boolean isRoundOK(GameState gameState, Team team, int roundIndex, Card cardToTakeWith)
+
+	@Override
+	protected boolean isValidCard(Card card)
 	{
-		Round round = gameState.getRound(roundIndex);
-		PlayerSeat theCardPlayer = round.getPlayerOfCard(cardToTakeWith);
-		if (theCardPlayer == null) return false;
-		
-		if (gameState.getPlayerPairs().getTeam(theCardPlayer) != team)
-		{
+		if (!(card instanceof TarockCard))
 			return false;
-		}
-		else
-		{
-			return round.getWinner() == theCardPlayer;
-		}
+
+		TarockCard tarockCard = (TarockCard)card;
+		return tarockCard.getValue() == 1 || tarockCard.getValue() == 2;
 	}
-	
+
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{

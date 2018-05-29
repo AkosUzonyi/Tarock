@@ -127,17 +127,6 @@ public class GameSession implements Runnable
 	{
 		state = new GameState(gameType, getNextBeginnerPlayer(doubleRound));
 
-		List<Card> cardsToDeal = new ArrayList<>(Card.getAll());
-		Collections.shuffle(cardsToDeal);
-		for (PlayerSeat player : PlayerSeat.getAll())
-		{
-			for (int i = 0; i < 9; i++)
-			{
-				state.getPlayerCards(player).addCard(cardsToDeal.remove(0));
-			}
-		}
-		state.setTalon(cardsToDeal);
-
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
 			getPlayerEventQueue(player).startGame(player, players.values().stream().map(Player::getName).collect(Collectors.toList()));

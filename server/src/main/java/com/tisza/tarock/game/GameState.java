@@ -2,8 +2,10 @@ package com.tisza.tarock.game;
 
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.Bidding.*;
+import com.tisza.tarock.player.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 public class GameState
 {
@@ -49,6 +51,17 @@ public class GameState
 	{
 		this.gameType = gameType;
 		this.beginnerPlayer = beginnerPlayer;
+
+		List<Card> cardsToDeal = new ArrayList<>(Card.getAll());
+		Collections.shuffle(cardsToDeal);
+		for (PlayerSeat player : PlayerSeat.getAll())
+		{
+			for (int i = 0; i < 9; i++)
+			{
+				getPlayerCards(player).addCard(cardsToDeal.remove(0));
+			}
+		}
+		setTalon(cardsToDeal);
 	}
 
 	public GameType getGameType()

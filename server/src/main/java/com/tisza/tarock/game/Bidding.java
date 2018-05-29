@@ -116,13 +116,18 @@ class Bidding extends Phase
 	{
 		if (isFinished())
 			throw new IllegalStateException();
-		
+
 		List<Integer> result = new ArrayList<Integer>();
+
+		if (playersState.get(currentPlayer) == BidState.OUT)
+			return result;
+		
 		result.add(-1);
 		if (checkBiddingRequirements(currentPlayer))
 		{
 			int defaultBid = getDefaultBid();
-			result.add(defaultBid);
+			if (defaultBid >= 0)
+				result.add(defaultBid);
 			
 			PlayerCards cards = currentGame.getPlayerCards(currentPlayer);
 			boolean canInvit = checkBaseInvitationRequirements(currentPlayer);

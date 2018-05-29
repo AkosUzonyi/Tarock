@@ -2,8 +2,6 @@ bugs:
 ? pagatsas isSuccessful
 AnnouncementBridge.canBeSilent unused
 GameActivity call displaymessage
-TarockCount announcement: no points earned
-TarockCount announcement: per team, not per player
 Zaroparos: do not require order of pagat and sas
 
 needs fix:
@@ -14,6 +12,7 @@ renames:
 little nice things:
 canBeAnnounced: remove AnnouncementBase's implementation
 create AnnouncementInstance class (Announcement, contraLevel, announcerteam)
+make annnouncement field private
 
 features:
 handle relogin

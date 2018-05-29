@@ -57,9 +57,13 @@ class Announcing extends Phase implements IAnnouncing
 		{
 			idTrack.identityRevealed(player);
 		}
-		
-		Team team = currentGame.getPlayerPairs().getTeam(player);
-		setContraLevel(ac.getNextTeamToContra(team), ac.getAnnouncement(), ac.getContraLevel());
+
+		if (ac.getAnnouncement().shouldBeStored())
+		{
+			Team team = currentGame.getPlayerPairs().getTeam(player);
+			setContraLevel(ac.getNextTeamToContra(team), ac.getAnnouncement(), ac.getContraLevel());
+		}
+
 		ac.getAnnouncement().onAnnounced(this);
 
 		gameSession.getBroadcastEventSender().announce(player, ac);
@@ -229,6 +233,16 @@ class Announcing extends Phase implements IAnnouncing
 	public void setXXIUltimoDeactivated(Team team)
 	{
 		currentGame.getAnnouncementsState().setXXIUltimoDeactivated(team);
+	}
+
+	public void announceTarockCount(PlayerSeat player, TarockCount announcement)
+	{
+		currentGame.getAnnouncementsState().announceTarockCount(player, announcement);
+	}
+
+	public TarockCount getTarockCountAnnounced(PlayerSeat player)
+	{
+		return currentGame.getAnnouncementsState().getTarockCountAnnounced(player);
 	}
 
 	@Override

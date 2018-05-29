@@ -13,6 +13,10 @@ public interface IAnnouncing
 	public void setXXIUltimoDeactivated(Team team);
 	public boolean getXXIUltimoDeactivated(Team team);
 
+
+	public void announceTarockCount(PlayerSeat player, TarockCount announcement);
+	public TarockCount getTarockCountAnnounced(PlayerSeat player);
+
 	public PlayerSeat getCurrentPlayer();
 	public Team getCurrentTeam();
 	public PlayerPairs getPlayerPairs();

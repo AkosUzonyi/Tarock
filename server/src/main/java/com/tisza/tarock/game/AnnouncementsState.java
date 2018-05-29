@@ -1,6 +1,9 @@
 package com.tisza.tarock.game;
 
 import com.tisza.tarock.announcement.*;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.player.*;
+import com.tisza.tarock.proto.*;
 
 import java.util.*;
 
@@ -9,6 +12,7 @@ public class AnnouncementsState
 	private Map<Team, Map<Announcement, Integer>> announcementContraLevels = new HashMap<Team, Map<Announcement, Integer>>();
 
 	private boolean callerXXIUltimoDeactivated = false, opponentXIUltimoDeactivated = false;
+	private PlayerSeat.Map<TarockCount> tarockCountAnnounced = new PlayerSeat.Map<>(null);
 
 	public AnnouncementsState()
 	{
@@ -66,4 +70,13 @@ public class AnnouncementsState
 		}
 	}
 
+	public void announceTarockCount(PlayerSeat player, TarockCount announcement)
+	{
+		tarockCountAnnounced.put(player, announcement);
+	}
+
+	public TarockCount getTarockCountAnnounced(PlayerSeat player)
+	{
+		return tarockCountAnnounced.get(player);
+	}
 }

@@ -142,10 +142,10 @@ public class Announcement implements Comparable<Announcement>
 	private static final List<String> order = Arrays.asList(
 		"jatek",
 		"hkp",
-		"trull",
-		"negykiraly",
 		"nyolctarokk",
 		"kilenctarokk",
+		"trull",
+		"negykiraly",
 		"banda",
 		"dupla",
 		"hosszudupla",

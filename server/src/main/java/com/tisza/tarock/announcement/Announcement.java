@@ -12,6 +12,7 @@ public interface Announcement
 	public boolean canContra();
 	public boolean isShownInList();
 	public boolean requireIdentification();
+	public boolean shouldBeStored();
 
 	public String getName();
 	public default int getSuit() { return -1; }

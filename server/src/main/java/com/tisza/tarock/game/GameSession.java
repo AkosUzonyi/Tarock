@@ -176,12 +176,24 @@ public class GameSession implements Runnable
 		}
 
 		int[] points = new int[4];
+
+		int allTarockCountPoints = 0;
+		for (PlayerSeat player : PlayerSeat.getAll())
+		{
+			TarockCount tarockCountAnnouncement = state.getAnnouncementsState().getTarockCountAnnounced(player);
+			int tarockCountPoints = tarockCountAnnouncement == null ? 0 : tarockCountAnnouncement.getPoints();
+			points[player.asInt()] += tarockCountPoints * 4;
+			allTarockCountPoints += tarockCountPoints;
+		}
+
 		for (int i = 0; i < 4; i++)
 		{
 			points[i] -= pointsForCallerTeam;
+			points[i] -= allTarockCountPoints;
 		}
 		points[state.getPlayerPairs().getCaller().asInt()] += pointsForCallerTeam * 2;
 		points[state.getPlayerPairs().getCalled().asInt()] += pointsForCallerTeam * 2;
+
 		addPoints(points);
 
 		for (PlayerSeat player : PlayerSeat.getAll())

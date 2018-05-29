@@ -97,7 +97,13 @@ public abstract class AnnouncementBase implements Announcement
 	{
 		return true;
 	}
-	
+
+	@Override
+	public boolean shouldBeStored()
+	{
+		return true;
+	}
+
 	public static enum Result
 	{
 		SUCCESSFUL, SUCCESSFUL_SILENT, FAILED, FAILED_SILENT, DEACTIVATED;

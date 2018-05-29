@@ -9,7 +9,20 @@ public class TarockCount implements Announcement
 	
 	TarockCount(int count)
 	{
+		if (count < 8 || count >= 10)
+			throw new IllegalArgumentException();
+
 		this.count = count;
+	}
+
+	public int getPoints()
+	{
+		switch (count)
+		{
+			case 8: return 1;
+			case 9: return 2;
+		}
+		throw new RuntimeException();
 	}
 
 	@Override
@@ -17,12 +30,10 @@ public class TarockCount implements Announcement
 	{
 		switch (count)
 		{
-			case 8:
-				return "nyolctarokk";
-			case 9:
-				return "kilenctarokk";
+			case 8: return "nyolctarokk";
+			case 9: return "kilenctarokk";
 		}
-		return "unknown";
+		throw new RuntimeException();
 	}
 
 	@Override
@@ -40,9 +51,7 @@ public class TarockCount implements Announcement
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
-		Team team = announcing.getCurrentTeam();
-		
-		if (announcing.isAnnounced(team, this))
+		if (announcing.getTarockCountAnnounced(announcing.getCurrentPlayer()) != null)
 			return false;
 		
 		PlayerCards cards = announcing.getCards(announcing.getCurrentPlayer());
@@ -52,6 +61,7 @@ public class TarockCount implements Announcement
 	@Override
 	public void onAnnounced(IAnnouncing announcing)
 	{
+		announcing.announceTarockCount(announcing.getCurrentPlayer(), this);
 	}
 	
 	@Override
@@ -70,5 +80,11 @@ public class TarockCount implements Announcement
 	public boolean requireIdentification()
 	{
 		return true;
+	}
+
+	@Override
+	public boolean shouldBeStored()
+	{
+		return false;
 	}
 }

@@ -59,6 +59,12 @@ public abstract class AnnouncementWrapper implements Announcement
 	}
 
 	@Override
+	public boolean shouldBeStored()
+	{
+		return false;
+	}
+
+	@Override
 	public GameType getGameType()
 	{
 		return wrappedAnnouncement.getAnnouncement().getGameType();

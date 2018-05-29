@@ -15,22 +15,17 @@ public abstract class TakeCards extends AnnouncementBase
 	@Override
 	public Result isSuccessful(GameState gameState, Team team)
 	{
-		Collection<Card> wonCards = new ArrayList<Card>();
-		for (PlayerSeat player : gameState.getPlayerPairs().getPlayersInTeam(team))
+		for (PlayerSeat opponentPlayer : gameState.getPlayerPairs().getPlayersInTeam(team.getOther()))
 		{
-			wonCards.addAll(gameState.getWonCards(player));
-		}
-		wonCards.addAll(gameState.getSkartForTeam(Team.CALLER));
-		wonCards.addAll(gameState.getSkartForTeam(Team.OPPONENT));
-
-		for (Card card : Card.getAll())
-		{
-			if (hasToBeTaken(card) && !wonCards.contains(card))
+			for (Card opponentCard : gameState.getWonCards(opponentPlayer))
 			{
-				return Result.FAILED;
+				if (hasToBeTaken(opponentCard))
+				{
+					return Result.FAILED;
+				}
 			}
 		}
-		
+
 		return canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 	}
 }

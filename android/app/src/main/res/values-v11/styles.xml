@@ -1,6 +1,0 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">   
-    <style name="spinner" parent="@style/button">
-        <item name="android:popupBackground">@drawable/button_background</item>
-        <item name="android:spinnerMode">dropdown</item>
-    </style>
-</resources>

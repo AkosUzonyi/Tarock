@@ -23,6 +23,7 @@
     
     <style name="spinner" parent="@style/button">
         <item name="android:popupBackground">@drawable/button_background</item>
+        <item name="android:spinnerMode">dropdown</item>
     </style>
 
     <style name="player_message">

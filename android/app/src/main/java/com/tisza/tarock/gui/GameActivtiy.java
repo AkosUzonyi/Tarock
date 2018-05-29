@@ -513,7 +513,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 
 	public void announce(int player, Announcement announcement)
 	{
-		if (announcement.getName().equals("jatek"))
+		if (announcement.getName().equals("jatek") && announcement.getContraLevel() == 0)
 			return;
 
 		setUltimoViewVisible(false);

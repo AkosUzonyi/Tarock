@@ -23,14 +23,15 @@ public abstract class AnnouncementWrapper implements Announcement
 	}
 
 	@Override
+	public GameType getGameType()
+	{
+		return wrappedAnnouncement.getAnnouncement().getGameType();
+	}
+
+	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		return announcing.canAnnounce(wrappedAnnouncement);
-	}
-
-	protected boolean canBeSilent()
-	{
-		return false;
 	}
 
 	@Override
@@ -62,11 +63,5 @@ public abstract class AnnouncementWrapper implements Announcement
 	public boolean shouldBeStored()
 	{
 		return false;
-	}
-
-	@Override
-	public GameType getGameType()
-	{
-		return wrappedAnnouncement.getAnnouncement().getGameType();
 	}
 }

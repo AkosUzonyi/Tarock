@@ -78,43 +78,34 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		final int port = getIntent().getIntExtra("port", 8128);
 		final String name = getIntent().getStringExtra("name");
 		
-		Thread connThread = new Thread(new Runnable()
+		Thread connThread = new Thread(() ->
 		{
-			public void run()
+			try
 			{
-				try
-				{
-					Socket socket = new Socket();
-					socket.connect(new InetSocketAddress(host, port), 1000);
-					conncection = new ProtoConnection(socket);
-					actionSender = new ProtoActionSender(conncection);
+				Socket socket = new Socket();
+				socket.connect(new InetSocketAddress(host, port), 1000);
+				conncection = new ProtoConnection(socket);
+				actionSender = new ProtoActionSender(conncection);
 
-					conncection.addMessageHandler(new MessageHandler()
+				conncection.addMessageHandler(new MessageHandler()
+				{
+					public void handleMessage(final MainProto.Message message)
 					{
-						public void handleMessage(final MainProto.Message message)
-						{
-							runOnUiThread(new Runnable()
-							{
-								public void run()
-								{
-									GameActivtiy.this.handleMessage(message);
-								}
-							});
-						}
+						runOnUiThread(() -> GameActivtiy.this.handleMessage(message));
+					}
 
-						public void connectionClosed()
-						{
-							GameActivtiy.this.connectionClosed();
-						}
-					});
-					conncection.start();
-					conncection.sendMessage(MainProto.Message.newBuilder().setLogin(Login.newBuilder().setName(name).build()).build());
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-					finish();
-				}
+					public void connectionClosed()
+					{
+						GameActivtiy.this.connectionClosed();
+					}
+				});
+				conncection.start();
+				conncection.sendMessage(MainProto.Message.newBuilder().setLogin(Login.newBuilder().setName(name).build()).build());
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+				finish();
 			}
 		});
 		connThread.start();
@@ -156,12 +147,9 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		
 		okButton = (Button)findViewById(R.id.ok_button);
 		throwButton = (Button)findViewById(R.id.throw_button);
-		throwButton.setOnClickListener(new OnClickListener()
+		throwButton.setOnClickListener(v ->
 		{
-			public void onClick(View v)
-			{
-				//doAction(Action.newBuilder().set);
-			}
+			//doAction(Action.newBuilder().set);
 		});
 		
 		layoutInflater.inflate(R.layout.messages, centerSpace);
@@ -178,13 +166,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		ultimoRoundSpinner = (Spinner)findViewById(R.id.ultimo_round_spinner);
 		announceButton = (Button)findViewById(R.id.ultimo_announce_button);
 		
-		ultimoBackButton.setOnClickListener(new OnClickListener()
-		{
-			public void onClick(View v)
-			{
-				showCenterView(messagesView);
-			}
-		});
+		ultimoBackButton.setOnClickListener(v -> showCenterView(messagesView));
 		
 		ultimoTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
 		{
@@ -199,44 +181,41 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 			}
 		});
 		
-		announceButton.setOnClickListener(new OnClickListener()
+		announceButton.setOnClickListener(v ->
 		{
-			public void onClick(View v)
+			Announcement announcement;
+
+			int roundIndex = 8 - ultimoRoundSpinner.getSelectedItemPosition();
+
+			int typeSelectedPos = ultimoTypeSpinner.getSelectedItemPosition();
+			if (typeSelectedPos < 3)
 			{
-				Announcement announcement;
-				
-				int roundIndex = 8 - ultimoRoundSpinner.getSelectedItemPosition();
-
-				int typeSelectedPos = ultimoTypeSpinner.getSelectedItemPosition();
-				if (typeSelectedPos < 3)
-				{
-					announcement = new Announcement("ultimo", 0);
-					announcement.setCard(new TarockCard(typeSelectedPos == 2 ? 21 : typeSelectedPos + 1));
-					announcement.setRound(roundIndex);
-				}
-				else if (typeSelectedPos < 8)
-				{
-					int suit = ultimoSuitvalueSpinner.getSelectedItemPosition();
-					int value = 5 - (typeSelectedPos - 3);
-
-					announcement = new Announcement("ultimo", 0);
-					announcement.setCard(new SuitCard(suit, value));
-					announcement.setRound(roundIndex);
-				}
-				else if (typeSelectedPos < 10)
-				{
-					boolean small = typeSelectedPos == 8;
-					int suit = ultimoSuitvalueSpinner.getSelectedItemPosition();
-					announcement = new Announcement(small ? "kisszincsalad" : "nagyszincsalad", 0);
-					announcement.setSuit(suit);
-				}
-				else
-				{
-					throw new RuntimeException();
-				}
-				
-				actionSender.announce(announcement);
+				announcement = new Announcement("ultimo", 0);
+				announcement.setCard(new TarockCard(typeSelectedPos == 2 ? 21 : typeSelectedPos + 1));
+				announcement.setRound(roundIndex);
 			}
+			else if (typeSelectedPos < 8)
+			{
+				int suit = ultimoSuitvalueSpinner.getSelectedItemPosition();
+				int value = 5 - (typeSelectedPos - 3);
+
+				announcement = new Announcement("ultimo", 0);
+				announcement.setCard(new SuitCard(suit, value));
+				announcement.setRound(roundIndex);
+			}
+			else if (typeSelectedPos < 10)
+			{
+				boolean small = typeSelectedPos == 8;
+				int suit = ultimoSuitvalueSpinner.getSelectedItemPosition();
+				announcement = new Announcement(small ? "kisszincsalad" : "nagyszincsalad", 0);
+				announcement.setSuit(suit);
+			}
+			else
+			{
+				throw new RuntimeException();
+			}
+
+			actionSender.announce(announcement);
 		});
 		
 		playedCardsView = new RelativeLayout(this);
@@ -366,13 +345,10 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 			Button bidButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			bidButton.setText(ResourceMappings.bidToName.get(bid));
 			
-			bidButton.setOnClickListener(new OnClickListener()
+			bidButton.setOnClickListener(v ->
 			{
-				public void onClick(View v)
-				{
-					availabeActionsView.removeAllViews();
-					actionSender.bid(bid);
-				}
+				availabeActionsView.removeAllViews();
+				actionSender.bid(bid);
 			});
 			availabeActionsView.addView(bidButton);
 		}
@@ -394,13 +370,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		arrangeCards();
 		
 		okButton.setVisibility(View.VISIBLE);
-		okButton.setOnClickListener(new OnClickListener()
-		{
-			public void onClick(View v)
-			{
-				actionSender.change(cardsToSkart);
-			}
-		});
+		okButton.setOnClickListener(v -> actionSender.change(cardsToSkart));
 	}
 	
 	public void changeDone(int player)
@@ -437,13 +407,10 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		{
 			Button callButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			callButton.setText(ResourceMappings.uppercaseCardName(card));
-			callButton.setOnClickListener(new OnClickListener()
+			callButton.setOnClickListener(v ->
 			{
-				public void onClick(View v)
-				{
-					availabeActionsView.removeAllViews();
-					actionSender.call(card);
-				}
+				availabeActionsView.removeAllViews();
+				actionSender.call(card);
 			});
 			availabeActionsView.addView(callButton);
 		}
@@ -460,13 +427,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		
 		Button ultimoButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 		ultimoButton.setText(ResourceMappings.roundNames[8]);
-		ultimoButton.setOnClickListener(new OnClickListener()
-		{
-			public void onClick(View v)
-			{
-				showCenterView(ultimoView);
-			}
-		});
+		ultimoButton.setOnClickListener(v -> showCenterView(ultimoView));
 		availabeActionsView.addView(ultimoButton);
 
 		Collections.sort(announcements);
@@ -474,25 +435,16 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		{
 			Button announceButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			announceButton.setText(announcement.getDisplayText());
-			announceButton.setOnClickListener(new OnClickListener()
-			{
-				public void onClick(View v)
-				{
-					actionSender.announce(announcement);
-				}
-			});
+			announceButton.setOnClickListener(v -> actionSender.announce(announcement));
 			availabeActionsView.addView(announceButton);
 		}
 		
 		okButton.setVisibility(View.VISIBLE);
-		okButton.setOnClickListener(new OnClickListener()
+		okButton.setOnClickListener(v ->
 		{
-			public void onClick(View v)
-			{
-				okButton.setVisibility(View.GONE);
-				availabeActionsView.removeAllViews();
-				actionSender.announcePassz();
-			}
+			okButton.setVisibility(View.GONE);
+			availabeActionsView.removeAllViews();
+			actionSender.announcePassz();
 		});
 	}
 
@@ -576,15 +528,12 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	public void cardsTaken(final int winnerPlayer)
 	{
 		waitingForTakeAnimation = true;
-		new Handler().postDelayed(new Runnable()
+		new Handler().postDelayed(() ->
 		{
-			public void run()
+			for (PlayedCardView playedCardView : playedCardViews)
 			{
-				for (PlayedCardView playedCardView : playedCardViews)
-				{
-					playedCardView.animateTake(getPositionFromPlayerID(winnerPlayer));
-					waitingForTakeAnimation = false;
-				}
+				playedCardView.animateTake(getPositionFromPlayerID(winnerPlayer));
+				waitingForTakeAnimation = false;
 			}
 		}, DELAY);
 	}
@@ -657,13 +606,10 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	public void pendingNewGame()
 	{
 		okButton.setVisibility(View.VISIBLE);
-		okButton.setOnClickListener(new OnClickListener()
+		okButton.setOnClickListener(v ->
 		{
-			public void onClick(View v)
-			{
-				okButton.setVisibility(View.GONE);
-				actionSender.readyForNewGame();
-			}
+			okButton.setVisibility(View.GONE);
+			actionSender.readyForNewGame();
 		});
 	}
 	
@@ -763,15 +709,12 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	private void showCenterViewDelayed(final View v)
 	{
 		pendingCenterView = v;
-		new Handler().postDelayed(new Runnable()
+		new Handler().postDelayed(() ->
 		{
-			public void run()
-			{
-				if (pendingCenterView != v)
-					return;
-				
-				showCenterView(pendingCenterView);
-			}
+			if (pendingCenterView != v)
+				return;
+
+			showCenterView(pendingCenterView);
 		}, DELAY);
 	}
 	
@@ -904,12 +847,6 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		this.doubleBackToExitPressedOnce = true;
 		Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
 
-		new Handler().postDelayed(new Runnable()
-		{
-			public void run()
-			{
-				doubleBackToExitPressedOnce = false;
-			}
-		}, 1000);
+		new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 1000);
 	}
 }

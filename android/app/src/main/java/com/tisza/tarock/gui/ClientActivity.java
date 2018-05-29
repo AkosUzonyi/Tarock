@@ -34,27 +34,24 @@ public class ClientActivity extends Activity
 		int port = sp.getInt("port", -1);
 		portField.setText(port < 0 ? "" : port + "");
 		
-		connectButton.setOnClickListener(new OnClickListener()
+		connectButton.setOnClickListener(v ->
 		{
-			public void onClick(View v)
-			{
-				String name = nameField.getText().toString();
-				String host = hostField.getText().toString();
-				int port = Integer.parseInt(portField.getText().toString());
-				
-				SharedPreferences sp = getSharedPreferences("client", Context.MODE_PRIVATE);
-				Editor editor = sp.edit();
-				editor.putString("name", name);
-				editor.putString("host", host);
-				editor.putInt("port", port);
-				editor.commit();
-				
-				Intent gameIntent = new Intent(ClientActivity.this, GameActivtiy.class);
-				gameIntent.putExtra("host", host);
-				gameIntent.putExtra("port", port);
-				gameIntent.putExtra("name", name);
-				startActivity(gameIntent);
-			}
+			String name = nameField.getText().toString();
+			String host = hostField.getText().toString();
+			int port1 = Integer.parseInt(portField.getText().toString());
+
+			SharedPreferences sp1 = getSharedPreferences("client", Context.MODE_PRIVATE);
+			Editor editor = sp1.edit();
+			editor.putString("name", name);
+			editor.putString("host", host);
+			editor.putInt("port", port1);
+			editor.commit();
+
+			Intent gameIntent = new Intent(ClientActivity.this, GameActivtiy.class);
+			gameIntent.putExtra("host", host);
+			gameIntent.putExtra("port", port1);
+			gameIntent.putExtra("name", name);
+			startActivity(gameIntent);
 		});
 	}
 }

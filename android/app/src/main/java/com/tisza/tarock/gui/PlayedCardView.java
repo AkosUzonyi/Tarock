@@ -13,13 +13,13 @@ import android.widget.RelativeLayout;
 import com.tisza.tarock.R;
 import com.tisza.tarock.card.Card;
 
-import java.util.LinkedList;
+import java.util.*;
 
 public class PlayedCardView extends ImageView
 {
 	private int orientation;
-	
-	private LinkedList<Integer> imgResourcesQueue = new LinkedList<Integer>();
+
+	private Queue<Integer> imgResourcesQueue = new LinkedList<Integer>();
 
 	private boolean isAnimating = false;
 
@@ -44,23 +44,29 @@ public class PlayedCardView extends ImageView
 	public void addCard(Card c)
 	{
 		int res = getBitmapResForCard(c);
+
+		if (imgResourcesQueue.isEmpty())
+			setImageResource(res);
+
 		imgResourcesQueue.add(res);
-		setImageResource(res);
 	}
 	
 	public void removeFirstCard()
 	{
-		if (!imgResourcesQueue.isEmpty())
+		if (imgResourcesQueue.isEmpty())
 		{
-			imgResourcesQueue.remove();
-			if (imgResourcesQueue.isEmpty())
-			{
-				setImageBitmap(null);
-			}
+			Log.e(GameActivtiy.LOG_TAG, "Tried to remove a card from an empty PlayedCardView");
+			return;
+		}
+
+		imgResourcesQueue.remove();
+		if (imgResourcesQueue.isEmpty())
+		{
+			setImageBitmap(null);
 		}
 		else
 		{
-			Log.e(GameActivtiy.LOG_TAG, "Tried to remove a card from an empty PlayedCardView");
+			setImageResource(imgResourcesQueue.peek());
 		}
 	}
 	

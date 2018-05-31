@@ -49,12 +49,12 @@ public abstract class Card
 		{
 			int suit = id / 5;
 			int value = id % 5 + 1;
-			return new SuitCard(suit, value);
+			return getSuitCard(suit, value);
 		}
 		else
 		{
 			int value = id - 20 + 1;
-			return new TarockCard(value);
+			return getTarockCard(value);
 		}
 	}
 	

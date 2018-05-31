@@ -3,7 +3,7 @@ package com.tisza.tarock.card;
 public class TarockCard extends Card
 {
 	private final int value;
-	
+
 	TarockCard(int v)
 	{
 		if (v < 1 || v >= 23) throw new IllegalArgumentException();

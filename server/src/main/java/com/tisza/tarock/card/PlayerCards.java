@@ -92,9 +92,9 @@ public class PlayerCards
 			if (tarocks.size() < 2)
 				return true;
 			
-			tarocks.remove(new TarockCard(1));
-			tarocks.remove(new TarockCard(2));
-			tarocks.remove(new TarockCard(21));
+			tarocks.remove(Card.getTarockCard(1));
+			tarocks.remove(Card.getTarockCard(2));
+			tarocks.remove(Card.getTarockCard(21));
 			
 			if (tarocks.size() == 0)
 				return true;
@@ -110,7 +110,7 @@ public class PlayerCards
 	{
 		for (int suit = 0; suit < 4; suit++)
 		{
-			if (!cards.contains(new SuitCard(suit, 5)))
+			if (!cards.contains(Card.getSuitCard(suit, 5)))
 			{
 				return false;
 			}

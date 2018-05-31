@@ -57,7 +57,7 @@ public class SuitCard extends Card
 	{
 		return suit * 5 + value - 1;
 	}
-	
+
 	public String toString()
 	{
 		return "Suit " + getSuit() + "-" + getValue();

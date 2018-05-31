@@ -2,16 +2,13 @@ package com.tisza.tarock.game;
 
 public enum GameType
 {
-	PASKIEVICS, ILLUSZTRALT, MAGAS, ZEBI;
+	PASKIEVICS(), ILLUSZTRALT(PASKIEVICS), MAGAS(ILLUSZTRALT), ZEBI(MAGAS);
 
-	private GameType[] parents;
+	private final GameType[] parents;
 
-	static
+	GameType(GameType ... parents)
 	{
-		PASKIEVICS.parents = new GameType[]{};
-		ILLUSZTRALT.parents = new GameType[]{PASKIEVICS};
-		MAGAS.parents = new GameType[]{ILLUSZTRALT};
-		ZEBI.parents = new GameType[]{MAGAS};
+		this.parents = parents;
 	}
 
 	public boolean hasParent(GameType gameType)

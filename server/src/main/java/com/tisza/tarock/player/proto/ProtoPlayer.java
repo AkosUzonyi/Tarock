@@ -5,6 +5,7 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.player.*;
 import com.tisza.tarock.proto.*;
 
+import java.io.*;
 import java.util.concurrent.*;
 
 public class ProtoPlayer implements Player
@@ -55,7 +56,14 @@ public class ProtoPlayer implements Player
 	{
 		actionQueue = null;
 		//TODO: remove
-		connection.closeRequest();
+		try
+		{
+			connection.close();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private class MyMessageHandler implements MessageHandler

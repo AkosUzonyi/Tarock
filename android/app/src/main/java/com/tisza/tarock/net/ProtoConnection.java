@@ -1,7 +1,5 @@
 package com.tisza.tarock.net;
 
-import com.tisza.tarock.net.*;
-import com.tisza.tarock.proto.*;
 import com.tisza.tarock.proto.MainProto.*;
 
 import java.io.*;
@@ -9,29 +7,32 @@ import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class ProtoConnection
+public class ProtoConnection implements Closeable
 {
 	private Socket socket;
 	private InputStream is;
 	private OutputStream os;
-	private List<MessageHandler> packetHandlers = new ArrayList<>();
-	private BlockingQueue<Message> messagesToSend = new LinkedBlockingQueue<>();
-	private boolean closeRequested = false;
-	
+	private final Object packetHandlersLock = new Object();
+	private List<MessageHandler> packetHandlers = new ArrayList<MessageHandler>();
+	private BlockingQueue<Message> messagesToSend = new LinkedBlockingQueue<Message>();
+	private volatile boolean started = false;
+	private volatile boolean closeRequested = false;
+
 	private Thread readerThread = new Thread(new Runnable()
 	{
+		@Override
 		public void run()
 		{
 			try
 			{
 				while (!closeRequested)
 				{
-					MainProto.Message message = Message.parseDelimitedFrom(is);
+					Message message = Message.parseDelimitedFrom(is);
 
 					if (message == null)
 						break;
 
-					synchronized (packetHandlers)
+					synchronized (packetHandlersLock)
 					{
 						for (MessageHandler handler : packetHandlers)
 						{
@@ -41,49 +42,63 @@ public class ProtoConnection
 				}
 			}
 			catch (EOFException e) {}
-			catch (SocketException e) {}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 			}
 			finally
 			{
-				closeRequest();
+				if (!closeRequested)
+				{
+					try
+					{
+						close();
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	});
 	
 	private Thread writerThread = new Thread(new Runnable()
 	{
+		@Override
 		public void run()
 		{
 			try
 			{
-				while (!closeRequested || !messagesToSend.isEmpty())
+				while (!closeRequested)
 				{
 					try
 					{
 						Message message = messagesToSend.take();
 						message.writeDelimitedTo(os);
 					}
-					catch (InterruptedException e) {}
+					catch (InterruptedException e)
+					{
+						break;
+					}
 				}
 			}
-			catch (SocketException e) {}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 			}
 			finally
 			{
-				closeRequest();
-				try
+				if (!closeRequested)
 				{
-					close();
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
+					try
+					{
+						close();
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -97,18 +112,19 @@ public class ProtoConnection
 		os = socket.getOutputStream();
 	}
 	
-	public void start()
+	public synchronized void start()
 	{
-		if (!closeRequested)
-		{
-			readerThread.start();
-			writerThread.start();
-		}
+		if (started || closeRequested)
+			throw new IllegalStateException();
+
+		started = true;
+		readerThread.start();
+		writerThread.start();
 	}
 	
 	public void addMessageHandler(MessageHandler handler)
 	{
-		synchronized (packetHandlers)
+		synchronized (packetHandlersLock)
 		{
 			packetHandlers.add(handler);
 		}
@@ -116,7 +132,7 @@ public class ProtoConnection
 	
 	public void removeMessageHandler(MessageHandler handler)
 	{
-		synchronized (packetHandlers)
+		synchronized (packetHandlersLock)
 		{
 			packetHandlers.remove(handler);
 		}
@@ -124,39 +140,68 @@ public class ProtoConnection
 	
 	public void sendMessage(Message message)
 	{
-		if (isAlive())
+		if (!isAlive())
+			throw new IllegalStateException();
+
+		messagesToSend.offer(message);
+	}
+
+	private void stopThreads()
+	{
+		stopThread(readerThread);
+		stopThread(writerThread);
+	}
+
+	private void stopThread(Thread thread)
+	{
+		if (!thread.isAlive())
+			return;
+
+		if (thread == Thread.currentThread())
+			return;
+
+		thread.interrupt();
+		try
 		{
-			messagesToSend.offer(message);
+			thread.join(1000);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+
+		if (thread.isAlive())
+		{
+			System.err.println("force stopping thread");
+			thread.stop();
 		}
 	}
-	
-	public void closeRequest()
+
+	public synchronized boolean isAlive()
 	{
-		if (!closeRequested)
-		{
-			closeRequested = true;
-			writerThread.interrupt();
-		}
+		return started && !closeRequested;
 	}
 	
-	public boolean isAlive()
+	public synchronized void close() throws IOException
 	{
-		return !closeRequested;
-	}
-	
-	private void close() throws IOException
-	{
+		if (closeRequested)
+			return;
+
 		closeRequested = true;
+
 		if (socket != null)
 		{
 			socket.close();
 			socket = null;
-			synchronized (packetHandlers)
+		}
+
+		stopThreads();
+
+		synchronized (packetHandlersLock)
+		{
+			for (MessageHandler handler : packetHandlers)
 			{
-				for (MessageHandler handler : packetHandlers)
-				{
-					handler.connectionClosed();
-				}
+				handler.connectionClosed();
 			}
 			packetHandlers = null;
 		}

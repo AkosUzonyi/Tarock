@@ -831,7 +831,14 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		super.onDestroy();
 		if (conncection != null)
 		{
-			conncection.closeRequest();
+			try
+			{
+				conncection.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
 		}
 	}
 

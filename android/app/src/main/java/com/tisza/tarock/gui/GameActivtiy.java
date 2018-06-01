@@ -149,7 +149,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		throwButton = (Button)findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v ->
 		{
-			//doAction(Action.newBuilder().set);
+			actionSender.throwCards();
 		});
 		
 		layoutInflater.inflate(R.layout.messages, centerSpace);
@@ -298,23 +298,13 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 				throwButton.setVisibility(View.VISIBLE);
 			}
 		}
-		else if (phase == PhaseEnum.CALLING)
-		{
-			showCenterView(messagesView);
-			
-			if (myCards.canBeThrown(false))
-			{
-				throwButton.setVisibility(View.VISIBLE);
-			}
-		}
 		else if (phase == PhaseEnum.CHANGING)
 		{
 			showCenterView(messagesView);
-			
-			if (myCards.canBeThrown(true))
-			{
-				throwButton.setVisibility(View.VISIBLE);
-			}
+		}
+		else if (phase == PhaseEnum.CALLING)
+		{
+			showCenterView(messagesView);
 		}
 		else if (phase == PhaseEnum.ANNOUNCING)
 		{

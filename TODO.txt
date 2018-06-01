@@ -1,8 +1,8 @@
 bugs:
-? pagatsas isSuccessful
 ? GameActivity call displaymessage
 soloIntentional: should not be intentional if a self-skarted card is called
 caller's skart is not shown
+Szinultimo, Kings announcements canBeAnnounced
 
 needs fix:
 ultimo button in GameTypes

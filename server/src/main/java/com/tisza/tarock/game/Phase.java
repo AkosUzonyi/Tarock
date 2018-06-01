@@ -9,15 +9,26 @@ abstract class Phase implements ActionHandler
 {
 	protected final GameSession gameSession;
 	protected final GameState currentGame;
+	protected final GameHistory history;
 
 	public Phase(GameSession gameSession)
 	{
 		this.gameSession = gameSession;
 		currentGame = gameSession.getCurrentGame();
+		history = gameSession.getCurrentHistory();
 	}
 
 	public abstract PhaseEnum asEnum();
 	public abstract void onStart();
+
+	public void requestHistory(PlayerSeat player)
+	{
+		EventSender eventSender = gameSession.getPlayerEventQueue(player);
+		eventSender.startGame(player, gameSession.getPlayerNames());
+		eventSender.playerCards(currentGame.getPlayerCards(player));
+		history.sendCurrentStatusToPlayer(player, asEnum(), gameSession.getPlayerEventQueue(player));
+		eventSender.phaseChanged(asEnum());
+	}
 
 	@Override
 	public void announce(PlayerSeat player, AnnouncementContra announcementContra)

@@ -33,6 +33,16 @@ class Announcing extends Phase implements IAnnouncing
 		announce(currentPlayer, Announcements.jatek);
 	}
 
+	@Override
+	public void requestHistory(PlayerSeat player)
+	{
+		super.requestHistory(player);
+
+		gameSession.getPlayerEventQueue(player).turn(currentPlayer);
+		if (player == currentPlayer)
+			sendAvailableAnnouncements();
+	}
+
 	public void announce(PlayerSeat player, Announcement a)
 	{
 		announce(player, new AnnouncementContra(a, 0));
@@ -60,12 +70,11 @@ class Announcing extends Phase implements IAnnouncing
 
 		if (ac.getAnnouncement().shouldBeStored())
 		{
-			Team team = currentGame.getPlayerPairs().getTeam(player);
-			setContraLevel(ac.getNextTeamToContra(team), ac.getAnnouncement(), ac.getContraLevel());
+			setContraLevel(ac.getNextTeamToContra(getCurrentTeam()), ac.getAnnouncement(), ac.getContraLevel());
 		}
 
+		history.registerAnnouncement(player, ac);
 		ac.getAnnouncement().onAnnounced(this);
-
 		gameSession.getBroadcastEventSender().announce(player, ac);
 		sendAvailableAnnouncements();
 	}
@@ -110,7 +119,7 @@ class Announcing extends Phase implements IAnnouncing
 	{
 		List<AnnouncementContra> list = new ArrayList<AnnouncementContra>();
 		
-		Team currentPlayerTeam = currentGame.getPlayerPairs().getTeam(currentPlayer);
+		Team currentPlayerTeam = getCurrentTeam();
 		boolean needsIdentification = needsIdentification();
 		
 		for (Team origAnnouncer : Team.values())
@@ -153,7 +162,7 @@ class Announcing extends Phase implements IAnnouncing
 	@Override
 	public boolean canAnnounce(AnnouncementContra ac)
 	{
-		Team currentPlayerTeam = currentGame.getPlayerPairs().getTeam(currentPlayer);
+		Team currentPlayerTeam = getCurrentTeam();
 		Announcement a = ac.getAnnouncement();
 		
 		if (ac.equals(new AnnouncementContra(Announcements.jatek, 1)) && Announcements.hkp.canBeAnnounced(this))

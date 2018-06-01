@@ -24,6 +24,15 @@ class PendingNewGame extends Phase
 	}
 
 	@Override
+	public void requestHistory(PlayerSeat player)
+	{
+		super.requestHistory(player);
+
+		if (!ready.get(player))
+			gameSession.getBroadcastEventSender().pendingNewGame();
+	}
+
+	@Override
 	public void readyForNewGame(PlayerSeat player)
 	{
 		ready.put(player, true);

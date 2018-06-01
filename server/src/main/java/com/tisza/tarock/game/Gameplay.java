@@ -27,6 +27,18 @@ class Gameplay extends Phase
 	}
 
 	@Override
+	public void requestHistory(PlayerSeat player)
+	{
+		super.requestHistory(player);
+
+		for (PlayerSeat cardPlayer = currentRound.getBeginnerPlayer(); cardPlayer != currentRound.getCurrentPlayer(); cardPlayer = cardPlayer.nextPlayer())
+		{
+			gameSession.getPlayerEventQueue(player).playCard(cardPlayer, currentRound.getCardByPlayer(cardPlayer));
+		}
+		gameSession.getPlayerEventQueue(player).turn(currentRound.getCurrentPlayer());
+	}
+
+	@Override
 	public void playCard(PlayerSeat player, Card card)
 	{
 		if (player != currentRound.getCurrentPlayer())
@@ -45,6 +57,7 @@ class Gameplay extends Phase
 		
 		if (currentRound.isFinished())
 		{
+			history.registerRound(currentRound);
 			currentGame.addRound(currentRound);
 			PlayerSeat winner = currentRound.getWinner();
 			currentGame.addWonCards(winner, currentRound.getCards());

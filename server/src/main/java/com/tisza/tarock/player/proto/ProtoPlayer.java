@@ -11,20 +11,35 @@ import java.util.concurrent.*;
 public class ProtoPlayer implements Player
 {
 	private ProtoConnection connection;
-	private EventSender eventSender;
-
-	private JoinRequestHandler joinRequestHandler = null;
+	private ProtoEventSender eventSender = new ProtoEventSender();
+	private MyMessageHandler messageHandler = new MyMessageHandler();
 
 	private String name = null;
 
 	private PlayerSeat seat;
 	private BlockingQueue<Action> actionQueue = null;
 
-	public ProtoPlayer(ProtoConnection connection)
+	public ProtoPlayer(String name)
+	{
+		this.name = name;
+		useConnection(null);
+	}
+
+	public void useConnection(ProtoConnection connection)
 	{
 		this.connection = connection;
-		eventSender = new ProtoEventSender(connection);
-		connection.addMessageHandler(new MyMessageHandler());
+		eventSender.useConnection(connection);
+
+		if (connection != null)
+		{
+			connection.addMessageHandler(messageHandler);
+			actionQueue.add(handler -> handler.requestHistory(seat));
+		}
+	}
+
+	public boolean isConnected()
+	{
+		return connection != null;
 	}
 
 	@Override
@@ -37,11 +52,6 @@ public class ProtoPlayer implements Player
 	public EventSender getEventSender()
 	{
 		return eventSender;
-	}
-
-	public void setJoinRequestHandler(JoinRequestHandler joinRequestHandler)
-	{
-		this.joinRequestHandler = joinRequestHandler;
 	}
 
 	@Override
@@ -80,9 +90,8 @@ public class ProtoPlayer implements Player
 					actionQueue.add(new ProtoAction(seat, message.getAction()));
 					break;
 				case LOGIN:
-					name = message.getLogin().getName();
+					//name = message.getLogin().getName();
 					System.out.println("Player logged in: " + name);
-					joinRequestHandler.requestJoin(0);
 					break;
 				default:
 					System.err.println("unhandled message type: " + message.getMessageTypeCase());
@@ -92,6 +101,7 @@ public class ProtoPlayer implements Player
 		@Override
 		public void connectionClosed()
 		{
+			useConnection(null);
 			System.out.println(name + " disconnected.");
 		}
 	}

@@ -15,14 +15,15 @@ public class ProtoEventSender implements EventSender
 {
 	private ProtoConnection connection;
 
-	public ProtoEventSender(ProtoConnection connection)
+	public void useConnection(ProtoConnection connection)
 	{
 		this.connection = connection;
 	}
 
 	private void sendEvent(Event event)
 	{
-		connection.sendMessage(MainProto.Message.newBuilder().setEvent(event).build());
+		if (connection != null)
+			connection.sendMessage(MainProto.Message.newBuilder().setEvent(event).build());
 	}
 
 	private void sendPlayerActionEvent(PlayerSeat player, ActionProto.Action action)

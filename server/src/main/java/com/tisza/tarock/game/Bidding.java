@@ -31,6 +31,16 @@ class Bidding extends Phase
 		sendAvailableBids();
 	}
 
+	@Override
+	public void requestHistory(PlayerSeat player)
+	{
+		super.requestHistory(player);
+
+		gameSession.getPlayerEventQueue(player).turn(currentPlayer);
+		if (player == currentPlayer)
+			sendAvailableBids();
+	}
+
 	private boolean canKeep()
 	{
 		return !isKept && playersState.get(currentPlayer) == BidState.IN;
@@ -79,6 +89,7 @@ class Bidding extends Phase
 			lastBidValue = bid;
 		}
 
+		history.registerBid(player, bid);
 		gameSession.getBroadcastEventSender().bid(player, bid);
 
 		findNextPlayer();

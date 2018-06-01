@@ -36,11 +36,20 @@ class Calling extends Phase
 				break;
 			}
 		}
-		
-		gameSession.getPlayerEventQueue(callerPlayer).availabeCalls(getCallableCards());
-		gameSession.getBroadcastEventSender().turn(callerPlayer);
+
+		sendAvailableCalls();
 	}
-	
+
+	@Override
+	public void requestHistory(PlayerSeat player)
+	{
+		super.requestHistory(player);
+
+		gameSession.getPlayerEventQueue(player).turn(callerPlayer);
+		if (player == callerPlayer)
+			sendAvailableCalls();
+	}
+
 	@Override
 	public void call(PlayerSeat player, Card card)
 	{
@@ -83,10 +92,17 @@ class Calling extends Phase
 			currentGame.invitAccepted();
 		}
 
+		history.setCalledCard(player, card);
 		gameSession.getBroadcastEventSender().call(player, card);
 		gameSession.changePhase(new Announcing(gameSession));
 	}
-	
+
+	private void sendAvailableCalls()
+	{
+		gameSession.getPlayerEventQueue(callerPlayer).availabeCalls(getCallableCards());
+		gameSession.getBroadcastEventSender().turn(callerPlayer);
+	}
+
 	private List<Card> getCallableCards()
 	{
 		Set<Card> callOptions = new LinkedHashSet<Card>();

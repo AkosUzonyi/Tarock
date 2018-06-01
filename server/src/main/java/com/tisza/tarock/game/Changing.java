@@ -28,12 +28,30 @@ class Changing extends Phase
 	public void onStart()
 	{
 		dealCardsFromTalon();
+
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
 			gameSession.getPlayerEventQueue(player).cardsFromTalon(cardsFromTalon.get(player));
 		}
 	}
-	
+
+	@Override
+	public void requestHistory(PlayerSeat player)
+	{
+		super.requestHistory(player);
+
+		for (PlayerSeat onePlayer : PlayerSeat.getAll())
+		{
+			if (donePlayer.get(onePlayer))
+			{
+				gameSession.getPlayerEventQueue(player).changeDone(player);
+			}
+		}
+
+		if (!donePlayer.get(player))
+			gameSession.getPlayerEventQueue(player).cardsFromTalon(cardsFromTalon.get(player));
+	}
+
 	private void dealCardsFromTalon()
 	{
 		for (PlayerSeat player : PlayerSeat.getAll())
@@ -60,6 +78,8 @@ class Changing extends Phase
 			{
 				cardsFromTalon.get(player).add(remainingCards.remove(0));
 			}
+
+			history.setCardsFromTalon(player, cardsFromTalon.get(player));
 
 			player = player.nextPlayer();
 		}
@@ -118,6 +138,8 @@ class Changing extends Phase
 		skartingPlayerCards.getCards().removeAll(cardsToSkart);
 		
 		donePlayer.put(player, true);
+
+		history.setCardsSkarted(player, cardsToSkart);
 		
 		gameSession.getPlayerEventQueue(player).playerCards(skartingPlayerCards);
 		gameSession.getBroadcastEventSender().changeDone(player);

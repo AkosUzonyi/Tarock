@@ -1,10 +1,10 @@
 package com.tisza.tarock.game;
 
 import com.tisza.tarock.announcement.*;
-import com.tisza.tarock.card.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.player.*;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.*;
@@ -21,6 +21,8 @@ public class GameSession implements Runnable
 
 	private GameState state;
 	private Phase currentPhase;
+
+	private GameHistory history;
 
 	private GameType gameType;
 
@@ -98,6 +100,11 @@ public class GameSession implements Runnable
 		return state;
 	}
 
+	public GameHistory getCurrentHistory()
+	{
+		return history;
+	}
+
 	void changePhase(Phase phase)
 	{
 		currentPhase = phase;
@@ -115,6 +122,11 @@ public class GameSession implements Runnable
 		return players.get(player).getEventSender();
 	}
 
+	public List<String> getPlayerNames()
+	{
+		return players.values().stream().map(Player::getName).collect(Collectors.toList());
+	}
+
 	private PlayerSeat getNextBeginnerPlayer(boolean doubleRound)
 	{
 		if (state == null)
@@ -126,11 +138,13 @@ public class GameSession implements Runnable
 	void startNewGame(boolean doubleRound)
 	{
 		state = new GameState(gameType, getNextBeginnerPlayer(doubleRound));
+		history = new GameHistory();
 
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			getPlayerEventQueue(player).startGame(player, players.values().stream().map(Player::getName).collect(Collectors.toList()));
+			getPlayerEventQueue(player).startGame(player, getPlayerNames());
 			getPlayerEventQueue(player).playerCards(state.getPlayerCards(player));
+			history.setOriginalPlayersCards(player, new ArrayList<>(state.getPlayerCards(player).getCards()));
 		}
 
 		changePhase(new Bidding(this));
@@ -138,6 +152,15 @@ public class GameSession implements Runnable
 
 	void sendStatistics()
 	{
+		try
+		{
+			history.writeJSON(new OutputStreamWriter(System.out));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
 		Map<Team, List<AnnouncementStaticticsEntry>> statEntriesForTeams = new HashMap<>();
 		Map<Team, Integer> gamePointsForTeams = new HashMap<>();
 		int pointsForCallerTeam = 0;

@@ -7,6 +7,7 @@ import java.util.*;
 
 public interface ActionHandler
 {
+	public void requestHistory(PlayerSeat player);
 	public void announce(PlayerSeat player, AnnouncementContra announcementContra);
 	public void announcePassz(PlayerSeat player);
 	public void bid(PlayerSeat player, int bid);

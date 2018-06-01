@@ -1,6 +1,8 @@
 bugs:
 ? pagatsas isSuccessful
 ? GameActivity call displaymessage
+soloIntentional: should not be intentional if a self-skarted card is called
+caller's skart is not shown
 
 needs fix:
 ultimo button in GameTypes
@@ -10,12 +12,15 @@ renames:
 little nice things:
 canBeAnnounced: remove AnnouncementBase's implementation
 create AnnouncementInstance class (Announcement, contraLevel, announcerteam)
+changing: add cards from talon immediately to players' cards
 
 features:
-handle relogin
 error messages
 
 refactorizations:
+remove GameSession dependency from Phase
+move Phase and GameHistory fields from GameSession to GameState
+create phase package
  
 other:
 final classes?

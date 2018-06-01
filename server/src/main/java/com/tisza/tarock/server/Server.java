@@ -17,42 +17,55 @@ public class Server implements Runnable
 	private Thread listenterThread = null;
 	private ServerSocket ss;
 
+	private List<ProtoPlayer> protoPlayers = new ArrayList<>();
+
 	public static void main(String[] args)
 	{
-		new Server(8128).start();
+		new Server(8128, 3).start();
 	}
 
-	public Server(int port)
+	public Server(int port, int randomPlayerCount)
 	{
+		if (randomPlayerCount < 0 || randomPlayerCount >= 4)
+			throw new IllegalArgumentException();
+
 		this.port = port;
 
-		//joinedPlayers.add(new RandomPlayer("bot0"));
-		//joinedPlayers.add(new RandomPlayer("bot1"));
-		//joinedPlayers.add(new RandomPlayer("bot2"));
+		List<Player> players = new ArrayList<>();
+		for (int i = 0; i < 4; i++)
+		{
+			Player player;
+			if (i < randomPlayerCount)
+			{
+				player = new RandomPlayer("bot" + i, 500);
+			}
+			else
+			{
+				ProtoPlayer protoPlayer = new ProtoPlayer("proto" + i);
+				protoPlayers.add(protoPlayer);
+				player = protoPlayer;
+			}
+			players.add(player);
+		}
+		gameSession = new GameSession(GameType.ZEBI, players);
+		gameSession.startSession();
 	}
 
-	//TODO: move
-	List<Player> joinedPlayers = new ArrayList<>();
-
-	private void listenLoop() throws IOException
+	private void newConnection(Socket s) throws IOException
 	{
-		while (!Thread.interrupted())
+		System.out.println(s.getRemoteSocketAddress());
+
+		for (ProtoPlayer player : protoPlayers)
 		{
-			Socket s = ss.accept();
-			System.out.println(s.getRemoteSocketAddress());
-			ProtoConnection connection = new ProtoConnection(s);
-			ProtoPlayer player = new ProtoPlayer(connection);
-			player.setJoinRequestHandler(gameID ->
+			if (!player.isConnected())
 			{
-				joinedPlayers.add(player);
-				if (joinedPlayers.size() == 4)
-				{
-					gameSession = new GameSession(GameType.PASKIEVICS, joinedPlayers);
-					gameSession.startSession();
-				}
-			});
-			connection.start();
+				ProtoConnection connection = new ProtoConnection(s);
+				player.useConnection(connection);
+				connection.start();
+				return;
+			}
 		}
+		s.close();
 	}
 
 	@Override
@@ -62,7 +75,11 @@ public class Server implements Runnable
 		{
 			ss = new ServerSocket(port);
 			System.out.println(ss.getLocalSocketAddress());
-			listenLoop();
+			while (!Thread.interrupted())
+			{
+				Socket s = ss.accept();
+				newConnection(s);
+			}
 		}
 		catch (IOException e)
 		{
@@ -87,6 +104,7 @@ public class Server implements Runnable
 			}
 			listenterThread = null;
 		}
+		System.out.println("server stopped");
 	}
 
 	public void start()

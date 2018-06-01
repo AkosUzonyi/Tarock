@@ -46,7 +46,7 @@ public class Round
 	
 	public Card getCardByIndex(int n)
 	{
-		PlayerSeat player = PlayerSeat.fromInt(beginnerPlayer.asInt() + n);
+		PlayerSeat player = PlayerSeat.fromInt((beginnerPlayer.asInt() + n) % 4);
 		return getCardByPlayer(player);
 	}
 	

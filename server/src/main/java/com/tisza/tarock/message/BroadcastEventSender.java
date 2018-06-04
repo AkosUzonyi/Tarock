@@ -7,11 +7,21 @@ import java.util.*;
 
 public class BroadcastEventSender implements EventSender
 {
-	private List<EventSender> eventSenders = new ArrayList<>();
+	private List<EventSender> eventSenders;
+
+	public BroadcastEventSender()
+	{
+		setEventSenders(Collections.EMPTY_LIST);
+	}
 
 	public BroadcastEventSender(List<EventSender> eventSenders)
 	{
-		this.eventSenders.addAll(eventSenders);
+		setEventSenders(eventSenders);
+	}
+
+	public void setEventSenders(List<EventSender> eventSenders)
+	{
+		this.eventSenders = eventSenders;
 	}
 
 	@Override

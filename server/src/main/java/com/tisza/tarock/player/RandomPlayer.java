@@ -1,4 +1,4 @@
-package com.tisza.tarock.player.random;
+package com.tisza.tarock.player;
 
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
@@ -34,7 +34,7 @@ public class RandomPlayer implements Player
 	@Override
 	public String getName()
 	{
-		return "<" + name + ">";
+		return name;
 	}
 
 	@Override
@@ -58,10 +58,8 @@ public class RandomPlayer implements Player
 
 	private void enqueueAction(Action action)
 	{
-		if (actionQueue == null)
-			throw new IllegalStateException("no action queue");
-
-		actionQueue.add(action);
+		if (actionQueue != null)
+			actionQueue.add(action);
 	}
 
 	private void enqueueActionDelayed(Action action)

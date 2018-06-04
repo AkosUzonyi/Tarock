@@ -3,7 +3,6 @@ package com.tisza.tarock.server;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.player.*;
 import com.tisza.tarock.player.proto.*;
-import com.tisza.tarock.player.random.*;
 
 import java.io.*;
 import java.net.*;
@@ -34,18 +33,17 @@ public class Server implements Runnable
 		List<Player> players = new ArrayList<>();
 		for (int i = 0; i < 4; i++)
 		{
-			Player player;
 			if (i < randomPlayerCount)
 			{
-				player = new RandomPlayer("bot" + i, 500);
+				players.add(new RandomPlayer("bot" + i, 500));
 			}
 			else
 			{
 				ProtoPlayer protoPlayer = new ProtoPlayer("proto" + i);
 				protoPlayers.add(protoPlayer);
-				player = protoPlayer;
+				players.add(protoPlayer);
+				//players.add(new MixedPlayer(new RandomPlayer(protoPlayer.getName(), 500), protoPlayer, PhaseEnum.ANNOUNCING));
 			}
-			players.add(player);
 		}
 		gameSession = new GameSession(GameType.ZEBI, players);
 		gameSession.startSession();
@@ -60,8 +58,8 @@ public class Server implements Runnable
 			if (!player.isConnected())
 			{
 				ProtoConnection connection = new ProtoConnection(s);
-				player.useConnection(connection);
 				connection.start();
+				player.useConnection(connection);
 				return;
 			}
 		}

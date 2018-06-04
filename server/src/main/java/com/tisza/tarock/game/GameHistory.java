@@ -64,13 +64,7 @@ public class GameHistory
 			eventSender.bid(bidEntry.getPlayer(), bidEntry.getBid());
 		}
 
-		if (currentPhase == PhaseEnum.BIDDING)
-			return;
-
-		if (currentPhase == PhaseEnum.CHANGING)
-			return;
-
-		if (currentPhase == PhaseEnum.CALLING)
+		if (!currentPhase.isAfter(PhaseEnum.CALLING))
 			return;
 
 		eventSender.call(callerPlayer, calledCard);
@@ -80,7 +74,7 @@ public class GameHistory
 			eventSender.announce(announcementEntry.getPlayer(), announcementEntry.getAnnouncement());
 		}
 
-		if (currentPhase == PhaseEnum.ANNOUNCING)
+		if (!currentPhase.isAfter(PhaseEnum.ANNOUNCING))
 			return;
 
 		for (Round round : rounds)
@@ -93,9 +87,6 @@ public class GameHistory
 			}
 			eventSender.cardsTaken(round.getWinner());
 		}
-
-		if (currentPhase == PhaseEnum.GAMEPLAY)
-			return;
 	}
 
 	public void writeJSON(Writer writer) throws JSONException, IOException

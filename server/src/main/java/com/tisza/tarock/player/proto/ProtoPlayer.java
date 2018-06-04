@@ -14,7 +14,7 @@ public class ProtoPlayer implements Player
 	private ProtoEventSender eventSender = new ProtoEventSender();
 	private MyMessageHandler messageHandler = new MyMessageHandler();
 
-	private String name = null;
+	private String name;
 
 	private PlayerSeat seat;
 	private BlockingQueue<Action> actionQueue = null;
@@ -33,7 +33,9 @@ public class ProtoPlayer implements Player
 		if (connection != null)
 		{
 			connection.addMessageHandler(messageHandler);
-			actionQueue.add(handler -> handler.requestHistory(seat));
+
+			if (actionQueue != null)
+				actionQueue.add(handler -> handler.requestHistory(seat));
 		}
 	}
 
@@ -84,10 +86,8 @@ public class ProtoPlayer implements Player
 			switch (message.getMessageTypeCase())
 			{
 				case ACTION:
-					if (actionQueue == null)
-						throw new IllegalStateException("no action queue");
-
-					actionQueue.add(new ProtoAction(seat, message.getAction()));
+					if (actionQueue != null)
+						actionQueue.add(new ProtoAction(seat, message.getAction()));
 					break;
 				case LOGIN:
 					//name = message.getLogin().getName();

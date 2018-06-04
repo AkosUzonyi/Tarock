@@ -1,6 +1,6 @@
 package com.tisza.tarock.card.filter;
 
-import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.*;
 
 public interface CardFilter
 {

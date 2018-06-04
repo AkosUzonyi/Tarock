@@ -46,7 +46,7 @@ public class ResourceMappings
 		{
 			for (int v = 0; v < 5; v++)
 			{
-				Card card = new SuitCard(s, v + 1);
+				Card card = Card.getSuitCard(s, v + 1);
 				
 				String imgName = suitNamesInFile[s] + valueNamesInFile[v];
 				int id = resources.getIdentifier(imgName, "drawable", context.getPackageName());
@@ -59,7 +59,7 @@ public class ResourceMappings
 		
 		for (int i = 1; i <= 22; i++)
 		{
-			Card card = new TarockCard(i);
+			Card card = Card.getTarockCard(i);
 			
 			String imgName = "t" + i;
 			int drawableID = resources.getIdentifier(imgName, "drawable", context.getPackageName());

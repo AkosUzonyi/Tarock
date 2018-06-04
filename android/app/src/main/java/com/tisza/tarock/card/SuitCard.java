@@ -2,9 +2,9 @@ package com.tisza.tarock.card;
 
 public class SuitCard extends Card
 {
-	private int suit, value;
+	private final int suit, value;
 
-	public SuitCard(int suit, int value)
+	SuitCard(int suit, int value)
 	{
 		if (suit < 0 || suit >= 4 || value < 1 || value >= 6)
 			throw new IllegalArgumentException();
@@ -22,11 +22,19 @@ public class SuitCard extends Card
 		return value;
 	}
 
+	@Override
 	public int getPoints()
 	{
 		return value;
 	}
-	
+
+	@Override
+	public boolean isHonor()
+	{
+		return false;
+	}
+
+	@Override
 	public boolean doesBeat(Card otherCard)
 	{
 		if (otherCard instanceof SuitCard)
@@ -44,11 +52,12 @@ public class SuitCard extends Card
 		}
 	}
 
+	@Override
 	public int getID()
 	{
 		return suit * 5 + value - 1;
 	}
-	
+
 	public String toString()
 	{
 		return "Suit " + getSuit() + "-" + getValue();

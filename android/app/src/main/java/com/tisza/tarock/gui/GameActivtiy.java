@@ -165,7 +165,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		ultimoSuitvalueSpinner = (Spinner)findViewById(R.id.ultimo_suitvalue_spinner);
 		ultimoRoundSpinner = (Spinner)findViewById(R.id.ultimo_round_spinner);
 		announceButton = (Button)findViewById(R.id.ultimo_announce_button);
-		
+
 		ultimoBackButton.setOnClickListener(v -> showCenterView(messagesView));
 		
 		ultimoTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -191,7 +191,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 			if (typeSelectedPos < 3)
 			{
 				announcement = new Announcement("ultimo", 0);
-				announcement.setCard(new TarockCard(typeSelectedPos == 2 ? 21 : typeSelectedPos + 1));
+				announcement.setCard(Card.getTarockCard(typeSelectedPos == 2 ? 21 : typeSelectedPos + 1));
 				announcement.setRound(roundIndex);
 			}
 			else if (typeSelectedPos < 8)
@@ -200,7 +200,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 				int value = 5 - (typeSelectedPos - 3);
 
 				announcement = new Announcement("ultimo", 0);
-				announcement.setCard(new SuitCard(suit, value));
+				announcement.setCard(Card.getSuitCard(suit, value));
 				announcement.setRound(roundIndex);
 			}
 			else if (typeSelectedPos < 10)
@@ -353,7 +353,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	public void cardsFromTalon(List<Card> cards)
 	{
 		higlightAllName();
-		
+
 		myCards.getCards().addAll(cards);
 		throwButton.setVisibility(myCards.canBeThrown(true) ? View.VISIBLE : View.GONE);
 		skarting = true;

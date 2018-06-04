@@ -1,17 +1,13 @@
 package com.tisza.tarock.card;
 
-import com.tisza.tarock.card.filter.CardFilter;
-import com.tisza.tarock.card.filter.SuitFilter;
-import com.tisza.tarock.card.filter.TarockFilter;
-import com.tisza.tarock.card.sort.IDSort;
+import com.tisza.tarock.card.filter.*;
+import com.tisza.tarock.card.sort.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class PlayerCards
 {
-	private List<Card> cards = new ArrayList<>();
+	private List<Card> cards = new ArrayList<Card>();
 
 	public PlayerCards() {}
 
@@ -46,6 +42,11 @@ public class PlayerCards
 			}
 		}
 		return result;
+	}
+
+	public int getTarockCount()
+	{
+		return filter(new TarockFilter()).size();
 	}
 
 	public List<Card> getCards()
@@ -85,7 +86,7 @@ public class PlayerCards
 			}
 		}
 
-		return new ArrayList<Card>();
+		return Collections.EMPTY_LIST;
 	}
 
 	public boolean canBeThrown(boolean afterChange)
@@ -98,9 +99,9 @@ public class PlayerCards
 			if (tarocks.size() < 2)
 				return true;
 			
-			tarocks.remove(new TarockCard(1));
-			tarocks.remove(new TarockCard(2));
-			tarocks.remove(new TarockCard(21));
+			tarocks.remove(Card.getTarockCard(1));
+			tarocks.remove(Card.getTarockCard(2));
+			tarocks.remove(Card.getTarockCard(21));
 			
 			if (tarocks.size() == 0)
 				return true;
@@ -116,7 +117,7 @@ public class PlayerCards
 	{
 		for (int suit = 0; suit < 4; suit++)
 		{
-			if (!cards.contains(new SuitCard(suit, 5)))
+			if (!cards.contains(Card.getSuitCard(suit, 5)))
 			{
 				return false;
 			}
@@ -124,6 +125,7 @@ public class PlayerCards
 		return true;
 	}
 
+	@Override
 	public PlayerCards clone()
 	{
 		PlayerCards clone = new PlayerCards();

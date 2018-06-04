@@ -1,11 +1,10 @@
 package com.tisza.tarock.card.filter;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
-import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.card.*;
 
 public class SkartableCardFilter implements CardFilter
 {
+	@Override
 	public boolean match(Card c)
 	{
 		if (c instanceof TarockCard)

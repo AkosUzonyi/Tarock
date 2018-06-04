@@ -50,7 +50,9 @@ public class UltimoViewManager
 			List<UltimoProperty> items = ultimoSelector.getAvailableProperties().get(spinnerPosition);
 
 			Spinner spinner = (Spinner)inflater.inflate(R.layout.ultimo_spinner, spinnerListView, false);
-			spinner.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, items));
+			ArrayAdapter<UltimoProperty> adapter = new ArrayAdapter<>(context, android.R.layout.simple_spinner_item, items);
+			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+			spinner.setAdapter(adapter);
 			spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
 			{
 				@Override

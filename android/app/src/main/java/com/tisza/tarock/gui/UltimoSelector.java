@@ -131,6 +131,9 @@ public class UltimoSelector
 
 		public static AvailableUltimoEntry createFromAnnouncement(Announcement announcement)
 		{
+			if (announcement.getContraLevel() != 0)
+				return null;
+
 			List<UltimoProperty> properties = new ArrayList<>();
 			switch (announcement.getName())
 			{

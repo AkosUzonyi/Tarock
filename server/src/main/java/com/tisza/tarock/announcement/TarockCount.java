@@ -71,12 +71,6 @@ public class TarockCount implements Announcement
 	}
 
 	@Override
-	public boolean isShownInList()
-	{
-		return true;
-	}
-
-	@Override
 	public boolean requireIdentification()
 	{
 		return true;

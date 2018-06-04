@@ -25,10 +25,4 @@ public abstract class Szincsalad extends LastRounds
 	{
 		return suit;
 	}
-	
-	@Override
-	public boolean isShownInList()
-	{
-		return false;
-	}
 }

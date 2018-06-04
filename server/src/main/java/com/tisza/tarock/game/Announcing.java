@@ -142,7 +142,6 @@ class Announcing extends Phase implements IAnnouncing
 					if ((!needsIdentification || !a.requireIdentification()) &&
 							origAnnouncer == currentPlayerTeam &&
 							a.canBeAnnounced(this) &&
-							a.isShownInList() &&
 							gameSession.getGameType().hasParent(a.getGameType())
 						)
 						list.add(new AnnouncementContra(a, 0));

@@ -29,7 +29,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	private int cardWidth;
 	
 	private LayoutInflater layoutInflater;
-	
+
 	private TextView[] playerNameViews;
 	private TextView[] playerMessageViews;
 	private LinearLayout myCardsView;
@@ -46,9 +46,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	private LinearLayout availabeActionsView;
 	
 	private Button ultimoBackButton;
-	private Spinner ultimoTypeSpinner;
-	private Spinner ultimoSuitvalueSpinner;
-	private Spinner ultimoRoundSpinner;
+	private UltimoViewManager ultimoViewManager;
 	private Button announceButton;
 	
 	private RelativeLayout playedCardsView;
@@ -161,59 +159,16 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		layoutInflater.inflate(R.layout.ultimo, centerSpace);
 		ultimoView = findViewById(R.id.ultimo_view);
 		ultimoBackButton = (Button)findViewById(R.id.ultimo_back_buton);
-		ultimoTypeSpinner = (Spinner)findViewById(R.id.ultimo_type_spinner);
-		ultimoSuitvalueSpinner = (Spinner)findViewById(R.id.ultimo_suitvalue_spinner);
-		ultimoRoundSpinner = (Spinner)findViewById(R.id.ultimo_round_spinner);
 		announceButton = (Button)findViewById(R.id.ultimo_announce_button);
-
+		ultimoViewManager = new UltimoViewManager(this, layoutInflater, (LinearLayout)findViewById(R.id.ultimo_spinner_list));
 		ultimoBackButton.setOnClickListener(v -> showCenterView(messagesView));
-		
-		ultimoTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-		{
-			public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-			{
-				ultimoSuitvalueSpinner.setVisibility(position < 3 ? View.GONE : View.VISIBLE);
-				ultimoRoundSpinner.setVisibility(position < 8 ? View.VISIBLE : View.GONE);
-			}
 
-			public void onNothingSelected(AdapterView<?> parent)
-			{
-			}
-		});
-		
 		announceButton.setOnClickListener(v ->
 		{
-			Announcement announcement;
+			Announcement announcement = ultimoViewManager.getCurrentSelectedAnnouncement();
 
-			int roundIndex = 8 - ultimoRoundSpinner.getSelectedItemPosition();
-
-			int typeSelectedPos = ultimoTypeSpinner.getSelectedItemPosition();
-			if (typeSelectedPos < 3)
-			{
-				announcement = new Announcement("ultimo", 0);
-				announcement.setCard(Card.getTarockCard(typeSelectedPos == 2 ? 21 : typeSelectedPos + 1));
-				announcement.setRound(roundIndex);
-			}
-			else if (typeSelectedPos < 8)
-			{
-				int suit = ultimoSuitvalueSpinner.getSelectedItemPosition();
-				int value = 5 - (typeSelectedPos - 3);
-
-				announcement = new Announcement("ultimo", 0);
-				announcement.setCard(Card.getSuitCard(suit, value));
-				announcement.setRound(roundIndex);
-			}
-			else if (typeSelectedPos < 10)
-			{
-				boolean small = typeSelectedPos == 8;
-				int suit = ultimoSuitvalueSpinner.getSelectedItemPosition();
-				announcement = new Announcement(small ? "kisszincsalad" : "nagyszincsalad", 0);
-				announcement.setSuit(suit);
-			}
-			else
-			{
+			if (announcement == null)
 				throw new RuntimeException();
-			}
 
 			actionSender.announce(announcement);
 		});
@@ -246,6 +201,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	}
 
 	private ProtoConnection conncection;
+
 	private List<String> playerNames;
 	private PlayerCards myCards;
 	private int myID = -1;
@@ -263,7 +219,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	public void startGame(int myID, List<String> playerNames)
 	{
 		inflateGameViews();
-		
+
 		this.myID = myID;
 		this.playerNames = playerNames;
 		for (int i = 0; i < 4; i++)
@@ -414,14 +370,19 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	public void availableAnnouncements(List<Announcement> announcements)
 	{
 		availabeActionsView.removeAllViews();
-		
-		Button ultimoButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
-		ultimoButton.setText(ResourceMappings.roundNames[8]);
-		ultimoButton.setOnClickListener(v -> showCenterView(ultimoView));
-		availabeActionsView.addView(ultimoButton);
 
 		Collections.sort(announcements);
-		for (final Announcement announcement : announcements)
+
+		ultimoViewManager.takeAnnouncements(announcements);
+		if (ultimoViewManager.hasAnyUltimo())
+		{
+			Button ultimoButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
+			ultimoButton.setText(ResourceMappings.roundNames[8]);
+			ultimoButton.setOnClickListener(v -> showCenterView(ultimoView));
+			availabeActionsView.addView(ultimoButton);
+		}
+
+		for (Announcement announcement : announcements)
 		{
 			Button announceButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			announceButton.setText(announcement.getDisplayText());

@@ -98,10 +98,4 @@ public abstract class Ultimo extends AnnouncementBase
 	{
 		return false;
 	}
-	
-	@Override
-	public boolean isShownInList()
-	{
-		return false;
-	}
 }

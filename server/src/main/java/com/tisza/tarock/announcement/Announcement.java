@@ -10,7 +10,6 @@ public interface Announcement
 	public boolean canBeAnnounced(IAnnouncing announcing);
 	public void onAnnounced(IAnnouncing announcing);
 	public boolean canContra();
-	public boolean isShownInList();
 	public boolean requireIdentification();
 	public boolean shouldBeStored();
 

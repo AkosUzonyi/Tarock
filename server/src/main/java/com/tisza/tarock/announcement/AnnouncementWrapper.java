@@ -48,12 +48,6 @@ public abstract class AnnouncementWrapper implements Announcement
 	}
 
 	@Override
-	public boolean isShownInList()
-	{
-		return true;
-	}
-
-	@Override
 	public boolean requireIdentification()
 	{
 		return wrappedAnnouncement.getContraLevel() == 0;

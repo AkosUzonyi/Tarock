@@ -1,7 +1,7 @@
 package com.tisza.tarock;
 
 import android.support.annotation.*;
-import com.tisza.tarock.card.Card;
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.gui.ResourceMappings;
 
 import java.util.*;
@@ -156,11 +156,11 @@ public class Announcement implements Comparable<Announcement>
 		"ketkiralyok",
 		"haromkiralyok",
 		"zaroparos",
-		"kisszincsalad",
-		"nagyszincsalad",
 		"facan",
 		"xxifogas",
-		"ultimo"
+		"ultimo",
+		"kisszincsalad",
+		"nagyszincsalad"
 	);
 
 	@Override
@@ -184,11 +184,27 @@ public class Announcement implements Comparable<Announcement>
 			return suit - other.suit;
 
 		if (hasCard() && other.hasCard() && !card.equals(other.card))
-			return card.getID() - other.card.getID();
+			return cardOrdinal(card) - cardOrdinal(other.card);
 
 		if (hasRound() && other.hasRound() && round != other.round)
-			return round - other.round;
+			return (round - other.round) * (name.equals("ultimo") ? -1 : 1);
 
 		return 0;
+	}
+
+	private static int cardOrdinal(Card card)
+	{
+		if (card instanceof TarockCard)
+		{
+			return ((TarockCard)card).getValue();
+		}
+		else if (card instanceof SuitCard)
+		{
+			return 22 + ((SuitCard)card).getSuit() * 5 + ((SuitCard)card).getValue();
+		}
+		else
+		{
+			throw new RuntimeException();
+		}
 	}
 }

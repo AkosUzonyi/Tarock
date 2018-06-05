@@ -232,6 +232,14 @@ public class GameState
 		{
 			points += c.getPoints();
 		}
+
+		if (team == Team.CALLER && playerPairs.isSolo() && !isSoloIntentional())
+		{
+			for (Card c : getSkartForTeam(Team.OPPONENT))
+			{
+				points += c.getPoints();
+			}
+		}
 		
 		return points;
 	}

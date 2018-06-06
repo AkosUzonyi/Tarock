@@ -18,9 +18,11 @@ public class Server implements Runnable
 
 	private List<ProtoPlayer> protoPlayers = new ArrayList<>();
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws IOException
 	{
 		new Server(8128, 3).start();
+		System.in.read();
+		System.exit(0);
 	}
 
 	public Server(int port, int randomPlayerCount)

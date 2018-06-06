@@ -28,17 +28,6 @@ public class Kisszincsalad extends Szincsalad
 	}
 
 	@Override
-	public boolean canBeAnnounced(IAnnouncing announcing)
-	{
-		Team team = announcing.getCurrentTeam();
-		
-		if (announcing.isAnnounced(team, Announcements.nagyszincsaladok[getSuit()]))
-			return false;
-		
-		return super.canBeAnnounced(announcing);
-	}
-
-	@Override
 	protected int getPoints()
 	{
 		return 60;

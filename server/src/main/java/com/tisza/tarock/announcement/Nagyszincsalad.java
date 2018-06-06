@@ -28,14 +28,6 @@ public class Nagyszincsalad extends Szincsalad
 	}
 
 	@Override
-	public void onAnnounced(IAnnouncing announcing)
-	{
-		Team team = announcing.getCurrentTeam();
-		
-		announcing.clearAnnouncement(team, Announcements.kisszincsaladok[getSuit()]);
-	}
-
-	@Override
 	protected int getPoints()
 	{
 		return 100;

@@ -40,4 +40,13 @@ public class Szinultimo extends Ultimo
 			return 10 * (9 - getRound()) + (isKing ? 0 : 10);
 		}
 	}
+
+	@Override
+	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	{
+		if (isKing && announcement == Announcements.kings[0])
+			return true;
+
+		return super.canOverrideAnnouncement(announcement);
+	}
 }

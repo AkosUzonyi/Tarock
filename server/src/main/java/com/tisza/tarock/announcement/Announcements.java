@@ -11,6 +11,8 @@ public class Announcements
 	private static final Map<AnnouncementID, Announcement> idmap = new HashMap<>();
 	private static final List<Announcement> list = new ArrayList<>();
 
+	private static final List<RoundAnnouncement> roundAnnouncements = new ArrayList<>();
+
 	public static final Jatek jatek = new Jatek();
 	public static final HivatalbolKontraParti hkp = new HivatalbolKontraParti();
 	public static final Trull trull = new Trull();
@@ -33,12 +35,17 @@ public class Announcements
 	public static final Facan sasfacan = new Facan(Card.getTarockCard(2));
 	public static final XXIFogas xxiFogas = new XXIFogas();
 	public static final Map<Card, Map<Integer, Ultimo>> ultimok = new HashMap<Card, Map<Integer, Ultimo>>();
-	
+
 	public static Collection<Announcement> getAll()
 	{
 		return list;
 	}
-	
+
+	public static Collection<RoundAnnouncement> getRoundAnnouncements()
+	{
+		return roundAnnouncements;
+	}
+
 	public static Announcement getByID(AnnouncementID id)
 	{
 		return idmap.get(id);
@@ -49,10 +56,13 @@ public class Announcements
 		return list.indexOf(a);
 	}
 
-	private static void add(Announcement a)
+	private static void add(Announcement announcement)
 	{
-		idmap.put(a.getID(), a);
-		list.add(a);
+		idmap.put(announcement.getID(), announcement);
+		list.add(announcement);
+
+		if (announcement instanceof RoundAnnouncement)
+			roundAnnouncements.add((RoundAnnouncement)announcement);
 	}
 
 	static

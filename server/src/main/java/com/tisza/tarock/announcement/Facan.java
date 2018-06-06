@@ -3,7 +3,7 @@ package com.tisza.tarock.announcement;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-public class Facan extends AnnouncementBase
+public class Facan extends RoundAnnouncement
 {
 	private final Card card;
 
@@ -75,6 +75,18 @@ public class Facan extends AnnouncementBase
 	protected int getSilentPoints()
 	{
 		return 5;
+	}
+
+	@Override
+	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	{
+		return false;
+	}
+
+	@Override
+	protected boolean containsRound(int round)
+	{
+		return round == 0;
 	}
 
 	@Override

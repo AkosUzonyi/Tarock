@@ -3,9 +3,7 @@ package com.tisza.tarock.announcement;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-import java.util.*;
-
-public abstract class Ultimo extends AnnouncementBase
+public abstract class Ultimo extends RoundAnnouncement
 {
 	private final int roundIndex;
 	private final Card cardToTakeWith;
@@ -57,41 +55,22 @@ public abstract class Ultimo extends AnnouncementBase
 			}
 		}
 	}
-	
+
 	@Override
-	public boolean canBeAnnounced(IAnnouncing announcing)
+	protected boolean containsRound(int round)
 	{
-		Team team = announcing.getCurrentTeam();
-		
-		Map<Integer, Ultimo> ultimokFromMyCard = Announcements.ultimok.get(cardToTakeWith);
-		
-		for (int r = 0; r <= roundIndex; r++)
-		{
-			Ultimo announcement = ultimokFromMyCard.get(r);
-			if (announcement != null && announcing.isAnnounced(team, announcement))
-			{
-				return false;
-			}
-		}
-		
-		return super.canBeAnnounced(announcing);
+		return this.roundIndex == round;
 	}
-	
+
 	@Override
-	public void onAnnounced(IAnnouncing announcing)
+	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
 	{
-		Team team = announcing.getCurrentTeam();
-		
-		Map<Integer, Ultimo> ultimokFromMyCard = Announcements.ultimok.get(cardToTakeWith);
-		
-		for (int r = 8; r > roundIndex; r--)
-		{
-			Ultimo announcement = ultimokFromMyCard.get(r);
-			if (announcement != null)
-			{
-				announcing.clearAnnouncement(team, announcement);
-			}
-		}
+		if (!(announcement instanceof Ultimo))
+			return false;
+
+		Ultimo otherUltimo = (Ultimo)announcement;
+
+		return cardToTakeWith == otherUltimo.cardToTakeWith && roundIndex < otherUltimo.roundIndex;
 	}
 
 	protected boolean canBeSilent()

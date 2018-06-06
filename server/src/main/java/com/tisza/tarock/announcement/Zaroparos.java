@@ -38,29 +38,40 @@ public class Zaroparos extends LastRounds
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
-		Announcement a0 = Announcements.ultimok.get(Card.getTarockCard(1)).get(6);
-		Announcement a1 = Announcements.ultimok.get(Card.getTarockCard(2)).get(6);
-		if (!a0.canBeAnnounced(announcing))
-			return false;
-		if  (!a1.canBeAnnounced(announcing))
-			return false;
-		
-		return super.canBeAnnounced(announcing);
-	}
-	
-	@Override
-	public void onAnnounced(IAnnouncing announcing)
-	{
 		Team team = announcing.getCurrentTeam();
-		
-		for (int t = 1; t <= 2; t++)
+
+		for (int round = 0; round < 7; round++)
 		{
-			for (int ri = 8; ri > 6; ri--)
+			for (int tarock = 1; tarock <= 2; tarock++)
 			{
-				Announcement ultimo = Announcements.ultimok.get(Card.getTarockCard(t)).get(ri);
-				announcing.clearAnnouncement(team, ultimo);
+				Ultimo pagatsasUltimo = Announcements.ultimok.get(Card.getTarockCard(tarock)).get(round);
+
+				if (announcing.isAnnounced(team, pagatsasUltimo))
+					return false;
 			}
 		}
+
+		return super.canBeAnnounced(announcing);
+	}
+
+	@Override
+	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	{
+		if (announcement instanceof Ultimo)
+		{
+			Ultimo ultimoAnnouncement = (Ultimo)announcement;
+
+			if (isValidCard(ultimoAnnouncement.getCard()) && ultimoAnnouncement.getRound() >= 7)
+				return true;
+		}
+
+		return super.canOverrideAnnouncement(announcement);
+	}
+
+	@Override
+	protected boolean isSameCategory(LastRounds otherAnnouncements)
+	{
+		return otherAnnouncements instanceof Zaroparos;
 	}
 
 	@Override

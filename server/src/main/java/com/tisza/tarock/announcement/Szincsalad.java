@@ -25,4 +25,10 @@ public abstract class Szincsalad extends LastRounds
 	{
 		return suit;
 	}
+
+	@Override
+	protected boolean isSameCategory(LastRounds otherAnnouncements)
+	{
+		return otherAnnouncements instanceof Szincsalad;
+	}
 }

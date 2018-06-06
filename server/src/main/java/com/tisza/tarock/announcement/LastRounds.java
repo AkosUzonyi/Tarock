@@ -3,12 +3,13 @@ package com.tisza.tarock.announcement;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-public abstract class LastRounds extends AnnouncementBase
+public abstract class LastRounds extends RoundAnnouncement
 {
 	LastRounds(){}
 
 	protected abstract int getRoundCount();
 	protected abstract boolean isValidCard(Card card);
+	protected abstract boolean isSameCategory(LastRounds otherAnnouncements);
 
 	@Override
 	public Result isSuccessful(GameState gameState, Team team)
@@ -34,6 +35,22 @@ public abstract class LastRounds extends AnnouncementBase
 		boolean isValidCard = isValidCard(winnerCard);
 
 		return isItUs && isValidCard;
+	}
+
+	@Override
+	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	{
+		if (!(announcement instanceof LastRounds))
+			return false;
+
+		LastRounds otherLastRounds = (LastRounds)announcement;
+		return isSameCategory(otherLastRounds) && getRoundCount() > otherLastRounds.getRoundCount();
+	}
+
+	@Override
+	protected boolean containsRound(int round)
+	{
+		return round >= GameSession.ROUND_COUNT - getRoundCount();
 	}
 }
 

@@ -3,7 +3,7 @@ package com.tisza.tarock.announcement;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-public class KezbeVacak extends AnnouncementBase
+public class KezbeVacak extends RoundAnnouncement
 {
 	private final int roundIndex;
 	private final Card cardToTakeWith;
@@ -55,6 +55,18 @@ public class KezbeVacak extends AnnouncementBase
 		}
 		
 		return Result.SUCCESSFUL;
+	}
+
+	@Override
+	protected boolean containsRound(int round)
+	{
+		return this.roundIndex == round;
+	}
+
+	@Override
+	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	{
+		return false;
 	}
 
 	@Override

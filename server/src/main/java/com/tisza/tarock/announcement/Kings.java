@@ -53,30 +53,9 @@ public class Kings extends LastRounds
 	}
 
 	@Override
-	public boolean canBeAnnounced(IAnnouncing announcing)
+	protected boolean isSameCategory(LastRounds otherAnnouncements)
 	{
-		Team team = announcing.getCurrentTeam();
-		
-		for (int i = 3; i >= count; i--)
-		{
-			if (announcing.isAnnounced(team, Announcements.kings[i - 1]))
-			{
-				return false;
-			}
-		}
-		
-		return super.canBeAnnounced(announcing);
-	}
-	
-	@Override
-	public void onAnnounced(IAnnouncing announcing)
-	{
-		Team team = announcing.getCurrentTeam();
-		
-		for (int i = 1; i < count; i++)
-		{
-			announcing.clearAnnouncement(team, Announcements.kings[i - 1]);
-		}
+		return otherAnnouncements instanceof Kings;
 	}
 
 	@Override

@@ -270,7 +270,13 @@ class Announcing extends Phase implements IAnnouncing
 	{
 		return currentGame.getPlayerToAnnounceSolo();
 	}
-	
+
+	@Override
+	public GameType getGameType()
+	{
+		return currentGame.getGameType();
+	}
+
 	private static class IdentityTracker
 	{
 		private final PlayerPairs playerPairs;

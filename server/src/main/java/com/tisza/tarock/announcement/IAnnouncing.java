@@ -23,4 +23,5 @@ public interface IAnnouncing
 	public boolean canAnnounce(AnnouncementContra a);
 	public PlayerCards getCards(PlayerSeat player);
 	public PlayerSeat getPlayerToAnnounceSolo();
+	public GameType getGameType();
 }

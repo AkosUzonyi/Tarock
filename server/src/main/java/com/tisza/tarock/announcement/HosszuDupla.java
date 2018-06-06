@@ -19,7 +19,7 @@ public class HosszuDupla extends AnnouncementWrapper
 	@Override
 	public GameType getGameType()
 	{
-		return GameType.ZEBI;
+		return GameType.MAGAS;
 	}
 
 	@Override

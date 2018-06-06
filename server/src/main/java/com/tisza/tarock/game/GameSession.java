@@ -174,6 +174,9 @@ public class GameSession implements Runnable
 
 			for (Announcement announcement : Announcements.getAll())
 			{
+				if (!gameType.hasParent(announcement.getGameType()))
+					continue;
+
 				int annoucementPoints = announcement.calculatePoints(state, team);
 
 				pointsForCallerTeam += annoucementPoints * (team == Team.CALLER ? 1 : -1);

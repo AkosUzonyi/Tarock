@@ -1,16 +1,12 @@
 package com.tisza.tarock.net;
 
-import com.tisza.tarock.Announcement;
-import com.tisza.tarock.PhaseEnum;
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
-import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.*;
+import com.tisza.tarock.card.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.EventProto.Event;
-import com.tisza.tarock.proto.ProtoUtils;
+import com.tisza.tarock.proto.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 class Utils
 {

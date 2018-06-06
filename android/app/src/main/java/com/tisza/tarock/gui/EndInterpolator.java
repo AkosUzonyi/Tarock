@@ -1,6 +1,6 @@
 package com.tisza.tarock.gui;
 
-import android.view.animation.Interpolator;
+import android.view.animation.*;
 
 public class EndInterpolator implements Interpolator
 {

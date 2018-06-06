@@ -1,6 +1,6 @@
 package com.tisza.tarock.message;
 
-import com.tisza.tarock.Announcement;
+import com.tisza.tarock.*;
 
 public class AnnouncementStaticticsEntry
 {

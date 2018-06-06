@@ -1,10 +1,11 @@
 package com.tisza.tarock.gui;
-import android.content.Context;
-import android.graphics.Canvas;
-import android.text.TextPaint;
-import android.util.AttributeSet;
-import android.view.Gravity;
-import android.widget.TextView;
+
+import android.content.*;
+import android.graphics.*;
+import android.text.*;
+import android.util.*;
+import android.view.*;
+import android.widget.*;
 
 public class VerticalTextView extends TextView
 {

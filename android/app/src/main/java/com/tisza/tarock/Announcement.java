@@ -1,8 +1,7 @@
 package com.tisza.tarock;
 
-import android.support.annotation.*;
 import com.tisza.tarock.card.*;
-import com.tisza.tarock.gui.ResourceMappings;
+import com.tisza.tarock.gui.*;
 
 import java.util.*;
 

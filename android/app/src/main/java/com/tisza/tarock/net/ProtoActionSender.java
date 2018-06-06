@@ -1,12 +1,12 @@
 package com.tisza.tarock.net;
 
-import com.tisza.tarock.Announcement;
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.message.ActionSender;
+import com.tisza.tarock.*;
+import com.tisza.tarock.card.*;
+import com.tisza.tarock.message.*;
+import com.tisza.tarock.proto.ActionProto.*;
 import com.tisza.tarock.proto.*;
-import com.tisza.tarock.proto.ActionProto.Action;
 
-import java.util.List;
+import java.util.*;
 
 public class ProtoActionSender implements ActionSender
 {

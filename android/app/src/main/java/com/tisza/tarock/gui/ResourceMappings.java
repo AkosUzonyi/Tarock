@@ -1,15 +1,12 @@
 package com.tisza.tarock.gui;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.res.Resources;
-import com.tisza.tarock.R;
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
-import com.tisza.tarock.card.TarockCard;
+import android.annotation.*;
+import android.content.*;
+import android.content.res.*;
+import com.tisza.tarock.*;
+import com.tisza.tarock.card.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @SuppressLint("UseSparseArrays")
 public class ResourceMappings

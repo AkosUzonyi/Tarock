@@ -1,17 +1,13 @@
 package com.tisza.tarock.gui;
 
-import android.content.Context;
-import android.util.Log;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationSet;
-import android.view.animation.RotateAnimation;
-import android.view.animation.TranslateAnimation;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import com.tisza.tarock.R;
-import com.tisza.tarock.card.Card;
+import android.content.*;
+import android.util.*;
+import android.view.*;
+import android.view.animation.*;
+import android.view.animation.Animation.*;
+import android.widget.*;
+import com.tisza.tarock.*;
+import com.tisza.tarock.card.*;
 
 import java.util.*;
 

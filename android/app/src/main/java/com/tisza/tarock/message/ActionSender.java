@@ -1,9 +1,9 @@
 package com.tisza.tarock.message;
 
-import com.tisza.tarock.Announcement;
-import com.tisza.tarock.card.Card;
+import com.tisza.tarock.*;
+import com.tisza.tarock.card.*;
 
-import java.util.List;
+import java.util.*;
 
 public interface ActionSender
 {

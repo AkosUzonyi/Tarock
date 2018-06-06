@@ -106,19 +106,11 @@ class Calling extends Phase
 	private List<Card> getCallableCards()
 	{
 		Set<Card> callOptions = new LinkedHashSet<Card>();
-		
-		if (currentGame.getInvitSent() == Invitation.XIX)
-		{
-			Card c = Card.getTarockCard(19);
-			callOptions.add(c);
-		}
-		
-		if (currentGame.getInvitSent() == Invitation.XVIII)
-		{
-			Card c = Card.getTarockCard(18);
-			callOptions.add(c);
-		}
-		
+
+		Invitation invit = currentGame.getInvitSent();
+		if (invit != Invitation.NONE)
+			callOptions.add(invit.getCard());
+
 		PlayerCards pc = currentGame.getPlayerCards(callerPlayer);
 		for (int t = 20; t >= 1; t--)
 		{

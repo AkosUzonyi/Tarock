@@ -67,7 +67,7 @@ public class UltimoSelector
 	{
 		int selectedSize = selectedProperties.size();
 
-		List<UltimoProperty> newAvailableProperties = new ArrayList<>();
+		SortedSet<UltimoProperty> newAvailableProperties = new TreeSet<>();
 
 		for (AvailableUltimoEntry ultimo : ultimos)
 		{
@@ -77,10 +77,7 @@ public class UltimoSelector
 
 				if (selectedSize < ultimoSize)
 				{
-					UltimoProperty newProperty = ultimo.getProperties().get(selectedSize);
-
-					if (!newAvailableProperties.contains(newProperty))
-						newAvailableProperties.add(newProperty);
+					newAvailableProperties.add(ultimo.getProperties().get(selectedSize));
 				}
 				else if (selectedSize == ultimoSize)
 				{
@@ -91,7 +88,7 @@ public class UltimoSelector
 
 		availableProperties.subList(selectedSize, availableProperties.size()).clear();
 		if (!newAvailableProperties.isEmpty())
-			availableProperties.add(newAvailableProperties);
+			availableProperties.add(new ArrayList<>(newAvailableProperties));
 	}
 
 	private static class AvailableUltimoEntry
@@ -176,8 +173,13 @@ public class UltimoSelector
 		}
 	}
 
-	public interface UltimoProperty
+	public interface UltimoProperty extends Comparable<UltimoProperty>
 	{
+		@Override
+		public default int compareTo(UltimoProperty other)
+		{
+			return hashCode() - other.hashCode();
+		}
 	}
 
 	private static class TarockCardProperty implements UltimoProperty
@@ -192,7 +194,7 @@ public class UltimoSelector
 		@Override
 		public int hashCode()
 		{
-			return value;
+			return 0 + value;
 		}
 
 		@Override
@@ -223,7 +225,7 @@ public class UltimoSelector
 		@Override
 		public int hashCode()
 		{
-			return value;
+			return 100 - value;
 		}
 
 		@Override
@@ -247,7 +249,7 @@ public class UltimoSelector
 		@Override
 		public int hashCode()
 		{
-			return 0;
+			return 200 + 0;
 		}
 
 		@Override
@@ -268,7 +270,7 @@ public class UltimoSelector
 		@Override
 		public int hashCode()
 		{
-			return 0;
+			return 200 + 1;
 		}
 
 		@Override
@@ -296,7 +298,7 @@ public class UltimoSelector
 		@Override
 		public int hashCode()
 		{
-			return suit;
+			return 300 + suit;
 		}
 
 		@Override
@@ -327,7 +329,7 @@ public class UltimoSelector
 		@Override
 		public int hashCode()
 		{
-			return round;
+			return 400 - round;
 		}
 
 		@Override

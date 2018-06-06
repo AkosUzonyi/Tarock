@@ -184,27 +184,11 @@ public class Announcement implements Comparable<Announcement>
 			return suit - other.suit;
 
 		if (hasCard() && other.hasCard() && !card.equals(other.card))
-			return cardOrdinal(card) - cardOrdinal(other.card);
+			return card.getID() - other.card.getID();
 
 		if (hasRound() && other.hasRound() && round != other.round)
 			return (round - other.round) * (name.equals("ultimo") ? -1 : 1);
 
 		return 0;
-	}
-
-	private static int cardOrdinal(Card card)
-	{
-		if (card instanceof TarockCard)
-		{
-			return ((TarockCard)card).getValue();
-		}
-		else if (card instanceof SuitCard)
-		{
-			return 22 + ((SuitCard)card).getSuit() * 5 + ((SuitCard)card).getValue();
-		}
-		else
-		{
-			throw new RuntimeException();
-		}
 	}
 }

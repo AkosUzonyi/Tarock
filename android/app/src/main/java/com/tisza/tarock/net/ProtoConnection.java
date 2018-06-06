@@ -182,6 +182,7 @@ public class ProtoConnection implements Closeable
 		return started && !closeRequested;
 	}
 	
+	@Override
 	public synchronized void close() throws IOException
 	{
 		if (closeRequested)

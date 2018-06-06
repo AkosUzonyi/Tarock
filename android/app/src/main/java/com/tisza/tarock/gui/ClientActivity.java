@@ -19,6 +19,7 @@ public class ClientActivity extends Activity
 	private EditText hostField;
 	private EditText portField;
 	
+	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);

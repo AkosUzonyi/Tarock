@@ -14,6 +14,7 @@ public class ProtoEvent implements Event
 		this.event = event;
 	}
 
+	@Override
 	public void handle(EventHandler handler)
 	{
 		switch (event.getEventTypeCase())

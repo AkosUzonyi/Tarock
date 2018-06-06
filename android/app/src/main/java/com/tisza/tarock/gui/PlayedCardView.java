@@ -32,6 +32,7 @@ public class PlayedCardView extends ImageView
 		setLayoutParams(lp);
 	}
 	
+	@Override
 	protected void onSizeChanged(int w, int h, int oldw, int oldh)
 	{
 		super.onSizeChanged(w, h, oldw, oldh);
@@ -167,14 +168,17 @@ public class PlayedCardView extends ImageView
 		
 		animSet.setAnimationListener(new AnimationListener()
 		{
+			@Override
 			public void onAnimationStart(Animation animation)
 			{
 			}
 			
+			@Override
 			public void onAnimationRepeat(Animation animation)
 			{
 			}
 			
+			@Override
 			public void onAnimationEnd(Animation animation)
 			{
 				if (!play)

@@ -61,6 +61,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	private TextView[] statisticsPointsNameViews = new TextView[4];
 	private TextView[] statisticsPointsValueViews = new TextView[4];
 	
+	@Override
 	@SuppressWarnings("deprecation")
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -87,11 +88,13 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 
 				conncection.addMessageHandler(new MessageHandler()
 				{
+					@Override
 					public void handleMessage(final MainProto.Message message)
 					{
 						runOnUiThread(() -> GameActivtiy.this.handleMessage(message));
 					}
 
+					@Override
 					public void connectionClosed()
 					{
 						GameActivtiy.this.connectionClosed();
@@ -216,6 +219,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 
 	private boolean waitingForTakeAnimation;
 	
+	@Override
 	public void startGame(int myID, List<String> playerNames)
 	{
 		inflateGameViews();
@@ -233,12 +237,14 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		messages = "";
 	}
 	
+	@Override
 	public void cardsChanged(List<Card> cards)
 	{
 		myCards = new PlayerCards(cards);
 		arrangeCards();
 	}
 
+	@Override
 	public void phaseChanged(PhaseEnum phase)
 	{
 		gamePhase = phase;
@@ -276,6 +282,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		}
 	}
 
+	@Override
 	public void cardsThrown(int player, PlayerCards thrownCards)
 	{
 		String msg = getResources().getString(R.string.message_throw_cards);
@@ -283,6 +290,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		displayMessage(getResources().getString(R.string.press_ok) + "\n");
 	}
 	
+	@Override
 	public void availableBids(List<Integer> bids)
 	{
 		availabeActionsView.removeAllViews();
@@ -300,12 +308,14 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		}
 	}
 	
+	@Override
 	public void bid(int player, int bid)
 	{
 		String msg = ResourceMappings.bidToName.get(bid);
 		displayPlayerActionMessage(player, R.string.message_bid, msg);
 	}
 	
+	@Override
 	public void cardsFromTalon(List<Card> cards)
 	{
 		higlightAllName();
@@ -319,6 +329,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		okButton.setOnClickListener(v -> actionSender.change(cardsToSkart));
 	}
 	
+	@Override
 	public void changeDone(int player)
 	{
 		setHiglighted(player, false);
@@ -330,6 +341,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		}
 	}
 	
+	@Override
 	public void skartTarock(int[] counts)
 	{
 		for (int p = 0; p < 4; p++)
@@ -346,6 +358,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		}
 	}
 
+	@Override
 	public void availableCalls(List<Card> calls)
 	{
 		availabeActionsView.removeAllViews();
@@ -362,11 +375,13 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		}
 	}
 	
+	@Override
 	public void call(int player, Card card)
 	{
 		displayPlayerActionMessage(player, R.string.message_call, ResourceMappings.uppercaseCardName(card));
 	}
 	
+	@Override
 	public void availableAnnouncements(List<Announcement> announcements)
 	{
 		availabeActionsView.removeAllViews();
@@ -399,6 +414,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		});
 	}
 
+	@Override
 	public void announce(int player, Announcement announcement)
 	{
 		if (announcement.getName().equals("jatek") && announcement.getContraLevel() == 0)
@@ -410,6 +426,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		displayPlayerActionMessage(player, R.string.message_announce, msg);
 	}
 
+	@Override
 	public void passz(int player)
 	{
 		showCenterView(messagesView);
@@ -418,6 +435,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		displayPlayerActionMessage(player, R.string.message_announce, msg);
 	}
 
+	@Override
 	public void cardPlayed(int player, Card card)
 	{
 		int pos = getPositionFromPlayerID(player);
@@ -476,6 +494,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		}
 	}
 	
+	@Override
 	public void cardsTaken(final int winnerPlayer)
 	{
 		waitingForTakeAnimation = true;
@@ -489,6 +508,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		}, DELAY);
 	}
 	
+	@Override
 	public void turn(int player)
 	{
 		if (gamePhase != PhaseEnum.CHANGING)
@@ -497,6 +517,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		}
 	}
 	
+	@Override
 	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points)
 	{
 		statisticsGamepointsSelf.setText(selfGamePoints + "");
@@ -554,6 +575,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		}
 	}
 
+	@Override
 	public void pendingNewGame()
 	{
 		okButton.setVisibility(View.VISIBLE);
@@ -564,6 +586,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		});
 	}
 	
+	@Override
 	public void wrongAction()
 	{
 		displayMessage("error");
@@ -596,6 +619,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 			cardView.setOnClickListener(new OnClickListener()
 			{
 				private boolean selectedForSkart = false;
+				@Override
 				public void onClick(View v)
 				{
 					if (skarting)
@@ -699,14 +723,17 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		fadeAnimation.setStartTime(AnimationUtils.currentAnimationTimeMillis() + 2000);
 		fadeAnimation.setAnimationListener(new AnimationListener()
 		{
+			@Override
 			public void onAnimationStart(Animation animation)
 			{
 			}
 			
+			@Override
 			public void onAnimationRepeat(Animation animation)
 			{
 			}
 			
+			@Override
 			public void onAnimationEnd(Animation animation)
 			{
 				view.setVisibility(View.GONE);
@@ -757,6 +784,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		return (id - myID + 4) % 4;
 	}
 
+	@Override
 	public void handleMessage(MainProto.Message message)
 	{
 		switch (message.getMessageTypeCase())
@@ -772,11 +800,13 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 
 	private ActionSender actionSender;
 
+	@Override
 	public void connectionClosed()
 	{
 		finish();
 	}
 	
+	@Override
 	protected void onDestroy()
 	{
 		super.onDestroy();
@@ -794,6 +824,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	}
 
 	private boolean doubleBackToExitPressedOnce = false;
+	@Override
 	public void onBackPressed()
 	{
 		if (doubleBackToExitPressedOnce)

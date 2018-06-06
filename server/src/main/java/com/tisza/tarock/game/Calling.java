@@ -105,7 +105,7 @@ class Calling extends Phase
 
 	private List<Card> getCallableCards()
 	{
-		Set<Card> callOptions = new LinkedHashSet<Card>();
+		Set<Card> callOptions = new LinkedHashSet<>();
 
 		Invitation invit = currentGame.getInvitSent();
 		if (invit != Invitation.NONE)
@@ -138,6 +138,6 @@ class Calling extends Phase
 			callOptions.addAll(pc.filter(new CallableCardFilter()));
 		}
 		
-		return new ArrayList<Card>(callOptions);
+		return new ArrayList<>(callOptions);
 	}
 }

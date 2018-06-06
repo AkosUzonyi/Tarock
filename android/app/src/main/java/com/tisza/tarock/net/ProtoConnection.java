@@ -13,8 +13,8 @@ public class ProtoConnection implements Closeable
 	private InputStream is;
 	private OutputStream os;
 	private final Object packetHandlersLock = new Object();
-	private List<MessageHandler> packetHandlers = new ArrayList<MessageHandler>();
-	private BlockingQueue<Message> messagesToSend = new LinkedBlockingQueue<Message>();
+	private List<MessageHandler> packetHandlers = new ArrayList<>();
+	private BlockingQueue<Message> messagesToSend = new LinkedBlockingQueue<>();
 	private volatile boolean started = false;
 	private volatile boolean closeRequested = false;
 

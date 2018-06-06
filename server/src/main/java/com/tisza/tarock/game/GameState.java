@@ -21,7 +21,7 @@ public class GameState
 	private PlayerSeat bidWinnerPlayer = null;
 	private int winnerBid;
 
-	private Map<Team, List<Card>> skartForTeams = new HashMap<Team, List<Card>>();
+	private Map<Team, List<Card>> skartForTeams = new HashMap<>();
 	private PlayerSeat playerSkarted20 = null;
 	
 	private PlayerPairs playerPairs = null;

@@ -7,7 +7,7 @@ import java.util.*;
 
 public class PlayerCards
 {
-	private List<Card> cards = new ArrayList<Card>();
+	private List<Card> cards = new ArrayList<>();
 
 	public void addCard(Card c)
 	{
@@ -26,7 +26,7 @@ public class PlayerCards
 
 	public List<Card> filter(CardFilter f)
 	{
-		List<Card> result = new ArrayList<Card>();
+		List<Card> result = new ArrayList<>();
 		for (Card c : cards)
 		{
 			if (f.match(c))
@@ -59,7 +59,7 @@ public class PlayerCards
 			return getCards();
 		}
 
-		List<List<Card>> lists = new ArrayList<List<Card>>();
+		List<List<Card>> lists = new ArrayList<>();
 
 		if (firstCard instanceof SuitCard)
 		{

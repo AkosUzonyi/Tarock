@@ -9,7 +9,7 @@ import java.util.*;
 
 public class AnnouncementsState
 {
-	private Map<Team, Map<Announcement, Integer>> announcementContraLevels = new HashMap<Team, Map<Announcement, Integer>>();
+	private Map<Team, Map<Announcement, Integer>> announcementContraLevels = new HashMap<>();
 
 	private boolean callerXXIUltimoDeactivated = false, opponentXIUltimoDeactivated = false;
 	private PlayerSeat.Map<TarockCount> tarockCountAnnounced = new PlayerSeat.Map<>(null);
@@ -18,7 +18,7 @@ public class AnnouncementsState
 	{
 		for (Team team : Team.values())
 		{
-			Map<Announcement, Integer> map = new HashMap<Announcement, Integer>();
+			Map<Announcement, Integer> map = new HashMap<>();
 			announcementContraLevels.put(team, map);
 		}
 	}

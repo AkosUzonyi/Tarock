@@ -34,7 +34,7 @@ public class Announcements
 	public static final Facan pagatfacan = new Facan(Card.getTarockCard(1));
 	public static final Facan sasfacan = new Facan(Card.getTarockCard(2));
 	public static final XXIFogas xxiFogas = new XXIFogas();
-	public static final Map<Card, Map<Integer, Ultimo>> ultimok = new HashMap<Card, Map<Integer, Ultimo>>();
+	public static final Map<Card, Map<Integer, Ultimo>> ultimok = new HashMap<>();
 
 	public static Collection<Announcement> getAll()
 	{
@@ -116,7 +116,7 @@ public class Announcements
 			for (int v = 1; v <= 5; v++)
 			{
 				SuitCard card = Card.getSuitCard(s, v);
-				ultimok.put(card, new HashMap<Integer, Ultimo>());
+				ultimok.put(card, new HashMap<>());
 				for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
 				{
 					Ultimo announcement = new Szinultimo(roundIndex, card);
@@ -129,7 +129,7 @@ public class Announcements
 		for (int t = 1; t <= 2; t++)
 		{
 			TarockCard card = Card.getTarockCard(t);
-			ultimok.put(card, new HashMap<Integer, Ultimo>());
+			ultimok.put(card, new HashMap<>());
 			for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
 			{
 				Ultimo announcement = new PagatSasUltimo(roundIndex, card);
@@ -140,7 +140,7 @@ public class Announcements
 		
 		{
 			Card card = Card.getTarockCard(21);
-			ultimok.put(card, new HashMap<Integer, Ultimo>());
+			ultimok.put(card, new HashMap<>());
 			for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
 			{
 				Ultimo announcement = new XXIUltimo(roundIndex);

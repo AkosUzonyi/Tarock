@@ -208,13 +208,13 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	private List<String> playerNames;
 	private PlayerCards myCards;
 	private int myID = -1;
-	private Map<Card, View> cardToViewMapping = new HashMap<Card, View>();
+	private Map<Card, View> cardToViewMapping = new HashMap<>();
 	
 	private PhaseEnum gamePhase;
 	
 	private String messages;
 	
-	private List<Card> cardsToSkart = new ArrayList<Card>();
+	private List<Card> cardsToSkart = new ArrayList<>();
 	private boolean skarting = false;
 
 	private boolean waitingForTakeAnimation;

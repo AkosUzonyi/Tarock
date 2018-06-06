@@ -128,7 +128,7 @@ class Bidding extends Phase
 		if (isFinished())
 			throw new IllegalStateException();
 
-		List<Integer> result = new ArrayList<Integer>();
+		List<Integer> result = new ArrayList<>();
 
 		if (playersState.get(currentPlayer) == BidState.OUT)
 			return result;

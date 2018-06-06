@@ -56,10 +56,10 @@ class Changing extends Phase
 	{
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			cardsFromTalon.put(player, new ArrayList<Card>());
+			cardsFromTalon.put(player, new ArrayList<>());
 		}
 		
-		List<Card> remainingCards = new LinkedList<Card>(currentGame.getTalon());
+		List<Card> remainingCards = new LinkedList<>(currentGame.getTalon());
 		PlayerSeat player = currentGame.getBidWinnerPlayer();
 
 		for (int i = 0; i < 4; i++)
@@ -100,7 +100,7 @@ class Changing extends Phase
 			return;
 		}
 		
-		List<Card> checkedSkartCards = new ArrayList<Card>();
+		List<Card> checkedSkartCards = new ArrayList<>();
 		for (Card c : cardsToSkart)
 		{
 			if (!cardFilter.match(c))

@@ -19,7 +19,7 @@ public class PlayedCardView extends ImageView
 {
 	private int orientation;
 
-	private Queue<Integer> imgResourcesQueue = new LinkedList<Integer>();
+	private Queue<Integer> imgResourcesQueue = new LinkedList<>();
 
 	private boolean isAnimating = false;
 

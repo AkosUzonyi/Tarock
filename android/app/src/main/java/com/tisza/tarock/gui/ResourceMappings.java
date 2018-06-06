@@ -16,15 +16,15 @@ public class ResourceMappings
 {
 	private static Context context;
 
-	public static Map<Card, Integer> cardToImageResource = new HashMap<Card, Integer>();
-	public static Map<Integer, String> bidToName = new HashMap<Integer, String>();
+	public static Map<Card, Integer> cardToImageResource = new HashMap<>();
+	public static Map<Integer, String> bidToName = new HashMap<>();
 
 	public static String[] roundNames;
 	public static String[] contraNames;
 	public static String[] tarockNames;
 	public static String[] suitNames;
 	public static String[] suitcardValueNames;
-	public static Map<Card, String> cardToName = new HashMap<Card, String>();
+	public static Map<Card, String> cardToName = new HashMap<>();
 
 	public static String silent;
 

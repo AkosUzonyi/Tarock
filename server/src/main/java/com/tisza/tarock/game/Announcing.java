@@ -117,7 +117,7 @@ class Announcing extends Phase implements IAnnouncing
 	
 	private void sendAvailableAnnouncements()
 	{
-		List<AnnouncementContra> list = new ArrayList<AnnouncementContra>();
+		List<AnnouncementContra> list = new ArrayList<>();
 		
 		Team currentPlayerTeam = getCurrentTeam();
 		boolean needsIdentification = needsIdentification();

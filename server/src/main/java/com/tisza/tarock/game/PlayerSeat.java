@@ -139,7 +139,7 @@ public enum PlayerSeat
 			Set<Entry<PlayerSeat, V>> result = new HashSet<>();
 			for (int i = 0; i < 4; i++)
 			{
-				result.add(new AbstractMap.SimpleEntry<PlayerSeat, V>(PlayerSeat.fromInt(i), values[i]));
+				result.add(new AbstractMap.SimpleEntry<>(PlayerSeat.fromInt(i), values[i]));
 			}
 			return result;
 		}

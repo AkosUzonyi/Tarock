@@ -172,8 +172,7 @@ public class ProtoConnection implements Closeable
 
 		if (thread.isAlive())
 		{
-			System.err.println("force stopping thread");
-			thread.stop();
+			System.err.println("could not stop thread: " + thread);
 		}
 	}
 

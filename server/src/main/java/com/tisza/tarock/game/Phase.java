@@ -33,53 +33,53 @@ abstract class Phase implements ActionHandler
 	@Override
 	public void announce(PlayerSeat player, AnnouncementContra announcementContra)
 	{
-		wrongPhase();
+		wrongPhase("announce");
 	}
 
 	@Override
 	public void announcePassz(PlayerSeat player)
 	{
-		wrongPhase();
+		wrongPhase("announcePassz");
 	}
 
 	@Override
 	public void bid(PlayerSeat player, int bid)
 	{
-		wrongPhase();
+		wrongPhase("bid");
 	}
 
 	@Override
 	public void call(PlayerSeat player, Card card)
 	{
-		wrongPhase();
+		wrongPhase("call");
 	}
 
 	@Override
 	public void change(PlayerSeat player, List<Card> cards)
 	{
-		wrongPhase();
+		wrongPhase("change");
 	}
 
 	@Override
 	public void playCard(PlayerSeat player, Card card)
 	{
-		wrongPhase();
+		wrongPhase("playCard");
 	}
 
 	@Override
 	public void readyForNewGame(PlayerSeat player)
 	{
-		wrongPhase();
+		wrongPhase("readyForNewGame");
 	}
 
 	@Override
 	public void throwCards(PlayerSeat player)
 	{
-		wrongPhase();
+		wrongPhase("throwCards");
 	}
 
-	private void wrongPhase()
+	private void wrongPhase(String action)
 	{
-		System.err.println("wrong phase");
+		System.err.println("phase: " + asEnum() + " does not support action: " + action);
 	}
 }

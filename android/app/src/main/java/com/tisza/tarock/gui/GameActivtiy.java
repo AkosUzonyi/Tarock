@@ -1,5 +1,6 @@
 package com.tisza.tarock.gui;
 
+import android.animation.*;
 import android.app.*;
 import android.content.*;
 import android.graphics.*;
@@ -23,10 +24,15 @@ import java.util.*;
 public class GameActivtiy extends Activity implements MessageHandler, EventHandler
 {
 	public static final String LOG_TAG = "Tarokk";
-	
+
+	public static final float PLAYED_CARD_DISTANCE = 0.65F;
+	public static final int PLAY_DURATION = 100;
+	public static final int TAKE_DURATION = 800;
 	private static final int DELAY = 1600;
 	private static final int CARDS_PER_ROW = 6;
-	private int cardWidth;
+
+	private static final float cardImageRatio = 1.66F;
+	private int cardWidth, cardHeight;
 	
 	private LayoutInflater layoutInflater;
 
@@ -70,6 +76,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		ResourceMappings.init(this);
 			
 		cardWidth = getWindowManager().getDefaultDisplay().getWidth() / CARDS_PER_ROW;
+		cardHeight = (int)(cardWidth * cardImageRatio);
 		
 		layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
@@ -181,7 +188,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		playedCardViews = new PlayedCardView[4];
 		for (int i = 0; i < 4; i++)
 		{
-			playedCardViews[i] = new PlayedCardView(this, cardWidth, i);
+			playedCardViews[i] = new PlayedCardView(this, cardWidth, cardHeight, i);
 			playedCardsView.addView(playedCardViews[i]);
 		}
 		centerSpace.addView(playedCardsView);
@@ -409,6 +416,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		okButton.setOnClickListener(v ->
 		{
 			okButton.setVisibility(View.GONE);
+			showCenterView(messagesView);
 			availabeActionsView.removeAllViews();
 			actionSender.announcePassz();
 		});
@@ -443,54 +451,42 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		
 		playedCardView.addCard(card);
 		playedCardView.bringToFront();
-		//playedCardView.animatePlay();
+		playedCardView.animatePlay();
 		
 		if (player == myID)
 		{
 			myCards.removeCard(card);
-			
+
 			View myCardView = cardToViewMapping.remove(card);
-			myCardsView0.removeView(myCardView);
-			myCardsView1.removeView(myCardView);
-			
-			if (myCards.getCards().size() == CARDS_PER_ROW)
+			if (myCardView != null)
 			{
-				arrangeCards();
+				int originalWidth = myCardView.getWidth();
+				int originalHeight = myCardView.getHeight();
+
+				ValueAnimator shrinkAnimator = ValueAnimator.ofInt(originalWidth, 0);
+				shrinkAnimator.addUpdateListener(animation ->
+				{
+					myCardView.getLayoutParams().width = (Integer)animation.getAnimatedValue();
+					//myCardView.getLayoutParams().height = originalHeight;
+					myCardView.requestLayout();
+				});
+				shrinkAnimator.setDuration(PLAY_DURATION);
+				shrinkAnimator.start();
+				shrinkAnimator.addListener(new AnimatorListenerAdapter()
+				{
+					@Override
+					public void onAnimationEnd(Animator animation)
+					{
+						myCardsView0.removeView(myCardView);
+						myCardsView1.removeView(myCardView);
+
+						if (myCards.getCards().size() == CARDS_PER_ROW)
+						{
+							arrangeCards();
+						}
+					}
+				});
 			}
-			
-			/*int[] myCardViewLocation = new int[2];
-			myCardView.getLocationOnScreen(myCardViewLocation);
-			int[] playedCardViewLocation = new int[2];
-			playedCardView.getLocationOnScreen(playedCardViewLocation);
-			
-			final Animation currentAnim = playedCardView.createPositionAnimation();
-			
-			float tx = myCardViewLocation[0] - playedCardViewLocation[0];
-			float ty = myCardViewLocation[1] - playedCardViewLocation[1];
-			Animation placeAnim = new TranslateAnimation(-tx, 0, -ty, 0);
-			
-			AnimationSet animSet = new AnimationSet(false);
-			//animSet.addAnimation(currentAnim);
-			animSet.addAnimation(placeAnim);
-			animSet.setFillAfter(true);
-			animSet.setDuration(800);
-			playedCardView.startAnimation(animSet);
-			
-			animSet.setAnimationListener(new AnimationListener()
-			{
-				public void onAnimationStart(Animation animation)
-				{
-				}
-				
-				public void onAnimationRepeat(Animation animation)
-				{
-				}
-				
-				public void onAnimationEnd(Animation animation)
-				{
-					playedCardView.startAnimation(playedCardView.createPositionAnimation());
-				}
-			});*/
 		}
 	}
 	

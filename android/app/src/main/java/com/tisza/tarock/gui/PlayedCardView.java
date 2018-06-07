@@ -19,11 +19,11 @@ public class PlayedCardView extends ImageView
 
 	private boolean isAnimating = false;
 
-	public PlayedCardView(Context context, int width, int orientation)
+	public PlayedCardView(Context context, int width, int height, int orientation)
 	{
 		super(context);
 		this.orientation = orientation;
-		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(width, RelativeLayout.LayoutParams.WRAP_CONTENT);
+		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(width, height);
 		lp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 		setLayoutParams(lp);
 	}
@@ -34,7 +34,7 @@ public class PlayedCardView extends ImageView
 		super.onSizeChanged(w, h, oldw, oldh);
 		if (!isAnimating)
 		{
-			startAnimation(createPositionAnimation());
+			startAnimation(createStaticPositionAnimation());
 		}
 	}
 	
@@ -67,12 +67,12 @@ public class PlayedCardView extends ImageView
 		}
 	}
 	
-	public Animation createPositionAnimation()
+	private Animation createPositionAnimation()
 	{
 		int w = getWidth();
 		int h = getHeight();
-		
-		Animation rotateAnim = new RotateAnimation(0, orientation * 90, w / 2, h / 2);
+
+		Animation rotateAnim = new RotateAnimation(0, (orientation % 2) * 90, w / 2, h / 2);
 		
 		float tx = 0;
 		float ty = 0;
@@ -92,19 +92,24 @@ public class PlayedCardView extends ImageView
 		{
 			tx = -1;
 		}
-		tx *= h / 4;
-		ty *= h / 4;
+		tx *= h * GameActivtiy.PLAYED_CARD_DISTANCE;
+		ty *= h * GameActivtiy.PLAYED_CARD_DISTANCE;
 		Animation translateAnim = new TranslateAnimation(0, tx, 0, ty);
-		System.out.println(tx);
-		
+
 		AnimationSet animSet = new AnimationSet(true);
 		animSet.addAnimation(rotateAnim);
 		animSet.addAnimation(translateAnim);
-		animSet.setDuration(0);
-		animSet.setInterpolator(new EndInterpolator());
-		animSet.setFillAfter(true);
-		
+
 		return animSet;
+	}
+
+	private Animation createStaticPositionAnimation()
+	{
+		Animation animation = createPositionAnimation();
+		animation.setDuration(0);
+		animation.setInterpolator(new EndInterpolator());
+		animation.setFillAfter(true);
+		return animation;
 	}
 	
 	public void animatePlay()
@@ -117,7 +122,7 @@ public class PlayedCardView extends ImageView
 		startTakePlayAnimation(false, dir);
 	}
 	
-	private void startTakePlayAnimation(final boolean play, int dir)
+	private void startTakePlayAnimation(boolean play, int dir)
 	{
 		Animation currentAnimation = getAnimation();
 		if (currentAnimation != null)
@@ -126,11 +131,7 @@ public class PlayedCardView extends ImageView
 		}
 		
 		isAnimating = true;
-		
-		final Animation positionAnim = createPositionAnimation();
-		positionAnim.setInterpolator(play ? new EndInterpolator() : new ReverseInterpolator());
-		positionAnim.setDuration(play ? 0 : 800);
-		
+
 		View parent = (View)getParent();
 		float tx = 0;
 		float ty = 0;
@@ -150,16 +151,19 @@ public class PlayedCardView extends ImageView
 		{
 			tx = -parent.getWidth() / 2;
 		}
-		float fromX = play ? tx : 0;
-		float toX =   play ? 0  : tx;
-		float fromY = play ? ty : 0;
-		float toY =   play ? 0  : ty;
-		Animation takeAnim = new TranslateAnimation(fromX, toX, fromY, toY);
-		takeAnim.setDuration(800);
-		
+
+		Interpolator interpolator = play ? new LinearInterpolator() : new ReverseInterpolator();
+		int duration = play ? GameActivtiy.PLAY_DURATION : GameActivtiy.TAKE_DURATION;
+
+		Animation moveAnim = new TranslateAnimation(tx, 0, ty, 0);
+		Animation positionAnim = createPositionAnimation();
+		moveAnim.setInterpolator(interpolator);
+		positionAnim.setInterpolator(interpolator);
+
 		AnimationSet animSet = new AnimationSet(false);
 		animSet.addAnimation(positionAnim);
-		animSet.addAnimation(takeAnim);
+		animSet.addAnimation(moveAnim);
+		animSet.setDuration(duration);
 		startAnimation(animSet);
 		
 		animSet.setAnimationListener(new AnimationListener()
@@ -181,7 +185,7 @@ public class PlayedCardView extends ImageView
 				{
 					removeFirstCard();
 				}
-				startAnimation(createPositionAnimation());
+				startAnimation(createStaticPositionAnimation());
 				isAnimating = false;
 			}
 		});

@@ -10,45 +10,52 @@ import java.util.*;
 
 public class Server implements Runnable
 {
+	private static final int PROTO_PLAYER_COUNT = 1;
+	private static final PhaseEnum FAST_FORWARD_TO_PHASE = null;
+	private static final int RANDOM_PLAYER_DELAY = 500;
+
 	private int port;
 
-	private GameSession gameSession = null;
-	private Thread listenterThread = null;
+	private GameSession gameSession;
+	private Thread listenerThread;
 	private ServerSocket ss;
 
 	private List<ProtoPlayer> protoPlayers = new ArrayList<>();
 
 	public static void main(String[] args) throws IOException
 	{
-		new Server(8128, 3).start();
+		Server server = new Server(8128);
+		server.start();
 		System.in.read();
-		System.exit(0);
+		server.stop();
 	}
 
-	public Server(int port, int randomPlayerCount)
+	public Server(int port)
 	{
-		if (randomPlayerCount < 0 || randomPlayerCount >= 4)
-			throw new IllegalArgumentException();
-
 		this.port = port;
 
 		List<Player> players = new ArrayList<>();
 		for (int i = 0; i < 4; i++)
 		{
-			if (i < randomPlayerCount)
-			{
-				players.add(new RandomPlayer("bot" + i, 500));
-			}
-			else
+			Player player;
+
+			if (i < PROTO_PLAYER_COUNT)
 			{
 				ProtoPlayer protoPlayer = new ProtoPlayer("proto" + i);
 				protoPlayers.add(protoPlayer);
-				players.add(protoPlayer);
-				//players.add(new MixedPlayer(new RandomPlayer(protoPlayer.getName(), 500), protoPlayer, PhaseEnum.ANNOUNCING));
+				player = protoPlayer;
 			}
+			else
+			{
+				player = new RandomPlayer("bot" + i, RANDOM_PLAYER_DELAY);
+			}
+
+			if (FAST_FORWARD_TO_PHASE != null)
+				player = new MixedPlayer(new RandomPlayer(player.getName(), 0), player, FAST_FORWARD_TO_PHASE);
+
+			players.add(player);
 		}
 		gameSession = new GameSession(GameType.ZEBI, players);
-		gameSession.startSession();
 	}
 
 	private void newConnection(Socket s) throws IOException
@@ -81,47 +88,61 @@ public class Server implements Runnable
 				newConnection(s);
 			}
 		}
+		catch (SocketException e) {}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
 		finally
 		{
-			if (ss != null)
-			{
-				try
-				{
-					ss.close();
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-			}
+			closeSocket();
+
 			if (gameSession != null)
 			{
 				gameSession.stopSession();
+				gameSession = null;
 			}
-			listenterThread = null;
+			listenerThread = null;
+			System.out.println("server stopped");
 		}
-		System.out.println("server stopped");
 	}
 
 	public void start()
 	{
-		if (listenterThread == null)
+		gameSession.startSession();
+
+		if (listenerThread == null)
 		{
-			listenterThread = new Thread(this);
-			listenterThread.start();
+			listenerThread = new Thread(this);
+			listenerThread.start();
 		}
 	}
 	
 	public void stop()
 	{
-		if (listenterThread != null)
+		closeSocket();
+		if (listenerThread != null)
 		{
-			listenterThread.interrupt();
-			listenterThread = null;
+			listenerThread.interrupt();
+		}
+	}
+
+	private void closeSocket()
+	{
+		if (ss != null)
+		{
+			try
+			{
+				ss.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				ss = null;
+			}
 		}
 	}
 }

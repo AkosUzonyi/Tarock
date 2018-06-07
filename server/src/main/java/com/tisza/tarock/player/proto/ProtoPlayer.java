@@ -70,11 +70,18 @@ public class ProtoPlayer implements Player
 		//TODO: remove
 		try
 		{
-			connection.close();
+			if (connection != null)
+			{
+				connection.close();
+			}
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
+		}
+		finally
+		{
+			connection = null;
 		}
 	}
 

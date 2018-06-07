@@ -41,7 +41,6 @@ public class ProtoConnection implements Closeable
 					}
 				}
 			}
-			catch (EOFException e) {}
 			catch (IOException e)
 			{
 				e.printStackTrace();

@@ -105,8 +105,16 @@ public class JatekDuplaVolatPoints
 			@Override
 			public Collection<Card> getWonCards(PlayerSeat player)
 			{
-				boolean callerTeam = player.asInt() < 2;
-				return callerGamePoints == 94 && callerTeam || callerGamePoints == 0 && !callerTeam ? Card.getAll() : Collections.EMPTY_LIST;
+				if (callerGamePoints == 0 || callerGamePoints == 94)
+				{
+					boolean isPlayerInCallerTeam = player.asInt() < 2;
+					boolean isVolatForCaller = callerGamePoints == 94;
+					return isPlayerInCallerTeam == isVolatForCaller ? Card.getAll() : Collections.EMPTY_LIST;
+				}
+				else
+				{
+					return Arrays.asList(Card.getTarockCard(1));
+				}
 			}
 		};
 	}

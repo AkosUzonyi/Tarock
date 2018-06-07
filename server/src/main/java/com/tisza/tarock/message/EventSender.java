@@ -20,7 +20,6 @@ public interface EventSender
 	void phaseChanged(PhaseEnum phase);
 	void availabeBids(Collection<Integer> bids);
 	void availabeCalls(Collection<Card> cards);
-	void cardsFromTalon(List<Card> cards);
 	void changeDone(PlayerSeat player);
 	void skartTarock(PlayerSeat.Map<Integer> counts);
 	void availableAnnouncements(List<AnnouncementContra> announcements);

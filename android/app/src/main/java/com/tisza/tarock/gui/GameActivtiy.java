@@ -249,27 +249,43 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	{
 		myCards = new PlayerCards(cards);
 		arrangeCards();
+
+		throwButton.setVisibility(View.GONE);
+
+		if (gamePhase == PhaseEnum.BIDDING)
+		{
+			if (myCards.canBeThrown(false))
+			{
+				throwButton.setVisibility(View.VISIBLE);
+			}
+		}
+		else if (gamePhase == PhaseEnum.CHANGING)
+		{
+			if (myCards.canBeThrown(true))
+			{
+				throwButton.setVisibility(View.VISIBLE);
+			}
+		}
 	}
 
 	@Override
 	public void phaseChanged(PhaseEnum phase)
 	{
 		gamePhase = phase;
-		
-		throwButton.setVisibility(View.GONE);
-		
+
 		if (phase == PhaseEnum.BIDDING)
 		{
 			showCenterView(messagesView);
-			
-			if (myCards.canBeThrown(false))
-			{
-				throwButton.setVisibility(View.VISIBLE);
-			}
 		}
 		else if (phase == PhaseEnum.CHANGING)
 		{
 			showCenterView(messagesView);
+
+			higlightAllName();
+			skarting = true;
+
+			okButton.setVisibility(View.VISIBLE);
+			okButton.setOnClickListener(v -> actionSender.change(cardsToSkart));
 		}
 		else if (phase == PhaseEnum.CALLING)
 		{
@@ -321,21 +337,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		String msg = ResourceMappings.bidToName.get(bid);
 		displayPlayerActionMessage(player, R.string.message_bid, msg);
 	}
-	
-	@Override
-	public void cardsFromTalon(List<Card> cards)
-	{
-		higlightAllName();
 
-		myCards.getCards().addAll(cards);
-		throwButton.setVisibility(myCards.canBeThrown(true) ? View.VISIBLE : View.GONE);
-		skarting = true;
-		arrangeCards();
-		
-		okButton.setVisibility(View.VISIBLE);
-		okButton.setOnClickListener(v -> actionSender.change(cardsToSkart));
-	}
-	
 	@Override
 	public void changeDone(int player)
 	{
@@ -343,6 +345,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		if (player == myID)
 		{
 			okButton.setVisibility(View.GONE);
+			throwButton.setVisibility(View.GONE);
 			cardsToSkart.clear();
 			skarting = false;
 		}

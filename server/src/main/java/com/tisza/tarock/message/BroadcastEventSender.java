@@ -142,15 +142,6 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void cardsFromTalon(List<Card> cards)
-	{
-		for (EventSender eventSender : eventSenders)
-		{
-			eventSender.cardsFromTalon(cards);
-		}
-	}
-
-	@Override
 	public void changeDone(PlayerSeat player)
 	{
 		for (EventSender eventSender : eventSenders)

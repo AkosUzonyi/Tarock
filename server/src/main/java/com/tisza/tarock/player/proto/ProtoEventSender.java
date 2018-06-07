@@ -135,14 +135,6 @@ public class ProtoEventSender implements EventSender
 		sendEvent(Event.newBuilder().setAvailableCalls(e).build());
 	}
 
-	@Override public void cardsFromTalon(List<Card> cards)
-	{
-		Event.CardsFromTalon e = Event.CardsFromTalon.newBuilder()
-				.addAllCard(cards.stream().map(Utils::cardToProto).collect(Collectors.toList()))
-				.build();
-		sendEvent(Event.newBuilder().setCardsFromTalon(e).build());
-	}
-
 	@Override public void changeDone(PlayerSeat player)
 	{
 		Event.ChangeDone e = Event.ChangeDone.newBuilder()

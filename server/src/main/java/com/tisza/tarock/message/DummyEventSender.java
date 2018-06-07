@@ -86,12 +86,6 @@ public class DummyEventSender implements EventSender
 	}
 
 	@Override
-	public void cardsFromTalon(List<Card> cards)
-	{
-
-	}
-
-	@Override
 	public void changeDone(PlayerSeat player)
 	{
 

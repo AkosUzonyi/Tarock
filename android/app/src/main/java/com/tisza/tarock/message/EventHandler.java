@@ -25,6 +25,5 @@ public interface EventHandler
 	public void skartTarock(int[] counts);
 	public void turn(int player);
 	public void wrongAction();
-	public void cardsFromTalon(List<Card> cards);
 	public void pendingNewGame();
 }

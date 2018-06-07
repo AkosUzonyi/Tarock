@@ -9,7 +9,6 @@ class Changing extends Phase
 {
 	private static final SkartableCardFilter cardFilter = new SkartableCardFilter();
 	
-	private PlayerSeat.Map<List<Card>> cardsFromTalon = new PlayerSeat.Map<>();
 	private PlayerSeat.Map<Boolean> donePlayer = new PlayerSeat.Map<>(false);
 	private PlayerSeat.Map<Integer> tarockCounts = new PlayerSeat.Map<>();
 	
@@ -28,11 +27,6 @@ class Changing extends Phase
 	public void onStart()
 	{
 		dealCardsFromTalon();
-
-		for (PlayerSeat player : PlayerSeat.getAll())
-		{
-			gameSession.getPlayerEventQueue(player).cardsFromTalon(cardsFromTalon.get(player));
-		}
 	}
 
 	@Override
@@ -40,25 +34,17 @@ class Changing extends Phase
 	{
 		super.requestHistory(player);
 
-		for (PlayerSeat onePlayer : PlayerSeat.getAll())
+		for (PlayerSeat otherPlayer : PlayerSeat.getAll())
 		{
-			if (donePlayer.get(onePlayer))
+			if (donePlayer.get(otherPlayer))
 			{
-				gameSession.getPlayerEventQueue(player).changeDone(player);
+				gameSession.getPlayerEventQueue(player).changeDone(otherPlayer);
 			}
 		}
-
-		if (!donePlayer.get(player))
-			gameSession.getPlayerEventQueue(player).cardsFromTalon(cardsFromTalon.get(player));
 	}
 
 	private void dealCardsFromTalon()
 	{
-		for (PlayerSeat player : PlayerSeat.getAll())
-		{
-			cardsFromTalon.put(player, new ArrayList<>());
-		}
-		
 		List<Card> remainingCards = new LinkedList<>(currentGame.getTalon());
 		PlayerSeat player = currentGame.getBidWinnerPlayer();
 
@@ -73,13 +59,13 @@ class Changing extends Phase
 			{
 				cardCount = (int)Math.ceil((float)remainingCards.size() / (4 - i));
 			}
-			
-			for (int j = 0; j < cardCount; j++)
-			{
-				cardsFromTalon.get(player).add(remainingCards.remove(0));
-			}
 
-			history.setCardsFromTalon(player, cardsFromTalon.get(player));
+			List<Card> cardsFromTalon = remainingCards.subList(0, cardCount);
+			PlayerCards playerCards = currentGame.getPlayerCards(player);
+			playerCards.addCards(cardsFromTalon);
+			gameSession.getPlayerEventQueue(player).playerCards(playerCards);
+			history.setCardsFromTalon(player, cardsFromTalon);
+			cardsFromTalon.clear();
 
 			player = player.nextPlayer();
 		}
@@ -92,15 +78,14 @@ class Changing extends Phase
 			return;
 		
 		PlayerCards skartingPlayerCards = currentGame.getPlayerCards(player);
-		List<Card> cardsFromTalonForPlayer = cardsFromTalon.get(player);
-		
-		if (cardsToSkart.size() != cardsFromTalonForPlayer.size())
+
+		if (skartingPlayerCards.size() - cardsToSkart.size() != GameSession.ROUND_COUNT)
 		{
 			//gameSession.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
 			return;
 		}
 		
-		List<Card> checkedSkartCards = new ArrayList<>();
+		Set<Card> checkedSkartCards = new HashSet<>();
 		for (Card c : cardsToSkart)
 		{
 			if (!cardFilter.match(c))
@@ -109,12 +94,10 @@ class Changing extends Phase
 				return;
 			}
 			
-			if (checkedSkartCards.contains(c))
+			if (!checkedSkartCards.add(c))
 				return;
-			
-			checkedSkartCards.add(c);
-			
-			if (!skartingPlayerCards.hasCard(c) && !cardsFromTalonForPlayer.contains(c))
+
+			if (!skartingPlayerCards.hasCard(c))
 				return;
 		}
 		
@@ -134,13 +117,9 @@ class Changing extends Phase
 		}
 		tarockCounts.put(player, tarockCount);
 		
-		skartingPlayerCards.getCards().addAll(cardsFromTalonForPlayer);
-		skartingPlayerCards.getCards().removeAll(cardsToSkart);
-		
+		skartingPlayerCards.removeCards(cardsToSkart);
 		donePlayer.put(player, true);
-
 		history.setCardsSkarted(player, cardsToSkart);
-		
 		gameSession.getPlayerEventQueue(player).playerCards(skartingPlayerCards);
 		gameSession.getBroadcastEventSender().changeDone(player);
 

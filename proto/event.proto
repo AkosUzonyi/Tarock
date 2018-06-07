@@ -18,7 +18,6 @@ message Event
 		PhaseChanged phase_changed = 4;
 		AvailableBids available_bids= 5;
 		AvailableCalls available_calls = 6;
-		CardsFromTalon cards_from_talon = 14;
 		ChangeDone change_done = 7;
 		SkartTarock skart_tarock = 8;
 		AvailableAnnouncements available_announcements = 9;
@@ -53,10 +52,6 @@ message Event
 		repeated sint32 bid = 1;
 	}
 	message AvailableCalls
-	{
-		repeated Card card = 1;
-	}
-	message CardsFromTalon
 	{
 		repeated Card card = 1;
 	}

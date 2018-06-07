@@ -56,7 +56,7 @@ public class GameState
 		Collections.shuffle(cardsToDeal);
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			for (int i = 0; i < 9; i++)
+			for (int i = 0; i < GameSession.ROUND_COUNT; i++)
 			{
 				getPlayerCards(player).addCard(cardsToDeal.remove(0));
 			}

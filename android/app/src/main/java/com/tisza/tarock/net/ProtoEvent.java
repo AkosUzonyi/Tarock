@@ -37,9 +37,6 @@ public class ProtoEvent implements Event
 			case AVAILABLE_CALLS:
 				handler.availableCalls(Utils.cardListFromProto(event.getAvailableCalls().getCardList()));
 				break;
-			case CARDS_FROM_TALON:
-				handler.cardsFromTalon(Utils.cardListFromProto(event.getCardsFromTalon().getCardList()));
-				break;
 			case CHANGE_DONE:
 				handler.changeDone(event.getChangeDone().getPlayer());
 				break;

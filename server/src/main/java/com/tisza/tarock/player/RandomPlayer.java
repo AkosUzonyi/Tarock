@@ -136,6 +136,13 @@ public class RandomPlayer implements Player
 		public void playerCards(PlayerCards cards)
 		{
 			myCards = cards.clone();
+
+			if (phase == PhaseEnum.CHANGING)
+			{
+				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter()).subList(0, myCards.size() - 9);
+				myCards.removeCards(cardsToSkart);
+				enqueueAction(handler -> handler.change(seat, cardsToSkart));
+			}
 		}
 
 		@Override
@@ -154,15 +161,6 @@ public class RandomPlayer implements Player
 		public void availabeCalls(Collection<Card> cards)
 		{
 			enqueueActionDelayed(handler -> handler.call(seat, chooseRandom(cards)));
-		}
-
-		@Override
-		public void cardsFromTalon(List<Card> cards)
-		{
-			List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter()).subList(0, cards.size());
-			myCards.getCards().removeAll(cardsToSkart);
-			myCards.getCards().addAll(cards);
-			enqueueAction(handler -> handler.change(seat, cardsToSkart));
 		}
 
 		@Override public void changeDone(PlayerSeat player) {}

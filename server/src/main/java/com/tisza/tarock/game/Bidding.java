@@ -36,7 +36,7 @@ class Bidding extends Phase
 	{
 		super.requestHistory(player);
 
-		gameSession.getPlayerEventQueue(player).turn(currentPlayer);
+		gameSession.getPlayerEventSender(player).turn(currentPlayer);
 		if (player == currentPlayer)
 			sendAvailableBids();
 	}
@@ -165,7 +165,7 @@ class Bidding extends Phase
 	
 	private void sendAvailableBids()
 	{
-		gameSession.getPlayerEventQueue(currentPlayer).availabeBids(getAvailableBids());
+		gameSession.getPlayerEventSender(currentPlayer).availabeBids(getAvailableBids());
 		gameSession.getBroadcastEventSender().turn(currentPlayer);
 	}
 

@@ -38,7 +38,7 @@ class Changing extends Phase
 		{
 			if (donePlayer.get(otherPlayer))
 			{
-				gameSession.getPlayerEventQueue(player).changeDone(otherPlayer);
+				gameSession.getPlayerEventSender(player).changeDone(otherPlayer);
 			}
 		}
 	}
@@ -63,7 +63,7 @@ class Changing extends Phase
 			List<Card> cardsFromTalon = remainingCards.subList(0, cardCount);
 			PlayerCards playerCards = currentGame.getPlayerCards(player);
 			playerCards.addCards(cardsFromTalon);
-			gameSession.getPlayerEventQueue(player).playerCards(playerCards);
+			gameSession.getPlayerEventSender(player).playerCards(playerCards);
 			history.setCardsFromTalon(player, cardsFromTalon);
 			cardsFromTalon.clear();
 
@@ -120,7 +120,7 @@ class Changing extends Phase
 		skartingPlayerCards.removeCards(cardsToSkart);
 		donePlayer.put(player, true);
 		history.setCardsSkarted(player, cardsToSkart);
-		gameSession.getPlayerEventQueue(player).playerCards(skartingPlayerCards);
+		gameSession.getPlayerEventSender(player).playerCards(skartingPlayerCards);
 		gameSession.getBroadcastEventSender().changeDone(player);
 
 		if (isFinished())

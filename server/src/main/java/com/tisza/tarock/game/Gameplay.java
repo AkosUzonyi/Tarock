@@ -33,9 +33,9 @@ class Gameplay extends Phase
 
 		for (PlayerSeat cardPlayer = currentRound.getBeginnerPlayer(); cardPlayer != currentRound.getCurrentPlayer(); cardPlayer = cardPlayer.nextPlayer())
 		{
-			gameSession.getPlayerEventQueue(player).playCard(cardPlayer, currentRound.getCardByPlayer(cardPlayer));
+			gameSession.getPlayerEventSender(player).playCard(cardPlayer, currentRound.getCardByPlayer(cardPlayer));
 		}
-		gameSession.getPlayerEventQueue(player).turn(currentRound.getCurrentPlayer());
+		gameSession.getPlayerEventSender(player).turn(currentRound.getCurrentPlayer());
 	}
 
 	@Override

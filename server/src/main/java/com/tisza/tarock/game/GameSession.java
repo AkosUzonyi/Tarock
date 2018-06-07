@@ -117,7 +117,7 @@ public class GameSession implements Runnable
 		return broadcastEventSender;
 	}
 
-	EventSender getPlayerEventQueue(PlayerSeat player)
+	EventSender getPlayerEventSender(PlayerSeat player)
 	{
 		return players.get(player).getEventSender();
 	}
@@ -142,8 +142,8 @@ public class GameSession implements Runnable
 
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			getPlayerEventQueue(player).startGame(player, getPlayerNames());
-			getPlayerEventQueue(player).playerCards(state.getPlayerCards(player));
+			getPlayerEventSender(player).startGame(player, getPlayerNames());
+			getPlayerEventSender(player).playerCards(state.getPlayerCards(player));
 			history.setOriginalPlayersCards(player, new ArrayList<>(state.getPlayerCards(player).getCards()));
 		}
 
@@ -219,7 +219,7 @@ public class GameSession implements Runnable
 			List<AnnouncementStaticticsEntry> selfEntries = statEntriesForTeams.get(team);
 			List<AnnouncementStaticticsEntry> opponentEntries = statEntriesForTeams.get(team.getOther());
 			int sumPoints = pointsForCallerTeam * (team == Team.CALLER ? 1 : -1);
-			getPlayerEventQueue(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, points);
+			getPlayerEventSender(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, points);
 		}
 	}
 

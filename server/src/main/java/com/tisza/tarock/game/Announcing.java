@@ -38,7 +38,7 @@ class Announcing extends Phase implements IAnnouncing
 	{
 		super.requestHistory(player);
 
-		gameSession.getPlayerEventQueue(player).turn(currentPlayer);
+		gameSession.getPlayerEventSender(player).turn(currentPlayer);
 		if (player == currentPlayer)
 			sendAvailableAnnouncements();
 	}
@@ -154,7 +154,7 @@ class Announcing extends Phase implements IAnnouncing
 			list.remove(new AnnouncementContra(Announcements.jatek, 1));
 		}
 		
-		gameSession.getPlayerEventQueue(currentPlayer).availableAnnouncements(list);
+		gameSession.getPlayerEventSender(currentPlayer).availableAnnouncements(list);
 		gameSession.getBroadcastEventSender().turn(currentPlayer);
 	}
 	

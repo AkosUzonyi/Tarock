@@ -45,7 +45,7 @@ class Calling extends Phase
 	{
 		super.requestHistory(player);
 
-		gameSession.getPlayerEventQueue(player).turn(callerPlayer);
+		gameSession.getPlayerEventSender(player).turn(callerPlayer);
 		if (player == callerPlayer)
 			sendAvailableCalls();
 	}
@@ -99,7 +99,7 @@ class Calling extends Phase
 
 	private void sendAvailableCalls()
 	{
-		gameSession.getPlayerEventQueue(callerPlayer).availabeCalls(getCallableCards());
+		gameSession.getPlayerEventSender(callerPlayer).availabeCalls(getCallableCards());
 		gameSession.getBroadcastEventSender().turn(callerPlayer);
 	}
 

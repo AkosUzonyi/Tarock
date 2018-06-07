@@ -1,8 +1,6 @@
 package com.tisza.tarock.announcement;
 
-import com.tisza.tarock.card.Card;
-import com.tisza.tarock.card.SuitCard;
-import com.tisza.tarock.card.TarockCard;
+import com.tisza.tarock.card.*;
 
 import java.util.*;
 
@@ -29,8 +27,8 @@ public class Announcements
 	public static final Zaroparos zaroparos = new Zaroparos();
 	public static final Szinesites szinesites = new Szinesites();
 	public static final Volat volat = new Volat();
-	public static final Kisszincsalad[] kisszincsaladok = new Kisszincsalad[4];
-	public static final Nagyszincsalad[] nagyszincsaladok = new Nagyszincsalad[4];
+	public static final Szincsalad[] kisszincsaladok = new Szincsalad[4];
+	public static final Szincsalad[] nagyszincsaladok = new Szincsalad[4];
 	public static final Facan pagatfacan = new Facan(Card.getTarockCard(1));
 	public static final Facan sasfacan = new Facan(Card.getTarockCard(2));
 	public static final XXIFogas xxiFogas = new XXIFogas();
@@ -95,14 +93,14 @@ public class Announcements
 		
 		for (int s = 0; s < 4; s++)
 		{
-			Kisszincsalad kisszincsalad = new Kisszincsalad(s);
+			Szincsalad kisszincsalad = new Szincsalad(s, true);
 			kisszincsaladok[s] = kisszincsalad;
 			add(kisszincsalad);
 		}
 		
 		for (int s = 0; s < 4; s++)
 		{
-			Nagyszincsalad nagyszincsalad = new Nagyszincsalad(s);
+			Szincsalad nagyszincsalad = new Szincsalad(s, false);
 			nagyszincsaladok[s] = nagyszincsalad;
 			add(nagyszincsalad);
 		}

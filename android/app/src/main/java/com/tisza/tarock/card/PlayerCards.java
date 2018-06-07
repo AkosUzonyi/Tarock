@@ -13,7 +13,7 @@ public class PlayerCards
 
 	public PlayerCards(List<Card> cards)
 	{
-		this.cards.addAll(cards);
+		addCards(cards);
 	}
 
 	public void addCard(Card c)
@@ -21,9 +21,19 @@ public class PlayerCards
 		cards.add(c);
 	}
 
+	public void addCards(List<? extends Card> c)
+	{
+		cards.addAll(c);
+	}
+
 	public boolean removeCard(Card c)
 	{
 		return cards.remove(c);
+	}
+
+	public boolean removeCards(List<? extends Card> c)
+	{
+		return cards.removeAll(c);
 	}
 
 	public boolean hasCard(Card c)
@@ -42,6 +52,11 @@ public class PlayerCards
 			}
 		}
 		return result;
+	}
+
+	public int size()
+	{
+		return cards.size();
 	}
 
 	public int getTarockCount()
@@ -91,7 +106,6 @@ public class PlayerCards
 
 	public boolean canBeThrown(boolean afterChange)
 	{
-		
 		if (!afterChange)
 		{
 			List<Card> tarocks = filter(new TarockFilter());
@@ -128,8 +142,6 @@ public class PlayerCards
 	@Override
 	public PlayerCards clone()
 	{
-		PlayerCards clone = new PlayerCards();
-		clone.cards.addAll(cards);
-		return clone;
+		return new PlayerCards(cards);
 	}
 }

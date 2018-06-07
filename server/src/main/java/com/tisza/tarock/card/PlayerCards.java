@@ -2,6 +2,7 @@ package com.tisza.tarock.card;
 
 import com.tisza.tarock.card.filter.*;
 import com.tisza.tarock.card.sort.*;
+import com.tisza.tarock.player.*;
 
 import java.util.*;
 
@@ -9,14 +10,31 @@ public class PlayerCards
 {
 	private List<Card> cards = new ArrayList<>();
 
+	public PlayerCards() {}
+
+	public PlayerCards(List<Card> cards)
+	{
+		addCards(cards);
+	}
+
 	public void addCard(Card c)
 	{
 		cards.add(c);
 	}
 
+	public void addCards(List<? extends Card> c)
+	{
+		cards.addAll(c);
+	}
+
 	public boolean removeCard(Card c)
 	{
 		return cards.remove(c);
+	}
+
+	public boolean removeCards(List<? extends Card> c)
+	{
+		return cards.removeAll(c);
 	}
 
 	public boolean hasCard(Card c)
@@ -35,6 +53,11 @@ public class PlayerCards
 			}
 		}
 		return result;
+	}
+
+	public int size()
+	{
+		return cards.size();
 	}
 
 	public int getTarockCount()
@@ -84,7 +107,6 @@ public class PlayerCards
 
 	public boolean canBeThrown(boolean afterChange)
 	{
-		
 		if (!afterChange)
 		{
 			List<Card> tarocks = filter(new TarockFilter());
@@ -121,8 +143,6 @@ public class PlayerCards
 	@Override
 	public PlayerCards clone()
 	{
-		PlayerCards clone = new PlayerCards();
-		clone.cards.addAll(cards);
-		return clone;
+		return new PlayerCards(cards);
 	}
 }

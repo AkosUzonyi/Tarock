@@ -16,12 +16,11 @@ public class Banda extends TakeCards
 	}
 
 	@Override
-	public String getName()
+	public AnnouncementID getID()
 	{
-		return "banda";
+		return new AnnouncementID("banda").setSuit(suit);
 	}
 
-	@Override
 	public int getSuit()
 	{
 		return suit;

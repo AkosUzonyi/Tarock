@@ -5,9 +5,9 @@ import com.tisza.tarock.game.*;
 public class Jatek extends AnnouncementBase
 {
 	@Override
-	public String getName()
+	public AnnouncementID getID()
 	{
-		return "jatek";
+		return new AnnouncementID("jatek");
 	}
 
 	@Override

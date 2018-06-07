@@ -26,14 +26,16 @@ public class TarockCount implements Announcement
 	}
 
 	@Override
-	public String getName()
+	public AnnouncementID getID()
 	{
+		String name;
 		switch (count)
 		{
-			case 8: return "nyolctarokk";
-			case 9: return "kilenctarokk";
+			case 8: name = "nyolctarokk"; break;
+			case 9: name = "kilenctarokk"; break;
+			default: throw new RuntimeException();
 		}
-		throw new RuntimeException();
+		return new AnnouncementID(name);
 	}
 
 	@Override

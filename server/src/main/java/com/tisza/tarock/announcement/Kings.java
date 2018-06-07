@@ -18,15 +18,17 @@ public class Kings extends LastRounds
 	}
 
 	@Override
-	public String getName()
+	public AnnouncementID getID()
 	{
+		String name;
 		switch (count)
 		{
-			case 1: return "kiralyultimo";
-			case 2: return "ketkiralyok";
-			case 3: return "haromkiralyok";
+			case 1: name = "kiralyultimo"; break;
+			case 2: name = "ketkiralyok"; break;
+			case 3: name = "haromkiralyok"; break;
+			default: throw new RuntimeException();
 		}
-		throw new RuntimeException();
+		return new AnnouncementID(name);
 	}
 
 	@Override

@@ -31,9 +31,10 @@ public class AnnouncementID
 		return suit;
 	}
 
-	public void setSuit(int suit)
+	public AnnouncementID setSuit(int suit)
 	{
 		this.suit = suit;
+		return this;
 	}
 
 	public boolean hasCard()
@@ -46,9 +47,10 @@ public class AnnouncementID
 		return card;
 	}
 
-	public void setCard(Card card)
+	public AnnouncementID setCard(Card card)
 	{
 		this.card = card;
+		return this;
 	}
 
 	public boolean hasRound()
@@ -61,9 +63,10 @@ public class AnnouncementID
 		return round;
 	}
 
-	public void setRound(int round)
+	public AnnouncementID setRound(int round)
 	{
 		this.round = round;
+		return this;
 	}
 
 	public boolean equals(Object o)
@@ -78,7 +81,6 @@ public class AnnouncementID
 
 	public int hashCode()
 	{
-
 		return Objects.hash(name, suit, card, round);
 	}
 }

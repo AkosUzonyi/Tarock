@@ -18,12 +18,11 @@ public class Szincsalad extends LastRounds
 	}
 
 	@Override
-	public String getName()
+	public AnnouncementID getID()
 	{
-		return kis ? "kisszincsalad" : "nagyszincsalad";
+		return new AnnouncementID(kis ? "kisszincsalad" : "nagyszincsalad").setSuit(suit);
 	}
 
-	@Override
 	public final int getSuit()
 	{
 		return suit;

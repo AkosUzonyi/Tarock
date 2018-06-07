@@ -3,8 +3,6 @@ package com.tisza.tarock.announcement;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 
-import java.util.*;
-
 public abstract class TakeCards extends AnnouncementBase
 {
 	TakeCards(){}

@@ -13,12 +13,11 @@ public class Facan extends RoundAnnouncement
 	}
 
 	@Override
-	public String getName()
+	public AnnouncementID getID()
 	{
-		return "facan";
+		return new AnnouncementID("facan").setCard(card);
 	}
 
-	@Override
 	public Card getCard()
 	{
 		return card;

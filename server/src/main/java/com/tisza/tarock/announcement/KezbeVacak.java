@@ -15,15 +15,19 @@ public class KezbeVacak extends RoundAnnouncement
 	}
 
 	@Override
-	public String getName()
+	public AnnouncementID getID()
 	{
-		return "kezbevacak";
+		return new AnnouncementID("kezbevacak").setRound(roundIndex);
 	}
 
-	@Override
 	public int getRound()
 	{
 		return roundIndex;
+	}
+
+	public Card getCard()
+	{
+		return cardToTakeWith;
 	}
 
 	@Override

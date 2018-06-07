@@ -8,9 +8,9 @@ public class Szinesites extends TakeCards
 	Szinesites(){}
 
 	@Override
-	public String getName()
+	public AnnouncementID getID()
 	{
-		return "szinesites";
+		return new AnnouncementID("szinesites");
 	}
 
 	@Override

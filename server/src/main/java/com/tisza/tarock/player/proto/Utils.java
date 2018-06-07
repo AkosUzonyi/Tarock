@@ -57,17 +57,17 @@ class Utils
 
 	public static ProtoUtils.Announcement announcementToProto(AnnouncementContra ac)
 	{
-		Announcement a = ac.getAnnouncement();
+		AnnouncementID aid = ac.getAnnouncement().getID();
 		ProtoUtils.Announcement.Builder builder = ProtoUtils.Announcement.newBuilder()
-				.setName(a.getName())
+				.setName(aid.getName())
 				.setContraLevel(ac.getContraLevel());
 
-		if (a.getCard() != null)
-			builder.setCard(cardToProto(a.getCard()));
-		if (a.getRound() >= 0)
-			builder.setRound(a.getRound());
-		if (a.getSuit() >= 0)
-			builder.setSuit(a.getSuit());
+		if (aid.hasSuit())
+			builder.setSuit(aid.getSuit());
+		if (aid.hasCard())
+			builder.setCard(cardToProto(aid.getCard()));
+		if (aid.hasRound())
+			builder.setRound(aid.getRound());
 
 		return builder.build();
 	}

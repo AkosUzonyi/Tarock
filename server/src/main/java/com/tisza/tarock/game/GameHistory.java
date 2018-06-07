@@ -82,7 +82,7 @@ public class GameHistory
 			for (int i = 0; i < 4; i++)
 			{
 				eventSender.playCard(cardPlayer, round.getCardByPlayer(cardPlayer));
-				cardPlayer = callerPlayer.nextPlayer();
+				cardPlayer = cardPlayer.nextPlayer();
 			}
 			eventSender.cardsTaken(round.getWinner());
 		}

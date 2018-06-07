@@ -119,7 +119,16 @@ public class RandomPlayer implements Player
 		@Override
 		public void turn(PlayerSeat player)
 		{
-			if (phase == PhaseEnum.GAMEPLAY && player == seat)
+			if (player != seat)
+				return;
+
+			if (phase == PhaseEnum.CHANGING)
+			{
+				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter()).subList(0, myCards.size() - 9);
+				myCards.removeCards(cardsToSkart);
+				enqueueAction(handler -> handler.change(seat, cardsToSkart));
+			}
+			else if (phase == PhaseEnum.GAMEPLAY)
 			{
 				Card cardToPlay = chooseRandom(myCards.getPlaceableCards(currentFirstCard));
 				myCards.removeCard(cardToPlay);
@@ -136,13 +145,6 @@ public class RandomPlayer implements Player
 		public void playerCards(PlayerCards cards)
 		{
 			myCards = cards.clone();
-
-			if (phase == PhaseEnum.CHANGING)
-			{
-				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter()).subList(0, myCards.size() - 9);
-				myCards.removeCards(cardsToSkart);
-				enqueueAction(handler -> handler.change(seat, cardsToSkart));
-			}
 		}
 
 		@Override

@@ -41,6 +41,9 @@ class Changing extends Phase
 				gameSession.getPlayerEventSender(player).changeDone(otherPlayer);
 			}
 		}
+
+		if (!donePlayer.get(player))
+			gameSession.getPlayerEventSender(player).turn(player);
 	}
 
 	private void dealCardsFromTalon()
@@ -64,7 +67,8 @@ class Changing extends Phase
 			PlayerCards playerCards = currentGame.getPlayerCards(player);
 			playerCards.addCards(cardsFromTalon);
 			gameSession.getPlayerEventSender(player).playerCards(playerCards);
-			history.setCardsFromTalon(player, cardsFromTalon);
+			gameSession.getPlayerEventSender(player).turn(player);
+			history.setCardsFromTalon(player, new ArrayList<>(cardsFromTalon));
 			cardsFromTalon.clear();
 
 			player = player.nextPlayer();

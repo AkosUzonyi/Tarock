@@ -282,10 +282,6 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 			showCenterView(messagesView);
 
 			higlightAllName();
-			skarting = true;
-
-			okButton.setVisibility(View.VISIBLE);
-			okButton.setOnClickListener(v -> actionSender.change(cardsToSkart));
 		}
 		else if (phase == PhaseEnum.CALLING)
 		{
@@ -510,7 +506,14 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	@Override
 	public void turn(int player)
 	{
-		if (gamePhase != PhaseEnum.CHANGING)
+		if (gamePhase == PhaseEnum.CHANGING)
+		{
+			skarting = true;
+
+			okButton.setVisibility(View.VISIBLE);
+			okButton.setOnClickListener(v -> actionSender.change(cardsToSkart));
+		}
+		else
 		{
 			highlightName(player);
 		}

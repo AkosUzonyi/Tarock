@@ -127,32 +127,4 @@
     <string name="statictics_opponent">Ellenfél figurái</string>
     <string name="statictics_points">Pont</string>
     <string name="statictics_sum">Összesen:</string>
-    
-    <string-array name="ultimo_type_array">
-        <item>Pagát</item>
-        <item>Sas</item>
-        <item>Huszonegy</item>
-        <item>Király</item>
-        <item>Dáma</item>
-        <item>Lovas</item>
-        <item>Botos</item>
-        <item>Ász</item>
-        <item>Kisszíncsalád</item>
-        <item>Nagyszíncsalád</item>
-	</string-array>
-    
-    <string-array name="ultimo_suit_array">
-        <item>Kőr</item>
-        <item>Káró</item>
-        <item>Pikk</item>
-        <item>Treff</item>
-	</string-array>
-    
-    <string-array name="ultimo_round_array">
-        <item>Ultimó</item>
-        <item>Uhu</item>
-        <item>Nagymadár</item>
-        <item>Kismadár</item>
-    </string-array>
-    
 </resources>

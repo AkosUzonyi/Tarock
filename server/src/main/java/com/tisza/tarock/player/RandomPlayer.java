@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 public class RandomPlayer implements Player
 {
 	private final String name;
-	private final int delay;
+	private final int delay, extraDelay;
 	private EventSender eventSender = new MyEventSender();
 	private Random rnd = new Random();
 
@@ -22,13 +22,14 @@ public class RandomPlayer implements Player
 
 	public RandomPlayer(String name)
 	{
-		this(name, 700);
+		this(name, 0, 0);
 	}
 
-	public RandomPlayer(String name, int delay)
+	public RandomPlayer(String name, int delay, int extraDelay)
 	{
 		this.name = name;
 		this.delay = delay;
+		this.extraDelay = extraDelay;
 	}
 
 	@Override
@@ -71,6 +72,21 @@ public class RandomPlayer implements Player
 		catch (InterruptedException e)
 		{
 			e.printStackTrace();
+			Thread.currentThread().interrupt();
+		}
+		enqueueAction(action);
+	}
+
+	private void enqueueActionExtraDelayed(Action action)
+	{
+		try
+		{
+			Thread.sleep(extraDelay);
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+			Thread.currentThread().interrupt();
 		}
 		enqueueAction(action);
 	}
@@ -132,7 +148,14 @@ public class RandomPlayer implements Player
 			{
 				Card cardToPlay = chooseRandom(myCards.getPlaceableCards(currentFirstCard));
 				myCards.removeCard(cardToPlay);
-				enqueueActionDelayed(handler -> handler.playCard(seat, cardToPlay));
+				if (currentFirstCard == null)
+				{
+					enqueueActionExtraDelayed(handler -> handler.playCard(seat, cardToPlay));
+				}
+				else
+				{
+					enqueueActionDelayed(handler -> handler.playCard(seat, cardToPlay));
+				}
 			}
 		}
 

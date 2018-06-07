@@ -12,7 +12,7 @@ public class Server implements Runnable
 {
 	private static final int PROTO_PLAYER_COUNT = 1;
 	private static final PhaseEnum FAST_FORWARD_TO_PHASE = null;
-	private static final int RANDOM_PLAYER_DELAY = 500;
+	private static final int RANDOM_PLAYER_DELAY = 500, RANDOM_PLAYER_EXTRA_DELAY = 2500;
 
 	private int port;
 
@@ -47,11 +47,11 @@ public class Server implements Runnable
 			}
 			else
 			{
-				player = new RandomPlayer("bot" + i, RANDOM_PLAYER_DELAY);
+				player = new RandomPlayer("bot" + i, RANDOM_PLAYER_DELAY, RANDOM_PLAYER_EXTRA_DELAY);
 			}
 
 			if (FAST_FORWARD_TO_PHASE != null)
-				player = new MixedPlayer(new RandomPlayer(player.getName(), 0), player, FAST_FORWARD_TO_PHASE);
+				player = new MixedPlayer(new RandomPlayer(player.getName()), player, FAST_FORWARD_TO_PHASE);
 
 			players.add(player);
 		}

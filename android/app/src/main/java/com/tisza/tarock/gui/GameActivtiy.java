@@ -26,9 +26,9 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	public static final String LOG_TAG = "Tarokk";
 
 	public static final float PLAYED_CARD_DISTANCE = 0.65F;
-	public static final int PLAY_DURATION = 100;
-	public static final int TAKE_DURATION = 800;
-	private static final int DELAY = 1600;
+	public static final int PLAY_DURATION = 50;
+	public static final int TAKE_DURATION = 400;
+	private static final int DELAY = 600;
 	private static final int CARDS_PER_ROW = 6;
 
 	private static final float cardImageRatio = 1.66F;

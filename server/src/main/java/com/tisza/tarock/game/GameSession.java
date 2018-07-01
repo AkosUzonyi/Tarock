@@ -13,7 +13,7 @@ public class GameSession implements Runnable
 {
 	public static final int ROUND_COUNT = 9;
 
-	private PlayerSeat.Map<Integer> points = new PlayerSeat.Map<>(0);
+	private int[] points = new int[4];
 
 	private PlayerSeat.Map<Player> players = new PlayerSeat.Map<>();
 	private EventSender broadcastEventSender;
@@ -190,8 +190,6 @@ public class GameSession implements Runnable
 			}
 		}
 
-		int[] points = new int[4];
-
 		int allTarockCountPoints = 0;
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
@@ -209,8 +207,6 @@ public class GameSession implements Runnable
 		points[state.getPlayerPairs().getCaller().asInt()] += pointsForCallerTeam * 2;
 		points[state.getPlayerPairs().getCalled().asInt()] += pointsForCallerTeam * 2;
 
-		addPoints(points);
-
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
 			Team team = state.getPlayerPairs().getTeam(player);
@@ -220,14 +216,6 @@ public class GameSession implements Runnable
 			List<AnnouncementStaticticsEntry> opponentEntries = statEntriesForTeams.get(team.getOther());
 			int sumPoints = pointsForCallerTeam * (team == Team.CALLER ? 1 : -1);
 			getPlayerEventSender(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, points);
-		}
-	}
-
-	private void addPoints(int[] pointsToAdd)
-	{
-		for (PlayerSeat p : PlayerSeat.getAll())
-		{
-			points.compute(p, (k, v) -> v + pointsToAdd[p.asInt()]);
 		}
 	}
 }

@@ -13,15 +13,11 @@ import android.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.message.*;
-import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
-import com.tisza.tarock.proto.MainProto.*;
 
-import java.io.*;
-import java.net.*;
 import java.util.*;
 
-public class GameActivtiy extends Activity implements MessageHandler, EventHandler
+public class GameFragment extends Fragment implements EventHandler
 {
 	public static final String LOG_TAG = "Tarokk";
 
@@ -66,111 +62,72 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	private TextView statisticsSumPointsView;
 	private TextView[] statisticsPointsNameViews = new TextView[4];
 	private TextView[] statisticsPointsValueViews = new TextView[4];
-	
+
 	@Override
-	@SuppressWarnings("deprecation")
-	protected void onCreate(Bundle savedInstanceState)
+	public void onAttach(Context context)
+	{
+		super.onAttach(context);
+
+		actionSender = ((MainActivity)getActivity()).getActionSender();
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		
-		ResourceMappings.init(this);
-			
-		cardWidth = getWindowManager().getDefaultDisplay().getWidth() / CARDS_PER_ROW;
-		cardHeight = (int)(cardWidth * cardImageRatio);
-		
-		layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		
-		final String host = getIntent().getStringExtra("host");
-		final int port = getIntent().getIntExtra("port", 8128);
-		final String name = getIntent().getStringExtra("name");
-		
-		Thread connThread = new Thread(() ->
-		{
-			try
-			{
-				Socket socket = new Socket();
-				socket.connect(new InetSocketAddress(host, port), 1000);
-				conncection = new ProtoConnection(socket);
-				actionSender = new ProtoActionSender(conncection);
 
-				conncection.addMessageHandler(new MessageHandler()
-				{
-					@Override
-					public void handleMessage(final MainProto.Message message)
-					{
-						runOnUiThread(() -> GameActivtiy.this.handleMessage(message));
-					}
+		ResourceMappings.init(getActivity());
 
-					@Override
-					public void connectionClosed()
-					{
-						GameActivtiy.this.connectionClosed();
-					}
-				});
-				conncection.start();
-				conncection.sendMessage(MainProto.Message.newBuilder().setLogin(Login.newBuilder().setName(name).build()).build());
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-				finish();
-			}
-		});
-		connThread.start();
-		try
-		{
-			connThread.join(1000);
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
+		layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
-	
-	private void inflateGameViews()
+
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		setContentView(R.layout.game);
-		
-		centerSpace = (FrameLayout)findViewById(R.id.center_space);
+		View contentView = inflater.inflate(R.layout.game, container, false);
+
+		cardWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth() / CARDS_PER_ROW;
+		cardHeight = (int)(cardWidth * cardImageRatio);
+
+		centerSpace = (FrameLayout)contentView.findViewById(R.id.center_space);
 		
 		playerNameViews = new TextView[]
 		{
 				null,
-				(TextView)findViewById(R.id.player_name_1),
-				(TextView)findViewById(R.id.player_name_2),
-				(TextView)findViewById(R.id.player_name_3),
+				(TextView)contentView.findViewById(R.id.player_name_1),
+				(TextView)contentView.findViewById(R.id.player_name_2),
+				(TextView)contentView.findViewById(R.id.player_name_3),
 		};
 		
 		playerMessageViews = new TextView[]
 		{
-				(TextView)findViewById(R.id.player_message_0),
-				(TextView)findViewById(R.id.player_message_1),
-				(TextView)findViewById(R.id.player_message_2),
-				(TextView)findViewById(R.id.player_message_3),
+				(TextView)contentView.findViewById(R.id.player_message_0),
+				(TextView)contentView.findViewById(R.id.player_message_1),
+				(TextView)contentView.findViewById(R.id.player_message_2),
+				(TextView)contentView.findViewById(R.id.player_message_3),
 		};
 		
-		myCardsView = (LinearLayout)findViewById(R.id.my_cards);
-		myCardsView0 = (LinearLayout)findViewById(R.id.my_cards_0);
-		myCardsView1 = (LinearLayout)findViewById(R.id.my_cards_1);
+		myCardsView = (LinearLayout)contentView.findViewById(R.id.my_cards);
+		myCardsView0 = (LinearLayout)contentView.findViewById(R.id.my_cards_0);
+		myCardsView1 = (LinearLayout)contentView.findViewById(R.id.my_cards_1);
 		
-		okButton = (Button)findViewById(R.id.ok_button);
-		throwButton = (Button)findViewById(R.id.throw_button);
+		okButton = (Button)contentView.findViewById(R.id.ok_button);
+		throwButton = (Button)contentView.findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v ->
 		{
 			actionSender.throwCards();
 		});
 		
 		layoutInflater.inflate(R.layout.messages, centerSpace);
-		messagesView = findViewById(R.id.messages_view);
-		messagesScrollView = (ScrollView)findViewById(R.id.messages_scroll);
-		messagesTextView = (TextView)findViewById(R.id.messages_text_view);
-		availabeActionsView = (LinearLayout)findViewById(R.id.available_actions);
+		messagesView = contentView.findViewById(R.id.messages_view);
+		messagesScrollView = (ScrollView)contentView.findViewById(R.id.messages_scroll);
+		messagesTextView = (TextView)contentView.findViewById(R.id.messages_text_view);
+		availabeActionsView = (LinearLayout)contentView.findViewById(R.id.available_actions);
 
 		layoutInflater.inflate(R.layout.ultimo, centerSpace);
-		ultimoView = findViewById(R.id.ultimo_view);
-		ultimoBackButton = (Button)findViewById(R.id.ultimo_back_buton);
-		announceButton = (Button)findViewById(R.id.ultimo_announce_button);
-		ultimoViewManager = new UltimoViewManager(this, layoutInflater, (LinearLayout)findViewById(R.id.ultimo_spinner_list));
+		ultimoView = contentView.findViewById(R.id.ultimo_view);
+		ultimoBackButton = (Button)contentView.findViewById(R.id.ultimo_back_buton);
+		announceButton = (Button)contentView.findViewById(R.id.ultimo_announce_button);
+		ultimoViewManager = new UltimoViewManager(getActivity(), layoutInflater, (LinearLayout)contentView.findViewById(R.id.ultimo_spinner_list));
 		ultimoBackButton.setOnClickListener(v -> showCenterView(messagesView));
 
 		announceButton.setOnClickListener(v ->
@@ -183,34 +140,61 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 			actionSender.announce(announcement);
 		});
 		
-		playedCardsView = new RelativeLayout(this);
+		playedCardsView = new RelativeLayout(getActivity());
 		playedCardsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 		playedCardViews = new PlayedCardView[4];
 		for (int i = 0; i < 4; i++)
 		{
-			playedCardViews[i] = new PlayedCardView(this, cardWidth, cardHeight, i);
+			playedCardViews[i] = new PlayedCardView(getActivity(), cardWidth, cardHeight, i);
 			playedCardsView.addView(playedCardViews[i]);
 		}
 		centerSpace.addView(playedCardsView);
 		
 		layoutInflater.inflate(R.layout.statistics, centerSpace);
-		statisticsView = findViewById(R.id.statistics_view);
-		statisticsGamepointsSelf = (TextView)findViewById(R.id.statistics_gamepoints_self);
-		statisticsGamepointsOpponent = (TextView)findViewById(R.id.statistics_gamepoints_opponent);
-		statisticsSelfEntriesView = (LinearLayout)findViewById(R.id.statistics_self_entries_list);
-		statisticsOpponentEntriesView = (LinearLayout)findViewById(R.id.statistics_opponent_entries_list);
-		statisticsSumPointsView = (TextView)findViewById(R.id.statistics_sum_points);
-		statisticsPointsNameViews[0] = (TextView)findViewById(R.id.statistics_points_name_0);
-		statisticsPointsNameViews[1] = (TextView)findViewById(R.id.statistics_points_name_1);
-		statisticsPointsNameViews[2] = (TextView)findViewById(R.id.statistics_points_name_2);
-		statisticsPointsNameViews[3] = (TextView)findViewById(R.id.statistics_points_name_3);
-		statisticsPointsValueViews[0] = (TextView)findViewById(R.id.statistics_points_value_0);
-		statisticsPointsValueViews[1] = (TextView)findViewById(R.id.statistics_points_value_1);
-		statisticsPointsValueViews[2] = (TextView)findViewById(R.id.statistics_points_value_2);
-		statisticsPointsValueViews[3] = (TextView)findViewById(R.id.statistics_points_value_3);
+		statisticsView = contentView.findViewById(R.id.statistics_view);
+		statisticsGamepointsSelf = (TextView)contentView.findViewById(R.id.statistics_gamepoints_self);
+		statisticsGamepointsOpponent = (TextView)contentView.findViewById(R.id.statistics_gamepoints_opponent);
+		statisticsSelfEntriesView = (LinearLayout)contentView.findViewById(R.id.statistics_self_entries_list);
+		statisticsOpponentEntriesView = (LinearLayout)contentView.findViewById(R.id.statistics_opponent_entries_list);
+		statisticsSumPointsView = (TextView)contentView.findViewById(R.id.statistics_sum_points);
+		statisticsPointsNameViews[0] = (TextView)contentView.findViewById(R.id.statistics_points_name_0);
+		statisticsPointsNameViews[1] = (TextView)contentView.findViewById(R.id.statistics_points_name_1);
+		statisticsPointsNameViews[2] = (TextView)contentView.findViewById(R.id.statistics_points_name_2);
+		statisticsPointsNameViews[3] = (TextView)contentView.findViewById(R.id.statistics_points_name_3);
+		statisticsPointsValueViews[0] = (TextView)contentView.findViewById(R.id.statistics_points_value_0);
+		statisticsPointsValueViews[1] = (TextView)contentView.findViewById(R.id.statistics_points_value_1);
+		statisticsPointsValueViews[2] = (TextView)contentView.findViewById(R.id.statistics_points_value_2);
+		statisticsPointsValueViews[3] = (TextView)contentView.findViewById(R.id.statistics_points_value_3);
+
+		((MainActivity)getActivity()).setEventHandler(this);
+		((MainActivity)getActivity()).getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
+				.setGameId(getArguments().getInt("gameID"))
+				.build())
+				.build());
+
+		return contentView;
 	}
 
-	private ProtoConnection conncection;
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		((MainActivity)getActivity()).setEventHandler(null);
+		((MainActivity)getActivity()).getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
+				.build())
+				.build());
+	}
+
+	private void resetGameViews()
+	{
+		showCenterView(messagesView);
+		okButton.setVisibility(View.GONE);
+		throwButton.setVisibility(View.GONE);
+		messagesTextView.setText("");
+
+	}
+
+	private ActionSender actionSender;
 
 	private List<String> playerNames;
 	private PlayerCards myCards;
@@ -229,7 +213,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	@Override
 	public void startGame(int myID, List<String> playerNames)
 	{
-		inflateGameViews();
+		resetGameViews();
 
 		this.myID = myID;
 		this.playerNames = playerNames;
@@ -606,7 +590,7 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 		{
 			final Card card = myCards.getCards().get(i);
 			
-			ImageView cardView = new ImageView(this);
+			ImageView cardView = new ImageView(getActivity());
 			cardView.setAdjustViewBounds(true);
 			int padding = (int)(cardWidth * 0.1F / 2);
 			cardView.setPadding(padding, padding, padding, padding);
@@ -784,60 +768,5 @@ public class GameActivtiy extends Activity implements MessageHandler, EventHandl
 	private int getPositionFromPlayerID(int id)
 	{
 		return (id - myID + 4) % 4;
-	}
-
-	@Override
-	public void handleMessage(MainProto.Message message)
-	{
-		switch (message.getMessageTypeCase())
-		{
-			case EVENT:
-				new ProtoEvent(message.getEvent()).handle(this);
-				break;
-			default:
-				System.err.println("unhandled message type: " + message.getMessageTypeCase());
-				break;
-		}
-	}
-
-	private ActionSender actionSender;
-
-	@Override
-	public void connectionClosed()
-	{
-		finish();
-	}
-	
-	@Override
-	protected void onDestroy()
-	{
-		super.onDestroy();
-		if (conncection != null)
-		{
-			try
-			{
-				conncection.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private boolean doubleBackToExitPressedOnce = false;
-	@Override
-	public void onBackPressed()
-	{
-		if (doubleBackToExitPressedOnce)
-		{
-			super.onBackPressed();
-			return;
-		}
-
-		this.doubleBackToExitPressedOnce = true;
-		Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
-
-		new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 1000);
 	}
 }

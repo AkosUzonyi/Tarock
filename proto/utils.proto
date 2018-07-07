@@ -44,3 +44,11 @@ enum Phase
 	END = 6;
 	INTERRUPTED = 7;
 }
+
+enum GameType
+{
+	PASKIEVICS = 0;
+	ILLUSZTRALT = 1;
+	MAGAS = 2;
+	ZEBI = 3;
+}

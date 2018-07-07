@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/wood_texture"
+    >
+
+    <TextView
+        android:id="@+id/app_name_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintTop_toTopOf="@+id/top"
+        app:layout_constraintStart_toStartOf="@id/center"
+        app:layout_constraintEnd_toEndOf="@id/center"
+
+        android:text="@string/app_name"
+        android:textColor="#D0101010"
+        android:textSize="80dp"
+        android:textStyle="italic|bold"
+
+        android:shadowColor="#80000000"
+        android:shadowRadius="10"
+        android:shadowDx="7"
+        android:shadowDy="7"
+    />
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_client"
+        app:layout_constraintTop_toBottomOf="@+id/app_name_view"
+        app:layout_constraintLeft_toLeftOf="@id/image_left"
+        app:layout_constraintRight_toRightOf="@id/image_right"
+    />
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/fb_login_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/image_view"
+        app:layout_constraintLeft_toLeftOf="@+id/button_left"
+        app:layout_constraintRight_toLeftOf="@+id/button_right"
+    />
+    <Button
+        android:text="@string/play"
+        android:id="@+id/play_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/fb_login_button"
+        app:layout_constraintLeft_toLeftOf="@+id/button_left"
+        app:layout_constraintRight_toLeftOf="@+id/button_right"
+        android:layout_marginTop="@dimen/button_margin"
+        style="@style/button"
+    />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintGuide_percent="0.05"
+        android:orientation="horizontal"
+    />
+    <android.support.constraint.Guideline
+        android:id="@+id/bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintGuide_percent="0.9"
+        android:orientation="horizontal"
+    />
+    <android.support.constraint.Guideline
+        android:id="@+id/button_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.3"
+    />
+    <android.support.constraint.Guideline
+        android:id="@+id/button_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.7"
+    />
+    <android.support.constraint.Guideline
+        android:id="@+id/image_left"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0"
+    />
+    <android.support.constraint.Guideline
+        android:id="@+id/image_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="1"
+    />
+    <android.support.constraint.Guideline
+        android:id="@+id/center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"
+    />
+</android.support.constraint.ConstraintLayout>

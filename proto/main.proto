@@ -8,11 +8,6 @@ import "action.proto";
 import "event.proto";
 import "utils.proto";
 
-message Login
-{
-    required string name = 1;
-}
-
 message Message
 {
     oneof message_type
@@ -20,5 +15,44 @@ message Message
         Login login = 1;
         Action action = 3;
         Event event = 2;
+        CreateGame create_game = 4;
+        ServerStatus server_status = 5;
+        JoinGame join_game = 6;
     }
+}
+
+message User
+{
+    required string id = 1;
+    required string name = 2;
+    optional string image_url = 3;
+}
+
+message Login
+{
+    required string facebook_token = 1;
+}
+
+message Game
+{
+    required int32 id = 1;
+    required GameType type = 2;
+    repeated string player_name = 3;
+}
+
+message CreateGame
+{
+    required GameType type = 1;
+    repeated string userID = 2;
+}
+
+message ServerStatus
+{
+    repeated Game available_game = 1;
+    repeated User available_user = 2;
+}
+
+message JoinGame
+{
+    optional int32 game_id = 1;
 }

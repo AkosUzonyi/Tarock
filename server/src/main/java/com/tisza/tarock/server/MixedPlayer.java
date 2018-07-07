@@ -1,4 +1,4 @@
-package com.tisza.tarock.player;
+package com.tisza.tarock.server;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
@@ -36,14 +36,14 @@ public class MixedPlayer implements Player
 
 		if (activePlayer != null)
 		{
-			activePlayer.onDisconnectedFromGame();
+			activePlayer.onRemovedFromGame();
 		}
 
 		activePlayer = player;
 
 		if (activePlayer != null)
 		{
-			activePlayer.onJoinedToGame(actionQueue, seat);
+			activePlayer.onAddedToGame(actionQueue, seat);
 			eventSender.setEventSenders(Arrays.asList(activePlayer.getEventSender(), phaseTrackerEventSender));
 			actionQueue.add(handler -> handler.requestHistory(seat));
 		}
@@ -62,7 +62,7 @@ public class MixedPlayer implements Player
 	}
 
 	@Override
-	public void onJoinedToGame(BlockingQueue<Action> actionQueue, PlayerSeat seat)
+	public void onAddedToGame(BlockingQueue<Action> actionQueue, PlayerSeat seat)
 	{
 		this.actionQueue = actionQueue;
 		this.seat = seat;
@@ -71,7 +71,7 @@ public class MixedPlayer implements Player
 	}
 
 	@Override
-	public void onDisconnectedFromGame()
+	public void onRemovedFromGame()
 	{
 		changeActivePlayer(null);
 	}

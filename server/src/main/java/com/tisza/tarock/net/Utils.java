@@ -1,12 +1,15 @@
-package com.tisza.tarock.player.proto;
+package com.tisza.tarock.net;
 
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
+import com.tisza.tarock.server.*;
 
-class Utils
+import java.util.stream.*;
+
+public class Utils
 {
 	public static ProtoUtils.Card cardToProto(Card c)
 	{
@@ -106,5 +109,59 @@ class Utils
 			aid.setRound(announcementProto.getRound());
 
 		return new AnnouncementContra(Announcements.getByID(aid), announcementProto.getContraLevel());
+	}
+
+	public static GameType gameTypeFromProto(ProtoUtils.GameType gameTypeProto)
+	{
+		switch (gameTypeProto)
+		{
+			case PASKIEVICS:
+				return GameType.PASKIEVICS;
+			case ILLUSZTRALT:
+				return GameType.ILLUSZTRALT;
+			case MAGAS:
+				return GameType.MAGAS;
+			case ZEBI:
+				return GameType.ZEBI;
+		}
+		throw new RuntimeException();
+	}
+
+	public static ProtoUtils.GameType gameTypeToProto(GameType gameTypeProto)
+	{
+		switch (gameTypeProto)
+		{
+			case PASKIEVICS:
+				return ProtoUtils.GameType.PASKIEVICS;
+			case ILLUSZTRALT:
+				return ProtoUtils.GameType.ILLUSZTRALT;
+			case MAGAS:
+				return ProtoUtils.GameType.MAGAS;
+			case ZEBI:
+				return ProtoUtils.GameType.ZEBI;
+		}
+		throw new RuntimeException();
+	}
+
+	public static MainProto.User userToProto(User user)
+	{
+		MainProto.User.Builder builder = MainProto.User.newBuilder()
+				.setId(user.getId())
+				.setName(user.getName());
+
+		String imgURL = user.getImageURL();
+		if (imgURL != null)
+			builder.setImageUrl(imgURL);
+
+		return builder.build();
+	}
+
+	public static MainProto.Game gameInfoToProto(GameInfo gameInfo)
+	{
+		return MainProto.Game.newBuilder()
+				.setId(gameInfo.getId())
+				.setType(gameTypeToProto(gameInfo.getType()))
+				.addAllPlayerName(gameInfo.getPlayerNames())
+				.build();
 	}
 }

@@ -1,4 +1,4 @@
-package com.tisza.tarock.player.proto;
+package com.tisza.tarock.net;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
@@ -6,7 +6,7 @@ import com.tisza.tarock.proto.*;
 
 import java.util.stream.*;
 
-class ProtoAction implements Action
+public class ProtoAction implements Action
 {
 	private final ActionProto.Action actionProto;
 	private final PlayerSeat player;

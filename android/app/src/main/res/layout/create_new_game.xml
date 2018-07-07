@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:background="@drawable/wood_texture"
+	android:padding="@dimen/default_padding"
+	>
+
+	<Spinner
+		android:id="@+id/game_type_spinner"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:entries="@array/game_type_array"
+		style="@style/spinner"
+	/>
+
+	<ListView
+		android:id="@+id/available_users"
+		android:layout_width="match_parent"
+		android:layout_height="0dp"
+		android:layout_weight="1"
+	/>
+
+	<Button
+		android:id="@+id/create_game_button"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="@string/create_game"
+		style="@style/button"
+	/>
+
+</LinearLayout>

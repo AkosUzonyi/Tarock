@@ -27,26 +27,25 @@
         </activity>
 
     	<activity
-    	    android:name="com.tisza.tarock.gui.GameActivtiy"
+    	    android:name="com.tisza.tarock.gui.GameFragment"
     	    android:screenOrientation="portrait"
     	    android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
     		>
     	</activity>
-    	
-    	<activity
-    	    android:name="com.tisza.tarock.gui.ClientActivity"
-    	    android:label="@string/client_app_name"
-    	    android:icon="@drawable/icon_client"
-    	    android:taskAffinity="com.tisza.tarock.client"
-    	    android:screenOrientation="portrait"
-    	    android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
-    		>
-    	    <intent-filter>
-    	        <action android:name="android.intent.action.MAIN"/>
-    	        <category android:name="android.intent.category.LAUNCHER"/>
-    	    </intent-filter>
-    	    
-    	</activity>
+
+		<activity
+			android:name="com.tisza.tarock.gui.MainActivity"
+			android:label="@string/app_name"
+			android:icon="@drawable/icon_client"
+			android:screenOrientation="portrait"
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+		>
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
+
+		</activity>
 	</application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.tisza.tarock.player.proto;
+package com.tisza.tarock.net;
 
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.*;
@@ -8,7 +8,7 @@ import com.tisza.tarock.proto.*;
 import java.util.*;
 import java.util.stream.*;
 
-import static com.tisza.tarock.player.proto.Utils.*;
+import static com.tisza.tarock.net.Utils.*;
 import static com.tisza.tarock.proto.EventProto.*;
 
 public class ProtoEventSender implements EventSender

@@ -2,10 +2,8 @@ package com.tisza.tarock.game;
 
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.Bidding.*;
-import com.tisza.tarock.player.*;
 
 import java.util.*;
-import java.util.stream.*;
 
 public class GameState
 {

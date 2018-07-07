@@ -1,4 +1,4 @@
-package com.tisza.tarock.player.proto;
+package com.tisza.tarock.net;
 
 import com.tisza.tarock.proto.MainProto.*;
 

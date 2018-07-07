@@ -1,11 +1,10 @@
-package com.tisza.tarock.player;
+package com.tisza.tarock.server;
 
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.card.filter.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
-import com.tisza.tarock.player.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -45,16 +44,17 @@ public class RandomPlayer implements Player
 	}
 
 	@Override
-	public void onJoinedToGame(BlockingQueue<Action> actionQueue, PlayerSeat seat)
+	public void onAddedToGame(BlockingQueue<Action> actionQueue, PlayerSeat seat)
 	{
 		this.actionQueue = actionQueue;
 		this.seat = seat;
 	}
 
 	@Override
-	public void onDisconnectedFromGame()
+	public void onRemovedFromGame()
 	{
 		actionQueue = null;
+		seat = null;
 	}
 
 	private void enqueueAction(Action action)

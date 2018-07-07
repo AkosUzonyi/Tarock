@@ -1,0 +1,52 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal"
+	android:padding="@dimen/default_padding"
+	>
+
+	<ImageView
+		android:id="@+id/user_image"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:layout_margin="@dimen/button_margin"
+	/>
+
+	<FrameLayout
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:layout_gravity="center|left"
+		android:layout_margin="@dimen/button_margin"
+		>
+
+		<TextView
+			android:id="@+id/user_name"
+			android:layout_width="wrap_content"
+			android:layout_height="match_parent"
+			android:textSize="@dimen/name_size"
+			style="@style/text_view"
+		/>
+	</FrameLayout>
+
+
+	<ImageView
+		android:id="@+id/is_user_friend"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+		android:layout_margin="@dimen/button_margin"
+		android:visibility="gone"
+	/>
+
+	<Space
+		android:layout_width="0dp"
+		android:layout_height="match_parent"
+		android:layout_weight="1"
+	/>
+
+	<CheckBox
+		android:id="@+id/user_checkbox"
+		android:layout_width="wrap_content"
+		android:layout_height="match_parent"
+	/>
+
+</LinearLayout>

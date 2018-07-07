@@ -3,14 +3,13 @@
     <string name="fb_login_protocol_scheme">fb1735167250066232</string>
 
     <string name="app_name">Tarokk</string>
-    <string name="client_app_name">Tarokk client</string>
-    <string name="server_app_name">Tarokk server</string>
-    <string name="name">Name</string>
-    <string name="connect">Connect</string>
-    <string name="ip">IP address</string>
-    <string name="port">Port number</string>
-    <string name="server_start">Start server</string>
-    <string name="server_stop">Stop server</string>
+    <string name="play">Play</string>
+    <string name="new_game">Új játék</string>
+    <string name="join_game">Csatlakozás</string>
+    <string name="delete_game">Törlés</string>
+    <string name="create_game">Létrehoz</string>
+    <string name="back_again_to_exit">"Please click BACK again to exit"</string>
+    <string name="too_much_user_selected">"Maximum 4 játékost jelölj meg!"</string>
 
     <string name="ok">OK</string>
     <string name="throw_cards">Bedob</string>
@@ -33,14 +32,21 @@
     <string name="bid1">1</string>
     <string name="bid0">Szóló</string>
     <string name="bid_passz">Passz</string>
-    
+
+    <string-array name="game_type_array">
+        <item>Paskievics</item>
+        <item>Illusztrált</item>
+        <item>Magas</item>
+        <item>Zebi</item>
+    </string-array>
+
     <string-array name="suit_array">
         <item>kőr</item>
         <item>káró</item>
         <item>pikk</item>
         <item>treff</item>
     </string-array>
-    
+
     <string-array name="suitcard_value_array">
         <item>ász</item>
         <item>botos</item>

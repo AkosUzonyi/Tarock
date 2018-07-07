@@ -1,4 +1,4 @@
-package com.tisza.tarock.player;
+package com.tisza.tarock.message;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
@@ -9,6 +9,6 @@ public interface Player
 {
 	public String getName();
 	public EventSender getEventSender();
-	public void onJoinedToGame(BlockingQueue<Action> actionQueue, PlayerSeat seat);
-	public void onDisconnectedFromGame();
+	public void onAddedToGame(BlockingQueue<Action> actionQueue, PlayerSeat seat);
+	public void onRemovedFromGame();
 }

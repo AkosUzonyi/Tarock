@@ -7,8 +7,9 @@ import com.tisza.tarock.proto.EventProto.Event;
 import com.tisza.tarock.proto.*;
 
 import java.util.*;
+import java.util.stream.*;
 
-class Utils
+public class Utils
 {
 	public static AnnouncementStaticticsEntry staticticsFromProto(Event.AnnouncementStatistics.Entry entry)
 	{
@@ -155,5 +156,54 @@ class Utils
 		}
 
 		return protocard.build();
+	}
+
+	public static GameType gameTypeFromProto(ProtoUtils.GameType gameTypeProto)
+	{
+		switch (gameTypeProto)
+		{
+			case PASKIEVICS:
+				return GameType.PASKIEVICS;
+			case ILLUSZTRALT:
+				return GameType.ILLUSZTRALT;
+			case MAGAS:
+				return GameType.MAGAS;
+			case ZEBI:
+				return GameType.ZEBI;
+		}
+		throw new RuntimeException();
+	}
+
+	public static ProtoUtils.GameType gameTypeToProto(GameType gameTypeProto)
+	{
+		switch (gameTypeProto)
+		{
+			case PASKIEVICS:
+				return ProtoUtils.GameType.PASKIEVICS;
+			case ILLUSZTRALT:
+				return ProtoUtils.GameType.ILLUSZTRALT;
+			case MAGAS:
+				return ProtoUtils.GameType.MAGAS;
+			case ZEBI:
+				return ProtoUtils.GameType.ZEBI;
+		}
+		throw new RuntimeException();
+	}
+
+	public static User userFromProto(MainProto.User userProto)
+	{
+		if (userProto.hasImageUrl())
+		{
+			return new User(userProto.getId(), userProto.getName(), userProto.getImageUrl());
+		}
+		else
+		{
+			return new User(userProto.getId(), userProto.getName());
+		}
+	}
+
+	public static GameInfo gameInfoFromProto(MainProto.Game gameProto)
+	{
+		return new GameInfo(gameProto.getId(), gameTypeFromProto(gameProto.getType()), gameProto.getPlayerNameList());
 	}
 }

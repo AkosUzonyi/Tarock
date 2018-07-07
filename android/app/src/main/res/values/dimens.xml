@@ -4,6 +4,8 @@
     <dimen name="player_message_size">20sp</dimen>
     <dimen name="statistics_header_text_size">14sp</dimen>
     <dimen name="button_min_height">40dp</dimen>
-    <dimen name="button_margin">4dp</dimen>
     <dimen name="player_message_margin">10dp</dimen>
+    <dimen name="default_padding">10dp</dimen>
+    <dimen name="button_padding">4dp</dimen>
+    <dimen name="button_margin">4dp</dimen>
 </resources>

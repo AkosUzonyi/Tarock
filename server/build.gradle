@@ -10,7 +10,7 @@ apply plugin: 'application'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'idea'
 
-mainClassName = "com.tisza.tarock.server.Server"
+mainClassName = "com.tisza.tarock.Main"
 
 sourceCompatibility = 1.8
 
@@ -47,7 +47,6 @@ sourceSets {
 		}
     }
 }
-
 
 protobuf {
   protoc {

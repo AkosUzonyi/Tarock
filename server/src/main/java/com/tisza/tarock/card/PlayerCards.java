@@ -2,7 +2,6 @@ package com.tisza.tarock.card;
 
 import com.tisza.tarock.card.filter.*;
 import com.tisza.tarock.card.sort.*;
-import com.tisza.tarock.player.*;
 
 import java.util.*;
 

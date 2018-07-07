@@ -2,7 +2,6 @@ package com.tisza.tarock.game;
 
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.message.*;
-import com.tisza.tarock.player.*;
 
 import java.io.*;
 import java.util.*;
@@ -69,7 +68,7 @@ public class GameSession implements Runnable
 		broadcastEventSender = new BroadcastEventSender(players.values().stream().map(Player::getEventSender).collect(Collectors.toList()));
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{
-			players.get(seat).onJoinedToGame(actionQueue, seat);
+			players.get(seat).onAddedToGame(actionQueue, seat);
 		}
 
 		startNewGame(false);
@@ -91,7 +90,7 @@ public class GameSession implements Runnable
 		broadcastEventSender = null;
 		for (Player p : players)
 		{
-			p.onDisconnectedFromGame();
+			p.onRemovedFromGame();
 		}
 	}
 

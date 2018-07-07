@@ -52,7 +52,7 @@ public class PlayedCardView extends ImageView
 	{
 		if (imgResourcesQueue.isEmpty())
 		{
-			Log.e(GameActivtiy.LOG_TAG, "Tried to remove a card from an empty PlayedCardView");
+			Log.e(GameFragment.LOG_TAG, "Tried to remove a card from an empty PlayedCardView");
 			return;
 		}
 
@@ -92,8 +92,8 @@ public class PlayedCardView extends ImageView
 		{
 			tx = -1;
 		}
-		tx *= h * GameActivtiy.PLAYED_CARD_DISTANCE;
-		ty *= h * GameActivtiy.PLAYED_CARD_DISTANCE;
+		tx *= h * GameFragment.PLAYED_CARD_DISTANCE;
+		ty *= h * GameFragment.PLAYED_CARD_DISTANCE;
 		Animation translateAnim = new TranslateAnimation(0, tx, 0, ty);
 
 		AnimationSet animSet = new AnimationSet(true);
@@ -153,7 +153,7 @@ public class PlayedCardView extends ImageView
 		}
 
 		Interpolator interpolator = play ? new LinearInterpolator() : new ReverseInterpolator();
-		int duration = play ? GameActivtiy.PLAY_DURATION : GameActivtiy.TAKE_DURATION;
+		int duration = play ? GameFragment.PLAY_DURATION : GameFragment.TAKE_DURATION;
 
 		Animation moveAnim = new TranslateAnimation(tx, 0, ty, 0);
 		Animation positionAnim = createPositionAnimation();
@@ -204,7 +204,7 @@ public class PlayedCardView extends ImageView
 		}
 		else
 		{
-			Log.e(GameActivtiy.LOG_TAG, card + " has no image");
+			Log.e(GameFragment.LOG_TAG, card + " has no image");
 			return R.drawable.a1;
 		}
 	}

@@ -26,17 +26,6 @@ public class Szinesites extends TakeCards
 	}
 	
 	@Override
-	public boolean canBeAnnounced(IAnnouncing announcing)
-	{
-		Team team = announcing.getCurrentTeam();
-		
-		if (announcing.isAnnounced(team, Announcements.volat))
-			return false;
-		
-		return super.canBeAnnounced(announcing);
-	}
-
-	@Override
 	public int getPoints()
 	{
 		return 5;

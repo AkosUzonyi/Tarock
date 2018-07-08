@@ -50,7 +50,10 @@ public class Banda extends TakeCards
 				return false;
 			}
 		}
-		
+
+		if (announcing.isAnnounced(team, Announcements.szinesites))
+			return false;
+
 		return super.canBeAnnounced(announcing);
 	}
 

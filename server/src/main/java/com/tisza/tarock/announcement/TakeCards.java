@@ -26,4 +26,15 @@ public abstract class TakeCards extends AnnouncementBase
 
 		return canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 	}
+
+	@Override
+	public boolean canBeAnnounced(IAnnouncing announcing)
+	{
+		Team team = announcing.getCurrentTeam();
+
+		if (announcing.isAnnounced(team, Announcements.volat))
+			return false;
+
+		return super.canBeAnnounced(announcing);
+	}
 }

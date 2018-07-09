@@ -44,7 +44,7 @@ public class Szinultimo extends Ultimo
 	@Override
 	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
 	{
-		if (isKing && announcement == Announcements.kings[0])
+		if (isKing && getRound() == 8 && announcement == Announcements.kings[0])
 			return true;
 
 		return super.canOverrideAnnouncement(announcement);

@@ -41,7 +41,7 @@ public class GameSessionManager
 		int randomPlayerCount = 4 - players.size();
 		for (int i = 0; i < randomPlayerCount; i++)
 		{
-			players.add(new RandomPlayer("bot" + i));
+			players.add(new RandomPlayer("bot" + i, 500, 2000));
 		}
 
 		GameSession game = new GameSession(type, players);

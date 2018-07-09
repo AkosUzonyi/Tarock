@@ -5,6 +5,7 @@ caller's skart is not shown
 
 needs fix:
 ultimo button in GameTypes
+typos in strings
 
 renames:
 
@@ -14,11 +15,14 @@ create AnnouncementInstance class (Announcement, contraLevel, announcerteam)
 
 features:
 error messages
+SSL encription
+VERSION CHECKING
 
 refactorizations:
 remove GameSession dependency from Phase
 move Phase and GameHistory fields from GameSession to GameState
 create phase package
+elimnate race conditions (just one universal game thread in server, and somehow elimnate network protocol race condititons also)
  
 other:
 final classes?

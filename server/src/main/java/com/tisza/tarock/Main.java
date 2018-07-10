@@ -10,7 +10,5 @@ public class Main
 	{
 		Server server = new Server(8128);
 		server.start();
-		System.in.read();
-		server.stop();
 	}
 }

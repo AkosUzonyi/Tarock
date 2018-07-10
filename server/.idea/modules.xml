@@ -3,9 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/2119724809/proto.iml" filepath="$PROJECT_DIR$/.idea/modules/2119724809/proto.iml" group="proto" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tarock_server.iml" filepath="$PROJECT_DIR$/.idea/modules/tarock_server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tarock_server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/tarock_server_main.iml" group="tarock_server" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tarock_server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/tarock_server_test.iml" group="tarock_server" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tarock-server.iml" filepath="$PROJECT_DIR$/.idea/modules/tarock-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tarock-server_main.iml" filepath="$PROJECT_DIR$/.idea/modules/tarock-server_main.iml" group="tarock-server" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tarock-server_test.iml" filepath="$PROJECT_DIR$/.idea/modules/tarock-server_test.iml" group="tarock-server" />
     </modules>
   </component>
 </project>

@@ -1,0 +1,9 @@
+[Unit]
+Description=Tarock server
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/tarock-server
+
+[Install]
+WantedBy=multi-user.target

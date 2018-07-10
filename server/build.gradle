@@ -1,5 +1,14 @@
+def getVersion = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine '../get-version.sh'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
 group 'com.tisza'
-version '1.0'
+version getVersion()
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.6'

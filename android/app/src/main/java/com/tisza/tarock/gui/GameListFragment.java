@@ -9,18 +9,8 @@ import com.facebook.*;
 import com.facebook.login.widget.*;
 import com.tisza.tarock.R;
 
-public class GameListFragment extends Fragment
+public class GameListFragment extends MainActivityFragment
 {
-	private MainActivity mainActivity;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-
-		mainActivity = ((MainActivity)getActivity());
-	}
-
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{

@@ -17,7 +17,7 @@ import com.tisza.tarock.proto.*;
 
 import java.util.*;
 
-public class GameFragment extends Fragment implements EventHandler
+public class GameFragment extends MainActivityFragment implements EventHandler
 {
 	public static final String LOG_TAG = "Tarokk";
 
@@ -64,14 +64,6 @@ public class GameFragment extends Fragment implements EventHandler
 	private TextView[] statisticsPointsValueViews = new TextView[4];
 
 	@Override
-	public void onAttach(Context context)
-	{
-		super.onAttach(context);
-
-		actionSender = ((MainActivity)getActivity()).getActionSender();
-	}
-
-	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
@@ -79,6 +71,11 @@ public class GameFragment extends Fragment implements EventHandler
 		ResourceMappings.init(getActivity());
 
 		layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
+
+	private ActionSender getActionSender()
+	{
+		return mainActivity.getActionSender();
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -114,7 +111,7 @@ public class GameFragment extends Fragment implements EventHandler
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v ->
 		{
-			actionSender.throwCards();
+			getActionSender().throwCards();
 		});
 		
 		layoutInflater.inflate(R.layout.messages, centerSpace);
@@ -137,7 +134,7 @@ public class GameFragment extends Fragment implements EventHandler
 			if (announcement == null)
 				throw new RuntimeException();
 
-			actionSender.announce(announcement);
+			getActionSender().announce(announcement);
 		});
 		
 		playedCardsView = new RelativeLayout(getActivity());
@@ -166,8 +163,8 @@ public class GameFragment extends Fragment implements EventHandler
 		statisticsPointsValueViews[2] = (TextView)contentView.findViewById(R.id.statistics_points_value_2);
 		statisticsPointsValueViews[3] = (TextView)contentView.findViewById(R.id.statistics_points_value_3);
 
-		((MainActivity)getActivity()).setEventHandler(this);
-		((MainActivity)getActivity()).getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
+		mainActivity.setEventHandler(this);
+		mainActivity.getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
 				.setGameId(getArguments().getInt("gameID"))
 				.build())
 				.build());
@@ -179,8 +176,8 @@ public class GameFragment extends Fragment implements EventHandler
 	public void onDestroy()
 	{
 		super.onDestroy();
-		((MainActivity)getActivity()).setEventHandler(null);
-		((MainActivity)getActivity()).getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
+		mainActivity.setEventHandler(null);
+		mainActivity.getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
 				.build())
 				.build());
 	}
@@ -193,8 +190,6 @@ public class GameFragment extends Fragment implements EventHandler
 		messagesTextView.setText("");
 
 	}
-
-	private ActionSender actionSender;
 
 	private List<String> playerNames;
 	private PlayerCards myCards;
@@ -305,7 +300,7 @@ public class GameFragment extends Fragment implements EventHandler
 			bidButton.setOnClickListener(v ->
 			{
 				availabeActionsView.removeAllViews();
-				actionSender.bid(bid);
+				getActionSender().bid(bid);
 			});
 			availabeActionsView.addView(bidButton);
 		}
@@ -359,7 +354,7 @@ public class GameFragment extends Fragment implements EventHandler
 			callButton.setOnClickListener(v ->
 			{
 				availabeActionsView.removeAllViews();
-				actionSender.call(card);
+				getActionSender().call(card);
 			});
 			availabeActionsView.addView(callButton);
 		}
@@ -391,7 +386,7 @@ public class GameFragment extends Fragment implements EventHandler
 		{
 			Button announceButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			announceButton.setText(announcement.getDisplayText());
-			announceButton.setOnClickListener(v -> actionSender.announce(announcement));
+			announceButton.setOnClickListener(v -> getActionSender().announce(announcement));
 			availabeActionsView.addView(announceButton);
 		}
 		
@@ -401,7 +396,7 @@ public class GameFragment extends Fragment implements EventHandler
 			okButton.setVisibility(View.GONE);
 			showCenterView(messagesView);
 			availabeActionsView.removeAllViews();
-			actionSender.announcePassz();
+			getActionSender().announcePassz();
 		});
 	}
 
@@ -495,7 +490,7 @@ public class GameFragment extends Fragment implements EventHandler
 			skarting = true;
 
 			okButton.setVisibility(View.VISIBLE);
-			okButton.setOnClickListener(v -> actionSender.change(cardsToSkart));
+			okButton.setOnClickListener(v -> getActionSender().change(cardsToSkart));
 		}
 		else
 		{
@@ -568,7 +563,7 @@ public class GameFragment extends Fragment implements EventHandler
 		okButton.setOnClickListener(v ->
 		{
 			okButton.setVisibility(View.GONE);
-			actionSender.readyForNewGame();
+			getActionSender().readyForNewGame();
 		});
 	}
 	
@@ -631,7 +626,7 @@ public class GameFragment extends Fragment implements EventHandler
 					}
 					else if (gamePhase == PhaseEnum.GAMEPLAY && !waitingForTakeAnimation && !playedCardViews[0].isAnimating())
 					{
-						actionSender.playCard(card);
+						getActionSender().playCard(card);
 					}
 				}
 			});

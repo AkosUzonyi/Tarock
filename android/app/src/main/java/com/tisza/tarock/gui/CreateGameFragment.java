@@ -8,19 +8,11 @@ import com.tisza.tarock.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
 
-public class CreateGameFragment extends Fragment
+public class CreateGameFragment extends MainActivityFragment
 {
 	private MainActivity mainActivity;
 	private Spinner gameTypeSpinner;
 	private AvailableUsersAdapter availableUsersAdapter;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		
-		mainActivity = ((MainActivity)getActivity());
-	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)

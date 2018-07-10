@@ -9,7 +9,7 @@ import com.facebook.*;
 import com.facebook.login.widget.*;
 import com.tisza.tarock.R;
 
-public class LoginFragment extends Fragment
+public class LoginFragment extends MainActivityFragment
 {
 	private CallbackManager callbackManager = CallbackManager.Factory.create();
 	private Button playButton;

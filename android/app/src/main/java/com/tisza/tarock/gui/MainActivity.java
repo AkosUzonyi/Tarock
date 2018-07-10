@@ -208,7 +208,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 			if (accessToken == null)
 				return null;
 
-			final String host = "dell";
+			final String host = "akos0.ddns.net";
 			final int port = 8128;
 
 			try

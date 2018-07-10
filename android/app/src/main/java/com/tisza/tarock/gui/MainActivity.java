@@ -137,17 +137,25 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		}
 	}
 
+	private void popBackToLoginScreen()
+	{
+		FragmentManager fragmentManager = getFragmentManager();
+		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+		for (String tag : new String[] {"gamelist", "create_game", "game"})
+		{
+			Fragment fragment = fragmentManager.findFragmentByTag(tag);
+			if (fragment != null)
+				fragmentTransaction.remove(fragment);
+		}
+
+		fragmentTransaction.commit();
+	}
+
 	@Override
 	public void connectionClosed()
 	{
-		FragmentManager fm = getFragmentManager();
-
-		fm.beginTransaction()
-				.remove(fm.findFragmentByTag("gamelist"))
-				.remove(fm.findFragmentByTag("create_game"))
-				.remove(fm.findFragmentByTag("game"))
-				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-				.commit();
+		popBackToLoginScreen();
 	}
 
 	public ActionSender getActionSender()

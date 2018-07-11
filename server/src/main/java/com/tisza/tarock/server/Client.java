@@ -61,12 +61,13 @@ public class Client implements MessageHandler
 			{
 				MainProto.CreateGame createGame = message.getCreateGame();
 
-				if (createGame.getUserIDCount() > 4)
+				if (createGame.getUserIDCount() > 3)
 					break;
 
 				GameType gameType = Utils.gameTypeFromProto(createGame.getType());
 
 				List<User> users = new ArrayList<>();
+				users.add(loggedInUser);
 				for (String userID : createGame.getUserIDList())
 				{
 					users.add(server.getFacebookUserManager().getUserByID(userID));
@@ -129,7 +130,8 @@ public class Client implements MessageHandler
 
 		for (User user : server.getFacebookUserManager().listUsers())
 		{
-			builder.addAvailableUser(Utils.userToProto(user, loggedInUser.isFriendWith(user)));
+			if (!user.equals(loggedInUser))
+				builder.addAvailableUser(Utils.userToProto(user, loggedInUser.isFriendWith(user)));
 		}
 
 		connection.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());

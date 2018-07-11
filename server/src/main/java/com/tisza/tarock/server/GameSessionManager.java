@@ -44,6 +44,8 @@ public class GameSessionManager
 			players.add(new RandomPlayer("bot" + i, 500, 2000));
 		}
 
+		Collections.shuffle(players);
+
 		GameSession game = new GameSession(type, players);
 		games.put(id, game);
 		game.startSession();

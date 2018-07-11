@@ -18,6 +18,7 @@ message Message
         CreateGame create_game = 4;
         ServerStatus server_status = 5;
         JoinGame join_game = 6;
+        DeleteGame delete_game = 7;
     }
 }
 
@@ -44,6 +45,11 @@ message CreateGame
 {
     required GameType type = 1;
     repeated string userID = 2;
+}
+
+message DeleteGame
+{
+    required int32 game_id = 1;
 }
 
 message ServerStatus

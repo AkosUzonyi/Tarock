@@ -79,6 +79,18 @@ public class Client implements MessageHandler
 				break;
 			}
 
+			case DELETE_GAME:
+			{
+				int gameID = message.getDeleteGame().getGameId();
+
+				if (server.getGameSessionManager().hasUserPermissionToDelete(gameID, loggedInUser))
+				{
+					server.getGameSessionManager().deleteGame(gameID);
+				}
+
+				server.broadcastStatus();
+			}
+
 			case JOIN_GAME:
 			{
 				if (currentPlayer != null)

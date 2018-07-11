@@ -3,7 +3,6 @@ package com.tisza.tarock.gui;
 import android.app.*;
 import android.content.*;
 import android.os.*;
-import android.widget.*;
 import com.facebook.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.R;
@@ -15,7 +14,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class MainActivity extends Activity implements MessageHandler, GameListAdapter.JoinListener
+public class MainActivity extends Activity implements MessageHandler, GameListAdapter.GameAdapterListener
 {
 	private LoginFragment loginFragment = new LoginFragment();
 
@@ -82,6 +81,14 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
+	}
+
+	@Override
+	public void deleteGame(int gameID)
+	{
+		connection.sendMessage(MainProto.Message.newBuilder().setDeleteGame(MainProto.DeleteGame.newBuilder()
+				.setGameId(gameID))
+				.build());
 	}
 
 	@Override

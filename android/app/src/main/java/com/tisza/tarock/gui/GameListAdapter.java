@@ -9,13 +9,13 @@ import java.util.*;
 
 public class GameListAdapter extends BaseAdapter
 {
-	private JoinListener joinListener;
+	private GameAdapterListener gameAdapterListener;
 	private final LayoutInflater inflater;
 	private List<GameInfo> games = new ArrayList<>();
 
-	public GameListAdapter(Context context, JoinListener joinListener)
+	public GameListAdapter(Context context, GameAdapterListener gameAdapterListener)
 	{
-		this.joinListener = joinListener;
+		this.gameAdapterListener = gameAdapterListener;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
@@ -76,7 +76,8 @@ public class GameListAdapter extends BaseAdapter
 			holder.userNameViews[i].setText(gameInfo.getPlayerNames().get(i));
 		}
 
-		holder.joinGameButton.setOnClickListener(v -> joinListener.joinGame(gameInfo.getId()));
+		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGame(gameInfo.getId()));
+		holder.deleteGameButton.setOnClickListener(v -> gameAdapterListener.deleteGame(gameInfo.getId()));
 
 		return view;
 	}
@@ -88,8 +89,9 @@ public class GameListAdapter extends BaseAdapter
 		public Button deleteGameButton;
 	}
 
-	public static interface JoinListener
+	public static interface GameAdapterListener
 	{
 		public void joinGame(int gameID);
+		public void deleteGame(int gameID);
 	}
 }

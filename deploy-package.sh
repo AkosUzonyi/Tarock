@@ -1,5 +1,7 @@
 #!/bin/bash
 
+PROJECT_DIR=$(pwd)
+
 USER=root
 HOST=akos0.ddns.net
 PORT=3125

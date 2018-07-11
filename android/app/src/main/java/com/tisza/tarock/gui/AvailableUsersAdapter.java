@@ -24,9 +24,10 @@ public class AvailableUsersAdapter extends BaseAdapter
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	public void setUsers(Collection<User> users)
+	public void setUsers(Collection<User> newUsers)
 	{
-		this.users = new ArrayList<>(users);
+		users = new ArrayList<>(newUsers);
+		Collections.sort(users);
 		selectedUsers.retainAll(users);
 		notifyDataSetChanged();
 	}
@@ -85,12 +86,13 @@ public class AvailableUsersAdapter extends BaseAdapter
 		}
 
 		User user = users.get(position);
+
 		holder.nameView.setText(user.getName());
 
 		if (user.getImageURL() != null)
 			profilePictureLoader.loadPictre(user.getImageURL(), holder.profilePictureView);
 
-		holder.isFriendView.setVisibility(View.GONE);
+		holder.isFriendView.setVisibility(user.isFriend() ? View.VISIBLE : View.GONE);
 
 		holder.checkBox.setChecked(selectedUsers.contains(user));
 		holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->

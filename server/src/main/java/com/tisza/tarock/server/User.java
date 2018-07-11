@@ -9,20 +9,17 @@ public class User
 	private final String id;
 	private final String name;
 	private final String imgURL;
+	private final List<String> friendIDs;
 
 	private boolean loggedIn = false;
 	private Map<Integer, ProtoPlayer> gameIDToPlayer = new HashMap<>();
 
-	public User(String id, String name)
-	{
-		this(id, name, null);
-	}
-
-	public User(String id, String name, String imgURL)
+	public User(String id, String name, String imgURL, List<String> friendIDs)
 	{
 		this.id = id;
 		this.name = name;
 		this.imgURL = imgURL;
+		this.friendIDs = friendIDs;
 	}
 
 	public String getId()
@@ -38,6 +35,11 @@ public class User
 	public String getImageURL()
 	{
 		return imgURL;
+	}
+
+	public boolean isFriendWith(User user)
+	{
+		return friendIDs.contains(user.getId());
 	}
 
 	public boolean isLoggedIn()

@@ -9,38 +9,34 @@
 		android:id="@+id/user_image"
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"
-		android:layout_margin="@dimen/button_margin"
+		android:layout_marginRight="@dimen/user_margin"
 	/>
 
 	<FrameLayout
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"
-		android:layout_gravity="center|left"
-		android:layout_margin="@dimen/button_margin"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:layout_weight="1"
+		android:layout_marginRight="@dimen/user_margin"
 		>
 
 		<TextView
 			android:id="@+id/user_name"
 			android:layout_width="wrap_content"
-			android:layout_height="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_gravity="center|left"
 			android:textSize="@dimen/name_size"
 			style="@style/text_view"
 		/>
 	</FrameLayout>
 
-
 	<ImageView
 		android:id="@+id/is_user_friend"
-		android:layout_width="wrap_content"
+		android:layout_width="30dp"
 		android:layout_height="match_parent"
 		android:layout_margin="@dimen/button_margin"
+		android:layout_marginRight="@dimen/user_margin"
+		android:src="@drawable/friend"
 		android:visibility="gone"
-	/>
-
-	<Space
-		android:layout_width="0dp"
-		android:layout_height="match_parent"
-		android:layout_weight="1"
 	/>
 
 	<CheckBox
@@ -48,5 +44,4 @@
 		android:layout_width="wrap_content"
 		android:layout_height="match_parent"
 	/>
-
 </LinearLayout>

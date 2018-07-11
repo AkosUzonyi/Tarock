@@ -38,7 +38,7 @@ public class FacebookUserManager
 	{
 		try
 		{
-			URL url = new URL("https://graph.facebook.com/me/?fields=id,name,picture&access_token=" + accessToken);
+			URL url = new URL("https://graph.facebook.com/me/?fields=id,name,picture,friends&access_token=" + accessToken);
 			HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
 			urlConnection.setRequestMethod("GET");
 
@@ -57,9 +57,18 @@ public class FacebookUserManager
 			String name = json.getString("name");
 			String imgURL = json.getJSONObject("picture").getJSONObject("data").getString("url");
 
+			List<String> friendIDs = new ArrayList<>();
+			if (json.has("friends"))
+			{
+				for (Object friendJSON : json.getJSONObject("friends").getJSONArray("data"))
+				{
+					friendIDs.add(((JSONObject)friendJSON).getString("id"));
+				}
+			}
+
 			System.out.println("user created: " + name);
 
-			return new User(id, name, imgURL);
+			return new User(id, name, imgURL, friendIDs);
 		}
 		catch (Exception e)
 		{

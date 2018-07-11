@@ -20,7 +20,6 @@ error messages
 SSL encription
 VERSION CHECKING
 double round
-facebook friends
 automatic skart for solo
 kibic
 

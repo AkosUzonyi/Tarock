@@ -129,7 +129,7 @@ public class Client implements MessageHandler
 
 		for (User user : server.getFacebookUserManager().listUsers())
 		{
-			builder.addAvailableUser(Utils.userToProto(user));
+			builder.addAvailableUser(Utils.userToProto(user, loggedInUser.isFriendWith(user)));
 		}
 
 		connection.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());

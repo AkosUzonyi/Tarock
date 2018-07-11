@@ -192,14 +192,9 @@ public class Utils
 
 	public static User userFromProto(MainProto.User userProto)
 	{
-		if (userProto.hasImageUrl())
-		{
-			return new User(userProto.getId(), userProto.getName(), userProto.getImageUrl());
-		}
-		else
-		{
-			return new User(userProto.getId(), userProto.getName());
-		}
+		String imgURL = userProto.hasImageUrl() ? userProto.getImageUrl() : null;
+
+		return new User(userProto.getId(), userProto.getName(), imgURL, userProto.getIsFriend());
 	}
 
 	public static GameInfo gameInfoFromProto(MainProto.Game gameProto)

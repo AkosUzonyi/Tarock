@@ -143,11 +143,12 @@ public class Utils
 		throw new RuntimeException();
 	}
 
-	public static MainProto.User userToProto(User user)
+	public static MainProto.User userToProto(User user, boolean isFriend)
 	{
 		MainProto.User.Builder builder = MainProto.User.newBuilder()
 				.setId(user.getId())
-				.setName(user.getName());
+				.setName(user.getName())
+				.setIsFriend(isFriend);
 
 		String imgURL = user.getImageURL();
 		if (imgURL != null)

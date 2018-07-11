@@ -13,6 +13,8 @@ import java.util.*;
 
 public class AvailableUsersAdapter extends BaseAdapter
 {
+	private final ProfilePictureLoader profilePictureLoader = new ProfilePictureLoader();
+
 	private final LayoutInflater inflater;
 	private List<User> users = new ArrayList<>();
 	private List<User> selectedUsers = new ArrayList<>();
@@ -86,7 +88,7 @@ public class AvailableUsersAdapter extends BaseAdapter
 		holder.nameView.setText(user.getName());
 
 		if (user.getImageURL() != null)
-			new ImageDonwloadTask(holder.profilePictureView).execute(user.getImageURL());
+			profilePictureLoader.loadPictre(user.getImageURL(), holder.profilePictureView);
 
 		holder.isFriendView.setVisibility(View.GONE);
 
@@ -112,40 +114,5 @@ public class AvailableUsersAdapter extends BaseAdapter
 		public TextView nameView;
 		public View isFriendView;
 		public CheckBox checkBox;
-	}
-
-	private static class ImageDonwloadTask extends AsyncTask<String, Void, Bitmap>
-	{
-		private ImageView imageView;
-
-		public ImageDonwloadTask(ImageView imageView)
-		{
-			this.imageView = imageView;
-		}
-
-		@Override
-		protected Bitmap doInBackground(String... strings)
-		{
-			try
-			{
-				URL url = new URL(strings[0]);
-				HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-				connection.setDoInput(true);
-				connection.connect();
-				InputStream input = connection.getInputStream();
-				return BitmapFactory.decodeStream(input);
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-				return null;
-			}
-		}
-
-		@Override
-		protected void onPostExecute(Bitmap bitmap)
-		{
-			imageView.setImageBitmap(bitmap);
-		}
 	}
 }

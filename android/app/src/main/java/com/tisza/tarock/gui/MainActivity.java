@@ -9,9 +9,12 @@ import com.tisza.tarock.R;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
+import org.apache.http.params.*;
 
+import javax.net.ssl.*;
 import java.io.*;
 import java.net.*;
+import java.security.*;
 import java.util.*;
 
 public class MainActivity extends Activity implements MessageHandler, GameListAdapter.GameAdapterListener
@@ -220,7 +223,19 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 			try
 			{
-				Socket socket = new Socket();
+				KeyStore ks = KeyStore.getInstance("BKS");
+				ks.load(getAssets().open("truststore"), "000000".toCharArray());
+
+				KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+				kmf.init(ks, "000000".toCharArray());
+
+				TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				tmf.init(ks);
+
+				SSLContext sc = SSLContext.getInstance("TLS");
+				sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+				Socket socket = sc.getSocketFactory().createSocket();
 				socket.connect(new InetSocketAddress(host, port), 1000);
 				connection = new ProtoConnection(socket);
 				actionSender = new ProtoActionSender(connection);
@@ -231,7 +246,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 						.build())
 						.build());
 			}
-			catch (IOException e)
+			catch (Exception e)
 			{
 				e.printStackTrace();
 			}

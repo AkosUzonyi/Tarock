@@ -17,7 +17,6 @@ create AnnouncementInstance class (Announcement, contraLevel, announcerteam)
 
 features:
 error messages
-SSL encription
 VERSION CHECKING
 double round
 kibic

@@ -2,8 +2,9 @@ package com.tisza.tarock.server;
 
 import com.tisza.tarock.net.*;
 
+import javax.net.ssl.*;
 import java.io.*;
-import java.net.*;
+import java.security.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -11,7 +12,9 @@ public class Server implements Runnable
 {
 	private final int port;
 	private Thread listenerThread;
-	private ServerSocket ss;
+	private SSLServerSocket serverSocket;
+
+	private final File keystoreFile;
 
 	private ExecutorService gameExecutorService = Executors.newSingleThreadExecutor(new GameThreadFactory());
 
@@ -20,9 +23,10 @@ public class Server implements Runnable
 	private final GameSessionManager gameSessionManager = new GameSessionManager();
 	private final FacebookUserManager facebookUserManager = new FacebookUserManager();
 
-	public Server(int port)
+	public Server(int port, File keystoreFile)
 	{
 		this.port = port;
+		this.keystoreFile = keystoreFile;
 	}
 
 	public GameSessionManager getGameSessionManager()
@@ -43,22 +47,42 @@ public class Server implements Runnable
 		}
 	}
 
+	private void createServerSocket() throws IOException, GeneralSecurityException
+	{
+		KeyStore ks = KeyStore.getInstance("JKS");
+		ks.load(new FileInputStream(keystoreFile), "000000".toCharArray());
+
+		KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+		kmf.init(ks, "000000".toCharArray());
+
+		TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+		tmf.init(ks);
+
+		SSLContext sc = SSLContext.getInstance("TLS");
+		sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+
+		SSLServerSocketFactory ssf = sc.getServerSocketFactory();
+		serverSocket = (SSLServerSocket)ssf.createServerSocket(port);
+
+		System.out.println("Server listening on: " + serverSocket.getLocalSocketAddress());
+	}
+
 	@Override
 	public void run()
 	{
 		try
 		{
-			ss = new ServerSocket(port);
-			System.out.println("Server listening on: " + ss.getLocalSocketAddress());
+			createServerSocket();
+
 			while (!Thread.interrupted())
 			{
-				Socket socket = ss.accept();
+				SSLSocket socket = (SSLSocket)serverSocket.accept();
 				ProtoConnection connection = new ProtoConnection(socket, gameExecutorService);
 				clients.add(new Client(this, connection));
 				connection.start();
 			}
 		}
-		catch (IOException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -107,11 +131,11 @@ public class Server implements Runnable
 
 	private void closeSocket()
 	{
-		if (ss != null)
+		if (serverSocket != null)
 		{
 			try
 			{
-				ss.close();
+				serverSocket.close();
 			}
 			catch (IOException e)
 			{
@@ -119,7 +143,7 @@ public class Server implements Runnable
 			}
 			finally
 			{
-				ss = null;
+				serverSocket = null;
 			}
 		}
 	}

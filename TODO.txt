@@ -20,7 +20,6 @@ error messages
 SSL encription
 VERSION CHECKING
 double round
-automatic skart for solo
 kibic
 
 refactorizations:

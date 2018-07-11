@@ -69,6 +69,8 @@ class Changing extends Phase
 			gameSession.getPlayerEventSender(player).playerCards(playerCards);
 			gameSession.getPlayerEventSender(player).turn(player);
 			history.setCardsFromTalon(player, new ArrayList<>(cardsFromTalon));
+			if (cardsFromTalon.isEmpty())
+				change(player, Collections.EMPTY_LIST);
 			cardsFromTalon.clear();
 
 			player = player.nextPlayer();

@@ -5,12 +5,15 @@ import com.tisza.tarock.net.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class Server implements Runnable
 {
 	private final int port;
 	private Thread listenerThread;
 	private ServerSocket ss;
+
+	private ExecutorService gameExecutorService = Executors.newSingleThreadExecutor(new GameThreadFactory());
 
 	private List<Client> clients = new ArrayList<>();
 
@@ -50,7 +53,7 @@ public class Server implements Runnable
 			while (!Thread.interrupted())
 			{
 				Socket socket = ss.accept();
-				ProtoConnection connection = new ProtoConnection(socket);
+				ProtoConnection connection = new ProtoConnection(socket, gameExecutorService);
 				clients.add(new Client(this, connection));
 				connection.start();
 			}
@@ -70,6 +73,7 @@ public class Server implements Runnable
 
 			gameSessionManager.shutdown();
 			facebookUserManager.shutdown();
+			gameExecutorService.shutdownNow();
 
 			System.out.println("server stopped");
 		}

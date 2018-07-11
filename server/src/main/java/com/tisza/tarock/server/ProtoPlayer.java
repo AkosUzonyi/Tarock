@@ -11,7 +11,7 @@ public class ProtoPlayer implements Player
 {
 	private String name;
 	private ProtoEventSender eventSender = new ProtoEventSender();
-	private BlockingQueue<Action> actionQueue = null;
+	private ActionHandler actionHandler;
 	private PlayerSeat seat;
 
 	public ProtoPlayer(String name)
@@ -25,13 +25,13 @@ public class ProtoPlayer implements Player
 
 		if (connection != null)
 		{
-			actionQueue.add(handler -> handler.requestHistory(seat));
+			actionHandler.requestHistory(seat);
 		}
 	}
 
 	public void queueAction(ActionProto.Action action)
 	{
-		actionQueue.add(new ProtoAction(seat, action));
+		new ProtoAction(seat, action).handle(actionHandler);
 	}
 
 	@Override
@@ -47,16 +47,16 @@ public class ProtoPlayer implements Player
 	}
 
 	@Override
-	public void onAddedToGame(BlockingQueue<Action> actionQueue, PlayerSeat seat)
+	public void onAddedToGame(ActionHandler actionHandler, PlayerSeat seat)
 	{
-		this.actionQueue = actionQueue;
+		this.actionHandler = actionHandler;
 		this.seat = seat;
 	}
 
 	@Override
 	public void onRemovedFromGame()
 	{
-		actionQueue = null;
+		actionHandler = null;
 		seat = null;
 	}
 }

@@ -5,10 +5,9 @@ import com.tisza.tarock.message.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.stream.*;
 
-public class GameSession implements Runnable
+public class GameSession
 {
 	public static final int ROUND_COUNT = 9;
 
@@ -16,7 +15,6 @@ public class GameSession implements Runnable
 
 	private PlayerSeat.Map<Player> players = new PlayerSeat.Map<>();
 	private EventSender broadcastEventSender;
-	private BlockingQueue<Action> actionQueue = new LinkedBlockingQueue<>();
 
 	private GameState state;
 	private Phase currentPhase;
@@ -24,8 +22,6 @@ public class GameSession implements Runnable
 	private GameHistory history;
 
 	private GameType gameType;
-
-	private Thread gameThread;
 
 	public GameSession(GameType gameType, List<Player> playerList)
 	{
@@ -42,56 +38,28 @@ public class GameSession implements Runnable
 
 	public void startSession()
 	{
-		if (gameThread != null)
-			throw new IllegalArgumentException();
+		broadcastEventSender = new BroadcastEventSender(players.values().stream().map(Player::getEventSender).collect(Collectors.toList()));
+		for (PlayerSeat seat : PlayerSeat.getAll())
+		{
+			players.get(seat).onAddedToGame(new GameSessionActionHandler(this), seat);
+		}
 
-		gameThread = new Thread(this, "GameSession thread");
-		gameThread.start();
+		startNewGame(false);
 	}
 
 	public void stopSession()
 	{
-		if (gameThread == null)
-			throw new IllegalArgumentException();
-
-		gameThread.interrupt();
-	}
-
-	public GameType getGameType()
-	{
-		return gameType;
-	}
-
-	@Override
-	public void run()
-	{
-		broadcastEventSender = new BroadcastEventSender(players.values().stream().map(Player::getEventSender).collect(Collectors.toList()));
-		for (PlayerSeat seat : PlayerSeat.getAll())
-		{
-			players.get(seat).onAddedToGame(actionQueue, seat);
-		}
-
-		startNewGame(false);
-
-		while (true)
-		{
-			try
-			{
-				actionQueue.take().handle(currentPhase);
-			}
-			catch (InterruptedException e)
-			{
-				break;
-			}
-		}
-
-		gameThread = null;
 		state = null;
 		broadcastEventSender = null;
 		for (Player p : players)
 		{
 			p.onRemovedFromGame();
 		}
+	}
+
+	public GameType getGameType()
+	{
+		return gameType;
 	}
 
 	public GameState getCurrentGame()
@@ -102,6 +70,11 @@ public class GameSession implements Runnable
 	public GameHistory getCurrentHistory()
 	{
 		return history;
+	}
+
+	public Phase getCurrentPhase()
+	{
+		return currentPhase;
 	}
 
 	void changePhase(Phase phase)

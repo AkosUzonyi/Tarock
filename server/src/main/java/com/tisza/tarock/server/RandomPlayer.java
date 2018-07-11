@@ -17,7 +17,7 @@ public class RandomPlayer implements Player
 	private Random rnd = new Random();
 
 	private PlayerSeat seat;
-	private BlockingQueue<Action> actionQueue;
+	private ActionHandler actionHandler;
 
 	public RandomPlayer(String name)
 	{
@@ -44,23 +44,23 @@ public class RandomPlayer implements Player
 	}
 
 	@Override
-	public void onAddedToGame(BlockingQueue<Action> actionQueue, PlayerSeat seat)
+	public void onAddedToGame(ActionHandler actionHandler, PlayerSeat seat)
 	{
-		this.actionQueue = actionQueue;
+		this.actionHandler = actionHandler;
 		this.seat = seat;
 	}
 
 	@Override
 	public void onRemovedFromGame()
 	{
-		actionQueue = null;
+		actionHandler = null;
 		seat = null;
 	}
 
 	private void enqueueAction(Action action)
 	{
-		if (actionQueue != null)
-			actionQueue.add(action);
+		if (actionHandler != null)
+			action.handle(actionHandler);
 	}
 
 	private void enqueueActionDelayed(Action action)

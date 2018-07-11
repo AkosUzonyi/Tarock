@@ -114,7 +114,7 @@ public class GameSession
 
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			getPlayerEventSender(player).startGame(player, getPlayerNames());
+			getPlayerEventSender(player).startGame(player, getPlayerNames(), gameType);
 			getPlayerEventSender(player).playerCards(state.getPlayerCards(player));
 			history.setOriginalPlayersCards(player, new ArrayList<>(state.getPlayerCards(player).getCards()));
 		}

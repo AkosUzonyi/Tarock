@@ -5,7 +5,6 @@ caller's skart is not shown
 card image not cleared
 
 needs fix:
-ultimo button in GameTypes
 typos in strings
 paskievics sas skart
 

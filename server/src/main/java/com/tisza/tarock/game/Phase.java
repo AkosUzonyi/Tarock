@@ -24,7 +24,7 @@ abstract class Phase implements ActionHandler
 	public void requestHistory(PlayerSeat player)
 	{
 		EventSender eventSender = gameSession.getPlayerEventSender(player);
-		eventSender.startGame(player, gameSession.getPlayerNames());
+		eventSender.startGame(player, gameSession.getPlayerNames(), gameSession.getGameType());
 		eventSender.playerCards(currentGame.getPlayerCards(player));
 		history.sendCurrentStatusToPlayer(player, asEnum(), gameSession.getPlayerEventSender(player));
 		eventSender.phaseChanged(asEnum());

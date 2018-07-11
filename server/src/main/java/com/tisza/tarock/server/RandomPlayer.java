@@ -159,7 +159,7 @@ public class RandomPlayer implements Player
 			}
 		}
 
-		@Override public void startGame(PlayerSeat s, List<String> names)
+		@Override public void startGame(PlayerSeat s, List<String> names, GameType gameType)
 		{
 			seat = s;
 		}

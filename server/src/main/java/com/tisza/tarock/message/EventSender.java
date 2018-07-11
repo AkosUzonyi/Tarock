@@ -15,7 +15,7 @@ public interface EventSender
 	void readyForNewGame(PlayerSeat player);
 	void throwCards(PlayerSeat player);
 	void turn(PlayerSeat player);
-	void startGame(PlayerSeat seat, List<String> names);
+	void startGame(PlayerSeat seat, List<String> names, GameType gameType);
 	void playerCards(PlayerCards cards);
 	void phaseChanged(PhaseEnum phase);
 	void availabeBids(Collection<Integer> bids);

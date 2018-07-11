@@ -1,7 +1,6 @@
 package com.tisza.tarock.gui;
 
 import android.animation.*;
-import android.app.*;
 import android.content.*;
 import android.graphics.*;
 import android.os.*;
@@ -194,6 +193,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private List<String> playerNames;
 	private PlayerCards myCards;
 	private int myID = -1;
+	private GameType gameType;
 	private Map<Card, View> cardToViewMapping = new HashMap<>();
 	
 	private PhaseEnum gamePhase;
@@ -206,12 +206,14 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private boolean waitingForTakeAnimation;
 	
 	@Override
-	public void startGame(int myID, List<String> playerNames)
+	public void startGame(int myID, List<String> playerNames, GameType gameType)
 	{
 		resetGameViews();
 
 		this.myID = myID;
 		this.playerNames = playerNames;
+		this.gameType = gameType;
+
 		for (int i = 0; i < 4; i++)
 		{
 			int pos = getPositionFromPlayerID(i);
@@ -373,7 +375,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 		Collections.sort(announcements);
 
-		ultimoViewManager.takeAnnouncements(announcements);
+		if (gameType != GameType.PASKIEVICS)
+			ultimoViewManager.takeAnnouncements(announcements);
+
 		if (ultimoViewManager.hasAnyUltimo())
 		{
 			Button ultimoButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);

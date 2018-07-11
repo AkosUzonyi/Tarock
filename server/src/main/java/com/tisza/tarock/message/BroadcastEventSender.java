@@ -97,11 +97,11 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void startGame(PlayerSeat id, List<String> names)
+	public void startGame(PlayerSeat id, List<String> names, GameType gameType)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
-			eventSender.startGame(id, names);
+			eventSender.startGame(id, names, gameType);
 		}
 	}
 

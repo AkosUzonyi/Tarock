@@ -20,7 +20,8 @@ public class ProtoEvent implements Event
 		switch (event.getEventTypeCase())
 		{
 			case START_GAME:
-				handler.startGame(event.getStartGame().getMyId(), event.getStartGame().getPlayerNameList());
+				EventProto.Event.StartGame startGame = event.getStartGame();
+				handler.startGame(startGame.getMyId(), startGame.getPlayerNameList(), Utils.gameTypeFromProto(startGame.getGameType()));
 				break;
 			case TURN:
 				handler.turn(event.getTurn().getPlayer());

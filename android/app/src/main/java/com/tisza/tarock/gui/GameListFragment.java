@@ -17,10 +17,10 @@ public class GameListFragment extends MainActivityFragment
 		View view = inflater.inflate(R.layout.game_list, container, false);
 
 		ListView gameListView = view.findViewById(R.id.game_list);
-		gameListView.setAdapter(mainActivity.getGameListAdapter());
+		gameListView.setAdapter(getMainActivity().getGameListAdapter());
 
 		Button createNewGameButton = view.findViewById(R.id.new_game_button);
-		createNewGameButton.setOnClickListener(v -> mainActivity.createNewGame());
+		createNewGameButton.setOnClickListener(v -> getMainActivity().createNewGame());
 
 		return view;
 	}

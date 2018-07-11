@@ -10,7 +10,6 @@ import com.tisza.tarock.proto.*;
 
 public class CreateGameFragment extends MainActivityFragment
 {
-	private MainActivity mainActivity;
 	private Spinner gameTypeSpinner;
 	private AvailableUsersAdapter availableUsersAdapter;
 
@@ -21,7 +20,7 @@ public class CreateGameFragment extends MainActivityFragment
 
 		gameTypeSpinner = view.findViewById(R.id.game_type_spinner);
 
-		availableUsersAdapter = mainActivity.getAvailableUsersAdapter();
+		availableUsersAdapter = getMainActivity().getAvailableUsersAdapter();
 		ListView availableUsersView = view.findViewById(R.id.available_users);
 		availableUsersView.setAdapter(availableUsersAdapter);
 
@@ -30,7 +29,7 @@ public class CreateGameFragment extends MainActivityFragment
 		{
 			if (availableUsersAdapter.getSelectedUsers().size() > 4)
 			{
-				Toast.makeText(mainActivity, R.string.too_much_user_selected, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getMainActivity(), R.string.too_much_user_selected, Toast.LENGTH_SHORT).show();
 				return;
 			}
 
@@ -43,9 +42,9 @@ public class CreateGameFragment extends MainActivityFragment
 				builder.addUserID(user.getId());
 			}
 
-			mainActivity.getConnection().sendMessage(MainProto.Message.newBuilder().setCreateGame(builder).build());
+			getMainActivity().getConnection().sendMessage(MainProto.Message.newBuilder().setCreateGame(builder).build());
 
-			mainActivity.getFragmentManager().popBackStack();
+			getMainActivity().getFragmentManager().popBackStack();
 		});
 
 		return view;

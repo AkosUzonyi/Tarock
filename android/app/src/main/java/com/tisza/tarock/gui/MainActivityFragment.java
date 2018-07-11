@@ -1,17 +1,13 @@
 package com.tisza.tarock.gui;
 
 import android.app.*;
+import android.content.*;
 import android.os.*;
 
 public class MainActivityFragment extends Fragment
 {
-	protected MainActivity mainActivity;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState)
+	public MainActivity getMainActivity()
 	{
-		super.onCreate(savedInstanceState);
-
-		mainActivity = ((MainActivity)getActivity());
+		return ((MainActivity)getActivity());
 	}
 }

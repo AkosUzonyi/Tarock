@@ -29,7 +29,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 	private static final float cardImageRatio = 1.66F;
 	private int cardWidth, cardHeight;
-	
+
 	private LayoutInflater layoutInflater;
 
 	private TextView[] playerNameViews;
@@ -40,20 +40,20 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private FrameLayout centerSpace;
 	private Button okButton;
 	private Button throwButton;
-	
+
 	private View messagesView;
 	private View ultimoView;
 	private ScrollView messagesScrollView;
 	private TextView messagesTextView;
 	private LinearLayout availabeActionsView;
-	
+
 	private Button ultimoBackButton;
 	private UltimoViewManager ultimoViewManager;
 	private Button announceButton;
-	
+
 	private RelativeLayout playedCardsView;
 	private PlayedCardView[] playedCardViews;
-	
+
 	private View statisticsView;
 	private TextView statisticsGamepointsSelf;
 	private TextView statisticsGamepointsOpponent;
@@ -75,7 +75,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 	private ActionSender getActionSender()
 	{
-		return mainActivity.getActionSender();
+		return getMainActivity().getActionSender();
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -86,7 +86,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		cardHeight = (int)(cardWidth * cardImageRatio);
 
 		centerSpace = (FrameLayout)contentView.findViewById(R.id.center_space);
-		
+
 		playerNameViews = new TextView[]
 		{
 				null,
@@ -94,7 +94,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 				(TextView)contentView.findViewById(R.id.player_name_2),
 				(TextView)contentView.findViewById(R.id.player_name_3),
 		};
-		
+
 		playerMessageViews = new TextView[]
 		{
 				(TextView)contentView.findViewById(R.id.player_message_0),
@@ -102,18 +102,18 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 				(TextView)contentView.findViewById(R.id.player_message_2),
 				(TextView)contentView.findViewById(R.id.player_message_3),
 		};
-		
+
 		myCardsView = (LinearLayout)contentView.findViewById(R.id.my_cards);
 		myCardsView0 = (LinearLayout)contentView.findViewById(R.id.my_cards_0);
 		myCardsView1 = (LinearLayout)contentView.findViewById(R.id.my_cards_1);
-		
+
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v ->
 		{
 			getActionSender().throwCards();
 		});
-		
+
 		layoutInflater.inflate(R.layout.messages, centerSpace);
 		messagesView = contentView.findViewById(R.id.messages_view);
 		messagesScrollView = (ScrollView)contentView.findViewById(R.id.messages_scroll);
@@ -136,7 +136,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 			getActionSender().announce(announcement);
 		});
-		
+
 		playedCardsView = new RelativeLayout(getActivity());
 		playedCardsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
 		playedCardViews = new PlayedCardView[4];
@@ -146,7 +146,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			playedCardsView.addView(playedCardViews[i]);
 		}
 		centerSpace.addView(playedCardsView);
-		
+
 		layoutInflater.inflate(R.layout.statistics, centerSpace);
 		statisticsView = contentView.findViewById(R.id.statistics_view);
 		statisticsGamepointsSelf = (TextView)contentView.findViewById(R.id.statistics_gamepoints_self);
@@ -163,8 +163,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		statisticsPointsValueViews[2] = (TextView)contentView.findViewById(R.id.statistics_points_value_2);
 		statisticsPointsValueViews[3] = (TextView)contentView.findViewById(R.id.statistics_points_value_3);
 
-		mainActivity.setEventHandler(this);
-		mainActivity.getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
+		getMainActivity().setEventHandler(this);
+		getMainActivity().getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
 				.setGameId(getArguments().getInt("gameID"))
 				.build())
 				.build());
@@ -176,8 +176,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	public void onDestroy()
 	{
 		super.onDestroy();
-		mainActivity.setEventHandler(null);
-		mainActivity.getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
+		getMainActivity().setEventHandler(null);
+		getMainActivity().getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
 				.build())
 				.build());
 	}

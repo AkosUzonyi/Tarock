@@ -5,6 +5,8 @@
     <string name="app_name" translatable="false">Tarokk</string>
     <string name="play" translatable="false">Play</string>
     <string name="new_game">Új játék</string>
+    <string name="connecting">Csatlakozás a szerverhez&#8230;</string>
+    <string name="logging_in">Bejelentkezés&#8230;</string>
     <string name="join_game">Csatlakozás</string>
     <string name="delete_game">Törlés</string>
     <string name="create_game">Létrehoz</string>
@@ -132,6 +134,4 @@
     <string name="statictics_opponent">Ellenfél figurái</string>
     <string name="statictics_points">Pont</string>
     <string name="statictics_sum">Összesen:</string>
-    <string name="connecting">Csatlakozás...</string>
-    <string name="logging_in">Bejelentkezés...</string>
 </resources>

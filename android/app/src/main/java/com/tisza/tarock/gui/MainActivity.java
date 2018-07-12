@@ -81,7 +81,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 					.build())
 					.build());
 
-			progressDialog.setTitle(R.string.logging_in);
+			progressDialog.setMessage(getResources().getString(R.string.logging_in));
 			progressDialog.show();
 		}
 	}
@@ -254,7 +254,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		@Override
 		protected void onPreExecute()
 		{
-			progressDialog.setTitle(R.string.connecting);
+			progressDialog.setMessage(getResources().getString(R.string.connecting));
 			progressDialog.show();
 		}
 

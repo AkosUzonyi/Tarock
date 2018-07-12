@@ -268,8 +268,10 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 			try
 			{
+				String trustStoreFile = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ? "truststore.bks" : "truststore.v1.bks";
+
 				KeyStore ks = KeyStore.getInstance("BKS");
-				ks.load(getAssets().open("truststore"), "000000".toCharArray());
+				ks.load(getAssets().open(trustStoreFile), "000000".toCharArray());
 
 				KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 				kmf.init(ks, "000000".toCharArray());

@@ -74,6 +74,9 @@ class Calling extends Phase
 		//if the player called a card that had been skarted
 		if (calledPlayer == null)
 		{
+			if (currentGame.getSkartForTeam(Team.CALLER).contains(card))
+				currentGame.setSoloIntentional(true);
+
 			calledPlayer = callerPlayer;
 			
 			if (card.equals(Card.getTarockCard(20)) && currentGame.getPlayerSkarted20() != callerPlayer)

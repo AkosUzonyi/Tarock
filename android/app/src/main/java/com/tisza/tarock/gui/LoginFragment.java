@@ -10,7 +10,6 @@ import com.tisza.tarock.R;
 
 public class LoginFragment extends MainActivityFragment
 {
-	private CallbackManager callbackManager = CallbackManager.Factory.create();
 	private Button playButton;
 
 	private final AccessTokenTracker accessTokenTracker = new AccessTokenTracker()
@@ -41,13 +40,6 @@ public class LoginFragment extends MainActivityFragment
 		loginButton.setReadPermissions("public_profile, user_friends");
 
 		return view;
-	}
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		callbackManager.onActivityResult(requestCode, resultCode, data);
-		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override

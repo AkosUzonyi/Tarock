@@ -18,7 +18,9 @@ import java.util.*;
 
 public class MainActivity extends Activity implements MessageHandler, GameListAdapter.GameAdapterListener
 {
-	private LoginFragment loginFragment = new LoginFragment();
+	private CallbackManager callbackManager;
+
+	private boolean destroyed = false;
 
 	private ProgressDialog progressDialog;
 
@@ -38,6 +40,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		super.onCreate(savedInstanceState);
 
 		FacebookSdk.sdkInitialize(this.getApplicationContext());
+		callbackManager = CallbackManager.Factory.create();
 
 		setContentView(R.layout.main);
 
@@ -46,6 +49,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		gameListAdapter = new GameListAdapter(this, this);
 		availableUsersAdapter = new AvailableUsersAdapter(this);
 
+		LoginFragment loginFragment = new LoginFragment();
 		getFragmentManager().beginTransaction()
 				.add(R.id.fragment_container, loginFragment, "login")
 				.commit();
@@ -55,7 +59,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
-		loginFragment.onActivityResult(requestCode, resultCode, data);
+		callbackManager.onActivityResult(requestCode, resultCode, data);
 	}
 
 	public void onPlayButtonClicked()

@@ -63,10 +63,17 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	public void onPlayButtonClicked()
 	{
 		if (loggedIn)
+		{
 			onSuccesfulLogin();
-
-		if (connection == null)
+		}
+		else if (connection != null)
+		{
+			login();
+		}
+		else
+		{
 			new ConnectAsyncTask().execute();
+		}
 	}
 
 	private void login()

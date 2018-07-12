@@ -1,9 +1,5 @@
 package com.tisza.tarock;
 
-import android.support.annotation.*;
-
-import java.util.*;
-
 public class User implements Comparable<User>
 {
 	private final String id;

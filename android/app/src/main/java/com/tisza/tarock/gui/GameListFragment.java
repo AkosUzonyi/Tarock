@@ -1,13 +1,9 @@
 package com.tisza.tarock.gui;
 
-import android.app.*;
-import android.content.*;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
-import com.facebook.*;
-import com.facebook.login.widget.*;
-import com.tisza.tarock.R;
+import com.tisza.tarock.*;
 
 public class GameListFragment extends MainActivityFragment
 {

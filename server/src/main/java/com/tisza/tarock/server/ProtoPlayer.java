@@ -5,8 +5,6 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
 
-import java.util.concurrent.*;
-
 public class ProtoPlayer implements Player
 {
 	private String name;

@@ -7,8 +7,6 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.*;
 
-import java.util.stream.*;
-
 public class Utils
 {
 	public static ProtoUtils.Card cardToProto(Card c)

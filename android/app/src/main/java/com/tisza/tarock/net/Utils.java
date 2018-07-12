@@ -7,7 +7,6 @@ import com.tisza.tarock.proto.EventProto.Event;
 import com.tisza.tarock.proto.*;
 
 import java.util.*;
-import java.util.stream.*;
 
 public class Utils
 {

@@ -4,7 +4,6 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
-import java.util.concurrent.*;
 
 public class MixedPlayer implements Player
 {

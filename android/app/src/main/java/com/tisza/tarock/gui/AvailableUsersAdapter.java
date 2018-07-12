@@ -1,14 +1,10 @@
 package com.tisza.tarock.gui;
 
 import android.content.*;
-import android.graphics.*;
-import android.os.*;
 import android.view.*;
 import android.widget.*;
 import com.tisza.tarock.*;
 
-import java.io.*;
-import java.net.*;
 import java.util.*;
 
 public class AvailableUsersAdapter extends BaseAdapter

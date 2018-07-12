@@ -174,7 +174,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				break;
 
 			case EVENT:
-				runOnUiThread(() -> new ProtoEvent(message.getEvent()).handle(eventHandler));
+				new ProtoEvent(message.getEvent()).handle(eventHandler);
 				break;
 
 			case SERVER_STATUS:
@@ -190,11 +190,8 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 					users.add(Utils.userFromProto(userProto));
 				}
 
-				runOnUiThread(() ->
-				{
-					gameListAdapter.setGames(games);
-					availableUsersAdapter.setUsers(users);
-				});
+				gameListAdapter.setGames(games);
+				availableUsersAdapter.setUsers(users);
 
 				break;
 
@@ -285,7 +282,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				Socket socket = sc.getSocketFactory().createSocket();
 				socket.connect(new InetSocketAddress(host, port), 1000);
 
-				return new ProtoConnection(socket);
+				return new ProtoConnection(socket, new UIThreadExecutor());
 			}
 			catch (Exception e)
 			{

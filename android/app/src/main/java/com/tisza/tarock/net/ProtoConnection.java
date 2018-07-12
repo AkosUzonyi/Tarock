@@ -9,6 +9,7 @@ import java.util.concurrent.*;
 
 public class ProtoConnection implements Closeable
 {
+	private final Executor messageHandlerExecutor;
 	private Socket socket;
 	private InputStream is;
 	private OutputStream os;
@@ -36,12 +37,11 @@ public class ProtoConnection implements Closeable
 					{
 						for (MessageHandler handler : packetHandlers)
 						{
-							handler.handleMessage(message);
+							messageHandlerExecutor.execute(() -> handler.handleMessage(message));
 						}
 					}
 				}
 			}
-			catch (EOFException e) {}
 			catch (IOException e)
 			{
 				e.printStackTrace();
@@ -104,9 +104,11 @@ public class ProtoConnection implements Closeable
 		}
 	});
 	
-	public ProtoConnection(Socket s) throws IOException
+	public ProtoConnection(Socket socket, Executor messageHandlerExecutor) throws IOException
 	{
-		socket = s;
+		this.socket = socket;
+		this.messageHandlerExecutor = messageHandlerExecutor;
+
 		socket.setTcpNoDelay(true);
 		is = socket.getInputStream();
 		os = socket.getOutputStream();
@@ -181,7 +183,6 @@ public class ProtoConnection implements Closeable
 		return started && !closeRequested;
 	}
 	
-	@Override
 	public synchronized void close() throws IOException
 	{
 		if (closeRequested)
@@ -201,7 +202,7 @@ public class ProtoConnection implements Closeable
 		{
 			for (MessageHandler handler : packetHandlers)
 			{
-				handler.connectionClosed();
+				messageHandlerExecutor.execute(() -> handler.connectionClosed());
 			}
 			packetHandlers = null;
 		}

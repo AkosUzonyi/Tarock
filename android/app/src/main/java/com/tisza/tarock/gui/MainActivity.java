@@ -249,12 +249,19 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		return availableUsersAdapter;
 	}
 
-	private class ConnectAsyncTask extends AsyncTask<Void, Void, ProtoConnection>
+	private class ConnectAsyncTask extends AsyncTask<Void, Void, ProtoConnection> implements DialogInterface.OnDismissListener
 	{
+		@Override
+		public void onDismiss(DialogInterface dialog)
+		{
+			cancel(true);
+		}
+
 		@Override
 		protected void onPreExecute()
 		{
 			progressDialog.setMessage(getResources().getString(R.string.connecting));
+			progressDialog.setOnDismissListener(this);
 			progressDialog.show();
 		}
 
@@ -293,6 +300,8 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 		protected void onPostExecute(ProtoConnection resultProtoConnection)
 		{
+			progressDialog.setOnDismissListener(null);
+
 			if (progressDialog.isShowing())
 				progressDialog.dismiss();
 

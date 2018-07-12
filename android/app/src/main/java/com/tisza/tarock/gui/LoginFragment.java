@@ -32,7 +32,7 @@ public class LoginFragment extends MainActivityFragment
 		View view = inflater.inflate(R.layout.login, container, false);
 
 		playButton = view.findViewById(R.id.play_button);
-		playButton.setOnClickListener(v -> ((MainActivity)getActivity()).onPlayButtonClicked());
+		playButton.setOnClickListener(v -> getMainActivity().onPlayButtonClicked());
 		playButton.setEnabled(AccessToken.getCurrentAccessToken() != null);
 		accessTokenTracker.startTracking();
 

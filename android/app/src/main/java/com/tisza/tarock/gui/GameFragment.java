@@ -277,7 +277,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private List<String> playerNames;
 	protected List<Card> myCards;
-	private int myID = -1;
+	private int seat = -1;
 	private Team myTeam;
 	private GameType gameType;
 	private int beginnerPlayer;
@@ -292,11 +292,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private boolean skarting = false;
 
 	@Override
-	public void startGame(int myID, List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
 	{
 		resetGameViews();
 
-		this.myID = myID;
 		this.playerNames = playerNames;
 		this.gameType = gameType;
 		this.beginnerPlayer = beginnerPlayer;
@@ -304,14 +303,20 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
 
-		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
-		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
 		for (int i = 0; i < 4; i++)
 		{
 			int pos = getPositionFromPlayerID(i);
 			playerNameViews[pos].setText(playerNames.get(i));
 		}
 		messages = "";
+	}
+
+	@Override
+	public void seat(int seat)
+	{
+		this.seat = seat;
+		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
+		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
 	}
 
 	private void doAction(Action action)
@@ -408,7 +413,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void bid(int player, int bid)
 	{
-		if (player == myID)
+		if (player == seat)
 			availableActionsAdapter.clear();
 
 		String msg = ResourceMappings.bidToName.get(bid);
@@ -419,7 +424,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	public void changeDone(int player)
 	{
 		setHiglighted(player, false);
-		if (player == myID)
+		if (player == seat)
 		{
 			okButton.setVisibility(View.GONE);
 			throwButton.setVisibility(View.GONE);
@@ -452,7 +457,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void call(int player, Card card)
 	{
-		if (player == myID)
+		if (player == seat)
 			availableActionsAdapter.clear();
 
 		displayPlayerActionMessage(R.string.message_call, player, ResourceMappings.uppercaseCardName(card));
@@ -508,7 +513,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (announcement.getName().equals("jatek") && announcement.getContraLevel() == 0)
 			return;
 
-		if (player == myID)
+		if (player == seat)
 		{
 			okButton.setVisibility(View.GONE);
 			availableActionsAdapter.clear();
@@ -523,7 +528,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void announcePassz(int player)
 	{
-		if (player == myID)
+		if (player == seat)
 		{
 			okButton.setVisibility(View.GONE);
 			availableActionsAdapter.clear();
@@ -540,7 +545,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		playedCardView.bringToFront();
 		playedCardView.animatePlay();
 		
-		if (myCards != null && player == myID)
+		if (myCards != null && player == seat)
 		{
 			myCards.remove(card);
 
@@ -608,7 +613,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		int pos = getPositionFromPlayerID(player);
 		int color = getResources().getColor(team == Team.CALLER ? R.color.caller_team : R.color.opponent_team);
 
-		if (player == myID)
+		if (player == seat)
 		{
 			myTeam = team;
 			cardsBackgroundColorView.setBackgroundColor(color);
@@ -682,7 +687,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void readyForNewGame(int player)
 	{
-		if (player == myID)
+		if (player == seat)
 			okButton.setVisibility(View.GONE);
 
 		setHiglighted(player, false);
@@ -890,12 +895,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private boolean isKibic()
 	{
-		return myID < 0;
+		return seat < 0;
 	}
 	
 	private int getPositionFromPlayerID(int id)
 	{
-		int viewID = isKibic() ? 0 : myID;
+		int viewID = isKibic() ? 0 : seat;
 		return (id - viewID + 4) % 4;
 	}
 }

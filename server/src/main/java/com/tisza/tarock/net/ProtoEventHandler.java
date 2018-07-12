@@ -1,18 +1,15 @@
 package com.tisza.tarock.net;
 
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.game.card.*;
+import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 
 import java.util.*;
 import java.util.stream.*;
 
-import static com.tisza.tarock.net.Utils.*;
-import static com.tisza.tarock.proto.EventProto.*;
-
-public class ProtoEventSender implements EventSender
+public class ProtoEventHandler implements EventHandler
 {
 	private ProtoConnection connection;
 
@@ -21,7 +18,7 @@ public class ProtoEventSender implements EventSender
 		this.connection = connection;
 	}
 
-	private void sendEvent(Event event)
+	private void sendEvent(EventProto.Event event)
 	{
 		if (connection == null)
 			return;
@@ -31,11 +28,11 @@ public class ProtoEventSender implements EventSender
 
 	private void sendPlayerActionEvent(PlayerSeat player, Action action)
 	{
-		Event.PlayerAction event = Event.PlayerAction.newBuilder()
+		EventProto.Event.PlayerAction event = EventProto.Event.PlayerAction.newBuilder()
 				.setPlayer(player.asInt())
 				.setAction(action.getId())
 				.build();
-		sendEvent(Event.newBuilder().setPlayerAction(event).build());
+		sendEvent(EventProto.Event.newBuilder().setPlayerAction(event).build());
 	}
 
 	@Override
@@ -88,135 +85,143 @@ public class ProtoEventSender implements EventSender
 
 	@Override public void turn(PlayerSeat player)
 	{
-		Event.Turn e = Event.Turn.newBuilder()
+		EventProto.Event.Turn e = EventProto.Event.Turn.newBuilder()
 				.setPlayer(player.asInt())
 				.build();
-		sendEvent(Event.newBuilder().setTurn(e).build());
+		sendEvent(EventProto.Event.newBuilder().setTurn(e).build());
 	}
 
 	@Override public void playerTeamInfo(PlayerSeat player, Team team)
 	{
-		Event.PlayerTeamInfo e = Event.PlayerTeamInfo.newBuilder()
+		EventProto.Event.PlayerTeamInfo e = EventProto.Event.PlayerTeamInfo.newBuilder()
 				.setPlayer(player.asInt())
 				.setIsCaller(team == Team.CALLER)
 				.build();
-		sendEvent(Event.newBuilder().setPlayerTeamInfo(e).build());
+		sendEvent(EventProto.Event.newBuilder().setPlayerTeamInfo(e).build());
 	}
 
-	@Override public void startGame(PlayerSeat seat, List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
+	@Override public void startGame(List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
 	{
-		Event.StartGame e = Event.StartGame.newBuilder()
-				.setMyId(seat == null ? -1 : seat.asInt())
+		EventProto.Event.StartGame e = EventProto.Event.StartGame.newBuilder()
 				.addAllPlayerName(names)
 				.setGameType(gameType.getID())
 				.setBeginnerPlayer(beginnerPlayer.asInt())
 				.build();
-		sendEvent(Event.newBuilder().setStartGame(e).build());
+		sendEvent(EventProto.Event.newBuilder().setStartGame(e).build());
+	}
+
+	@Override
+	public void seat(PlayerSeat seat)
+	{
+		EventProto.Event.Seat e = EventProto.Event.Seat.newBuilder()
+				.setSeat(seat == null ? -1 : seat.asInt())
+				.build();
+		sendEvent(EventProto.Event.newBuilder().setSeat(e).build());
 	}
 
 	@Override public void playerCards(PlayerCards cards)
 	{
-		Event.PlayerCards e = Event.PlayerCards.newBuilder()
+		EventProto.Event.PlayerCards e = EventProto.Event.PlayerCards.newBuilder()
 				.addAllCard(cards.getCards().stream().map(Card::getID).collect(Collectors.toList()))
 				.setCanBeThrown(cards.canBeThrown())
 				.build();
-		sendEvent(Event.newBuilder().setPlayerCards(e).build());
+		sendEvent(EventProto.Event.newBuilder().setPlayerCards(e).build());
 	}
 
 	@Override public void phaseChanged(PhaseEnum phase)
 	{
-		Event.PhaseChanged e = Event.PhaseChanged.newBuilder()
+		EventProto.Event.PhaseChanged e = EventProto.Event.PhaseChanged.newBuilder()
 				.setPhase(phase.getID())
 				.build();
-		sendEvent(Event.newBuilder().setPhaseChanged(e).build());
+		sendEvent(EventProto.Event.newBuilder().setPhaseChanged(e).build());
 	}
 
 	@Override public void availabeBids(Collection<Integer> bids)
 	{
-		Event.AvailableBids e = Event.AvailableBids.newBuilder()
+		EventProto.Event.AvailableBids e = EventProto.Event.AvailableBids.newBuilder()
 				.addAllBid(bids)
 				.build();
-		sendEvent(Event.newBuilder().setAvailableBids(e).build());
+		sendEvent(EventProto.Event.newBuilder().setAvailableBids(e).build());
 	}
 
 	@Override public void availabeCalls(Collection<Card> cards)
 	{
-		Event.AvailableCalls e = Event.AvailableCalls.newBuilder()
+		EventProto.Event.AvailableCalls e = EventProto.Event.AvailableCalls.newBuilder()
 				.addAllCard(cards.stream().map(Card::getID).collect(Collectors.toList()))
 				.build();
-		sendEvent(Event.newBuilder().setAvailableCalls(e).build());
+		sendEvent(EventProto.Event.newBuilder().setAvailableCalls(e).build());
 	}
 
 	@Override public void changeDone(PlayerSeat player)
 	{
-		Event.ChangeDone e = Event.ChangeDone.newBuilder()
+		EventProto.Event.ChangeDone e = EventProto.Event.ChangeDone.newBuilder()
 				.setPlayer(player.asInt())
 				.build();
-		sendEvent(Event.newBuilder().setChangeDone(e).build());
+		sendEvent(EventProto.Event.newBuilder().setChangeDone(e).build());
 	}
 
 	@Override public void skartTarock(PlayerSeatMap<Integer> counts)
 	{
-		Event.SkartTarock.Builder e = Event.SkartTarock.newBuilder();
+		EventProto.Event.SkartTarock.Builder e = EventProto.Event.SkartTarock.newBuilder();
 
 		for (int count : counts)
 		{
 			e.addCount(count);
 		}
 
-		sendEvent(Event.newBuilder().setSkartTarock(e).build());
+		sendEvent(EventProto.Event.newBuilder().setSkartTarock(e).build());
 	}
 
 	@Override public void availableAnnouncements(List<AnnouncementContra> announcements)
 	{
-		Event.AvailableAnnouncements e = Event.AvailableAnnouncements.newBuilder()
+		EventProto.Event.AvailableAnnouncements e = EventProto.Event.AvailableAnnouncements.newBuilder()
 				.addAllAnnouncement(announcements.stream().map(AnnouncementContra::getID).collect(Collectors.toList()))
 				.build();
-		sendEvent(Event.newBuilder().setAvailableAnnouncements(e).build());
+		sendEvent(EventProto.Event.newBuilder().setAvailableAnnouncements(e).build());
 	}
 
 	@Override public void cardsTaken(PlayerSeat player)
 	{
-		Event.CardsTaken e = Event.CardsTaken.newBuilder()
+		EventProto.Event.CardsTaken e = EventProto.Event.CardsTaken.newBuilder()
 				.setPlayer(player.asInt())
 				.build();
-		sendEvent(Event.newBuilder().setCardsTaken(e).build());
+		sendEvent(EventProto.Event.newBuilder().setCardsTaken(e).build());
 	}
 
 	@Override public void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
 	{
-		Event.Statistics.Builder e = Event.Statistics.newBuilder()
+		EventProto.Event.Statistics.Builder e = EventProto.Event.Statistics.newBuilder()
 				.setCallerGamePoints(callerGamePoints)
 				.setOpponentGamePoints(opponentGamePoints)
 				.addAllAnnouncementResult(announcementResults.stream().map(Utils::announcementResultToProto).collect(Collectors.toList()))
 				.setSumPoints(sumPoints)
 				.setPointMultiplier(pointMultiplier);
 
-		sendEvent(Event.newBuilder().setStatistics(e).build());
+		sendEvent(EventProto.Event.newBuilder().setStatistics(e).build());
 	}
 
 	@Override
 	public void playerPoints(int[] points)
 	{
-		Event.PlayerPoints.Builder e = Event.PlayerPoints.newBuilder();
+		EventProto.Event.PlayerPoints.Builder e = EventProto.Event.PlayerPoints.newBuilder();
 
 		for (int point : points)
 		{
 			e.addPlayerPoint(point);
 		}
 
-		sendEvent(Event.newBuilder().setPlayerPoints(e).build());
+		sendEvent(EventProto.Event.newBuilder().setPlayerPoints(e).build());
 	}
 
 	@Override public void pendingNewGame()
 	{
-		Event.PendingNewGame e = Event.PendingNewGame.newBuilder().build();
-		sendEvent(Event.newBuilder().setPendingNewGame(e).build());
+		EventProto.Event.PendingNewGame e = EventProto.Event.PendingNewGame.newBuilder().build();
+		sendEvent(EventProto.Event.newBuilder().setPendingNewGame(e).build());
 	}
 
 	@Override public void deleteGame()
 	{
-		Event.DeleteGame e = Event.DeleteGame.newBuilder().build();
-		sendEvent(Event.newBuilder().setDeleteGame(e).build());
+		EventProto.Event.DeleteGame e = EventProto.Event.DeleteGame.newBuilder().build();
+		sendEvent(EventProto.Event.newBuilder().setDeleteGame(e).build());
 	}
 }

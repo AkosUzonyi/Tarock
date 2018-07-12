@@ -30,27 +30,14 @@ class PendingNewGame extends Phase
 			game.sendPlayerPoints();
 		}
 
-		game.getBroadcastEventSender().pendingNewGame();
-	}
-
-	@Override
-	public void requestHistory(PlayerSeat player, EventSender eventSender)
-	{
-		if (!doubleRound)
-			game.sendStatistics();
-
-		eventSender.pendingNewGame();
-
-		for (PlayerSeat p : PlayerSeat.getAll())
-			if (ready.get(p))
-				game.getBroadcastEventSender().readyForNewGame(p);
+		game.broadcastEvent(Event.pendingNewGame());
 	}
 
 	@Override
 	public void readyForNewGame(PlayerSeat player)
 	{
 		ready.put(player, true);
-		game.getBroadcastEventSender().readyForNewGame(player);
+		game.broadcastEvent(Event.readyForNewGame(player));
 
 		if (allReady())
 			game.finish();

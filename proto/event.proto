@@ -9,6 +9,7 @@ message Event
 	oneof event_type
 	{
 		StartGame start_game = 1;
+		Seat seat = 17;
 		PlayerAction player_action = 2;
 		Turn turn = 13;
 		PlayerTeamInfo player_team_info = 14;
@@ -27,10 +28,13 @@ message Event
 	}
 	message StartGame
 	{
-		required int32 my_id = 1;
-		repeated string player_name = 2;
-		required string game_type = 3;
-		required int32 beginner_player = 4;
+		repeated string player_name = 1;
+		required string game_type = 2;
+		required int32 beginner_player = 3;
+	}
+	message Seat
+	{
+		required int32 seat = 1;
 	}
 	message PlayerAction
 	{

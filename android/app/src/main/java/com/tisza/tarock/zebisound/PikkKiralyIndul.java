@@ -17,7 +17,7 @@ class PikkKiralyIndul extends ZebiSound
 	}
 
 	@Override
-	public void startGame(int myID, List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
 	{
 		firstCard = true;
 	}

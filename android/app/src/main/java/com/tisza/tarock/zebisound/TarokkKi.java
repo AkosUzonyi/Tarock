@@ -1,7 +1,6 @@
 package com.tisza.tarock.zebisound;
 
 import android.content.*;
-import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 
@@ -20,7 +19,7 @@ class TarokkKi extends ZebiSound
 	}
 
 	@Override
-	public void startGame(int myID, List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
 	{
 		tarocks = 0;
 		suits = 0;

@@ -19,7 +19,6 @@ abstract class Phase implements ActionHandler
 
 	public abstract PhaseEnum asEnum();
 	public abstract void onStart();
-	public abstract void requestHistory(PlayerSeat player, EventSender eventSender);
 
 	@Override
 	public void announce(PlayerSeat player, AnnouncementContra announcementContra)
@@ -72,7 +71,7 @@ abstract class Phase implements ActionHandler
 	@Override
 	public void chat(PlayerSeat player, String message)
 	{
-		game.getBroadcastEventSender().chat(player, message);
+		game.broadcastEvent(Event.chat(player, message));
 	}
 
 	private void wrongPhase(String action)

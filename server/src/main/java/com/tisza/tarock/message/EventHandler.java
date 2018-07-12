@@ -6,7 +6,7 @@ import com.tisza.tarock.game.phase.*;
 
 import java.util.*;
 
-public interface EventSender
+public interface EventHandler
 {
 	default void announce(PlayerSeat player, AnnouncementContra announcement) {}
 	default void announcePassz(PlayerSeat player) {}
@@ -17,7 +17,8 @@ public interface EventSender
 	default void throwCards(PlayerSeat player) {}
 	default void turn(PlayerSeat player) {}
 	default void playerTeamInfo(PlayerSeat player, Team team) {}
-	default void startGame(PlayerSeat seat, List<String> names, GameType gameType, PlayerSeat beginnerPlayer) {}
+	default void startGame(List<String> names, GameType gameType, PlayerSeat beginnerPlayer) {}
+	default void seat(PlayerSeat seat) {}
 	default void playerCards(PlayerCards cards) {}
 	default void phaseChanged(PhaseEnum phase) {}
 	default void availabeBids(Collection<Integer> bids) {}

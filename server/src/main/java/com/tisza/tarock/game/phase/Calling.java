@@ -1,8 +1,8 @@
 package com.tisza.tarock.game.phase;
 
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
-import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
@@ -39,14 +39,6 @@ class Calling extends Phase
 		}
 
 		sendAvailableCalls();
-	}
-
-	@Override
-	public void requestHistory(PlayerSeat player, EventSender eventSender)
-	{
-		eventSender.turn(callerPlayer);
-		if (player == callerPlayer)
-			sendAvailableCalls();
 	}
 
 	@Override
@@ -96,14 +88,14 @@ class Calling extends Phase
 		}
 
 		history.setCalledCard(player, card);
-		game.getBroadcastEventSender().call(player, card);
+		game.broadcastEvent(Event.call(player, card));
 		game.changePhase(new Announcing(game));
 	}
 
 	private void sendAvailableCalls()
 	{
-		game.getPlayerEventSender(callerPlayer).availabeCalls(getCallableCards());
-		game.getBroadcastEventSender().turn(callerPlayer);
+		game.sendEvent(callerPlayer, Event.availabeCalls(getCallableCards()));
+		game.broadcastEvent(Event.turn(callerPlayer));
 	}
 
 	private List<Card> getCallableCards()

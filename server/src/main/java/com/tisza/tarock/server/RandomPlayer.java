@@ -15,7 +15,7 @@ public class RandomPlayer implements Player
 	private final String name;
 	private final ScheduledExecutorService executorService;
 	private final int delay, extraDelay;
-	private EventSender eventSender = new MyEventSender();
+	private EventHandler eventHandler = new MyEventHandler();
 	private Random rnd = new Random();
 
 	private PlayerSeat seat;
@@ -41,9 +41,9 @@ public class RandomPlayer implements Player
 	}
 
 	@Override
-	public EventSender getEventSender()
+	public EventHandler getEventHandler()
 	{
-		return eventSender;
+		return eventHandler;
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class RandomPlayer implements Player
 		executorService.schedule(() -> doAction(action), extraDelay, TimeUnit.MILLISECONDS);
 	}
 
-	private class MyEventSender implements EventSender
+	private class MyEventHandler implements EventHandler
 	{
 		private PlayerCards myCards;
 		private PhaseEnum phase;
@@ -142,10 +142,15 @@ public class RandomPlayer implements Player
 			}
 		}
 
-		@Override public void startGame(PlayerSeat s, List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
+		@Override public void startGame(List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
+		{
+			this.gameType = gameType;
+		}
+
+		@Override
+		public void seat(PlayerSeat s)
 		{
 			seat = s;
-			this.gameType = gameType;
 		}
 
 		@Override

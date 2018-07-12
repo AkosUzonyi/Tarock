@@ -32,21 +32,6 @@ class Changing extends Phase
 		dealCardsFromTalon();
 	}
 
-	@Override
-	public void requestHistory(PlayerSeat player, EventSender eventSender)
-	{
-		for (PlayerSeat otherPlayer : PlayerSeat.getAll())
-		{
-			if (donePlayer.get(otherPlayer))
-			{
-				eventSender.changeDone(otherPlayer);
-			}
-		}
-
-		if (player != null && !donePlayer.get(player))
-			game.getPlayerEventSender(player).turn(player);
-	}
-
 	private void dealCardsFromTalon()
 	{
 		List<Card> remainingCards = new LinkedList<>(game.getTalon());
@@ -67,8 +52,8 @@ class Changing extends Phase
 			List<Card> cardsFromTalon = remainingCards.subList(0, cardCount);
 			PlayerCards playerCards = game.getPlayerCards(player);
 			playerCards.addCards(cardsFromTalon);
-			game.getPlayerEventSender(player).playerCards(playerCards);
-			game.getPlayerEventSender(player).turn(player);
+			game.sendEvent(player, Event.playerCards(playerCards));
+			game.sendEvent(player, Event.turn(player));
 			history.setCardsFromTalon(player, new ArrayList<>(cardsFromTalon));
 			if (cardsFromTalon.isEmpty())
 				change(player, Collections.EMPTY_LIST);
@@ -127,12 +112,12 @@ class Changing extends Phase
 		skartingPlayerCards.removeCards(cardsToSkart);
 		donePlayer.put(player, true);
 		history.setCardsSkarted(player, cardsToSkart);
-		game.getPlayerEventSender(player).playerCards(skartingPlayerCards);
-		game.getBroadcastEventSender().changeDone(player);
+		game.sendEvent(player, Event.playerCards(skartingPlayerCards));
+		game.broadcastEvent(Event.changeDone(player));
 
 		if (isFinished())
 		{
-			game.getBroadcastEventSender().skartTarock(tarockCounts);
+			game.broadcastEvent(Event.skartTarock(tarockCounts));
 			game.changePhase(new Calling(game));
 		}
 	}
@@ -146,7 +131,7 @@ class Changing extends Phase
 		if (!game.getPlayerCards(player).canBeThrown())
 			return;
 
-		game.getBroadcastEventSender().throwCards(player);
+		game.broadcastEvent(Event.throwCards(player));
 		game.changePhase(new PendingNewGame(game, true));
 	}
 	

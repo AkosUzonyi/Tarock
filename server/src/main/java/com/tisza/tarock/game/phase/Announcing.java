@@ -1,8 +1,9 @@
 package com.tisza.tarock.game.phase;
 
+
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
@@ -34,14 +35,6 @@ class Announcing extends Phase implements IAnnouncing
 		announce(currentPlayer, Announcements.jatek);
 	}
 
-	@Override
-	public void requestHistory(PlayerSeat player, EventSender eventSender)
-	{
-		eventSender.turn(currentPlayer);
-		if (player == currentPlayer)
-			sendAvailableAnnouncements();
-	}
-
 	public void announce(PlayerSeat player, Announcement a)
 	{
 		announce(player, new AnnouncementContra(a, 0));
@@ -65,7 +58,7 @@ class Announcing extends Phase implements IAnnouncing
 
 		history.registerAnnouncement(player, ac);
 		ac.getAnnouncement().onAnnounced(this);
-		game.getBroadcastEventSender().announce(player, ac);
+		game.broadcastEvent(Event.announce(player, ac));
 		sendAvailableAnnouncements();
 	}
 	
@@ -88,7 +81,7 @@ class Announcing extends Phase implements IAnnouncing
 		currentPlayer = currentPlayer.nextPlayer();
 		currentPlayerAnnounced = false;
 
-		game.getBroadcastEventSender().announcePassz(player);
+		game.broadcastEvent(Event.announcePassz(player));
 
 		if (!isFinished())
 		{
@@ -144,8 +137,8 @@ class Announcing extends Phase implements IAnnouncing
 			list.remove(new AnnouncementContra(Announcements.jatek, 1));
 		}
 		
-		game.getPlayerEventSender(currentPlayer).availableAnnouncements(list);
-		game.getBroadcastEventSender().turn(currentPlayer);
+		game.sendEvent(currentPlayer, Event.availableAnnouncements(list));
+		game.broadcastEvent(Event.turn(currentPlayer));
 	}
 	
 	@Override

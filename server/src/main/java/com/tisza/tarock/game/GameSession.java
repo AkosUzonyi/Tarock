@@ -10,12 +10,12 @@ import java.text.*;
 import java.util.*;
 import java.util.stream.*;
 
-public class GameSession implements GameFinishedListener
+public class GameSession implements GameFinishedListener, Game
 {
 	private final File saveDir;
 	private final GameType gameType;
 	private final PlayerSeatMap<Player> players = new PlayerSeatMap<>();
-	private final Set<Player> kibices = new HashSet<>();
+	private final Set<Player> allPlayers = new HashSet<>();
 
 	private final DoubleRoundTracker doubleRoundTracker;
 
@@ -26,7 +26,7 @@ public class GameSession implements GameFinishedListener
 
 	public GameSession(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, File saveDir)
 	{
-		if (players.size() != 4)
+		if (playerList.size() != 4)
 			throw new IllegalArgumentException();
 
 		this.saveDir = saveDir;
@@ -34,7 +34,12 @@ public class GameSession implements GameFinishedListener
 
 		for (int i = 0; i < 4; i++)
 		{
-			players.put(PlayerSeat.fromInt(i), playerList.get(i));
+			PlayerSeat playerSeat = PlayerSeat.fromInt(i);
+			Player player = playerList.get(i);
+
+			players.put(playerSeat, player);
+			allPlayers.add(player);
+			player.setGame(this, playerSeat);
 		}
 
 		doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
@@ -47,30 +52,22 @@ public class GameSession implements GameFinishedListener
 
 	public void stopSession()
 	{
-		currentGame.stop();
 		currentGame = null;
-		for (Player player : players)
+		dispatchEvents(Arrays.asList(new EventInstance(null, Event.deleteGame())));
+		for (Player player : allPlayers)
 			player.setGame(null, null);
-		for (Player kibic : kibices)
-			kibic.setGame(null, null);
 	}
 
 	public void addKibic(Player player)
 	{
-		if (kibices.add(player))
-		{
-			player.setGame(currentGame, null);
-			currentGame.addKibic(player);
-		}
+		if (allPlayers.add(player))
+			player.setGame(this, null);
 	}
 
 	public void removeKibic(Player player)
 	{
-		if (kibices.remove(player))
-		{
+		if (allPlayers.remove(player))
 			player.setGame(null, null);
-			currentGame.removeKibic(player);
-		}
 	}
 
 	public GameType getGameType()
@@ -90,15 +87,36 @@ public class GameSession implements GameFinishedListener
 
 	private void startNewGame()
 	{
-		currentGame = new GameState(gameType, players, currentBeginnerPlayer, this, doubleRoundTracker.getCurrentMultiplier());
-		for (PlayerSeat seat : PlayerSeat.getAll())
-			players.get(seat).setGame(currentGame, seat);
-		for (Player kibic : kibices)
+		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, this, doubleRoundTracker.getCurrentMultiplier());
+		List<EventInstance> events = currentGame.start();
+		dispatchEvents(events);
+	}
+
+	@Override
+	public void action(Action action)
+	{
+		List<EventInstance> eventInstances = currentGame.processAction(action);
+		dispatchEvents(eventInstances);
+	}
+
+	private void dispatchEvents(List<EventInstance> events)
+	{
+		for (EventInstance event : events)
 		{
-			kibic.setGame(currentGame, null);
-			currentGame.addKibic(kibic);
+			if (event.getPlayerSeat() == null)
+				for (Player player : allPlayers)
+					event.getEvent().handle(player.getEventHandler());
+			else
+				event.getEvent().handle(players.get(event.getPlayerSeat()).getEventHandler());
 		}
-		currentGame.start();
+	}
+
+	@Override
+	public void requestHistory(PlayerSeat seat, EventHandler eventHandler)
+	{
+		for (EventInstance event : currentGame.getEvents())
+			if (event.getPlayerSeat() == null || event.getPlayerSeat() == seat)
+				event.getEvent().handle(eventHandler);
 	}
 
 	@Override

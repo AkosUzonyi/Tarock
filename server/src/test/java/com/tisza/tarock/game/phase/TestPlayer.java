@@ -26,9 +26,9 @@ public class TestPlayer implements Player
 	}
 
 	@Override
-	public EventSender getEventSender()
+	public EventHandler getEventHandler()
 	{
-		return new BroadcastEventSender();
+		return new EventHandler() {};
 	}
 
 	@Override

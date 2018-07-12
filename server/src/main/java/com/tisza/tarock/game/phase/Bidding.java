@@ -1,7 +1,7 @@
 package com.tisza.tarock.game.phase;
 
-import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
@@ -31,14 +31,6 @@ class Bidding extends Phase
 	{
 		currentPlayer = game.getBeginnerPlayer();
 		sendAvailableBids();
-	}
-
-	@Override
-	public void requestHistory(PlayerSeat player, EventSender eventSender)
-	{
-		eventSender.turn(currentPlayer);
-		if (player == currentPlayer)
-			sendAvailableBids();
 	}
 
 	private boolean canKeep()
@@ -90,7 +82,7 @@ class Bidding extends Phase
 		}
 
 		history.registerBid(player, bid);
-		game.getBroadcastEventSender().bid(player, bid);
+		game.broadcastEvent(Event.bid(player, bid));
 
 		findNextPlayer();
 		
@@ -118,7 +110,7 @@ class Bidding extends Phase
 		if (!game.getPlayerCards(player).canBeThrown())
 			return;
 
-		game.getBroadcastEventSender().throwCards(player);
+		game.broadcastEvent(Event.throwCards(player));
 		game.changePhase(new PendingNewGame(game, true));
 	}
 
@@ -172,8 +164,8 @@ class Bidding extends Phase
 	
 	private void sendAvailableBids()
 	{
-		game.getPlayerEventSender(currentPlayer).availabeBids(getAvailableBids());
-		game.getBroadcastEventSender().turn(currentPlayer);
+		game.sendEvent(currentPlayer, Event.availabeBids(getAvailableBids()));
+		game.broadcastEvent(Event.turn(currentPlayer));
 	}
 
 	private boolean checkBiddingRequirements(PlayerSeat player)

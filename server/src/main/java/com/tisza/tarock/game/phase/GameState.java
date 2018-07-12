@@ -1,27 +1,27 @@
 package com.tisza.tarock.game.phase;
 
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
-import java.util.stream.*;
 
-public class GameState implements Game
+public class GameState
 {
 	public static final int ROUND_COUNT = 9;
 
 	private final GameType gameType;
-	private final PlayerSeatMap<Player> players;
+	private final List<String> playerNames;
 	private final PlayerSeat beginnerPlayer;
 
 	private final GameFinishedListener gameFinishedListener;
-	private BroadcastEventSender broadcastEventSender = new BroadcastEventSender();
 
 	private TeamInfoTracker teamInfoTracker;
 
 	private GameHistory history;
+	private List<EventInstance> events = new ArrayList<>();
+	private List<EventInstance> newEvents = new ArrayList<>();
 
 	private Phase currentPhase;
 
@@ -66,25 +66,19 @@ public class GameState implements Game
 		}
 	}
 
-	public GameState(GameType gameType, PlayerSeatMap<Player> players, PlayerSeat beginnerPlayer, GameFinishedListener gameFinishedListener, int pointMultiplier)
+	public GameState(GameType gameType, List<String> playerNames, PlayerSeat beginnerPlayer, GameFinishedListener gameFinishedListener, int pointMultiplier)
 	{
 		this.gameType = gameType;
-		this.players = players;
+		this.playerNames = playerNames;
 		this.beginnerPlayer = beginnerPlayer;
 		this.gameFinishedListener = gameFinishedListener;
 		this.pointMultiplier = pointMultiplier;
 
 		teamInfoTracker = new TeamInfoTracker(this);
 		history = new GameHistory();
-
-		broadcastEventSender.addEventSender(teamInfoTracker);
-		for (Player player : players.values())
-		{
-			broadcastEventSender.addEventSender(player.getEventSender());
-		}
 	}
 
-	public void start()
+	public List<EventInstance> start()
 	{
 		List<Card> cardsToDeal = new ArrayList<>(Card.getAll());
 		Collections.shuffle(cardsToDeal);
@@ -97,53 +91,28 @@ public class GameState implements Game
 		}
 		setTalon(cardsToDeal);
 
+		broadcastEvent(Event.startGame(playerNames, gameType, beginnerPlayer));
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			getPlayerEventSender(player).startGame(player, getPlayerNames(), gameType, beginnerPlayer);
-			getPlayerEventSender(player).playerCards(playersCards.get(player));
+			sendEvent(player, Event.seat(player));
+			sendEvent(player, Event.playerCards(playersCards.get(player)));
 			history.setOriginalPlayersCards(player, new ArrayList<>(playersCards.get(player).getCards()));
 		}
 
 		changePhase(new Bidding(this));
+		return newEvents;
 	}
 
-	public void stop()
+	public List<EventInstance> processAction(Action action)
 	{
-		getBroadcastEventSender().deleteGame();
-	}
-
-	@Override
-	public void action(Action action)
-	{
+		newEvents.clear();
 		action.handle(currentPhase);
+		return newEvents;
 	}
 
-	@Override
-	public void requestHistory(PlayerSeat player, EventSender eventSender)
+	public List<EventInstance> getEvents()
 	{
-		eventSender.startGame(player, getPlayerNames(), gameType, beginnerPlayer);
-		if (player != null)
-			eventSender.playerCards(playersCards.get(player));
-		history.sendCurrentStatusToPlayer(player, currentPhase.asEnum(), eventSender);
-		eventSender.phaseChanged(currentPhase.asEnum());
-		teamInfoTracker.sendStatusToPlayer(player, eventSender);
-		sendPlayerPoints();
-		currentPhase.requestHistory(player, eventSender);
-	}
-
-	public List<String> getPlayerNames()
-	{
-		return players.values().stream().map(Player::getName).collect(Collectors.toList());
-	}
-
-	public void addKibic(Player player)
-	{
-		broadcastEventSender.addEventSender(player.getEventSender());
-	}
-
-	public void removeKibic(Player player)
-	{
-		broadcastEventSender.removeEventSender(player.getEventSender());
+		return events;
 	}
 
 	public void finish()
@@ -196,20 +165,23 @@ public class GameState implements Game
 		return history;
 	}
 
-	public EventSender getBroadcastEventSender()
+	public void broadcastEvent(Event event)
 	{
-		return broadcastEventSender;
+		events.add(new EventInstance(null, event));
+		newEvents.add(new EventInstance(null, event));
+		event.handle(teamInfoTracker);
 	}
 
-	public EventSender getPlayerEventSender(PlayerSeat player)
+	public void sendEvent(PlayerSeat player, Event event)
 	{
-		return players.get(player).getEventSender();
+		events.add(new EventInstance(player, event));
+		newEvents.add(new EventInstance(player, event));
 	}
 
 	void changePhase(Phase phase)
 	{
 		currentPhase = phase;
-		getBroadcastEventSender().phaseChanged(currentPhase.asEnum());
+		broadcastEvent(Event.phaseChanged(currentPhase.asEnum()));
 		currentPhase.onStart();
 	}
 
@@ -402,7 +374,7 @@ public class GameState implements Game
 		int callerGamePoints = 0;
 		int opponentGamePoints = 0;
 		int sumPoints = 0;
-		getBroadcastEventSender().announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, sumPoints, pointMultiplier);
+		broadcastEvent(Event.announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, sumPoints, pointMultiplier));
 	}
 
 	void calculateStatistics()
@@ -469,11 +441,11 @@ public class GameState implements Game
 		if (!statisticsCalculated)
 			throw new IllegalStateException();
 
-		getBroadcastEventSender().announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, pointsForCallerTeam, pointMultiplier);
+		broadcastEvent(Event.announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, pointsForCallerTeam, pointMultiplier));
 	}
 
 	void sendPlayerPoints()
 	{
-		getBroadcastEventSender().playerPoints(gameFinishedListener.getPlayerPoints());
+		broadcastEvent(Event.playerPoints(gameFinishedListener.getPlayerPoints()));
 	}
 }

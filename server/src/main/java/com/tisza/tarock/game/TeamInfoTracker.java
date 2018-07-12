@@ -7,7 +7,7 @@ import com.tisza.tarock.message.*;
 
 import java.util.*;
 
-public class TeamInfoTracker implements EventSender
+public class TeamInfoTracker implements EventHandler
 {
 	private final GameState game;
 
@@ -24,7 +24,7 @@ public class TeamInfoTracker implements EventSender
 	private void addNewTeamInfo(PlayerSeat player, PlayerSeat otherPlayer)
 	{
 		if (teamInfoKnowledges.add(new TeamInfoKnowledge(player, otherPlayer)))
-			game.getPlayerEventSender(player).playerTeamInfo(otherPlayer, game.getPlayerPairs().getTeam(otherPlayer));
+			game.sendEvent(player, Event.playerTeamInfo(otherPlayer, game.getPlayerPairs().getTeam(otherPlayer)));
 	}
 
 	private void revealAllTeamInfoOf(PlayerSeat player)
@@ -33,7 +33,7 @@ public class TeamInfoTracker implements EventSender
 		{
 			addNewTeamInfo(p, player);
 		}
-		game.getBroadcastEventSender().playerTeamInfo(player, game.getPlayerPairs().getTeam(player));
+		game.broadcastEvent(Event.playerTeamInfo(player, game.getPlayerPairs().getTeam(player)));
 	}
 
 	private void revealAllTeamInfoFor(PlayerSeat player)
@@ -67,18 +67,8 @@ public class TeamInfoTracker implements EventSender
 		return teamInfoKnowledges.contains(new TeamInfoKnowledge(player, otherPlayer));
 	}
 
-	public void sendStatusToPlayer(PlayerSeat player, EventSender eventSender)
-	{
-		for (PlayerSeat p : PlayerSeat.getAll())
-		{
-			boolean sendInfo = player == null ? isTeamInfoGlobalOf(p) : hasTeamInfo(player, p);
-			if (sendInfo)
-				eventSender.playerTeamInfo(p, game.getPlayerPairs().getTeam(p));
-		}
-	}
-
 	@Override
-	public void startGame(PlayerSeat seat, List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
+	public void startGame(List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
 	{
 		calledCard = null;
 		inviterSkartedTarock = false;

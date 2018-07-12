@@ -8,7 +8,7 @@ import com.tisza.tarock.proto.*;
 public class ProtoPlayer implements Player
 {
 	private String name;
-	private ProtoEventSender eventSender = new ProtoEventSender();
+	private ProtoEventHandler eventHandler = new ProtoEventHandler();
 	private Game game;
 	private PlayerSeat seat;
 
@@ -19,17 +19,18 @@ public class ProtoPlayer implements Player
 
 	public void useConnection(ProtoConnection connection)
 	{
-		eventSender.useConnection(connection);
+		eventHandler.useConnection(connection);
 
 		if (connection != null)
 		{
-			game.requestHistory(seat, eventSender);
+			game.requestHistory(seat, eventHandler);
 		}
 	}
 
 	public void queueAction(String action)
 	{
-		game.action(new Action(seat, action));
+		if (seat != null)
+			game.action(new Action(seat, action));
 	}
 
 	@Override
@@ -39,9 +40,9 @@ public class ProtoPlayer implements Player
 	}
 
 	@Override
-	public EventSender getEventSender()
+	public EventHandler getEventHandler()
 	{
-		return eventSender;
+		return eventHandler;
 	}
 
 	@Override

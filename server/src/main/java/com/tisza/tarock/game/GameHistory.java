@@ -56,38 +56,6 @@ public class GameHistory
 		rounds.add(round);
 	}
 
-	public void sendCurrentStatusToPlayer(PlayerSeat player, PhaseEnum currentPhase, EventSender eventSender)
-	{
-		for (BidEntry bidEntry : bids)
-		{
-			eventSender.bid(bidEntry.getPlayer(), bidEntry.getBid());
-		}
-
-		if (!currentPhase.isAfter(PhaseEnum.CALLING))
-			return;
-
-		eventSender.call(callerPlayer, calledCard);
-
-		for (AnnouncementEntry announcementEntry : announcements)
-		{
-			eventSender.announce(announcementEntry.getPlayer(), announcementEntry.getAnnouncement());
-		}
-
-		if (!currentPhase.isAfter(PhaseEnum.ANNOUNCING))
-			return;
-
-		for (Round round : rounds)
-		{
-			PlayerSeat cardPlayer = round.getBeginnerPlayer();
-			for (int i = 0; i < 4; i++)
-			{
-				eventSender.playCard(cardPlayer, round.getCardByPlayer(cardPlayer));
-				cardPlayer = cardPlayer.nextPlayer();
-			}
-			eventSender.cardsTaken(round.getWinner());
-		}
-	}
-
 	public JSONObject toJSON()
 	{
 		JSONObject obj = new JSONObject();

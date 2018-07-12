@@ -142,9 +142,6 @@ public class ProtoConnection implements Closeable
 	
 	public void sendMessage(Message message)
 	{
-		if (!isAlive())
-			throw new IllegalStateException();
-
 		messagesToSend.offer(message);
 	}
 

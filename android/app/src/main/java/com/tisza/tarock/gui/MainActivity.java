@@ -63,15 +63,10 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	public void onPlayButtonClicked()
 	{
 		if (loggedIn)
-		{
 			onSuccesfulLogin();
-		}
 
 		if (connection == null)
-		{
-			ConnectAsyncTask connectAsyncTask = new ConnectAsyncTask();
-			connectAsyncTask.execute();
-		}
+			new ConnectAsyncTask().execute();
 	}
 
 	private void login()
@@ -140,22 +135,18 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	public void onDestroy()
 	{
 		super.onDestroy();
+		destroyed = true;
+
 		if (connection != null)
-		{
-			try
-			{
-				connection.close();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
+			new DisconnectAsyncTask().execute();
 	}
 
 	@Override
 	public void handleMessage(MainProto.Message message)
 	{
+		if (destroyed)
+			return;
+
 		switch (message.getMessageTypeCase())
 		{
 			case LOGIN:
@@ -176,7 +167,9 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				break;
 
 			case EVENT:
-				new ProtoEvent(message.getEvent()).handle(eventHandler);
+				if (eventHandler != null)
+					new ProtoEvent(message.getEvent()).handle(eventHandler);
+
 				break;
 
 			case SERVER_STATUS:
@@ -222,7 +215,12 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	public void connectionClosed()
 	{
 		connection = null;
+		actionSender = null;
 		loggedIn = false;
+
+		if (destroyed)
+			return;
+
 		popBackToLoginScreen();
 	}
 
@@ -249,6 +247,27 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	public AvailableUsersAdapter getAvailableUsersAdapter()
 	{
 		return availableUsersAdapter;
+	}
+
+	private class DisconnectAsyncTask extends AsyncTask<Void, Void, Void>
+	{
+		@Override
+		protected Void doInBackground(Void... voids)
+		{
+			if (connection != null)
+			{
+				try
+				{
+					connection.close();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+
+			return null;
+		}
 	}
 
 	private class ConnectAsyncTask extends AsyncTask<Void, Void, ProtoConnection> implements DialogInterface.OnDismissListener

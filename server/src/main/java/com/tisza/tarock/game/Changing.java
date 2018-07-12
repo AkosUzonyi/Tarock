@@ -7,7 +7,7 @@ import java.util.*;
 
 class Changing extends Phase
 {
-	private static final SkartableCardFilter cardFilter = new SkartableCardFilter();
+	private final SkartableCardFilter cardFilter;
 	
 	private PlayerSeat.Map<Boolean> donePlayer = new PlayerSeat.Map<>(false);
 	private PlayerSeat.Map<Integer> tarockCounts = new PlayerSeat.Map<>();
@@ -15,6 +15,7 @@ class Changing extends Phase
 	public Changing(GameSession gameSession)
 	{
 		super(gameSession);
+		cardFilter = new SkartableCardFilter(gameSession.getGameType());
 	}
 	
 	@Override

@@ -94,6 +94,7 @@ public class RandomPlayer implements Player
 	{
 		private PlayerCards myCards;
 		private PhaseEnum phase;
+		private GameType gameType;
 
 		private <T> T chooseRandom(Collection<T> from)
 		{
@@ -139,7 +140,7 @@ public class RandomPlayer implements Player
 
 			if (phase == PhaseEnum.CHANGING)
 			{
-				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter()).subList(0, myCards.size() - 9);
+				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter(gameType)).subList(0, myCards.size() - 9);
 				myCards.removeCards(cardsToSkart);
 				enqueueAction(handler -> handler.change(seat, cardsToSkart));
 			}
@@ -161,6 +162,7 @@ public class RandomPlayer implements Player
 		@Override public void startGame(PlayerSeat s, List<String> names, GameType gameType)
 		{
 			seat = s;
+			this.gameType = gameType;
 		}
 
 		@Override

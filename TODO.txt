@@ -5,6 +5,7 @@ card image not cleared
 
 needs fix:
 check malicious accesstoken
+randomplayer use executor
 
 renames:
 
@@ -17,6 +18,7 @@ error messages
 VERSION CHECKING
 double round
 kibic
+nickname
 
 refactorizations:
 remove GameSession dependency from Phase

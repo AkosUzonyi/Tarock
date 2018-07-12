@@ -1,34 +1,31 @@
 <resources>
-    <string name="facebook_app_id">1735167250066232</string>
-    <string name="fb_login_protocol_scheme">fb1735167250066232</string>
+    <string name="facebook_app_id" translatable="false">1735167250066232</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb1735167250066232</string>
 
-    <string name="app_name">Tarokk</string>
-    <string name="play">Play</string>
-    <string name="connecting">Csatlakozás...</string>
-    <string name="logging_in">Bejelentkezés...</string>
+    <string name="app_name" translatable="false">Tarokk</string>
+    <string name="play" translatable="false">Play</string>
     <string name="new_game">Új játék</string>
     <string name="join_game">Csatlakozás</string>
     <string name="delete_game">Törlés</string>
     <string name="create_game">Létrehoz</string>
-    <string name="back_again_to_exit">"Please click BACK again to exit"</string>
     <string name="too_much_user_selected">"Maximum 4 játékost jelölj meg!"</string>
 
     <string name="ok">OK</string>
     <string name="throw_cards">Bedob</string>
     <string name="back">Vissza</string>
     <string name="announce">Bemond</string>
-    
+
     <string name="turn_bid">Licitálás</string>
     <string name="turn_call">Hívás</string>
     <string name="turn_announce">Bemondások</string>
-    
+
     <string name="message_throw_cards">bedobta a lapjait</string>
     <string name="press_ok">Nyomj OK-t a folyatatáshoz</string>
     <string name="message_bid">licitált</string>
     <string name="message_skart_tarock">tarokkot fektetett</string>
     <string name="message_call">hívott</string>
     <string name="message_announce">bemondta</string>
-    
+
     <string name="bid3">3</string>
     <string name="bid2">2</string>
     <string name="bid1">1</string>
@@ -56,32 +53,32 @@
         <item>dáma</item>
         <item>király</item>
     </string-array>
-    
+
     <string-array name="tarokk_array">
-	    <item>pagát</item>
-	    <item>sas</item>
-	    <item>hármas tarokk</item>
-	    <item>négyes tarokk</item>
-	    <item>ötös tarokk</item>
-	    <item>hatos tarokk</item>
-	    <item>hetes tarokk</item>
-	    <item>nyolcas tarokk</item>
-	    <item>kilences tarokk</item>
-	    <item>tizes tarokk</item>
-	    <item>tizenegyes tarokk</item>
-	    <item>tizenkettes tarokk</item>
-	    <item>tizenhármas tarokk</item>
-	    <item>tizennégyes tarokk</item>
-	    <item>tizenötös tarokk</item>
-	    <item>tizenhatos tarokk</item>
-	    <item>tizenhetes tarokk</item>
-	    <item>tizennyolcas tarokk</item>
-	    <item>tizenkilences tarokk</item>
-	    <item>húszas tarokk</item>
-	    <item>huszonegy</item>
-	    <item>skíz</item>
+        <item>pagát</item>
+        <item>sas</item>
+        <item>hármas tarokk</item>
+        <item>négyes tarokk</item>
+        <item>ötös tarokk</item>
+        <item>hatos tarokk</item>
+        <item>hetes tarokk</item>
+        <item>nyolcas tarokk</item>
+        <item>kilences tarokk</item>
+        <item>tizes tarokk</item>
+        <item>tizenegyes tarokk</item>
+        <item>tizenkettes tarokk</item>
+        <item>tizenhármas tarokk</item>
+        <item>tizennégyes tarokk</item>
+        <item>tizenötös tarokk</item>
+        <item>tizenhatos tarokk</item>
+        <item>tizenhetes tarokk</item>
+        <item>tizennyolcas tarokk</item>
+        <item>tizenkilences tarokk</item>
+        <item>húszas tarokk</item>
+        <item>huszonegy</item>
+        <item>skíz</item>
     </string-array>
-    
+
     <string-array name="round_array">
         <item>fácán</item>
         <item></item>
@@ -93,7 +90,7 @@
         <item>uhu</item>
         <item>ultimó</item>
     </string-array>
-    
+
     <string-array name="contra_array">
         <item></item>
         <item>kontra</item>
@@ -103,10 +100,10 @@
         <item>mordkontra</item>
         <item>fedák sári</item>
     </string-array>
-    
+
     <string name="silent">Csendes</string>
     <string name="passz">Passz</string>
-    
+
     <string name="announcement_jatek">játék</string>
     <string name="announcement_hkp">hivatalból kontra parti</string>
     <string name="announcement_trull">trull</string>
@@ -135,4 +132,6 @@
     <string name="statictics_opponent">Ellenfél figurái</string>
     <string name="statictics_points">Pont</string>
     <string name="statictics_sum">Összesen:</string>
+    <string name="connecting">Csatlakozás...</string>
+    <string name="logging_in">Bejelentkezés...</string>
 </resources>

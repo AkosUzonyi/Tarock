@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connecting">Connecting</string>
+    <string name="logging_in">Logging in...</string>
+    <string name="new_game">Create game</string>
+    <string name="join_game">Connect</string>
+    <string name="delete_game">Delete</string>
+    <string name="create_game">Create</string>
+    <string name="too_much_user_selected">Select maximum 3 players</string>
+    <string name="throw_cards">Throw</string>
+    <string name="back">Back</string>
+</resources>

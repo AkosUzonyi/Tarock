@@ -26,7 +26,7 @@ public class CreateGameFragment extends MainActivityFragment
 		Button createButton = view.findViewById(R.id.create_game_button);
 		createButton.setOnClickListener(v ->
 		{
-			if (availableUsersAdapter.getSelectedUsers().size() > 4)
+			if (availableUsersAdapter.getSelectedUsers().size() > 3)
 			{
 				Toast.makeText(getMainActivity(), R.string.too_much_user_selected, Toast.LENGTH_SHORT).show();
 				return;

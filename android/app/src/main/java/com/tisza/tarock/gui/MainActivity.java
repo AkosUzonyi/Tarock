@@ -29,8 +29,6 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	private ActionSender actionSender;
 	private EventHandler eventHandler;
 
-	private List<GameInfo> games = new ArrayList<>();
-	private List<User> users = new ArrayList<>();
 	private GameListAdapter gameListAdapter;
 	private AvailableUsersAdapter availableUsersAdapter;
 
@@ -182,13 +180,13 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				break;
 
 			case SERVER_STATUS:
-				games.clear();
+				List<GameInfo> games = new ArrayList<>();
 				for (MainProto.Game gameProto : message.getServerStatus().getAvailableGameList())
 				{
 					games.add(Utils.gameInfoFromProto(gameProto));
 				}
 
-				users.clear();
+				List<User> users = new ArrayList<>();
 				for (MainProto.User userProto : message.getServerStatus().getAvailableUserList())
 				{
 					users.add(Utils.userFromProto(userProto));

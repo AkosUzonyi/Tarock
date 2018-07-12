@@ -4,6 +4,8 @@
 
     <string name="app_name">Tarokk</string>
     <string name="play">Play</string>
+    <string name="connecting">Csatlakozás...</string>
+    <string name="logging_in">Bejelentkezés...</string>
     <string name="new_game">Új játék</string>
     <string name="join_game">Csatlakozás</string>
     <string name="delete_game">Törlés</string>

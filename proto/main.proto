@@ -32,7 +32,7 @@ message User
 
 message Login
 {
-    required string facebook_token = 1;
+    optional string facebook_token = 1;
 }
 
 message Game

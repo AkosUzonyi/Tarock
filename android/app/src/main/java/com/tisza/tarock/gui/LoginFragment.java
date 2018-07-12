@@ -1,6 +1,5 @@
 package com.tisza.tarock.gui;
 
-import android.app.*;
 import android.content.*;
 import android.os.*;
 import android.view.*;
@@ -34,7 +33,7 @@ public class LoginFragment extends MainActivityFragment
 		View view = inflater.inflate(R.layout.login, container, false);
 
 		playButton = view.findViewById(R.id.play_button);
-		playButton.setOnClickListener(v -> ((MainActivity)getActivity()).login());
+		playButton.setOnClickListener(v -> ((MainActivity)getActivity()).onPlayButtonClicked());
 		playButton.setEnabled(AccessToken.getCurrentAccessToken() != null);
 		accessTokenTracker.startTracking();
 

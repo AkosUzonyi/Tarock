@@ -31,17 +31,28 @@ public class Client implements MessageHandler
 		{
 			case LOGIN:
 			{
-				String fbAccessToken = message.getLogin().getFacebookToken();
-				User newUser = server.getFacebookUserManager().getUserByAccessToken(fbAccessToken);
+				String fbAccessToken = null;
+				User newUser = null;
 
-				if (newUser == null || newUser.isLoggedIn())
+				if (message.getLogin().hasFacebookToken())
 				{
-					server.removeClient(this);
-					break;
+					fbAccessToken = message.getLogin().getFacebookToken();
+					newUser = server.getFacebookUserManager().getUserByAccessToken(fbAccessToken);
 				}
 
+				if (newUser != null && newUser.isLoggedIn())
+					newUser = null;
+
+				MainProto.Login.Builder loginMessageBuilder = MainProto.Login.newBuilder();
+
 				loggedInUser = newUser;
-				newUser.setLoggedIn(true);
+				if (loggedInUser != null)
+				{
+					loggedInUser.setLoggedIn(true);
+					loginMessageBuilder.setFacebookToken(fbAccessToken);
+				}
+
+				connection.sendMessage(MainProto.Message.newBuilder().setLogin(loginMessageBuilder.build()).build());
 
 				server.broadcastStatus();
 

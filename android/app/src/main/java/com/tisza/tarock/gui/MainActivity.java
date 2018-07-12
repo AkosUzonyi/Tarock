@@ -9,7 +9,6 @@ import com.tisza.tarock.R;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
-import org.apache.http.params.*;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -21,6 +20,9 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 {
 	private LoginFragment loginFragment = new LoginFragment();
 
+	private ProgressDialog progressDialog;
+
+	private boolean loggedIn = false;
 	private ProtoConnection connection;
 	private ActionSender actionSender;
 	private EventHandler eventHandler;
@@ -39,6 +41,8 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 		setContentView(R.layout.main);
 
+		progressDialog = new ProgressDialog(this);
+
 		gameListAdapter = new GameListAdapter(this, this);
 		availableUsersAdapter = new AvailableUsersAdapter(this);
 
@@ -54,9 +58,45 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		loginFragment.onActivityResult(requestCode, resultCode, data);
 	}
 
-	public void login()
+	public void onPlayButtonClicked()
 	{
-		new ConnectAsyncTask().execute();
+		if (loggedIn)
+		{
+			onSuccesfulLogin();
+		}
+
+		if (connection == null)
+		{
+			ConnectAsyncTask connectAsyncTask = new ConnectAsyncTask();
+			connectAsyncTask.execute();
+		}
+	}
+
+	private void login()
+	{
+		if (!loggedIn)
+		{
+			connection.sendMessage(MainProto.Message.newBuilder().setLogin(MainProto.Login.newBuilder()
+					.setFacebookToken(AccessToken.getCurrentAccessToken().getToken())
+					.build())
+					.build());
+
+			progressDialog.setTitle(R.string.logging_in);
+			progressDialog.show();
+		}
+	}
+
+	private void onSuccesfulLogin()
+	{
+		popBackToLoginScreen();
+
+		GameListFragment gameListFragment = new GameListFragment();
+
+		getFragmentManager().beginTransaction()
+				.add(R.id.fragment_container, gameListFragment, "gamelist")
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+				.addToBackStack(null)
+				.commit();
 	}
 
 	public void createNewGame()
@@ -116,6 +156,23 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	{
 		switch (message.getMessageTypeCase())
 		{
+			case LOGIN:
+				loggedIn = message.getLogin().hasFacebookToken();
+
+				if (loggedIn)
+				{
+					onSuccesfulLogin();
+				}
+				else
+				{
+					popBackToLoginScreen();
+				}
+
+				if (progressDialog.isShowing())
+					progressDialog.dismiss();
+
+				break;
+
 			case EVENT:
 				runOnUiThread(() -> new ProtoEvent(message.getEvent()).handle(eventHandler));
 				break;
@@ -165,6 +222,8 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	@Override
 	public void connectionClosed()
 	{
+		connection = null;
+		loggedIn = false;
 		popBackToLoginScreen();
 	}
 
@@ -193,31 +252,17 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		return availableUsersAdapter;
 	}
 
-	private class ConnectAsyncTask extends AsyncTask<Void, Void, Void>
+	private class ConnectAsyncTask extends AsyncTask<Void, Void, ProtoConnection>
 	{
-		private ProgressDialog dialog;
-
-		public ConnectAsyncTask()
-		{
-			dialog = new ProgressDialog(MainActivity.this);
-		}
-
 		@Override
 		protected void onPreExecute()
 		{
-			dialog.setMessage("Connecting...");
-			dialog.show();
+			progressDialog.setTitle(R.string.connecting);
+			progressDialog.show();
 		}
 
-		protected Void doInBackground(Void... args)
+		protected ProtoConnection doInBackground(Void... voids)
 		{
-			if (connection != null)
-				return null;
-
-			AccessToken accessToken = AccessToken.getCurrentAccessToken();
-			if (accessToken == null)
-				return null;
-
 			final String host = "akos0.ddns.net";
 			final int port = 8128;
 
@@ -237,38 +282,28 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 				Socket socket = sc.getSocketFactory().createSocket();
 				socket.connect(new InetSocketAddress(host, port), 1000);
-				connection = new ProtoConnection(socket);
-				actionSender = new ProtoActionSender(connection);
-				connection.addMessageHandler(MainActivity.this);
-				connection.start();
-				connection.sendMessage(MainProto.Message.newBuilder().setLogin(MainProto.Login.newBuilder()
-						.setFacebookToken(accessToken.getToken())
-						.build())
-						.build());
+
+				return new ProtoConnection(socket);
 			}
 			catch (Exception e)
 			{
 				e.printStackTrace();
+				return null;
 			}
-			return null;
 		}
 
-		protected void onPostExecute(Void result)
+		protected void onPostExecute(ProtoConnection resultProtoConnection)
 		{
-			if (connection != null)
-			{
-				GameListFragment gameListFragment = new GameListFragment();
+			if (progressDialog.isShowing())
+				progressDialog.dismiss();
 
-				getFragmentManager().beginTransaction()
-						.add(R.id.fragment_container, gameListFragment, "gamelist")
-						.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-						.addToBackStack(null)
-						.commit();
-			}
-
-			if (dialog.isShowing())
+			if (resultProtoConnection != null)
 			{
-				dialog.dismiss();
+				connection = resultProtoConnection;
+				connection.addMessageHandler(MainActivity.this);
+				connection.start();
+				actionSender = new ProtoActionSender(connection);
+				login();
 			}
 		}
 	}

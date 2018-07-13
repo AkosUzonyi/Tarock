@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 ExecStart=/usr/bin/tarock-server
+User=tarock
 
 [Install]
 WantedBy=multi-user.target

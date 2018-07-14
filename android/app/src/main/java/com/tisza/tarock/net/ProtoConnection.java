@@ -1,5 +1,6 @@
 package com.tisza.tarock.net;
 
+import com.tisza.tarock.proto.*;
 import com.tisza.tarock.proto.MainProto.*;
 
 import java.io.*;
@@ -9,6 +10,9 @@ import java.util.concurrent.*;
 
 public class ProtoConnection implements Closeable
 {
+	private static final int KEEP_ALIVE_DELAY = 8;
+	private static final int SOCKET_TIMEOUT = 10;
+
 	private final Executor messageHandlerExecutor;
 	private Socket socket;
 	private InputStream is;
@@ -32,6 +36,9 @@ public class ProtoConnection implements Closeable
 
 					if (message == null)
 						break;
+
+					if (message.getMessageTypeCase() == Message.MessageTypeCase.KEEPALIVE)
+						continue;
 
 					synchronized (packetHandlersLock)
 					{
@@ -74,7 +81,11 @@ public class ProtoConnection implements Closeable
 				{
 					try
 					{
-						Message message = messagesToSend.take();
+						Message message = messagesToSend.poll(KEEP_ALIVE_DELAY, TimeUnit.SECONDS);
+
+						if (message == null)
+							message = MainProto.Message.newBuilder().setKeepAlive(MainProto.KeepAlive.getDefaultInstance()).build();
+
 						message.writeDelimitedTo(os);
 					}
 					catch (InterruptedException e)
@@ -110,6 +121,8 @@ public class ProtoConnection implements Closeable
 		this.messageHandlerExecutor = messageHandlerExecutor;
 
 		socket.setTcpNoDelay(true);
+		socket.setSoTimeout(SOCKET_TIMEOUT * 1000);
+
 		is = socket.getInputStream();
 		os = socket.getOutputStream();
 	}

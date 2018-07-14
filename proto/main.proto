@@ -12,15 +12,18 @@ message Message
 {
     oneof message_type
     {
-        Login login = 1;
+        KeepAlive keepAlive = 1;
+        Login login = 2;
         Action action = 3;
-        Event event = 2;
-        CreateGame create_game = 4;
-        ServerStatus server_status = 5;
-        JoinGame join_game = 6;
-        DeleteGame delete_game = 7;
+        Event event = 4;
+        CreateGame create_game = 5;
+        ServerStatus server_status = 6;
+        JoinGame join_game = 7;
+        DeleteGame delete_game = 8;
     }
 }
+
+message KeepAlive {}
 
 message User
 {

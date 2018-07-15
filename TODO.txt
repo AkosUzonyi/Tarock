@@ -2,6 +2,8 @@ bugs:
 ? GameActivity call displaymessage
 caller's skart is not shown
 card image not cleared
+round annoucement annoucablity
+silent trull, negykiral... after volat
 
 needs fix:
 check malicious accesstoken
@@ -19,6 +21,10 @@ VERSION CHECKING
 double round
 kibic
 nickname
+save users
+save finished games
+log
+show beginer player
 
 refactorizations:
 remove GameSession dependency from Phase

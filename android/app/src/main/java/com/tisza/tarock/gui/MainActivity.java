@@ -15,12 +15,17 @@ import java.io.*;
 import java.net.*;
 import java.security.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class MainActivity extends Activity implements MessageHandler, GameListAdapter.GameAdapterListener
 {
+	private static final int DISCONNECT_DELAY_SEC = 40;
+
+	private Executor uiThreadExecutor;
+
 	private CallbackManager callbackManager;
 
-	private boolean destroyed = false;
+	private boolean started = false;
 
 	private ProgressDialog progressDialog;
 
@@ -32,6 +37,9 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	private GameListAdapter gameListAdapter;
 	private AvailableUsersAdapter availableUsersAdapter;
 
+	private Handler handler;
+	private final Runnable disconnectRunnable = this::disconnect;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -40,9 +48,13 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		FacebookSdk.sdkInitialize(this.getApplicationContext());
 		callbackManager = CallbackManager.Factory.create();
 
+		uiThreadExecutor = new UIThreadExecutor();
+
 		setContentView(R.layout.main);
 
 		progressDialog = new ProgressDialog(this);
+
+		handler = new Handler();
 
 		gameListAdapter = new GameListAdapter(this, this);
 		availableUsersAdapter = new AvailableUsersAdapter(this);
@@ -62,32 +74,30 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 	public void onPlayButtonClicked()
 	{
-		if (loggedIn)
-		{
-			onSuccesfulLogin();
-		}
-		else if (connection != null)
+		if (connection != null)
 		{
 			login();
+			return;
 		}
-		else
-		{
-			new ConnectAsyncTask().execute();
-		}
+
+		new ConnectAsyncTask().execute();
 	}
 
 	private void login()
 	{
-		if (!loggedIn)
+		if (loggedIn)
 		{
-			connection.sendMessage(MainProto.Message.newBuilder().setLogin(MainProto.Login.newBuilder()
-					.setFacebookToken(AccessToken.getCurrentAccessToken().getToken())
-					.build())
-					.build());
-
-			progressDialog.setMessage(getResources().getString(R.string.logging_in));
-			progressDialog.show();
+			onSuccesfulLogin();
+			return;
 		}
+
+		connection.sendMessage(MainProto.Message.newBuilder().setLogin(MainProto.Login.newBuilder()
+				.setFacebookToken(AccessToken.getCurrentAccessToken().getToken())
+				.build())
+				.build());
+
+		progressDialog.setMessage(getResources().getString(R.string.logging_in));
+		progressDialog.show();
 	}
 
 	private void onSuccesfulLogin()
@@ -138,22 +148,41 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				.build());
 	}
 
-	@Override
-	public void onDestroy()
+	private void disconnect()
 	{
-		super.onDestroy();
-		destroyed = true;
-
 		if (connection != null)
 			new DisconnectAsyncTask().execute();
 	}
 
 	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		started = true;
+		handler.removeCallbacks(disconnectRunnable);
+
+		if (connection == null)
+			popBackToLoginScreen();
+	}
+
+	@Override
+	protected void onStop()
+	{
+		super.onStop();
+		started = false;
+		handler.postDelayed(disconnectRunnable,  DISCONNECT_DELAY_SEC * 1000);
+	}
+
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		disconnect();
+	}
+
+	@Override
 	public void handleMessage(MainProto.Message message)
 	{
-		if (destroyed)
-			return;
-
 		switch (message.getMessageTypeCase())
 		{
 			case LOGIN:
@@ -225,7 +254,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		actionSender = null;
 		loggedIn = false;
 
-		if (destroyed)
+		if (!started)
 			return;
 
 		popBackToLoginScreen();
@@ -317,7 +346,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				Socket socket = sc.getSocketFactory().createSocket();
 				socket.connect(new InetSocketAddress(host, port), 1000);
 
-				return new ProtoConnection(socket, new UIThreadExecutor());
+				return new ProtoConnection(socket, uiThreadExecutor);
 			}
 			catch (Exception e)
 			{

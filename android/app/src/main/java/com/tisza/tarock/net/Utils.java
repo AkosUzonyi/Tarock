@@ -193,7 +193,7 @@ public class Utils
 	{
 		String imgURL = userProto.hasImageUrl() ? userProto.getImageUrl() : null;
 
-		return new User(userProto.getId(), userProto.getName(), imgURL, userProto.getIsFriend());
+		return new User(userProto.getId(), userProto.getName(), imgURL, userProto.getIsFriend(), userProto.getOnline());
 	}
 
 	public static GameInfo gameInfoFromProto(MainProto.Game gameProto)

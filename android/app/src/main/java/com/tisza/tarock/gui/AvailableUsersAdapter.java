@@ -71,6 +71,7 @@ public class AvailableUsersAdapter extends BaseAdapter
 			holder.profilePictureView = view.findViewById(R.id.user_image);
 			holder.nameView = view.findViewById(R.id.user_name);
 			holder.isFriendView = view.findViewById(R.id.is_user_friend);
+			holder.isOnlineView = view.findViewById(R.id.is_user_online);
 			holder.checkBox = view.findViewById(R.id.user_checkbox);
 
 			view.setTag(holder);
@@ -89,6 +90,7 @@ public class AvailableUsersAdapter extends BaseAdapter
 			profilePictureLoader.loadPictre(user.getImageURL(), holder.profilePictureView);
 
 		holder.isFriendView.setVisibility(user.isFriend() ? View.VISIBLE : View.GONE);
+		holder.isOnlineView.setImageResource(user.isOnline() ? R.drawable.online : R.drawable.offline);
 
 		holder.checkBox.setChecked(selectedUsers.contains(user));
 		holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
@@ -111,6 +113,7 @@ public class AvailableUsersAdapter extends BaseAdapter
 		public ImageView profilePictureView;
 		public TextView nameView;
 		public View isFriendView;
+		public ImageView isOnlineView;
 		public CheckBox checkBox;
 	}
 }

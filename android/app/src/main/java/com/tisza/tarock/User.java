@@ -6,8 +6,9 @@ public class User implements Comparable<User>
 	private final String name;
 	private final String imgURL;
 	private final boolean isFriend;
+	private final boolean online;
 
-	public User(String id, String name, String imgURL, boolean isFriend)
+	public User(String id, String name, String imgURL, boolean isFriend, boolean online)
 	{
 		if (id == null || name == null)
 			throw new IllegalArgumentException();
@@ -16,6 +17,7 @@ public class User implements Comparable<User>
 		this.name = name;
 		this.imgURL = imgURL;
 		this.isFriend = isFriend;
+		this.online = online;
 	}
 
 	public String getId()
@@ -36,6 +38,11 @@ public class User implements Comparable<User>
 	public boolean isFriend()
 	{
 		return isFriend;
+	}
+
+	public boolean isOnline()
+	{
+		return online;
 	}
 
 	@Override

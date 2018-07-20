@@ -146,7 +146,8 @@ public class Utils
 		MainProto.User.Builder builder = MainProto.User.newBuilder()
 				.setId(user.getId())
 				.setName(user.getName())
-				.setIsFriend(isFriend);
+				.setIsFriend(isFriend)
+				.setOnline(user.isLoggedIn());
 
 		String imgURL = user.getImageURL();
 		if (imgURL != null)

@@ -45,6 +45,7 @@ public class Server implements Runnable
 		{
 			client.disonnect();
 		}
+		broadcastStatus();
 	}
 
 	private void createServerSocket() throws IOException, GeneralSecurityException

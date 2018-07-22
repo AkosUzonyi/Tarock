@@ -92,6 +92,9 @@ public class ProtoEvent implements Event
 			case ANNOUNCE:
 				handler.announce(player, Utils.announcementFromProto(action.getAnnounce().getAnnouncement()));
 				break;
+			case ANNOUCE_PASSZ:
+				handler.announcePassz(player);
+				break;
 			case PLAY_CARD:
 				handler.cardPlayed(player, Utils.cardFromProto(action.getPlayCard().getCard()));
 				break;

@@ -298,12 +298,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		{
 			Button bidButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			bidButton.setText(ResourceMappings.bidToName.get(bid));
-			
-			bidButton.setOnClickListener(v ->
-			{
-				availabeActionsView.removeAllViews();
-				getActionSender().bid(bid);
-			});
+			bidButton.setOnClickListener(v -> getActionSender().bid(bid));
 			availabeActionsView.addView(bidButton);
 		}
 	}
@@ -311,6 +306,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	@Override
 	public void bid(int player, int bid)
 	{
+		if (player == myID)
+			availabeActionsView.removeAllViews();
+
 		String msg = ResourceMappings.bidToName.get(bid);
 		displayPlayerActionMessage(player, R.string.message_bid, msg);
 	}
@@ -353,11 +351,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		{
 			Button callButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			callButton.setText(ResourceMappings.uppercaseCardName(card));
-			callButton.setOnClickListener(v ->
-			{
-				availabeActionsView.removeAllViews();
-				getActionSender().call(card);
-			});
+			callButton.setOnClickListener(v -> getActionSender().call(card));
 			availabeActionsView.addView(callButton);
 		}
 	}
@@ -365,6 +359,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	@Override
 	public void call(int player, Card card)
 	{
+		if (player == myID)
+			availabeActionsView.removeAllViews();
+
 		displayPlayerActionMessage(player, R.string.message_call, ResourceMappings.uppercaseCardName(card));
 	}
 	
@@ -395,13 +392,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		}
 		
 		okButton.setVisibility(View.VISIBLE);
-		okButton.setOnClickListener(v ->
-		{
-			okButton.setVisibility(View.GONE);
-			showCenterView(messagesView);
-			availabeActionsView.removeAllViews();
-			getActionSender().announcePassz();
-		});
+		okButton.setOnClickListener(v -> getActionSender().announcePassz());
 	}
 
 	@Override
@@ -410,6 +401,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		if (announcement.getName().equals("jatek") && announcement.getContraLevel() == 0)
 			return;
 
+		if (player == myID)
+		{
+			okButton.setVisibility(View.GONE);
+			availabeActionsView.removeAllViews();
+		}
+
 		showCenterView(messagesView);
 		
 		String msg = announcement.getDisplayText();
@@ -417,12 +414,15 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	}
 
 	@Override
-	public void passz(int player)
+	public void announcePassz(int player)
 	{
 		showCenterView(messagesView);
-		
-		String msg = getResources().getString(R.string.passz);
-		displayPlayerActionMessage(player, R.string.message_announce, msg);
+
+		if (player == myID)
+		{
+			okButton.setVisibility(View.GONE);
+			availabeActionsView.removeAllViews();
+		}
 	}
 
 	@Override

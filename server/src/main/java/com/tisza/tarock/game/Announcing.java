@@ -97,7 +97,9 @@ class Announcing extends Phase implements IAnnouncing
 		}
 		currentPlayer = currentPlayer.nextPlayer();
 		currentPlayerAnnounced = false;
-		
+
+		gameSession.getBroadcastEventSender().announcePassz(player);
+
 		if (!isFinished())
 		{
 			sendAvailableAnnouncements();
@@ -106,8 +108,6 @@ class Announcing extends Phase implements IAnnouncing
 		{
 			gameSession.changePhase(new Gameplay(gameSession));
 		}
-
-		gameSession.getBroadcastEventSender().announcePassz(player);
 	}
 	
 	private boolean isFinished()

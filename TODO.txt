@@ -24,7 +24,6 @@ nickname
 save users
 save finished games
 log
-show beginer player
 
 refactorizations:
 remove GameSession dependency from Phase

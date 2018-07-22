@@ -92,7 +92,7 @@ public class ProtoEventSender implements EventSender
 		sendEvent(Event.newBuilder().setTurn(e).build());
 	}
 
-	@Override public void startGame(PlayerSeat seat, List<String> names, GameType gameType)
+	@Override public void startGame(PlayerSeat seat, List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
 	{
 		startEventSent = true;
 
@@ -100,6 +100,7 @@ public class ProtoEventSender implements EventSender
 				.setMyId(seat.asInt())
 				.addAllPlayerName(names)
 				.setGameType(Utils.gameTypeToProto(gameType))
+				.setBeginnerPlayer(beginnerPlayer.asInt())
 				.build();
 		sendEvent(Event.newBuilder().setStartGame(e).build());
 	}

@@ -56,7 +56,7 @@ public class DummyEventSender implements EventSender
 	}
 
 	@Override
-	public void startGame(PlayerSeat seat, List<String> names, GameType gameType)
+	public void startGame(PlayerSeat seat, List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
 	{
 
 	}

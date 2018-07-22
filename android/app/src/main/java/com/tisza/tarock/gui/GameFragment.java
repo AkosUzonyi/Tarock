@@ -33,6 +33,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 	private TextView[] playerNameViews;
 	private TextView[] playerMessageViews;
+	private View[] skartViews;
 	private LinearLayout myCardsView;
 	private LinearLayout myCardsView0;
 	private LinearLayout myCardsView1;
@@ -100,6 +101,14 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 				(TextView)contentView.findViewById(R.id.player_message_1),
 				(TextView)contentView.findViewById(R.id.player_message_2),
 				(TextView)contentView.findViewById(R.id.player_message_3),
+		};
+
+		skartViews = new View[]
+		{
+				contentView.findViewById(R.id.skart_0),
+				contentView.findViewById(R.id.skart_1),
+				contentView.findViewById(R.id.skart_2),
+				contentView.findViewById(R.id.skart_3),
 		};
 
 		myCardsView = (LinearLayout)contentView.findViewById(R.id.my_cards);
@@ -187,13 +196,20 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		okButton.setVisibility(View.GONE);
 		throwButton.setVisibility(View.GONE);
 		messagesTextView.setText("");
+		availabeActionsView.removeAllViews();
 
+		for (View skartView : skartViews)
+		{
+			skartView.setVisibility(View.GONE);
+		}
 	}
 
 	private List<String> playerNames;
 	private PlayerCards myCards;
 	private int myID = -1;
 	private GameType gameType;
+	private int beginnerPlayer;
+
 	private Map<Card, View> cardToViewMapping = new HashMap<>();
 	
 	private PhaseEnum gamePhase;
@@ -206,13 +222,14 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private boolean waitingForTakeAnimation;
 	
 	@Override
-	public void startGame(int myID, List<String> playerNames, GameType gameType)
+	public void startGame(int myID, List<String> playerNames, GameType gameType, int beginnerPlayer)
 	{
 		resetGameViews();
 
 		this.myID = myID;
 		this.playerNames = playerNames;
 		this.gameType = gameType;
+		this.beginnerPlayer = beginnerPlayer;
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -280,6 +297,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		{
 			showCenterViewDelayed(statisticsView);
 		}
+
+		skartViews[getPositionFromPlayerID(beginnerPlayer)].setVisibility(phase.isAfter(PhaseEnum.CHANGING) ? View.VISIBLE : View.GONE);
 	}
 
 	@Override

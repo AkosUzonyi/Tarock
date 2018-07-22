@@ -155,9 +155,14 @@ public class GameState
 		return playerPairs;
 	}
 
-	void setSoloIntentional(boolean isSoloIntentional)
+	void setSoloIntentional()
 	{
-		this.isSoloIntentional = isSoloIntentional;
+		isSoloIntentional = true;
+
+		List<Card> callerSkart = skartForTeams.get(Team.CALLER);
+		List<Card> opponentSkart = skartForTeams.get(Team.OPPONENT);
+		callerSkart.addAll(opponentSkart);
+		opponentSkart.clear();
 	}
 
 	public boolean isSoloIntentional()
@@ -218,6 +223,7 @@ public class GameState
 	public int calculateGamePoints(Team team)
 	{
 		int points = 0;
+
 		for (PlayerSeat player : playerPairs.getPlayersInTeam(team))
 		{
 			for (Card c : getWonCards(player))
@@ -231,14 +237,6 @@ public class GameState
 			points += c.getPoints();
 		}
 
-		if (team == Team.CALLER && playerPairs.isSolo() && !isSoloIntentional())
-		{
-			for (Card c : getSkartForTeam(Team.OPPONENT))
-			{
-				points += c.getPoints();
-			}
-		}
-		
 		return points;
 	}
 }

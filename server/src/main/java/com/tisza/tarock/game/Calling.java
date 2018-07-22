@@ -68,14 +68,15 @@ class Calling extends Phase
 				calledPlayer = p;
 			}
 		}
-		
-		currentGame.setSoloIntentional(calledPlayer == callerPlayer);
-		
+
+		if (calledPlayer == callerPlayer)
+			currentGame.setSoloIntentional();
+
 		//if the player called a card that had been skarted
 		if (calledPlayer == null)
 		{
 			if (currentGame.getSkartForTeam(Team.CALLER).contains(card))
-				currentGame.setSoloIntentional(true);
+				currentGame.setSoloIntentional();
 
 			calledPlayer = callerPlayer;
 			

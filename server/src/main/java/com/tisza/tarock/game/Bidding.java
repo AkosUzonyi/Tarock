@@ -122,8 +122,13 @@ class Bidding extends Phase
 			gameSession.changePhase(new PendingNewGame(gameSession, true));
 		}
 	}
-	
-	private List<Integer> getAvailableBids()
+
+	public PlayerSeat getCurrentPlayer()
+	{
+		return currentPlayer;
+	}
+
+	public List<Integer> getAvailableBids()
 	{
 		if (isFinished())
 			throw new IllegalStateException();

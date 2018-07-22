@@ -1,6 +1,7 @@
+package com.tisza.tarock.game;
+
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
-import com.tisza.tarock.game.*;
 import org.junit.*;
 import org.junit.runner.*;
 import org.junit.runners.*;

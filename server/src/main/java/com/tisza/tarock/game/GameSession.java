@@ -23,7 +23,7 @@ public class GameSession
 
 	private GameType gameType;
 
-	public GameSession(GameType gameType, List<Player> playerList)
+	public GameSession(GameType gameType, List<? extends Player> playerList)
 	{
 		if (players.size() != 4)
 			throw new IllegalArgumentException();

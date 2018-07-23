@@ -72,17 +72,17 @@ class Bidding extends Phase
 		else
 		{
 			int jump = getDefaultBid() - bid;
-			
-			if (jump == 1)
+
+			if (jump == 1 && currentGame.getInvitSent() != Invitation.XIX)
 			{
 				currentGame.setInvitationSent(Invitation.XIX, currentPlayer);
 			}
-			
-			if (jump == 2)
+
+			if (jump == 2 && currentGame.getInvitSent() != Invitation.XVIII)
 			{
 				currentGame.setInvitationSent(Invitation.XVIII, currentPlayer);
 			}
-			
+
 			playersState.put(currentPlayer, BidState.IN);
 			isKept = lastBidValue == bid;
 			lastBidPlayer = currentPlayer;
@@ -152,17 +152,17 @@ class Bidding extends Phase
 			{
 				result.remove((Integer)(-1));
 			}
-			
-			if (canInvit)
+
+			for (int jump = 1; jump <= 2; jump++)
 			{
-				if (cards.hasCard(Card.getTarockCard(19)) && defaultBid - 1 >= 0)
-				{
-					result.add(defaultBid - 1);
-				}
-				if (cards.hasCard(Card.getTarockCard(18)) && defaultBid - 2 >= 0)
-				{
-					result.add(defaultBid - 2);
-				}
+				Invitation invit = jump == 1 ? Invitation.XIX : Invitation.XVIII;
+				int jumpBid = defaultBid - jump;
+
+				if (jumpBid < 0)
+					continue;
+
+				if (canInvit && cards.hasCard(invit.getCard()) || currentGame.getInvitSent() == invit)
+					result.add(jumpBid);
 			}
 		}
 		return result;

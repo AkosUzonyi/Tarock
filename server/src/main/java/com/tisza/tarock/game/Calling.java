@@ -11,9 +11,9 @@ class Calling extends Phase
 	private PlayerSeat callerPlayer;
 	private boolean canCallAnyTarock;
 	
-	public Calling(GameSession gameSession)
+	public Calling(GameState game)
 	{
-		super(gameSession);
+		super(game);
 	}
 	
 	@Override
@@ -25,10 +25,10 @@ class Calling extends Phase
 	@Override
 	public void onStart()
 	{
-		callerPlayer = currentGame.getBidWinnerPlayer();
+		callerPlayer = game.getBidWinnerPlayer();
 		
 		canCallAnyTarock = false;
-		for (Card c : currentGame.getSkartForTeam(Team.OPPONENT))
+		for (Card c : game.getSkartForTeam(Team.OPPONENT))
 		{
 			if (c instanceof TarockCard)
 			{
@@ -45,7 +45,7 @@ class Calling extends Phase
 	{
 		super.requestHistory(player);
 
-		gameSession.getPlayerEventSender(player).turn(callerPlayer);
+		game.getPlayerEventSender(player).turn(callerPlayer);
 		if (player == callerPlayer)
 			sendAvailableCalls();
 	}
@@ -62,7 +62,7 @@ class Calling extends Phase
 		PlayerSeat calledPlayer = null;
 		for (PlayerSeat p : PlayerSeat.getAll())
 		{
-			PlayerCards pc = currentGame.getPlayerCards(p);
+			PlayerCards pc = game.getPlayerCards(p);
 			if (pc.hasCard(card))
 			{
 				calledPlayer = p;
@@ -70,52 +70,52 @@ class Calling extends Phase
 		}
 
 		if (calledPlayer == callerPlayer)
-			currentGame.setSoloIntentional();
+			game.setSoloIntentional();
 
 		//if the player called a card that had been skarted
 		if (calledPlayer == null)
 		{
-			if (currentGame.getSkartForTeam(Team.CALLER).contains(card))
-				currentGame.setSoloIntentional();
+			if (game.getSkartForTeam(Team.CALLER).contains(card))
+				game.setSoloIntentional();
 
 			calledPlayer = callerPlayer;
 			
-			if (card.equals(Card.getTarockCard(20)) && currentGame.getPlayerSkarted20() != callerPlayer)
+			if (card.equals(Card.getTarockCard(20)) && game.getPlayerSkarted20() != callerPlayer)
 			{
-				if (currentGame.getPlayerSkarted20() == null)
+				if (game.getPlayerSkarted20() == null)
 					throw new RuntimeException();
-				currentGame.setPlayerToAnnounceSolo(currentGame.getPlayerSkarted20());
+				game.setPlayerToAnnounceSolo(game.getPlayerSkarted20());
 			}
 		}
 
-		currentGame.setPlayerPairs(new PlayerPairs(callerPlayer, calledPlayer));
+		game.setPlayerPairs(new PlayerPairs(callerPlayer, calledPlayer));
 
-		Invitation invit = currentGame.getInvitSent();
+		Invitation invit = game.getInvitSent();
 		if (invit != Invitation.NONE && card.equals(invit.getCard()))
 		{
-			currentGame.invitAccepted();
+			game.invitAccepted();
 		}
 
 		history.setCalledCard(player, card);
-		gameSession.getBroadcastEventSender().call(player, card);
-		gameSession.changePhase(new Announcing(gameSession));
+		game.getBroadcastEventSender().call(player, card);
+		game.changePhase(new Announcing(game));
 	}
 
 	private void sendAvailableCalls()
 	{
-		gameSession.getPlayerEventSender(callerPlayer).availabeCalls(getCallableCards());
-		gameSession.getBroadcastEventSender().turn(callerPlayer);
+		game.getPlayerEventSender(callerPlayer).availabeCalls(getCallableCards());
+		game.getBroadcastEventSender().turn(callerPlayer);
 	}
 
 	private List<Card> getCallableCards()
 	{
 		Set<Card> callOptions = new LinkedHashSet<>();
 
-		Invitation invit = currentGame.getInvitSent();
+		Invitation invit = game.getInvitSent();
 		if (invit != Invitation.NONE)
 			callOptions.add(invit.getCard());
 
-		PlayerCards pc = currentGame.getPlayerCards(callerPlayer);
+		PlayerCards pc = game.getPlayerCards(callerPlayer);
 		for (int t = 20; t >= 1; t--)
 		{
 			TarockCard c = Card.getTarockCard(t);

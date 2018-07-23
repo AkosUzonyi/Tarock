@@ -5,9 +5,9 @@ class PendingNewGame extends Phase
 	private boolean doubleRound;
 	private PlayerSeat.Map<Boolean> ready = new PlayerSeat.Map<>(false);
 
-	public PendingNewGame(GameSession gameSession, boolean doubleRound)
+	public PendingNewGame(GameState game, boolean doubleRound)
 	{
-		super(gameSession);
+		super(game);
 		this.doubleRound = doubleRound;
 	}
 
@@ -20,7 +20,13 @@ class PendingNewGame extends Phase
 	@Override
 	public void onStart()
 	{
-		gameSession.getBroadcastEventSender().pendingNewGame();
+		if (!doubleRound)
+		{
+			game.calculateStatistics();
+			game.sendStatistics();
+		}
+
+		game.getBroadcastEventSender().pendingNewGame();
 	}
 
 	@Override
@@ -28,19 +34,21 @@ class PendingNewGame extends Phase
 	{
 		super.requestHistory(player);
 
+		if (!doubleRound)
+			game.sendStatistics();
+
 		if (!ready.get(player))
-			gameSession.getBroadcastEventSender().pendingNewGame();
+			game.getBroadcastEventSender().pendingNewGame();
 	}
 
 	@Override
 	public void readyForNewGame(PlayerSeat player)
 	{
 		ready.put(player, true);
+		game.getBroadcastEventSender().readyForNewGame(player);
+
 		if (allReady())
-		{
-			gameSession.startNewGame(doubleRound);
-		}
-		gameSession.getBroadcastEventSender().readyForNewGame(player);
+			game.finish();
 	}
 
 	private boolean allReady()

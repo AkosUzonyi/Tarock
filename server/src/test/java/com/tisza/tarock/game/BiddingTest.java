@@ -105,10 +105,12 @@ public class BiddingTest
 		GameSession gameSession = new GameSession(GameType.PASKIEVICS, players);
 		gameSession.startSession();
 
+		GameState game = gameSession.getCurrentGame();
+
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{
 			for (int i = 0; i < 5; i++)
-				gameSession.getCurrentGame().getPlayerCards(seat).addCard(Card.getTarockCard(18 + i));
+				game.getPlayerCards(seat).addCard(Card.getTarockCard(18 + i));
 		}
 
 
@@ -119,16 +121,16 @@ public class BiddingTest
 			if (bidString.isEmpty())
 				continue;
 
-			assertEquals(PhaseEnum.BIDDING, gameSession.getCurrentPhase().asEnum());
+			assertEquals(PhaseEnum.BIDDING, game.getCurrentPhase().asEnum());
 
 			int bid = bidString.equals("-") ? -1 : Integer.parseInt(bidString);
 
 			players.get(i % 4).bid(bid);
 		}
 
-		assertNotEquals(PhaseEnum.BIDDING, gameSession.getCurrentPhase().asEnum());
+		assertNotEquals(PhaseEnum.BIDDING, game.getCurrentPhase().asEnum());
 
-		if (gameSession.getCurrentPhase().asEnum() == PhaseEnum.INTERRUPTED)
+		if (game.getCurrentPhase().asEnum() == PhaseEnum.INTERRUPTED)
 		{
 			assertEquals(expectedBidWinnerPlayer, "-");
 			assertEquals(expectedWinnerBid, "-");

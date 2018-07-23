@@ -12,10 +12,10 @@ class Changing extends Phase
 	private PlayerSeat.Map<Boolean> donePlayer = new PlayerSeat.Map<>(false);
 	private PlayerSeat.Map<Integer> tarockCounts = new PlayerSeat.Map<>();
 	
-	public Changing(GameSession gameSession)
+	public Changing(GameState game)
 	{
-		super(gameSession);
-		cardFilter = new SkartableCardFilter(gameSession.getGameType());
+		super(game);
+		cardFilter = new SkartableCardFilter(game.getGameType());
 	}
 	
 	@Override
@@ -39,25 +39,25 @@ class Changing extends Phase
 		{
 			if (donePlayer.get(otherPlayer))
 			{
-				gameSession.getPlayerEventSender(player).changeDone(otherPlayer);
+				game.getPlayerEventSender(player).changeDone(otherPlayer);
 			}
 		}
 
 		if (!donePlayer.get(player))
-			gameSession.getPlayerEventSender(player).turn(player);
+			game.getPlayerEventSender(player).turn(player);
 	}
 
 	private void dealCardsFromTalon()
 	{
-		List<Card> remainingCards = new LinkedList<>(currentGame.getTalon());
-		PlayerSeat player = currentGame.getBidWinnerPlayer();
+		List<Card> remainingCards = new LinkedList<>(game.getTalon());
+		PlayerSeat player = game.getBidWinnerPlayer();
 
 		for (int i = 0; i < 4; i++)
 		{
 			int cardCount;
-			if (player == currentGame.getBidWinnerPlayer())
+			if (player == game.getBidWinnerPlayer())
 			{
-				cardCount = currentGame.getWinnerBid();
+				cardCount = game.getWinnerBid();
 			}
 			else
 			{
@@ -65,10 +65,10 @@ class Changing extends Phase
 			}
 
 			List<Card> cardsFromTalon = remainingCards.subList(0, cardCount);
-			PlayerCards playerCards = currentGame.getPlayerCards(player);
+			PlayerCards playerCards = game.getPlayerCards(player);
 			playerCards.addCards(cardsFromTalon);
-			gameSession.getPlayerEventSender(player).playerCards(playerCards);
-			gameSession.getPlayerEventSender(player).turn(player);
+			game.getPlayerEventSender(player).playerCards(playerCards);
+			game.getPlayerEventSender(player).turn(player);
 			history.setCardsFromTalon(player, new ArrayList<>(cardsFromTalon));
 			if (cardsFromTalon.isEmpty())
 				change(player, Collections.EMPTY_LIST);
@@ -84,11 +84,11 @@ class Changing extends Phase
 		if (donePlayer.get(player))
 			return;
 		
-		PlayerCards skartingPlayerCards = currentGame.getPlayerCards(player);
+		PlayerCards skartingPlayerCards = game.getPlayerCards(player);
 
-		if (skartingPlayerCards.size() - cardsToSkart.size() != GameSession.ROUND_COUNT)
+		if (skartingPlayerCards.size() - cardsToSkart.size() != GameState.ROUND_COUNT)
 		{
-			//gameSession.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
+			//game.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
 			return;
 		}
 		
@@ -97,7 +97,7 @@ class Changing extends Phase
 		{
 			if (!cardFilter.match(c))
 			{
-				//gameSession.sendEvent(player, new EventActionFailed(Reason.INVALID_SKART));
+				//game.sendEvent(player, new EventActionFailed(Reason.INVALID_SKART));
 				return;
 			}
 			
@@ -116,24 +116,24 @@ class Changing extends Phase
 				tarockCount++;
 				if (c.equals(Card.getTarockCard(20)))
 				{
-					currentGame.setPlayerSkarted20(player);
+					game.setPlayerSkarted20(player);
 				}
 			}
 
-			currentGame.addCardToSkart(player == currentGame.getBidWinnerPlayer() ? Team.CALLER : Team.OPPONENT, c);
+			game.addCardToSkart(player == game.getBidWinnerPlayer() ? Team.CALLER : Team.OPPONENT, c);
 		}
 		tarockCounts.put(player, tarockCount);
 		
 		skartingPlayerCards.removeCards(cardsToSkart);
 		donePlayer.put(player, true);
 		history.setCardsSkarted(player, cardsToSkart);
-		gameSession.getPlayerEventSender(player).playerCards(skartingPlayerCards);
-		gameSession.getBroadcastEventSender().changeDone(player);
+		game.getPlayerEventSender(player).playerCards(skartingPlayerCards);
+		game.getBroadcastEventSender().changeDone(player);
 
 		if (isFinished())
 		{
-			gameSession.getBroadcastEventSender().skartTarock(tarockCounts);
-			gameSession.changePhase(new Calling(gameSession));
+			game.getBroadcastEventSender().skartTarock(tarockCounts);
+			game.changePhase(new Calling(game));
 		}
 	}
 	
@@ -143,11 +143,11 @@ class Changing extends Phase
 		if (donePlayer.get(player))
 			return;
 
-		if (!currentGame.getPlayerCards(player).canBeThrown())
+		if (!game.getPlayerCards(player).canBeThrown())
 			return;
 
-		gameSession.getBroadcastEventSender().throwCards(player);
-		gameSession.changePhase(new PendingNewGame(gameSession, true));
+		game.getBroadcastEventSender().throwCards(player);
+		game.changePhase(new PendingNewGame(game, true));
 	}
 	
 	private boolean isFinished()

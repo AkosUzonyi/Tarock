@@ -8,9 +8,9 @@ class Gameplay extends Phase
 {
 	private Round currentRound;
 	
-	public Gameplay(GameSession gameSession)
+	public Gameplay(GameState game)
 	{
-		super(gameSession);
+		super(game);
 	}
 	
 	@Override
@@ -22,8 +22,8 @@ class Gameplay extends Phase
 	@Override
 	public void onStart()
 	{
-		currentRound = new Round(currentGame.getBeginnerPlayer());
-		gameSession.getBroadcastEventSender().turn(currentRound.getCurrentPlayer());
+		currentRound = new Round(game.getBeginnerPlayer());
+		game.getBroadcastEventSender().turn(currentRound.getCurrentPlayer());
 	}
 
 	@Override
@@ -33,9 +33,9 @@ class Gameplay extends Phase
 
 		for (PlayerSeat cardPlayer = currentRound.getBeginnerPlayer(); cardPlayer != currentRound.getCurrentPlayer(); cardPlayer = cardPlayer.nextPlayer())
 		{
-			gameSession.getPlayerEventSender(player).playCard(cardPlayer, currentRound.getCardByPlayer(cardPlayer));
+			game.getPlayerEventSender(player).playCard(cardPlayer, currentRound.getCardByPlayer(cardPlayer));
 		}
-		gameSession.getPlayerEventSender(player).turn(currentRound.getCurrentPlayer());
+		game.getPlayerEventSender(player).turn(currentRound.getCurrentPlayer());
 	}
 
 	@Override
@@ -46,40 +46,39 @@ class Gameplay extends Phase
 		
 		if (!getPlaceableCards().contains(card))
 		{
-			//gameSession.sendEvent(player, new EventActionFailed(Reason.INVALID_CARD));
+			//game.sendEvent(player, new EventActionFailed(Reason.INVALID_CARD));
 			return;
 		}
 
-		currentGame.getPlayerCards(player).removeCard(card);
+		game.getPlayerCards(player).removeCard(card);
 		currentRound.placeCard(card);
 
-		gameSession.getBroadcastEventSender().playCard(player, card);
+		game.getBroadcastEventSender().playCard(player, card);
 		
 		if (currentRound.isFinished())
 		{
 			history.registerRound(currentRound);
-			currentGame.addRound(currentRound);
+			game.addRound(currentRound);
 			PlayerSeat winner = currentRound.getWinner();
-			currentGame.addWonCards(winner, currentRound.getCards());
-			currentRound = currentGame.areAllRoundsPassed() ? null : new Round(winner);
+			game.addWonCards(winner, currentRound.getCards());
+			currentRound = game.areAllRoundsPassed() ? null : new Round(winner);
 			
-			gameSession.getBroadcastEventSender().cardsTaken(winner);
+			game.getBroadcastEventSender().cardsTaken(winner);
 		}
 		
 		if (currentRound != null)
 		{
-			gameSession.getBroadcastEventSender().turn(currentRound.getCurrentPlayer());
+			game.getBroadcastEventSender().turn(currentRound.getCurrentPlayer());
 		}
 		else
 		{
-			gameSession.changePhase(new PendingNewGame(gameSession, false));
-			gameSession.sendStatistics();
+			game.changePhase(new PendingNewGame(game, false));
 		}
 	}
 	
 	private Collection<Card> getPlaceableCards()
 	{
-		PlayerCards pc = currentGame.getPlayerCards(currentRound.getCurrentPlayer());
+		PlayerCards pc = game.getPlayerCards(currentRound.getCurrentPlayer());
 		Card firstCard = currentRound.getFirstCard();
 		return pc.getPlaceableCards(firstCard);
 	}

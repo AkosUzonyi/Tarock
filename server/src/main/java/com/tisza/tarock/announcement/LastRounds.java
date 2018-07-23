@@ -50,7 +50,7 @@ public abstract class LastRounds extends RoundAnnouncement
 	@Override
 	protected boolean containsRound(int round)
 	{
-		return round >= GameSession.ROUND_COUNT - getRoundCount();
+		return round >= GameState.ROUND_COUNT - getRoundCount();
 	}
 }
 

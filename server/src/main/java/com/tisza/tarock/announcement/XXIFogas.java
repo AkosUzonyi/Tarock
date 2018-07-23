@@ -35,7 +35,7 @@ public class XXIFogas extends AnnouncementBase
 	{
 		PlayerPairs pp = gameState.getPlayerPairs();
 		
-		for (int i = 0; i < GameSession.ROUND_COUNT; i++)
+		for (int i = 0; i < GameState.ROUND_COUNT; i++)
 		{
 			Round round = gameState.getRound(i);
 			PlayerSeat skizPlayer = round.getPlayerOfCard(Card.getTarockCard(22));

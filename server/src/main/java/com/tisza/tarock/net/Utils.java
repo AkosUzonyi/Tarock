@@ -46,8 +46,6 @@ public class Utils
 				return ProtoUtils.Phase.ANNOUNCING;
 			case GAMEPLAY:
 				return ProtoUtils.Phase.GAMEPLAY;
-			case FINISHED:
-				return ProtoUtils.Phase.FINISHED;
 			case END:
 				return ProtoUtils.Phase.END;
 			case INTERRUPTED:

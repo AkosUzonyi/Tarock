@@ -1,15 +1,28 @@
 package com.tisza.tarock.game;
 
+import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
 import com.tisza.tarock.game.Bidding.*;
+import com.tisza.tarock.message.*;
 
+import java.io.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class GameState
 {
-	private final GameType gameType;
+	public static final int ROUND_COUNT = 9;
 
+	private final GameType gameType;
+	private final PlayerSeat.Map<Player> players;
 	private final PlayerSeat beginnerPlayer;
+
+	private final GameFinishedListener gameFinishedListener;
+	private EventSender broadcastEventSender;
+
+	private GameHistory history;
+
+	private Phase currentPhase;
 
 	private PlayerSeat.Map<PlayerCards> playersCards = new PlayerSeat.Map<>();
 	private List<Card> talon;
@@ -31,7 +44,12 @@ public class GameState
 
 	private List<Round> roundsPassed = new ArrayList<>();
 	private PlayerSeat.Map<Collection<Card>> wonCards = new PlayerSeat.Map<>();
-	
+
+	private int[] points;
+	private int pointsForCallerTeam;
+	private Map<Team, List<AnnouncementStaticticsEntry>> statEntriesForTeams;
+	private Map<Team, Integer> gamePointsForTeams;
+
 	{
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
@@ -45,21 +63,58 @@ public class GameState
 		}
 	}
 
-	public GameState(GameType gameType, PlayerSeat beginnerPlayer)
+	public GameState(GameType gameType, PlayerSeat.Map<Player> players, PlayerSeat beginnerPlayer, GameFinishedListener gameFinishedListener)
 	{
 		this.gameType = gameType;
+		this.players = players;
 		this.beginnerPlayer = beginnerPlayer;
+		this.gameFinishedListener = gameFinishedListener;
 
+		history = new GameHistory();
+		broadcastEventSender = new BroadcastEventSender(players.values().stream().map(Player::getEventSender).collect(Collectors.toList()));
+	}
+
+	public void start()
+	{
 		List<Card> cardsToDeal = new ArrayList<>(Card.getAll());
 		Collections.shuffle(cardsToDeal);
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			for (int i = 0; i < GameSession.ROUND_COUNT; i++)
+			for (int i = 0; i < ROUND_COUNT; i++)
 			{
 				getPlayerCards(player).addCard(cardsToDeal.remove(0));
 			}
 		}
 		setTalon(cardsToDeal);
+
+		for (PlayerSeat player : PlayerSeat.getAll())
+		{
+			getPlayerEventSender(player).startGame(player, getPlayerNames(), gameType, beginnerPlayer);
+			getPlayerEventSender(player).playerCards(playersCards.get(player));
+			history.setOriginalPlayersCards(player, new ArrayList<>(playersCards.get(player).getCards()));
+		}
+
+		changePhase(new Bidding(this));
+	}
+
+	public List<String> getPlayerNames()
+	{
+		return players.values().stream().map(Player::getName).collect(Collectors.toList());
+	}
+
+	public void finish()
+	{
+		switch (currentPhase.asEnum())
+		{
+			case INTERRUPTED:
+				gameFinishedListener.gameInterrupted();
+				break;
+			case END:
+				gameFinishedListener.gameFinished(points);
+				break;
+			default:
+				throw new IllegalStateException();
+		}
 	}
 
 	public GameType getGameType()
@@ -85,6 +140,33 @@ public class GameState
 	public List<Card> getTalon()
 	{
 		return talon;
+	}
+
+	public GameHistory getHistory()
+	{
+		return history;
+	}
+
+	EventSender getBroadcastEventSender()
+	{
+		return broadcastEventSender;
+	}
+
+	EventSender getPlayerEventSender(PlayerSeat player)
+	{
+		return players.get(player).getEventSender();
+	}
+
+	void changePhase(Phase phase)
+	{
+		currentPhase = phase;
+		getBroadcastEventSender().phaseChanged(currentPhase.asEnum());
+		currentPhase.onStart();
+	}
+
+	public Phase getCurrentPhase()
+	{
+		return currentPhase;
 	}
 
 	void setInvitationSent(Invitation invitSent, PlayerSeat invitingPlayer)
@@ -170,7 +252,7 @@ public class GameState
 		return isSoloIntentional;
 	}
 
-	public void invitAccepted()
+	void invitAccepted()
 	{
 		invitAccepted = invitSent;
 	}
@@ -202,7 +284,7 @@ public class GameState
 	
 	boolean areAllRoundsPassed()
 	{
-		return roundsPassed.size() >= GameSession.ROUND_COUNT;
+		return roundsPassed.size() >= ROUND_COUNT;
 	}
 
 	public Round getRound(int index)
@@ -238,5 +320,82 @@ public class GameState
 		}
 
 		return points;
+	}
+
+	void calculateStatistics()
+	{
+		points = new int[4];
+
+		try
+		{
+			history.writeJSON(new OutputStreamWriter(System.out));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
+		statEntriesForTeams = new HashMap<>();
+		gamePointsForTeams = new HashMap<>();
+		pointsForCallerTeam = 0;
+
+		for (Team team : Team.values())
+		{
+			gamePointsForTeams.put(team, calculateGamePoints(team));
+
+			List<AnnouncementStaticticsEntry> entriesForTeam = new ArrayList<>();
+			statEntriesForTeams.put(team, entriesForTeam);
+
+			for (Announcement announcement : Announcements.getAll())
+			{
+				if (!gameType.hasParent(announcement.getGameType()))
+					continue;
+
+				int annoucementPoints = announcement.calculatePoints(this, team);
+
+				pointsForCallerTeam += annoucementPoints * (team == Team.CALLER ? 1 : -1);
+
+				if (annoucementPoints != 0)
+				{
+					int acl = announcementsState.isAnnounced(team, announcement) ? announcementsState.getContraLevel(team, announcement) : -1;
+					AnnouncementContra ac = new AnnouncementContra(announcement, acl);
+					entriesForTeam.add(new AnnouncementStaticticsEntry(ac, annoucementPoints));
+				}
+			}
+		}
+
+		int allTarockCountPoints = 0;
+		for (PlayerSeat player : PlayerSeat.getAll())
+		{
+			TarockCount tarockCountAnnouncement = announcementsState.getTarockCountAnnounced(player);
+			int tarockCountPoints = tarockCountAnnouncement == null ? 0 : tarockCountAnnouncement.getPoints();
+			points[player.asInt()] += tarockCountPoints * 4;
+			allTarockCountPoints += tarockCountPoints;
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			points[i] -= pointsForCallerTeam;
+			points[i] -= allTarockCountPoints;
+		}
+		points[playerPairs.getCaller().asInt()] += pointsForCallerTeam * 2;
+		points[playerPairs.getCalled().asInt()] += pointsForCallerTeam * 2;
+	}
+
+	void sendStatistics()
+	{
+		if (points == null)
+			throw new IllegalStateException();
+
+		for (PlayerSeat player : PlayerSeat.getAll())
+		{
+			Team team = playerPairs.getTeam(player);
+			int selfGamePoints = gamePointsForTeams.get(team);
+			int opponentGamePoints = gamePointsForTeams.get(team.getOther());
+			List<AnnouncementStaticticsEntry> selfEntries = statEntriesForTeams.get(team);
+			List<AnnouncementStaticticsEntry> opponentEntries = statEntriesForTeams.get(team.getOther());
+			int sumPoints = pointsForCallerTeam * (team == Team.CALLER ? 1 : -1);
+			getPlayerEventSender(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, points);
+		}
 	}
 }

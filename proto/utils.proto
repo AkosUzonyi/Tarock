@@ -40,9 +40,8 @@ enum Phase
 	CALLING = 2;
 	ANNOUNCING = 3;
 	GAMEPLAY = 4;
-	FINISHED = 5;
-	END = 6;
-	INTERRUPTED = 7;
+	END = 5;
+	INTERRUPTED = 6;
 }
 
 enum GameType

@@ -1,27 +1,19 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.message.*;
 
-import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 
-public class GameSession
+public class GameSession implements GameFinishedListener
 {
-	public static final int ROUND_COUNT = 9;
+	private final GameType gameType;
+	private final PlayerSeat.Map<Player> players = new PlayerSeat.Map<>();
+
+	private PlayerSeat nextBeginnerPlayer = PlayerSeat.SEAT0;
+	private GameState currentGame;
 
 	private int[] points = new int[4];
-
-	private PlayerSeat.Map<Player> players = new PlayerSeat.Map<>();
-	private EventSender broadcastEventSender;
-
-	private GameState state;
-	private Phase currentPhase;
-
-	private GameHistory history;
-
-	private GameType gameType;
 
 	public GameSession(GameType gameType, List<? extends Player> playerList)
 	{
@@ -38,7 +30,6 @@ public class GameSession
 
 	public void startSession()
 	{
-		broadcastEventSender = new BroadcastEventSender(players.values().stream().map(Player::getEventSender).collect(Collectors.toList()));
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{
 			players.get(seat).onAddedToGame(new GameSessionActionHandler(this), seat);
@@ -49,8 +40,8 @@ public class GameSession
 
 	public void stopSession()
 	{
-		state = null;
-		broadcastEventSender = null;
+		currentGame = null;
+
 		for (Player p : players)
 		{
 			p.onRemovedFromGame();
@@ -64,34 +55,7 @@ public class GameSession
 
 	public GameState getCurrentGame()
 	{
-		return state;
-	}
-
-	public GameHistory getCurrentHistory()
-	{
-		return history;
-	}
-
-	public Phase getCurrentPhase()
-	{
-		return currentPhase;
-	}
-
-	void changePhase(Phase phase)
-	{
-		currentPhase = phase;
-		getBroadcastEventSender().phaseChanged(currentPhase.asEnum());
-		currentPhase.onStart();
-	}
-
-	EventSender getBroadcastEventSender()
-	{
-		return broadcastEventSender;
-	}
-
-	EventSender getPlayerEventSender(PlayerSeat player)
-	{
-		return players.get(player).getEventSender();
+		return currentGame;
 	}
 
 	public List<String> getPlayerNames()
@@ -99,95 +63,29 @@ public class GameSession
 		return players.values().stream().map(Player::getName).collect(Collectors.toList());
 	}
 
-	private PlayerSeat getNextBeginnerPlayer(boolean doubleRound)
-	{
-		if (state == null)
-			return PlayerSeat.SEAT0;
-
-		return doubleRound ? state.getBeginnerPlayer() : state.getBeginnerPlayer().nextPlayer();
-	}
-
 	void startNewGame(boolean doubleRound)
 	{
-		state = new GameState(gameType, getNextBeginnerPlayer(doubleRound));
-		history = new GameHistory();
+		currentGame = new GameState(gameType, players, nextBeginnerPlayer, this);
 
-		for (PlayerSeat player : PlayerSeat.getAll())
-		{
-			getPlayerEventSender(player).startGame(player, getPlayerNames(), gameType, state.getBeginnerPlayer());
-			getPlayerEventSender(player).playerCards(state.getPlayerCards(player));
-			history.setOriginalPlayersCards(player, new ArrayList<>(state.getPlayerCards(player).getCards()));
-		}
+		if (!doubleRound)
+			nextBeginnerPlayer = nextBeginnerPlayer.nextPlayer();
 
-		changePhase(new Bidding(this));
+		currentGame.start();
 	}
 
-	void sendStatistics()
+	@Override
+	public void gameFinished(int[] points)
 	{
-		try
-		{
-			history.writeJSON(new OutputStreamWriter(System.out));
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-
-		Map<Team, List<AnnouncementStaticticsEntry>> statEntriesForTeams = new HashMap<>();
-		Map<Team, Integer> gamePointsForTeams = new HashMap<>();
-		int pointsForCallerTeam = 0;
-
-		for (Team team : Team.values())
-		{
-			gamePointsForTeams.put(team, state.calculateGamePoints(team));
-
-			List<AnnouncementStaticticsEntry> entriesForTeam = new ArrayList<>();
-			statEntriesForTeams.put(team, entriesForTeam);
-
-			for (Announcement announcement : Announcements.getAll())
-			{
-				if (!gameType.hasParent(announcement.getGameType()))
-					continue;
-
-				int annoucementPoints = announcement.calculatePoints(state, team);
-
-				pointsForCallerTeam += annoucementPoints * (team == Team.CALLER ? 1 : -1);
-
-				if (annoucementPoints != 0)
-				{
-					int acl = state.getAnnouncementsState().isAnnounced(team, announcement) ? state.getAnnouncementsState().getContraLevel(team, announcement) : -1;
-					AnnouncementContra ac = new AnnouncementContra(announcement, acl);
-					entriesForTeam.add(new AnnouncementStaticticsEntry(ac, annoucementPoints));
-				}
-			}
-		}
-
-		int allTarockCountPoints = 0;
-		for (PlayerSeat player : PlayerSeat.getAll())
-		{
-			TarockCount tarockCountAnnouncement = state.getAnnouncementsState().getTarockCountAnnounced(player);
-			int tarockCountPoints = tarockCountAnnouncement == null ? 0 : tarockCountAnnouncement.getPoints();
-			points[player.asInt()] += tarockCountPoints * 4;
-			allTarockCountPoints += tarockCountPoints;
-		}
-
 		for (int i = 0; i < 4; i++)
 		{
-			points[i] -= pointsForCallerTeam;
-			points[i] -= allTarockCountPoints;
+			this.points[i] += points[i];
 		}
-		points[state.getPlayerPairs().getCaller().asInt()] += pointsForCallerTeam * 2;
-		points[state.getPlayerPairs().getCalled().asInt()] += pointsForCallerTeam * 2;
+		startNewGame(false);
+	}
 
-		for (PlayerSeat player : PlayerSeat.getAll())
-		{
-			Team team = state.getPlayerPairs().getTeam(player);
-			int selfGamePoints = gamePointsForTeams.get(team);
-			int opponentGamePoints = gamePointsForTeams.get(team.getOther());
-			List<AnnouncementStaticticsEntry> selfEntries = statEntriesForTeams.get(team);
-			List<AnnouncementStaticticsEntry> opponentEntries = statEntriesForTeams.get(team.getOther());
-			int sumPoints = pointsForCallerTeam * (team == Team.CALLER ? 1 : -1);
-			getPlayerEventSender(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, points);
-		}
+	@Override
+	public void gameInterrupted()
+	{
+		startNewGame(true);
 	}
 }

@@ -2,6 +2,7 @@ package com.tisza.tarock.game;
 
 import com.tisza.tarock.announcement.*;
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.message.*;
 import org.junit.*;
 import org.junit.runner.*;
 import org.junit.runners.*;
@@ -83,7 +84,13 @@ public class JatekDuplaVolatPoints
 	@Before
 	public void createGameState()
 	{
-		game = new GameState(GameType.PASKIEVICS, PlayerSeat.SEAT0)
+		PlayerSeat.Map<Player> players = new PlayerSeat.Map<>();
+		for (PlayerSeat seat : PlayerSeat.getAll())
+		{
+			players.put(seat, new TestPlayer(""));
+		}
+
+		game = new GameState(GameType.PASKIEVICS, players, PlayerSeat.SEAT0, null)
 		{
 			@Override
 			public int calculateGamePoints(Team team)

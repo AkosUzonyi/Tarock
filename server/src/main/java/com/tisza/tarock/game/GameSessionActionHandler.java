@@ -14,57 +14,62 @@ public class GameSessionActionHandler implements ActionHandler
 		this.gameSession = gameSession;
 	}
 
+	private ActionHandler getCurrentHandler()
+	{
+		return gameSession.getCurrentGame().getCurrentPhase();
+	}
+
 	@Override
 	public void requestHistory(PlayerSeat player)
 	{
-		gameSession.getCurrentPhase().requestHistory(player);
+		getCurrentHandler().requestHistory(player);
 	}
 
 	@Override
 	public void announce(PlayerSeat player, AnnouncementContra announcementContra)
 	{
-		gameSession.getCurrentPhase().announce(player, announcementContra);
+		getCurrentHandler().announce(player, announcementContra);
 	}
 
 	@Override
 	public void announcePassz(PlayerSeat player)
 	{
-		gameSession.getCurrentPhase().announcePassz(player);
+		getCurrentHandler().announcePassz(player);
 	}
 
 	@Override
 	public void bid(PlayerSeat player, int bid)
 	{
-		gameSession.getCurrentPhase().bid(player, bid);
+		getCurrentHandler().bid(player, bid);
 	}
 
 	@Override
 	public void call(PlayerSeat player, Card card)
 	{
-		gameSession.getCurrentPhase().call(player, card);
+		getCurrentHandler().call(player, card);
 	}
 
 	@Override
 	public void change(PlayerSeat player, List<Card> cards)
 	{
-		gameSession.getCurrentPhase().change(player, cards);
+		getCurrentHandler().change(player, cards);
 	}
 
 	@Override
 	public void playCard(PlayerSeat player, Card card)
 	{
-		gameSession.getCurrentPhase().playCard(player, card);
+		getCurrentHandler().playCard(player, card);
 	}
 
 	@Override
 	public void readyForNewGame(PlayerSeat player)
 	{
-		gameSession.getCurrentPhase().readyForNewGame(player);
+		getCurrentHandler().readyForNewGame(player);
 	}
 
 	@Override
 	public void throwCards(PlayerSeat player)
 	{
-		gameSession.getCurrentPhase().throwCards(player);
+		getCurrentHandler().throwCards(player);
 	}
 }

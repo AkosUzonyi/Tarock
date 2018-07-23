@@ -54,15 +54,15 @@ public class CountBiddings
 	{
 		List<List<Integer>> result = new ArrayList<>();
 
-		GameSession gameSession = createNewGameSession();
+		GameState game = createNewGame();
 
-		Bidding bidding = (Bidding)gameSession.getCurrentPhase();
+		Bidding bidding = (Bidding)game.getCurrentPhase();
 		for (int bid : bids)
 		{
 			bidding.bid(bidding.getCurrentPlayer(), bid);
 		}
 
-		if (gameSession.getCurrentPhase().asEnum() != PhaseEnum.BIDDING)
+		if (game.getCurrentPhase().asEnum() != PhaseEnum.BIDDING)
 		{
 			result.add(bids);
 			return result;
@@ -78,7 +78,7 @@ public class CountBiddings
 		return result;
 	}
 
-	private GameSession createNewGameSession()
+	private GameState createNewGame()
 	{
 		List<TestPlayer> players = new ArrayList<>();
 		for (PlayerSeat seat : PlayerSeat.getAll())
@@ -95,6 +95,6 @@ public class CountBiddings
 				gameSession.getCurrentGame().getPlayerCards(seat).addCard(Card.getTarockCard(18 + i));
 		}
 
-		return gameSession;
+		return gameSession.getCurrentGame();
 	}
 }

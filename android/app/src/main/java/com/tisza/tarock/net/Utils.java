@@ -114,8 +114,6 @@ public class Utils
 				return PhaseEnum.ANNOUNCING;
 			case GAMEPLAY:
 				return PhaseEnum.GAMEPLAY;
-			case FINISHED:
-				return PhaseEnum.FINISHED;
 			case END:
 				return PhaseEnum.END;
 			case INTERRUPTED:

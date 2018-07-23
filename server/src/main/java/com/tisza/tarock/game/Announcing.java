@@ -13,9 +13,9 @@ class Announcing extends Phase implements IAnnouncing
 	private PlayerSeat lastAnnouncer = null;
 	private IdentityTracker idTrack;
 
-	public Announcing(GameSession gameSession)
+	public Announcing(GameState game)
 	{
-		super(gameSession);
+		super(game);
 	}
 	
 	@Override
@@ -27,8 +27,8 @@ class Announcing extends Phase implements IAnnouncing
 	@Override
 	public void onStart()
 	{
-		currentPlayer = currentGame.getPlayerPairs().getCaller();
-		idTrack = new IdentityTracker(currentGame.getPlayerPairs(), currentGame.getInvitAccepted());
+		currentPlayer = game.getPlayerPairs().getCaller();
+		idTrack = new IdentityTracker(game.getPlayerPairs(), game.getInvitAccepted());
 		
 		announce(currentPlayer, Announcements.jatek);
 	}
@@ -38,7 +38,7 @@ class Announcing extends Phase implements IAnnouncing
 	{
 		super.requestHistory(player);
 
-		gameSession.getPlayerEventSender(player).turn(currentPlayer);
+		game.getPlayerEventSender(player).turn(currentPlayer);
 		if (player == currentPlayer)
 			sendAvailableAnnouncements();
 	}
@@ -75,7 +75,7 @@ class Announcing extends Phase implements IAnnouncing
 
 		history.registerAnnouncement(player, ac);
 		ac.getAnnouncement().onAnnounced(this);
-		gameSession.getBroadcastEventSender().announce(player, ac);
+		game.getBroadcastEventSender().announce(player, ac);
 		sendAvailableAnnouncements();
 	}
 	
@@ -87,7 +87,7 @@ class Announcing extends Phase implements IAnnouncing
 		
 		if (Announcements.hkp.canBeAnnounced(this))
 		{
-			//gameSession.sendEvent(player, new EventActionFailed(Reason.CONTRAJATEK_REQUIRED));
+			//game.sendEvent(player, new EventActionFailed(Reason.CONTRAJATEK_REQUIRED));
 			return;
 		}
 		
@@ -98,7 +98,7 @@ class Announcing extends Phase implements IAnnouncing
 		currentPlayer = currentPlayer.nextPlayer();
 		currentPlayerAnnounced = false;
 
-		gameSession.getBroadcastEventSender().announcePassz(player);
+		game.getBroadcastEventSender().announcePassz(player);
 
 		if (!isFinished())
 		{
@@ -106,7 +106,7 @@ class Announcing extends Phase implements IAnnouncing
 		}
 		else
 		{
-			gameSession.changePhase(new Gameplay(gameSession));
+			game.changePhase(new Gameplay(game));
 		}
 	}
 	
@@ -142,7 +142,7 @@ class Announcing extends Phase implements IAnnouncing
 					if ((!needsIdentification || !a.requireIdentification()) &&
 							origAnnouncer == currentPlayerTeam &&
 							a.canBeAnnounced(this) &&
-							gameSession.getGameType().hasParent(a.getGameType())
+							game.getGameType().hasParent(a.getGameType())
 						)
 						list.add(new AnnouncementContra(a, 0));
 				}
@@ -154,8 +154,8 @@ class Announcing extends Phase implements IAnnouncing
 			list.remove(new AnnouncementContra(Announcements.jatek, 1));
 		}
 		
-		gameSession.getPlayerEventSender(currentPlayer).availableAnnouncements(list);
-		gameSession.getBroadcastEventSender().turn(currentPlayer);
+		game.getPlayerEventSender(currentPlayer).availableAnnouncements(list);
+		game.getBroadcastEventSender().turn(currentPlayer);
 	}
 	
 	@Override
@@ -171,7 +171,7 @@ class Announcing extends Phase implements IAnnouncing
 		{
 			return (!needsIdentification() || !a.requireIdentification()) &&
 					a.canBeAnnounced(this) &&
-					gameSession.getGameType().hasParent(a.getGameType());
+					game.getGameType().hasParent(a.getGameType());
 		}
 		else
 		{
@@ -189,8 +189,8 @@ class Announcing extends Phase implements IAnnouncing
 		if (lastAnnouncer == null)
 			return false;
 		
-		Team currentPlayerTeam = currentGame.getPlayerPairs().getTeam(currentPlayer);
-		Team lastAnnouncerTeam = currentGame.getPlayerPairs().getTeam(lastAnnouncer);
+		Team currentPlayerTeam = game.getPlayerPairs().getTeam(currentPlayer);
+		Team lastAnnouncerTeam = game.getPlayerPairs().getTeam(lastAnnouncer);
 		
 		return currentPlayerTeam != lastAnnouncerTeam && !idTrack.isIdentityKnown(currentPlayer);
 	}
@@ -204,77 +204,77 @@ class Announcing extends Phase implements IAnnouncing
 	@Override
 	public Team getCurrentTeam()
 	{
-		return currentGame.getPlayerPairs().getTeam(currentPlayer);
+		return game.getPlayerPairs().getTeam(currentPlayer);
 	}
 
 	@Override
 	public PlayerPairs getPlayerPairs()
 	{
-		return currentGame.getPlayerPairs();
+		return game.getPlayerPairs();
 	}
 
 	@Override
 	public boolean isAnnounced(Team team, Announcement a)
 	{
-		return currentGame.getAnnouncementsState().isAnnounced(team, a);
+		return game.getAnnouncementsState().isAnnounced(team, a);
 	}
 
 	@Override
 	public void setContraLevel(Team team, Announcement a, int level)
 	{
-		 currentGame.getAnnouncementsState().setContraLevel(team, a, level);
+		 game.getAnnouncementsState().setContraLevel(team, a, level);
 	}
 
 	@Override
 	public int getContraLevel(Team team, Announcement a)
 	{
-		 return currentGame.getAnnouncementsState().getContraLevel(team, a);
+		 return game.getAnnouncementsState().getContraLevel(team, a);
 	}
 
 	@Override
 	public void clearAnnouncement(Team team, Announcement a)
 	{
-		 currentGame.getAnnouncementsState().clearAnnouncement(team, a);
+		 game.getAnnouncementsState().clearAnnouncement(team, a);
 	}
 
 	@Override
 	public void setXXIUltimoDeactivated(Team team)
 	{
-		currentGame.getAnnouncementsState().setXXIUltimoDeactivated(team);
+		game.getAnnouncementsState().setXXIUltimoDeactivated(team);
 	}
 
 	public void announceTarockCount(PlayerSeat player, TarockCount announcement)
 	{
-		currentGame.getAnnouncementsState().announceTarockCount(player, announcement);
+		game.getAnnouncementsState().announceTarockCount(player, announcement);
 	}
 
 	public TarockCount getTarockCountAnnounced(PlayerSeat player)
 	{
-		return currentGame.getAnnouncementsState().getTarockCountAnnounced(player);
+		return game.getAnnouncementsState().getTarockCountAnnounced(player);
 	}
 
 	@Override
 	public boolean getXXIUltimoDeactivated(Team team)
 	{
-		return currentGame.getAnnouncementsState().getXXIUltimoDeactivated(team);
+		return game.getAnnouncementsState().getXXIUltimoDeactivated(team);
 	}
 
 	@Override
 	public PlayerCards getCards(PlayerSeat player)
 	{
-		return currentGame.getPlayerCards(player);
+		return game.getPlayerCards(player);
 	}
 
 	@Override
 	public PlayerSeat getPlayerToAnnounceSolo()
 	{
-		return currentGame.getPlayerToAnnounceSolo();
+		return game.getPlayerToAnnounceSolo();
 	}
 
 	@Override
 	public GameType getGameType()
 	{
-		return currentGame.getGameType();
+		return game.getGameType();
 	}
 
 	private static class IdentityTracker

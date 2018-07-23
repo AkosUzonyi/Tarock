@@ -7,15 +7,13 @@ import java.util.*;
 
 abstract class Phase implements ActionHandler
 {
-	protected final GameSession gameSession;
-	protected final GameState currentGame;
+	protected final GameState game;
 	protected final GameHistory history;
 
-	public Phase(GameSession gameSession)
+	public Phase(GameState game)
 	{
-		this.gameSession = gameSession;
-		currentGame = gameSession.getCurrentGame();
-		history = gameSession.getCurrentHistory();
+		this.game = game;
+		history = game.getHistory();
 	}
 
 	public abstract PhaseEnum asEnum();
@@ -23,10 +21,10 @@ abstract class Phase implements ActionHandler
 
 	public void requestHistory(PlayerSeat player)
 	{
-		EventSender eventSender = gameSession.getPlayerEventSender(player);
-		eventSender.startGame(player, gameSession.getPlayerNames(), gameSession.getGameType(), gameSession.getCurrentGame().getBeginnerPlayer());
-		eventSender.playerCards(currentGame.getPlayerCards(player));
-		history.sendCurrentStatusToPlayer(player, asEnum(), gameSession.getPlayerEventSender(player));
+		EventSender eventSender = game.getPlayerEventSender(player);
+		eventSender.startGame(player, game.getPlayerNames(), game.getGameType(), game.getBeginnerPlayer());
+		eventSender.playerCards(game.getPlayerCards(player));
+		history.sendCurrentStatusToPlayer(player, asEnum(), game.getPlayerEventSender(player));
 		eventSender.phaseChanged(asEnum());
 	}
 

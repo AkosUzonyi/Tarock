@@ -204,11 +204,14 @@ class Bidding extends Phase
 	{
 		for (PlayerSeat p = currentPlayer.nextPlayer(); p != currentPlayer; p = p.nextPlayer())
 		{
-			if (playersState.get(p) != BidState.OUT)
-			{
-				currentPlayer = p;
-				break;
-			}
+			if (playersState.get(p) == BidState.OUT)
+				continue;
+
+			if (lastBidValue == 0 && playersState.get(p) != BidState.IN)
+				continue;
+
+			currentPlayer = p;
+			break;
 		}
 	}
 	

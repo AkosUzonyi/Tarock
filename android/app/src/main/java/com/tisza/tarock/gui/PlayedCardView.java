@@ -9,15 +9,11 @@ import android.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.card.*;
 
-import java.util.*;
-
 public class PlayedCardView extends ImageView
 {
 	private int orientation;
-
-	private Queue<Integer> imgResourcesQueue = new LinkedList<>();
-
 	private boolean isAnimating = false;
+	private Card currentCard, pendingCard;
 
 	public PlayedCardView(Context context, int width, int height, int orientation)
 	{
@@ -38,33 +34,41 @@ public class PlayedCardView extends ImageView
 		}
 	}
 	
-	public void addCard(Card c)
+	public void setCard(Card card)
 	{
-		int res = getBitmapResForCard(c);
-
-		if (imgResourcesQueue.isEmpty())
-			setImageResource(res);
-
-		imgResourcesQueue.add(res);
+		if (currentCard == null)
+		{
+			setCurrentCard(card);
+		}
+		else
+		{
+			pendingCard = card;
+		}
 	}
 	
-	public void removeFirstCard()
+	public void showPendingCard()
 	{
-		if (imgResourcesQueue.isEmpty())
-		{
-			Log.e(GameFragment.LOG_TAG, "Tried to remove a card from an empty PlayedCardView");
-			return;
-		}
+		setCurrentCard(pendingCard);
+		pendingCard = null;
+	}
 
-		imgResourcesQueue.remove();
-		if (imgResourcesQueue.isEmpty())
+	private void setCurrentCard(Card card)
+	{
+		currentCard = card;
+		if (currentCard == null)
 		{
 			setImageBitmap(null);
 		}
 		else
 		{
-			setImageResource(imgResourcesQueue.peek());
+			setImageResource(getBitmapResForCard(currentCard));
 		}
+	}
+
+	public void clear()
+	{
+		setCurrentCard(null);
+		pendingCard = null;
 	}
 	
 	private Animation createPositionAnimation()
@@ -183,7 +187,7 @@ public class PlayedCardView extends ImageView
 			{
 				if (!play)
 				{
-					removeFirstCard();
+					showPendingCard();
 				}
 				startAnimation(createStaticPositionAnimation());
 				isAnimating = false;

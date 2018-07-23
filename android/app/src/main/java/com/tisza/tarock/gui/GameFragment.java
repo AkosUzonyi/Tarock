@@ -195,6 +195,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		messagesTextView.setText("");
 		availabeActionsView.removeAllViews();
 
+		for (PlayedCardView playedCardView : playedCardViews)
+		{
+			playedCardView.clear();
+		}
+
 		for (View skartView : skartViews)
 		{
 			skartView.setVisibility(View.GONE);
@@ -433,7 +438,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		int pos = getPositionFromPlayerID(player);
 		final PlayedCardView playedCardView = playedCardViews[pos];
 		
-		playedCardView.addCard(card);
+		playedCardView.setCard(card);
 		playedCardView.bringToFront();
 		playedCardView.animatePlay();
 		

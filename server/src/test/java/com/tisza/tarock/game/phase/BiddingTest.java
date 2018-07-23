@@ -1,6 +1,7 @@
-package com.tisza.tarock.game;
+package com.tisza.tarock.game.phase;
 
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 import org.junit.*;
 import org.junit.runner.*;
 import org.junit.runners.*;
@@ -10,7 +11,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 import static org.junit.runners.Parameterized.*;
 
-import com.tisza.tarock.game.Bidding.Invitation;
+import com.tisza.tarock.game.phase.Bidding.Invitation;
 
 @RunWith(Parameterized.class)
 public class BiddingTest

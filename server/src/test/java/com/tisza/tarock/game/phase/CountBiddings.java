@@ -1,6 +1,7 @@
-package com.tisza.tarock.game;
+package com.tisza.tarock.game.phase;
 
 import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
 import org.junit.*;
 
 import java.util.*;

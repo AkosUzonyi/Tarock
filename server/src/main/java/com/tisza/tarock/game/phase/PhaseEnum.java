@@ -1,4 +1,4 @@
-package com.tisza.tarock.game;
+package com.tisza.tarock.game.phase;
 
 public enum PhaseEnum
 {

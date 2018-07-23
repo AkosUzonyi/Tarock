@@ -1,6 +1,7 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.phase.*;
 
 public abstract class AnnouncementBase implements Announcement
 {

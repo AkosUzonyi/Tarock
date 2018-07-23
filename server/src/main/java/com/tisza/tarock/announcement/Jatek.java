@@ -1,6 +1,7 @@
 package com.tisza.tarock.announcement;
 
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.phase.*;
 
 public class Jatek extends AnnouncementBase
 {

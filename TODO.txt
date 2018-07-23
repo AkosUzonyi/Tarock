@@ -25,7 +25,6 @@ save finished games
 log
 
 refactorizations:
-create phase package
  
 other:
 final classes?

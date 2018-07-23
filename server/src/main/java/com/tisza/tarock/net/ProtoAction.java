@@ -45,6 +45,7 @@ public class ProtoAction implements Action
 				break;
 			case THROW_CARDS:
 				handler.throwCards(player);
+				break;
 			default:
 				System.err.println("unkown action: " + actionProto.getActionTypeCase());
 				break;

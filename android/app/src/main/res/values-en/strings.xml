@@ -7,6 +7,5 @@
     <string name="delete_game">Delete</string>
     <string name="create_game">Create</string>
     <string name="too_much_user_selected">Select maximum 3 players</string>
-    <string name="throw_cards">Throw</string>
     <string name="back">Back</string>
 </resources>

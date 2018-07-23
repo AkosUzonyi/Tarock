@@ -304,9 +304,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	@Override
 	public void cardsThrown(int player, PlayerCards thrownCards)
 	{
-		String msg = getResources().getString(R.string.message_throw_cards);
-		displayPlayerActionMessage(player, msg);
-		displayMessage(getResources().getString(R.string.press_ok) + "\n");
+		displayPlayerActionMessage(R.string.message_generic, player, getString(R.string.cards_thrown));
 	}
 	
 	@Override
@@ -329,7 +327,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			availabeActionsView.removeAllViews();
 
 		String msg = ResourceMappings.bidToName.get(bid);
-		displayPlayerActionMessage(player, R.string.message_bid, msg);
+		displayPlayerActionMessage(R.string.message_bid, player, msg);
 	}
 
 	@Override
@@ -353,11 +351,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			int count = counts[p];
 			if (count > 0)
 			{
-				String msg = "";
-				msg += count;
-				msg += " ";
-				msg += getResources().getString(R.string.message_skart_tarock);
-				displayPlayerActionMessage(p, msg);
+				String msg = getResources().getQuantityString(R.plurals.message_skart_tarock, count, count);
+				displayPlayerActionMessage(R.string.message_generic, p, msg);
 			}
 		}
 	}
@@ -381,7 +376,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		if (player == myID)
 			availabeActionsView.removeAllViews();
 
-		displayPlayerActionMessage(player, R.string.message_call, ResourceMappings.uppercaseCardName(card));
+		displayPlayerActionMessage(R.string.message_call, player, ResourceMappings.uppercaseCardName(card));
 	}
 	
 	@Override
@@ -429,7 +424,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		showCenterView(messagesView);
 		
 		String msg = announcement.getDisplayText();
-		displayPlayerActionMessage(player, R.string.message_announce, msg);
+		displayPlayerActionMessage(R.string.message_announce, player, msg);
 	}
 
 	@Override
@@ -696,24 +691,22 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			showCenterView(pendingCenterView);
 		}, DELAY);
 	}
-	
+
+	private void displayMessage(int msgRes, Object ... formatArgs)
+	{
+		displayMessage(getString(msgRes, formatArgs));
+	}
+
 	private void displayMessage(String msg)
 	{
 		messages += msg;
 		messagesTextView.setText(messages);
 		messagesScrollView.fullScroll(View.FOCUS_DOWN);
 	}
-	
-	private void displayPlayerActionMessage(int player, String msg)
+
+	private void displayPlayerActionMessage(int actionRes, int player, String msg)
 	{
-		displayMessage(playerNames.get(player) + " " + msg + "\n");
-		showPlayerMessageView(player, msg);
-	}
-	
-	private void displayPlayerActionMessage(int player, int actionRes, String msg)
-	{
-		String action = getResources().getString(actionRes);
-		displayMessage(playerNames.get(player) + " " + action + ": " + msg + "\n");
+		displayMessage(actionRes, playerNames.get(player), msg);
 		showPlayerMessageView(player, msg);
 	}
 	

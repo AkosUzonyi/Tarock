@@ -132,6 +132,9 @@ public class Client implements MessageHandler
 
 	public void sendStatus()
 	{
+		if (loggedInUser == null)
+			return;
+
 		MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
 
 		for (GameInfo gameInfo : server.getGameSessionManager().listGames())

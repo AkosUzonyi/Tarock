@@ -297,6 +297,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		{
 			showCenterViewDelayed(statisticsView);
 		}
+		else if (phase == PhaseEnum.INTERRUPTED)
+		{
+			availabeActionsView.removeAllViews();
+			displayMessage(R.string.press_ok);
+		}
 
 		skartViews[getPositionFromPlayerID(beginnerPlayer)].setVisibility(phase.isAfter(PhaseEnum.CHANGING) ? View.VISIBLE : View.GONE);
 	}
@@ -578,13 +583,20 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	public void pendingNewGame()
 	{
 		okButton.setVisibility(View.VISIBLE);
-		okButton.setOnClickListener(v ->
-		{
-			okButton.setVisibility(View.GONE);
-			getActionSender().readyForNewGame();
-		});
+		okButton.setOnClickListener(v -> getActionSender().readyForNewGame());
+
+		higlightAllName();
 	}
-	
+
+	@Override
+	public void readyForNewGame(int player)
+	{
+		if (player == myID)
+			okButton.setVisibility(View.GONE);
+
+		setHiglighted(player, false);
+	}
+
 	@Override
 	public void wrongAction()
 	{

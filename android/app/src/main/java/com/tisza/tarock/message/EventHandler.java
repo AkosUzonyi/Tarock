@@ -26,4 +26,5 @@ public interface EventHandler
 	public void turn(int player);
 	public void wrongAction();
 	public void pendingNewGame();
+	public void readyForNewGame(int player);
 }

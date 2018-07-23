@@ -101,6 +101,9 @@ public class ProtoEvent implements Event
 			case THROW_CARDS:
 				handler.cardsThrown(player, null);
 				break;
+			case READY_FOR_NEW_GAME:
+				handler.readyForNewGame(player);
+				break;
 			default:
 				System.err.println("unhandled event");
 				break;

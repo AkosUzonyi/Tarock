@@ -1,6 +1,6 @@
 package com.tisza.tarock.game;
 
-import com.tisza.tarock.announcement.*;
+import com.tisza.tarock.game.announcement.*;
 
 import java.util.*;
 

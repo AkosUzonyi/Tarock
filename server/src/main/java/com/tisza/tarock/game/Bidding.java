@@ -164,6 +164,9 @@ class Bidding extends Phase
 				if (canInvit && cards.hasCard(invit.getCard()) || currentGame.getInvitSent() == invit)
 					result.add(jumpBid);
 			}
+
+			if (defaultBid == 3)
+				result.add(0);
 		}
 		return result;
 	}

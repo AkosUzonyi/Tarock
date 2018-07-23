@@ -117,10 +117,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
-		throwButton.setOnClickListener(v ->
-		{
-			getActionSender().throwCards();
-		});
+		throwButton.setOnClickListener(v -> getActionSender().throwCards());
 
 		layoutInflater.inflate(R.layout.messages, centerSpace);
 		messagesView = contentView.findViewById(R.id.messages_view);
@@ -247,23 +244,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	{
 		myCards = new PlayerCards(cards);
 		arrangeCards();
-
-		throwButton.setVisibility(View.GONE);
-
-		if (gamePhase == PhaseEnum.BIDDING)
-		{
-			if (myCards.canBeThrown(false))
-			{
-				throwButton.setVisibility(View.VISIBLE);
-			}
-		}
-		else if (gamePhase == PhaseEnum.CHANGING)
-		{
-			if (myCards.canBeThrown(true))
-			{
-				throwButton.setVisibility(View.VISIBLE);
-			}
-		}
 	}
 
 	@Override
@@ -274,6 +254,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		if (phase == PhaseEnum.BIDDING)
 		{
 			showCenterView(messagesView);
+
+			if (myCards.canBeThrown())
+				throwButton.setVisibility(View.VISIBLE);
 		}
 		else if (phase == PhaseEnum.CHANGING)
 		{
@@ -514,6 +497,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 			okButton.setVisibility(View.VISIBLE);
 			okButton.setOnClickListener(v -> getActionSender().change(cardsToSkart));
+
+			if (myCards.canBeThrown())
+				throwButton.setVisibility(View.VISIBLE);
 		}
 		else
 		{

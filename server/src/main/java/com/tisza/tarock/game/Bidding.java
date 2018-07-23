@@ -115,12 +115,11 @@ class Bidding extends Phase
 	@Override
 	public void throwCards(PlayerSeat player)
 	{
-		PlayerCards cards = currentGame.getPlayerCards(player);
-		if (cards.canBeThrown(false))
-		{
-			gameSession.getBroadcastEventSender().throwCards(player);
-			gameSession.changePhase(new PendingNewGame(gameSession, true));
-		}
+		if (!currentGame.getPlayerCards(player).canBeThrown())
+			return;
+
+		gameSession.getBroadcastEventSender().throwCards(player);
+		gameSession.changePhase(new PendingNewGame(gameSession, true));
 	}
 
 	public PlayerSeat getCurrentPlayer()

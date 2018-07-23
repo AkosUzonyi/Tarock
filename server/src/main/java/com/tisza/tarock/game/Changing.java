@@ -140,12 +140,14 @@ class Changing extends Phase
 	@Override
 	public void throwCards(PlayerSeat player)
 	{
-		PlayerCards cards = currentGame.getPlayerCards(player);
-		if (cards.canBeThrown(true))
-		{
-			gameSession.getBroadcastEventSender().throwCards(player);
-			gameSession.changePhase(new PendingNewGame(gameSession, true));
-		}
+		if (donePlayer.get(player))
+			return;
+
+		if (!currentGame.getPlayerCards(player).canBeThrown())
+			return;
+
+		gameSession.getBroadcastEventSender().throwCards(player);
+		gameSession.changePhase(new PendingNewGame(gameSession, true));
 	}
 	
 	private boolean isFinished()

@@ -104,23 +104,20 @@ public class PlayerCards
 		return Collections.EMPTY_LIST;
 	}
 
-	public boolean canBeThrown(boolean afterChange)
+	public boolean canBeThrown()
 	{
-		if (!afterChange)
-		{
-			List<Card> tarocks = filter(new TarockFilter());
-			
-			if (tarocks.size() < 2)
-				return true;
-			
-			tarocks.remove(Card.getTarockCard(1));
-			tarocks.remove(Card.getTarockCard(2));
-			tarocks.remove(Card.getTarockCard(21));
-			
-			if (tarocks.size() == 0)
-				return true;
-		}
-		
+		List<Card> tarocks = filter(new TarockFilter());
+
+		if (tarocks.size() < 2)
+			return true;
+
+		tarocks.remove(Card.getTarockCard(1));
+		tarocks.remove(Card.getTarockCard(2));
+		tarocks.remove(Card.getTarockCard(21));
+
+		if (tarocks.size() == 0)
+			return true;
+
 		if (hasFourKings())
 			return true;
 		

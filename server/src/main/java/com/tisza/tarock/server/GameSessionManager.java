@@ -7,9 +7,16 @@ import java.util.*;
 
 public class GameSessionManager
 {
+	private final BotFactory botFactory;
+
 	private int nextID = 0;
 	private Map<Integer, GameSession> games = new HashMap<>();
 	private Map<Integer, List<User>> gameIDToUsers = new HashMap<>();
+
+	public GameSessionManager(BotFactory botFactory)
+	{
+		this.botFactory = botFactory;
+	}
 
 	public Collection<GameInfo> listGames()
 	{
@@ -41,7 +48,7 @@ public class GameSessionManager
 		int randomPlayerCount = 4 - players.size();
 		for (int i = 0; i < randomPlayerCount; i++)
 		{
-			players.add(new RandomPlayer("bot" + i, 500, 2000));
+			players.add(botFactory.createBot(i));
 		}
 
 		Collections.shuffle(players);

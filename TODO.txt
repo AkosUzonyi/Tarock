@@ -6,7 +6,6 @@ silent trull, negykiral... after volat
 
 needs fix:
 check malicious accesstoken
-randomplayer use executor
 
 renames:
 

@@ -1,5 +1,6 @@
 package com.tisza.tarock.server;
 
+import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
 
 import javax.net.ssl.*;
@@ -16,17 +17,21 @@ public class Server implements Runnable
 
 	private final File keystoreFile;
 
-	private ExecutorService gameExecutorService = Executors.newSingleThreadExecutor(new GameThreadFactory());
+	private final ScheduledExecutorService gameExecutorService;
 
 	private List<Client> clients = new ArrayList<>();
 
-	private final GameSessionManager gameSessionManager = new GameSessionManager();
-	private final FacebookUserManager facebookUserManager = new FacebookUserManager();
+	private final GameSessionManager gameSessionManager;
+	private final FacebookUserManager facebookUserManager;
 
 	public Server(int port, File keystoreFile)
 	{
 		this.port = port;
 		this.keystoreFile = keystoreFile;
+
+		gameExecutorService = Executors.newSingleThreadScheduledExecutor(new GameThreadFactory());
+		gameSessionManager = new GameSessionManager(new RandomPlayerFactory());
+		facebookUserManager = new FacebookUserManager();
 	}
 
 	public GameSessionManager getGameSessionManager()
@@ -146,6 +151,15 @@ public class Server implements Runnable
 			{
 				serverSocket = null;
 			}
+		}
+	}
+
+	private class RandomPlayerFactory implements BotFactory
+	{
+		@Override
+		public Player createBot(int n)
+		{
+			return new RandomPlayer("bot" + n, gameExecutorService, 500, 2000);
 		}
 	}
 }

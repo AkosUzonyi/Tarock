@@ -8,10 +8,12 @@ import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 public class RandomPlayer implements Player
 {
 	private final String name;
+	private final ScheduledExecutorService executorService;
 	private final int delay, extraDelay;
 	private EventSender eventSender = new MyEventSender();
 	private Random rnd = new Random();
@@ -19,14 +21,15 @@ public class RandomPlayer implements Player
 	private PlayerSeat seat;
 	private ActionHandler actionHandler;
 
-	public RandomPlayer(String name)
+	public RandomPlayer(String name, ScheduledExecutorService executorService)
 	{
-		this(name, 0, 0);
+		this(name, executorService, 0, 0);
 	}
 
-	public RandomPlayer(String name, int delay, int extraDelay)
+	public RandomPlayer(String name, ScheduledExecutorService executorService, int delay, int extraDelay)
 	{
 		this.name = name;
+		this.executorService = executorService;
 		this.delay = delay;
 		this.extraDelay = extraDelay;
 	}
@@ -57,38 +60,25 @@ public class RandomPlayer implements Player
 		seat = null;
 	}
 
-	private void enqueueAction(Action action)
+	private void doAction(Action action)
 	{
 		if (actionHandler != null)
 			action.handle(actionHandler);
 	}
 
+	private void enqueueAction(Action action)
+	{
+		executorService.execute(() -> doAction(action));
+	}
+
 	private void enqueueActionDelayed(Action action)
 	{
-		try
-		{
-			Thread.sleep(delay);
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-			Thread.currentThread().interrupt();
-		}
-		enqueueAction(action);
+		executorService.schedule(() -> doAction(action), delay, TimeUnit.MILLISECONDS);
 	}
 
 	private void enqueueActionExtraDelayed(Action action)
 	{
-		try
-		{
-			Thread.sleep(extraDelay);
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-			Thread.currentThread().interrupt();
-		}
-		enqueueAction(action);
+		executorService.schedule(() -> doAction(action), extraDelay, TimeUnit.MILLISECONDS);
 	}
 
 	private class MyEventSender implements EventSender
@@ -142,7 +132,6 @@ public class RandomPlayer implements Player
 			if (phase == PhaseEnum.CHANGING)
 			{
 				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter(gameType)).subList(0, myCards.size() - 9);
-				myCards.removeCards(cardsToSkart);
 				enqueueAction(handler -> handler.change(seat, cardsToSkart));
 			}
 			else if (phase == PhaseEnum.GAMEPLAY)

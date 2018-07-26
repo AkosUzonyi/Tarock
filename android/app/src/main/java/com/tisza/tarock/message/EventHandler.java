@@ -8,7 +8,7 @@ import java.util.*;
 public interface EventHandler
 {
 	public void startGame(int myID, List<String> playerNames, GameType gameType, int beginnerPlayer);
-	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points);
+	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points, int pointMultiplier);
 	public void announce(int player, Announcement announcementContra);
 	public void announcePassz(int player);
 	public void availableAnnouncements(List<Announcement> announcements);

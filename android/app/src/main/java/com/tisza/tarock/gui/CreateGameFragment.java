@@ -9,7 +9,7 @@ import com.tisza.tarock.proto.*;
 
 public class CreateGameFragment extends MainActivityFragment
 {
-	private Spinner gameTypeSpinner;
+	private Spinner gameTypeSpinner, doubleRoundTypeSpinner;
 	private AvailableUsersAdapter availableUsersAdapter;
 
 	@Override
@@ -18,6 +18,7 @@ public class CreateGameFragment extends MainActivityFragment
 		View view = inflater.inflate(R.layout.create_new_game, container, false);
 
 		gameTypeSpinner = view.findViewById(R.id.game_type_spinner);
+		doubleRoundTypeSpinner = view.findViewById(R.id.double_round_type_spinner);
 
 		availableUsersAdapter = getMainActivity().getAvailableUsersAdapter();
 		ListView availableUsersView = view.findViewById(R.id.available_users);
@@ -35,6 +36,7 @@ public class CreateGameFragment extends MainActivityFragment
 			MainProto.CreateGame.Builder builder = MainProto.CreateGame.newBuilder();
 
 			builder.setType(Utils.gameTypeToProto(GameType.values()[gameTypeSpinner.getSelectedItemPosition()]));
+			builder.setDoubleRoundType(Utils.doubleRoundTypeToProto(DoubleRoundType.values()[doubleRoundTypeSpinner.getSelectedItemPosition()]));
 
 			for (User user : availableUsersAdapter.getSelectedUsers())
 			{

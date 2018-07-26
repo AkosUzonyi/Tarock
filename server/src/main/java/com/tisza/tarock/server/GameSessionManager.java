@@ -1,6 +1,7 @@
 package com.tisza.tarock.server;
 
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
@@ -31,7 +32,7 @@ public class GameSessionManager
 		return result;
 	}
 
-	public int createNewGame(GameType type, List<User> users)
+	public int createNewGame(GameType type, List<User> users, DoubleRoundType doubleRoundType)
 	{
 		if (users.size() > 4)
 			throw new IllegalArgumentException();
@@ -53,7 +54,7 @@ public class GameSessionManager
 
 		Collections.shuffle(players);
 
-		GameSession game = new GameSession(type, players);
+		GameSession game = new GameSession(type, players, doubleRoundType);
 		games.put(id, game);
 		game.startSession();
 

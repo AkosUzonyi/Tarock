@@ -91,7 +91,7 @@ public class JatekDuplaVolatPoints
 			players.put(seat, new TestPlayer(""));
 		}
 
-		game = new GameState(GameType.PASKIEVICS, players, PlayerSeat.SEAT0, null)
+		game = new GameState(GameType.PASKIEVICS, players, PlayerSeat.SEAT0, null, 1)
 		{
 			@Override
 			public int calculateGamePoints(Team team)

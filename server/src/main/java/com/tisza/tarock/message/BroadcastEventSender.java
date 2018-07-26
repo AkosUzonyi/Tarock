@@ -179,11 +179,11 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points)
+	public void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points, int pointMultiplier)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
-			eventSender.announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, points);
+			eventSender.announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, points, pointMultiplier);
 		}
 	}
 

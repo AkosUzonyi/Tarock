@@ -57,6 +57,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private View statisticsView;
 	private TextView statisticsGamepointsSelf;
 	private TextView statisticsGamepointsOpponent;
+	private TextView statisticsPointMultiplierView;
 	private LinearLayout statisticsSelfEntriesView;
 	private LinearLayout statisticsOpponentEntriesView;
 	private TextView statisticsSumPointsView;
@@ -156,6 +157,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		statisticsView = contentView.findViewById(R.id.statistics_view);
 		statisticsGamepointsSelf = (TextView)contentView.findViewById(R.id.statistics_gamepoints_self);
 		statisticsGamepointsOpponent = (TextView)contentView.findViewById(R.id.statistics_gamepoints_opponent);
+		statisticsPointMultiplierView = (TextView)contentView.findViewById(R.id.statistics_point_multiplier);
 		statisticsSelfEntriesView = (LinearLayout)contentView.findViewById(R.id.statistics_self_entries_list);
 		statisticsOpponentEntriesView = (LinearLayout)contentView.findViewById(R.id.statistics_opponent_entries_list);
 		statisticsSumPointsView = (TextView)contentView.findViewById(R.id.statistics_sum_points);
@@ -513,10 +515,13 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	}
 	
 	@Override
-	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points)
+	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points, int pointMultiplier)
 	{
 		statisticsGamepointsSelf.setText(selfGamePoints + "");
 		statisticsGamepointsOpponent.setText(opponentGamePoints + "");
+
+		statisticsPointMultiplierView.setVisibility(pointMultiplier == 1 ? View.GONE : View.VISIBLE);
+		statisticsPointMultiplierView.setText(getString(R.string.statictics_point_multiplier, pointMultiplier));
 		
 		statisticsSelfEntriesView.removeAllViews();
 		statisticsOpponentEntriesView.removeAllViews();

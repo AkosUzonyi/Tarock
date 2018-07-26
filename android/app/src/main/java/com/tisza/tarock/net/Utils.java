@@ -198,4 +198,20 @@ public class Utils
 	{
 		return new GameInfo(gameProto.getId(), gameTypeFromProto(gameProto.getType()), gameProto.getPlayerNameList());
 	}
+
+	public static ProtoUtils.DoubleRoundType doubleRoundTypeToProto(DoubleRoundType doubleRoundTypeProto)
+	{
+		switch (doubleRoundTypeProto)
+		{
+			case NONE:
+				return ProtoUtils.DoubleRoundType.NONE;
+			case PECULATING:
+				return ProtoUtils.DoubleRoundType.PECULATING;
+			case STACKING:
+				return ProtoUtils.DoubleRoundType.STACKING;
+			case MULTIPLYING:
+				return ProtoUtils.DoubleRoundType.MULTIPLYING;
+		}
+		throw new RuntimeException();
+	}
 }

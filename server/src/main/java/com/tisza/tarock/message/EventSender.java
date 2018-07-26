@@ -25,6 +25,6 @@ public interface EventSender
 	void skartTarock(PlayerSeat.Map<Integer> counts);
 	void availableAnnouncements(List<AnnouncementContra> announcements);
 	void cardsTaken(PlayerSeat player);
-	void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points);
+	void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points, int pointMultiplier);
 	void pendingNewGame();
 }

@@ -16,7 +16,6 @@ create AnnouncementInstance class (Announcement, contraLevel, announcerteam)
 features:
 error messages
 VERSION CHECKING
-double round
 kibic
 nickname
 save users

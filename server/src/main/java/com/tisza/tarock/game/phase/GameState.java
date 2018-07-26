@@ -46,6 +46,8 @@ public class GameState
 	private List<Round> roundsPassed = new ArrayList<>();
 	private PlayerSeat.Map<Collection<Card>> wonCards = new PlayerSeat.Map<>();
 
+	private boolean statisticsCalculated = false;
+	private final int pointMultiplier;
 	private int[] points;
 	private int pointsForCallerTeam;
 	private Map<Team, List<AnnouncementStaticticsEntry>> statEntriesForTeams;
@@ -64,12 +66,13 @@ public class GameState
 		}
 	}
 
-	public GameState(GameType gameType, PlayerSeat.Map<Player> players, PlayerSeat beginnerPlayer, GameFinishedListener gameFinishedListener)
+	public GameState(GameType gameType, PlayerSeat.Map<Player> players, PlayerSeat beginnerPlayer, GameFinishedListener gameFinishedListener, int pointMultiplier)
 	{
 		this.gameType = gameType;
 		this.players = players;
 		this.beginnerPlayer = beginnerPlayer;
 		this.gameFinishedListener = gameFinishedListener;
+		this.pointMultiplier = pointMultiplier;
 
 		history = new GameHistory();
 		broadcastEventSender = new BroadcastEventSender(players.values().stream().map(Player::getEventSender).collect(Collectors.toList()));
@@ -111,7 +114,7 @@ public class GameState
 				gameFinishedListener.gameInterrupted();
 				break;
 			case END:
-				gameFinishedListener.gameFinished(points);
+				gameFinishedListener.gameFinished();
 				break;
 			default:
 				throw new IllegalStateException();
@@ -325,6 +328,11 @@ public class GameState
 
 	void calculateStatistics()
 	{
+		if (statisticsCalculated)
+			throw new IllegalStateException();
+
+		statisticsCalculated = true;
+
 		points = new int[4];
 
 		try
@@ -353,6 +361,7 @@ public class GameState
 					continue;
 
 				int annoucementPoints = announcement.calculatePoints(this, team);
+				annoucementPoints *= pointMultiplier;
 
 				pointsForCallerTeam += annoucementPoints * (team == Team.CALLER ? 1 : -1);
 
@@ -370,6 +379,7 @@ public class GameState
 		{
 			TarockCount tarockCountAnnouncement = announcementsState.getTarockCountAnnounced(player);
 			int tarockCountPoints = tarockCountAnnouncement == null ? 0 : tarockCountAnnouncement.getPoints();
+			tarockCountPoints *= pointMultiplier;
 			points[player.asInt()] += tarockCountPoints * 4;
 			allTarockCountPoints += tarockCountPoints;
 		}
@@ -381,11 +391,13 @@ public class GameState
 		}
 		points[playerPairs.getCaller().asInt()] += pointsForCallerTeam * 2;
 		points[playerPairs.getCalled().asInt()] += pointsForCallerTeam * 2;
+
+		points = gameFinishedListener.pointsEarned(points);
 	}
 
 	void sendStatistics()
 	{
-		if (points == null)
+		if (!statisticsCalculated)
 			throw new IllegalStateException();
 
 		for (PlayerSeat player : PlayerSeat.getAll())
@@ -396,7 +408,7 @@ public class GameState
 			List<AnnouncementStaticticsEntry> selfEntries = statEntriesForTeams.get(team);
 			List<AnnouncementStaticticsEntry> opponentEntries = statEntriesForTeams.get(team.getOther());
 			int sumPoints = pointsForCallerTeam * (team == Team.CALLER ? 1 : -1);
-			getPlayerEventSender(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, points);
+			getPlayerEventSender(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, points, pointMultiplier);
 		}
 	}
 }

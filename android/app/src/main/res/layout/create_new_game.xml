@@ -11,6 +11,16 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:entries="@array/game_type_array"
+		android:layout_marginBottom="@dimen/button_margin"
+		style="@style/spinner"
+	/>
+
+	<Spinner
+		android:id="@+id/double_round_type_spinner"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:entries="@array/double_round_type_array"
+		android:layout_marginBottom="@dimen/button_margin"
 		style="@style/spinner"
 	/>
 

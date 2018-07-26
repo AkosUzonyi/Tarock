@@ -1,6 +1,7 @@
 package com.tisza.tarock.server;
 
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
 
@@ -76,6 +77,7 @@ public class Client implements MessageHandler
 					break;
 
 				GameType gameType = Utils.gameTypeFromProto(createGame.getType());
+				DoubleRoundType doubleRoundType = Utils.doubleRoundTypeFromProto(createGame.getDoubleRoundType());
 
 				List<User> users = new ArrayList<>();
 				users.add(loggedInUser);
@@ -84,7 +86,7 @@ public class Client implements MessageHandler
 					users.add(server.getFacebookUserManager().getUserByID(userID));
 				}
 
-				int gameID = server.getGameSessionManager().createNewGame(gameType, users);
+				int gameID = server.getGameSessionManager().createNewGame(gameType, users, doubleRoundType);
 
 				server.broadcastStatus();
 

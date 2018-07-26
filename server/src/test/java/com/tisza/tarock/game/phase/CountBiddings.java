@@ -2,6 +2,7 @@ package com.tisza.tarock.game.phase;
 
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.doubleround.*;
 import org.junit.*;
 
 import java.util.*;
@@ -87,7 +88,7 @@ public class CountBiddings
 			players.add(new TestPlayer(""));
 		}
 
-		GameSession gameSession = new GameSession(GameType.PASKIEVICS, players);
+		GameSession gameSession = new GameSession(GameType.PASKIEVICS, players, DoubleRoundType.NONE);
 		gameSession.startSession();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())

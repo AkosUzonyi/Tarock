@@ -47,6 +47,13 @@
         <item>Zebi</item>
     </string-array>
 
+    <string-array name="double_round_type_array">
+        <item>Fujsemijen</item>
+        <item>Sikkasztó</item>
+        <item>Halmozódó</item>
+        <item>Szorzódó</item>
+    </string-array>
+
     <string-array name="suit_array">
         <item>kőr</item>
         <item>káró</item>
@@ -136,6 +143,7 @@
     <string name="announcement_nyolctarokk">nyolc tarokk</string>
     <string name="announcement_kilenctarokk">kilenc tarokk</string>
 
+    <string name="statictics_point_multiplier">Duplakör szorzó: %1$d</string>
     <string name="statictics_self">Saját figurák</string>
     <string name="statictics_opponent">Ellenfél figurái</string>
     <string name="statictics_points">Pont</string>

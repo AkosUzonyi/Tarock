@@ -2,6 +2,7 @@ package com.tisza.tarock.game.phase;
 
 public interface GameFinishedListener
 {
-	public void gameFinished(int[] points);
+	public int[] pointsEarned(int[] points);
+	public void gameFinished();
 	public void gameInterrupted();
 }

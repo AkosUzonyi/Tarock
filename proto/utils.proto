@@ -51,3 +51,11 @@ enum GameType
 	MAGAS = 2;
 	ZEBI = 3;
 }
+
+enum DoubleRoundType
+{
+	NONE = 0;
+	PECULATING = 1;
+	STACKING = 2;
+	MULTIPLYING = 3;
+}

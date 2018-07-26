@@ -1,5 +1,7 @@
 package com.tisza.tarock.game;
 
+import com.tisza.tarock.game.doubleround.*;
+import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
@@ -10,12 +12,14 @@ public class GameSession implements GameFinishedListener
 	private final GameType gameType;
 	private final PlayerSeat.Map<Player> players = new PlayerSeat.Map<>();
 
-	private PlayerSeat nextBeginnerPlayer = PlayerSeat.SEAT0;
+	private final DoubleRoundTracker doubleRoundTracker;
+
+	private PlayerSeat currentBeginnerPlayer = PlayerSeat.SEAT0;
 	private GameState currentGame;
 
 	private int[] points = new int[4];
 
-	public GameSession(GameType gameType, List<? extends Player> playerList)
+	public GameSession(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType)
 	{
 		if (players.size() != 4)
 			throw new IllegalArgumentException();
@@ -26,6 +30,8 @@ public class GameSession implements GameFinishedListener
 		{
 			players.put(PlayerSeat.fromInt(i), playerList.get(i));
 		}
+
+		doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 	}
 
 	public void startSession()
@@ -35,7 +41,7 @@ public class GameSession implements GameFinishedListener
 			players.get(seat).onAddedToGame(new GameSessionActionHandler(this), seat);
 		}
 
-		startNewGame(false);
+		startNewGame();
 	}
 
 	public void stopSession()
@@ -63,29 +69,34 @@ public class GameSession implements GameFinishedListener
 		return players.values().stream().map(Player::getName).collect(Collectors.toList());
 	}
 
-	void startNewGame(boolean doubleRound)
+	private void startNewGame()
 	{
-		currentGame = new GameState(gameType, players, nextBeginnerPlayer, this);
-
-		if (!doubleRound)
-			nextBeginnerPlayer = nextBeginnerPlayer.nextPlayer();
-
+		currentGame = new GameState(gameType, players, currentBeginnerPlayer, this, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
 	}
 
 	@Override
-	public void gameFinished(int[] points)
+	public int[] pointsEarned(int[] points)
 	{
 		for (int i = 0; i < 4; i++)
 		{
 			this.points[i] += points[i];
 		}
-		startNewGame(false);
+		return this.points;
+	}
+
+	@Override
+	public void gameFinished()
+	{
+		currentBeginnerPlayer = currentBeginnerPlayer.nextPlayer();
+		doubleRoundTracker.gameFinished();
+		startNewGame();
 	}
 
 	@Override
 	public void gameInterrupted()
 	{
-		startNewGame(true);
+		doubleRoundTracker.gameInterrupted();
+		startNewGame();
 	}
 }

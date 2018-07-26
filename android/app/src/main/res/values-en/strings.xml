@@ -8,4 +8,11 @@
     <string name="create_game">Create</string>
     <string name="too_much_user_selected">Select maximum 3 players</string>
     <string name="back">Back</string>
+
+    <string-array name="double_round_type_array">
+        <item>None</item>
+        <item>Peculating</item>
+        <item>Stacking</item>
+        <item>Multiplying</item>
+    </string-array>
 </resources>

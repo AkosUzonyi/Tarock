@@ -3,6 +3,7 @@ package com.tisza.tarock.net;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
@@ -162,5 +163,21 @@ public class Utils
 				.setType(gameTypeToProto(gameInfo.getType()))
 				.addAllPlayerName(gameInfo.getPlayerNames())
 				.build();
+	}
+
+	public static DoubleRoundType doubleRoundTypeFromProto(ProtoUtils.DoubleRoundType doubleRoundTypeProto)
+	{
+		switch (doubleRoundTypeProto)
+		{
+			case NONE:
+				return DoubleRoundType.NONE;
+			case PECULATING:
+				return DoubleRoundType.PECULATING;
+			case STACKING:
+				return DoubleRoundType.STACKING;
+			case MULTIPLYING:
+				return DoubleRoundType.MULTIPLYING;
+		}
+		throw new RuntimeException();
 	}
 }

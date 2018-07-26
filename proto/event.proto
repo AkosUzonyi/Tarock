@@ -81,7 +81,8 @@ message Event
 		repeated Entry opponent_entry = 4;
 		required sint32 sum_points = 5;
 		repeated sint32 player_point = 6;
-		
+		required int32 point_multiplier = 7;
+
 		message Entry
 		{
 			required Announcement announcement = 1;

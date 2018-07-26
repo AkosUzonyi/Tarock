@@ -50,6 +50,7 @@ message CreateGame
 {
     required GameType type = 1;
     repeated string userID = 2;
+    required DoubleRoundType double_round_type = 3;
 }
 
 message DeleteGame

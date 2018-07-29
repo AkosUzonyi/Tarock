@@ -7,7 +7,7 @@ import android.view.animation.*;
 import android.view.animation.Animation.*;
 import android.widget.*;
 import com.tisza.tarock.*;
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.card.*;
 
 public class PlayedCardView extends ImageView
 {

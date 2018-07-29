@@ -4,6 +4,7 @@ import android.os.*;
 import android.view.*;
 import android.widget.*;
 import com.tisza.tarock.*;
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
 

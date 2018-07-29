@@ -10,7 +10,8 @@ import android.view.animation.*;
 import android.view.animation.Animation.*;
 import android.widget.*;
 import com.tisza.tarock.*;
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 
@@ -209,7 +210,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	}
 
 	private List<String> playerNames;
-	private PlayerCards myCards;
+	protected PlayerCards myCards;
 	private int myID = -1;
 	private GameType gameType;
 	private int beginnerPlayer;

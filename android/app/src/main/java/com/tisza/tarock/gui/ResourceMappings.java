@@ -4,7 +4,7 @@ import android.annotation.*;
 import android.content.*;
 import android.content.res.*;
 import com.tisza.tarock.*;
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.card.*;
 
 import java.util.*;
 

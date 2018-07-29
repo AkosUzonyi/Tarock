@@ -1,4 +1,4 @@
-package com.tisza.tarock.card;
+package com.tisza.tarock.game.card;
 
 public class SuitCard extends Card
 {

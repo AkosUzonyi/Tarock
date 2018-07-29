@@ -1,4 +1,4 @@
-package com.tisza.tarock;
+package com.tisza.tarock.game;
 
 public class User implements Comparable<User>
 {

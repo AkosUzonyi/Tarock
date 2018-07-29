@@ -1,6 +1,6 @@
-package com.tisza.tarock.card.filter;
+package com.tisza.tarock.game.card.filter;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.card.*;
 
 public class CallableCardFilter implements CardFilter
 {

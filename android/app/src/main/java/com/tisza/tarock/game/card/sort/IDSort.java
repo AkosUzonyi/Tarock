@@ -1,6 +1,6 @@
-package com.tisza.tarock.card.sort;
+package com.tisza.tarock.game.card.sort;
 
-import com.tisza.tarock.card.*;
+import com.tisza.tarock.game.card.*;
 
 import java.util.*;
 

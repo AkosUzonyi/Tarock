@@ -9,8 +9,12 @@
     <string name="logging_in">Bejelentkezés&#8230;</string>
     <string name="join_game">Csatlakozás</string>
     <string name="delete_game">Törlés</string>
-    <string name="create_game">Létrehoz</string>
-    <string name="too_much_user_selected">"Maximum 4 játékost jelölj meg!"</string>
+
+    <string name="create_game">Játék létrehozása</string>
+    <string name="too_much_user_selected">"Maximum 3 játékost jelölj meg!"</string>
+    <plurals name="create_game_with_bots">
+        <item quantity="other">Játék létrehozása %1$d robottal</item>
+    </plurals>
 
     <string name="ok">OK</string>
     <string name="throw_cards">Bedob</string>

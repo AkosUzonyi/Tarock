@@ -14,10 +14,16 @@ public class AvailableUsersAdapter extends BaseAdapter
 	private final LayoutInflater inflater;
 	private List<User> users = new ArrayList<>();
 	private List<User> selectedUsers = new ArrayList<>();
+	private UsersSelectedListener usersSelectedListener;
 
 	public AvailableUsersAdapter(Context context)
 	{
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	}
+
+	public void setUsersSelectedListener(UsersSelectedListener usersSelectedListener)
+	{
+		this.usersSelectedListener = usersSelectedListener;
 	}
 
 	public void setUsers(Collection<User> newUsers)
@@ -25,6 +31,8 @@ public class AvailableUsersAdapter extends BaseAdapter
 		users = new ArrayList<>(newUsers);
 		Collections.sort(users);
 		selectedUsers.retainAll(users);
+		if (usersSelectedListener != null)
+			usersSelectedListener.usersSelected(selectedUsers);
 		notifyDataSetChanged();
 	}
 
@@ -36,6 +44,8 @@ public class AvailableUsersAdapter extends BaseAdapter
 	public void clearSelectedUsers()
 	{
 		selectedUsers.clear();
+		if (usersSelectedListener != null)
+			usersSelectedListener.usersSelected(selectedUsers);
 		notifyDataSetChanged();
 	}
 
@@ -103,6 +113,9 @@ public class AvailableUsersAdapter extends BaseAdapter
 			{
 				selectedUsers.remove(user);
 			}
+
+			if (usersSelectedListener != null)
+				usersSelectedListener.usersSelected(selectedUsers);
 		});
 
 		return view;
@@ -115,5 +128,10 @@ public class AvailableUsersAdapter extends BaseAdapter
 		public View isFriendView;
 		public ImageView isOnlineView;
 		public CheckBox checkBox;
+	}
+
+	public static interface UsersSelectedListener
+	{
+		public void usersSelected(List<User> users);
 	}
 }

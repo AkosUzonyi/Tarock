@@ -26,6 +26,7 @@
 
     <style name="button">
         <item name="android:textSize">@dimen/text_size</item>
+        <item name="android:textAlignment">center</item>
         <item name="android:background">@drawable/button_background</item>
         <item name="android:minHeight">@dimen/button_min_height</item>
         <item name="android:padding">@dimen/button_padding</item>

@@ -5,17 +5,15 @@
     <string name="new_game">Create game</string>
     <string name="join_game">Connect</string>
     <string name="delete_game">Delete</string>
-    <string name="create_game">Create</string>
-    <string name="too_much_user_selected">Select maximum 3 players</string>
     <string name="back">Back</string>
 
     <string name="game_type">Game type: </string>
     <string name="double_round_type">Double round type: </string>
 
-    <string-array name="double_round_type_array">
-        <item>None</item>
-        <item>Peculating</item>
-        <item>Stacking</item>
-        <item>Multiplying</item>
-    </string-array>
+    <string name="create_game">Create game</string>
+    <string name="too_much_user_selected">"Select maximum 3 players!"</string>
+    <plurals name="create_game_with_bots">
+        <item quantity="one">Create game with %1$d bot</item>
+        <item quantity="other">Create game with %1$d bots</item>
+    </plurals>
 </resources>

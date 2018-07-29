@@ -22,6 +22,11 @@ public class Client implements MessageHandler
 		connection.addMessageHandler(this);
 	}
 
+	public User getLoggedInUser()
+	{
+		return loggedInUser;
+	}
+
 	@Override
 	public void handleMessage(MainProto.Message message)
 	{
@@ -53,7 +58,7 @@ public class Client implements MessageHandler
 					loginMessageBuilder.setFacebookToken(fbAccessToken);
 				}
 
-				connection.sendMessage(MainProto.Message.newBuilder().setLogin(loginMessageBuilder.build()).build());
+				sendMessage(MainProto.Message.newBuilder().setLogin(loginMessageBuilder.build()).build());
 
 				server.broadcastStatus();
 
@@ -132,25 +137,9 @@ public class Client implements MessageHandler
 		}
 	}
 
-	public void sendStatus()
+	public void sendMessage(MainProto.Message message)
 	{
-		if (loggedInUser == null)
-			return;
-
-		MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
-
-		for (GameInfo gameInfo : server.getGameSessionManager().listGames())
-		{
-			builder.addAvailableGame(Utils.gameInfoToProto(gameInfo));
-		}
-
-		for (User user : server.getFacebookUserManager().listUsers())
-		{
-			if (!user.equals(loggedInUser))
-				builder.addAvailableUser(Utils.userToProto(user, loggedInUser.isFriendWith(user)));
-		}
-
-		connection.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());
+		connection.sendMessage(message);
 	}
 
 	@Override

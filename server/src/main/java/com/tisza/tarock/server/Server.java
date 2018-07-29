@@ -2,6 +2,7 @@ package com.tisza.tarock.server;
 
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
+import com.tisza.tarock.proto.*;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -113,7 +114,20 @@ public class Server implements Runnable
 	{
 		for (Client client : clients)
 		{
-			client.sendStatus();
+			MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
+
+			for (GameInfo gameInfo : gameSessionManager.listGames())
+			{
+				builder.addAvailableGame(Utils.gameInfoToProto(gameInfo));
+			}
+
+			for (User user : facebookUserManager.listUsers())
+			{
+				if (!user.equals(client.getLoggedInUser()))
+					builder.addAvailableUser(Utils.userToProto(user, client.getLoggedInUser().isFriendWith(user)));
+			}
+
+			client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());
 		}
 	}
 

@@ -9,6 +9,9 @@
     <string name="too_much_user_selected">Select maximum 3 players</string>
     <string name="back">Back</string>
 
+    <string name="game_type">Game type: </string>
+    <string name="double_round_type">Double round type: </string>
+
     <string-array name="double_round_type_array">
         <item>None</item>
         <item>Peculating</item>

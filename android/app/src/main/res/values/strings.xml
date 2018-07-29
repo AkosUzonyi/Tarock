@@ -40,6 +40,9 @@
     <string name="bid0">Szóló</string>
     <string name="bid_passz">Passz</string>
 
+    <string name="game_type">Játék típus: </string>
+    <string name="double_round_type">Duplakör: </string>
+
     <string-array name="game_type_array">
         <item>Paskievics</item>
         <item>Illusztrált</item>

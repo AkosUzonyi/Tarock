@@ -76,7 +76,7 @@ public class MixedPlayer implements Player
 		changeActivePlayer(null);
 	}
 
-	private EventSender phaseTrackerEventSender = new DummyEventSender()
+	private EventSender phaseTrackerEventSender = new EventSender()
 	{
 		@Override
 		public void phaseChanged(PhaseEnum phase)

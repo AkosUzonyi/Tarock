@@ -6,6 +6,7 @@ import android.os.*;
 import com.facebook.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;

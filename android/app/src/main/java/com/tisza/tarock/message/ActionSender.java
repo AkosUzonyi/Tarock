@@ -7,12 +7,12 @@ import java.util.*;
 
 public interface ActionSender
 {
-	public void announce(Announcement announcementContra);
-	public void announcePassz();
-	public void bid(int bid);
-	public void call(Card card);
-	public void change(List<Card> cards);
-	public void playCard(Card card);
-	public void readyForNewGame();
-	public void throwCards();
+	default void announce(Announcement announcementContra) {}
+	default void announcePassz() {}
+	default void bid(int bid) {}
+	default void call(Card card) {}
+	default void change(List<Card> cards) {}
+	default void playCard(Card card) {}
+	default void readyForNewGame() {}
+	default void throwCards() {}
 }

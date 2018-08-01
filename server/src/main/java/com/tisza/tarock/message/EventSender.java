@@ -8,23 +8,23 @@ import java.util.*;
 
 public interface EventSender
 {
-	void announce(PlayerSeat player, AnnouncementContra announcement);
-	void announcePassz(PlayerSeat player);
-	void bid(PlayerSeat player, int bid);
-	void call(PlayerSeat player, Card card);
-	void playCard(PlayerSeat player, Card card);
-	void readyForNewGame(PlayerSeat player);
-	void throwCards(PlayerSeat player);
-	void turn(PlayerSeat player);
-	void startGame(PlayerSeat seat, List<String> names, GameType gameType, PlayerSeat beginnerPlayer);
-	void playerCards(PlayerCards cards);
-	void phaseChanged(PhaseEnum phase);
-	void availabeBids(Collection<Integer> bids);
-	void availabeCalls(Collection<Card> cards);
-	void changeDone(PlayerSeat player);
-	void skartTarock(PlayerSeat.Map<Integer> counts);
-	void availableAnnouncements(List<AnnouncementContra> announcements);
-	void cardsTaken(PlayerSeat player);
-	void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points, int pointMultiplier);
-	void pendingNewGame();
+	default void announce(PlayerSeat player, AnnouncementContra announcement) {}
+	default void announcePassz(PlayerSeat player) {}
+	default void bid(PlayerSeat player, int bid) {}
+	default void call(PlayerSeat player, Card card) {}
+	default void playCard(PlayerSeat player, Card card) {}
+	default void readyForNewGame(PlayerSeat player) {}
+	default void throwCards(PlayerSeat player) {}
+	default void turn(PlayerSeat player) {}
+	default void startGame(PlayerSeat seat, List<String> names, GameType gameType, PlayerSeat beginnerPlayer) {}
+	default void playerCards(PlayerCards cards) {}
+	default void phaseChanged(PhaseEnum phase) {}
+	default void availabeBids(Collection<Integer> bids) {}
+	default void availabeCalls(Collection<Card> cards) {}
+	default void changeDone(PlayerSeat player) {}
+	default void skartTarock(PlayerSeat.Map<Integer> counts) {}
+	default void availableAnnouncements(List<AnnouncementContra> announcements) {}
+	default void cardsTaken(PlayerSeat player) {}
+	default void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points, int pointMultiplier) {}
+	default void pendingNewGame() {}
 }

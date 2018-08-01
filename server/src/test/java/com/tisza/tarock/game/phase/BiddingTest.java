@@ -12,7 +12,7 @@ import java.util.*;
 import static org.junit.Assert.*;
 import static org.junit.runners.Parameterized.*;
 
-import com.tisza.tarock.game.phase.Bidding.Invitation;
+import com.tisza.tarock.game.Invitation;
 
 @RunWith(Parameterized.class)
 public class BiddingTest

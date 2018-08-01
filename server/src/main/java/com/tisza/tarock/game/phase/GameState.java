@@ -168,6 +168,15 @@ public class GameState
 		currentPhase.onStart();
 	}
 
+	public void sendHistoryToPlayer(PlayerSeat player)
+	{
+		EventSender eventSender = getPlayerEventSender(player);
+		eventSender.startGame(player, getPlayerNames(), gameType, beginnerPlayer);
+		eventSender.playerCards(playersCards.get(player));
+		history.sendCurrentStatusToPlayer(player, currentPhase.asEnum(), eventSender);
+		eventSender.phaseChanged(currentPhase.asEnum());
+	}
+
 	public Phase getCurrentPhase()
 	{
 		return currentPhase;

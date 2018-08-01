@@ -8,19 +8,19 @@ import java.util.*;
 
 public class BroadcastEventSender implements EventSender
 {
-	private List<EventSender> eventSenders;
+	private Collection<EventSender> eventSenders;
 
 	public BroadcastEventSender()
 	{
 		setEventSenders(Collections.EMPTY_LIST);
 	}
 
-	public BroadcastEventSender(List<EventSender> eventSenders)
+	public BroadcastEventSender(Collection<EventSender> eventSenders)
 	{
 		setEventSenders(eventSenders);
 	}
 
-	public void setEventSenders(List<EventSender> eventSenders)
+	public void setEventSenders(Collection<EventSender> eventSenders)
 	{
 		this.eventSenders = eventSenders;
 	}
@@ -94,6 +94,15 @@ public class BroadcastEventSender implements EventSender
 		for (EventSender eventSender : eventSenders)
 		{
 			eventSender.turn(player);
+		}
+	}
+
+	@Override
+	public void playerTeamInfo(PlayerSeat player, Team team)
+	{
+		for (EventSender eventSender : eventSenders)
+		{
+			eventSender.playerTeamInfo(player, team);
 		}
 	}
 

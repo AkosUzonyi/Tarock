@@ -35,9 +35,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private TextView[] playerNameViews;
 	private TextView[] playerMessageViews;
 	private View[] skartViews;
-	private LinearLayout myCardsView;
 	private LinearLayout myCardsView0;
 	private LinearLayout myCardsView1;
+	private View cardsBackgroundColorView;
+	private View cardsHighlightView;
 	private FrameLayout centerSpace;
 	private Button okButton;
 	private Button throwButton;
@@ -113,9 +114,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 				contentView.findViewById(R.id.skart_3),
 		};
 
-		myCardsView = (LinearLayout)contentView.findViewById(R.id.my_cards);
 		myCardsView0 = (LinearLayout)contentView.findViewById(R.id.my_cards_0);
 		myCardsView1 = (LinearLayout)contentView.findViewById(R.id.my_cards_1);
+		cardsBackgroundColorView = contentView.findViewById(R.id.cards_background_color);
+		cardsHighlightView = contentView.findViewById(R.id.cards_highlight);
 
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
@@ -198,9 +200,18 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		messagesTextView.setText("");
 		availabeActionsView.removeAllViews();
 
+		cardsHighlightView.setVisibility(View.GONE);
+		cardsBackgroundColorView.setBackgroundDrawable(null);
+
 		for (PlayedCardView playedCardView : playedCardViews)
 		{
 			playedCardView.clear();
+		}
+
+		for (TextView nameView : playerNameViews)
+		{
+			if (nameView != null)
+				nameView.setTextColor(getResources().getColor(R.color.unknown_team));
 		}
 
 		for (View skartView : skartViews)
@@ -514,7 +525,23 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			highlightName(player);
 		}
 	}
-	
+
+	@Override
+	public void playerTeamInfo(int player, boolean callerTeam)
+	{
+		int pos = getPositionFromPlayerID(player);
+		int color = getResources().getColor(callerTeam ? R.color.caller_team : R.color.opponent_team);
+
+		if (pos == 0)
+		{
+			cardsBackgroundColorView.setBackgroundColor(color);
+		}
+		else
+		{
+			playerNameViews[pos].setTextColor(color);
+		}
+	}
+
 	@Override
 	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points, int pointMultiplier)
 	{
@@ -770,7 +797,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		
 		if (pos == 0)
 		{
-			myCardsView.setBackgroundResource(val ? R.drawable.cards_highlight : R.drawable.cards);
+			cardsHighlightView.setVisibility(val ? View.VISIBLE : View.GONE);
 		}
 		else
 		{

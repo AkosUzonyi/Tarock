@@ -11,7 +11,6 @@ class Announcing extends Phase implements IAnnouncing
 	private PlayerSeat currentPlayer;
 	private boolean currentPlayerAnnounced = false;
 	private PlayerSeat lastAnnouncer = null;
-	private IdentityTracker idTrack;
 
 	public Announcing(GameState game)
 	{
@@ -28,8 +27,7 @@ class Announcing extends Phase implements IAnnouncing
 	public void onStart()
 	{
 		currentPlayer = game.getPlayerPairs().getCaller();
-		idTrack = new IdentityTracker(game.getPlayerPairs(), game.getInvitAccepted());
-		
+
 		announce(currentPlayer, Announcements.jatek);
 	}
 
@@ -58,15 +56,6 @@ class Announcing extends Phase implements IAnnouncing
 			return;
 		
 		currentPlayerAnnounced = true;
-		
-		if (ac.getAnnouncement() == Announcements.hkp)
-		{
-			idTrack.allIdentityRevealed();
-		}
-		else if (ac.getAnnouncement().requireIdentification())
-		{
-			idTrack.identityRevealed(player);
-		}
 
 		if (ac.getAnnouncement().shouldBeStored())
 		{
@@ -192,7 +181,7 @@ class Announcing extends Phase implements IAnnouncing
 		Team currentPlayerTeam = game.getPlayerPairs().getTeam(currentPlayer);
 		Team lastAnnouncerTeam = game.getPlayerPairs().getTeam(lastAnnouncer);
 		
-		return currentPlayerTeam != lastAnnouncerTeam && !idTrack.isIdentityKnown(currentPlayer);
+		return currentPlayerTeam != lastAnnouncerTeam && !game.getTeamInfoTracker().isTeamInfoGlobalOf(currentPlayer);
 	}
 
 	@Override
@@ -277,37 +266,4 @@ class Announcing extends Phase implements IAnnouncing
 		return game.getGameType();
 	}
 
-	private static class IdentityTracker
-	{
-		private final PlayerPairs playerPairs;
-		private PlayerSeat.Map<Boolean> identityKnown = new PlayerSeat.Map<>(false);
-		
-		public IdentityTracker(PlayerPairs pp, Invitation invitAccepted)
-		{
-			playerPairs = pp;
-			if (invitAccepted != Invitation.NONE)
-			{
-				allIdentityRevealed();
-			}
-		}
-		
-		public void identityRevealed(PlayerSeat player)
-		{
-			if (player == playerPairs.getCalled() && !playerPairs.isSolo())
-			{
-				identityKnown.fill(true);
-			}
-			identityKnown.put(player, true);
-		}
-		
-		public void allIdentityRevealed()
-		{
-			identityKnown.fill(true);
-		}
-		
-		public boolean isIdentityKnown(PlayerSeat player)
-		{
-			return identityKnown.get(player);
-		}
-	}
 }

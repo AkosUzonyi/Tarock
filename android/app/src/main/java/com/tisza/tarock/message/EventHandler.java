@@ -24,6 +24,7 @@ public interface EventHandler
 	default void cardsChanged(List<Card> pc) {}
 	default void skartTarock(int[] counts) {}
 	default void turn(int player) {}
+	default void playerTeamInfo(int player, boolean callerTeam) {}
 	default void wrongAction() {}
 	default void pendingNewGame() {}
 	default void readyForNewGame(int player) {}

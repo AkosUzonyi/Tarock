@@ -20,6 +20,8 @@ public class GameState
 	private final GameFinishedListener gameFinishedListener;
 	private EventSender broadcastEventSender;
 
+	private TeamInfoTracker teamInfoTracker;
+
 	private GameHistory history;
 
 	private Phase currentPhase;
@@ -73,8 +75,16 @@ public class GameState
 		this.gameFinishedListener = gameFinishedListener;
 		this.pointMultiplier = pointMultiplier;
 
+		teamInfoTracker = new TeamInfoTracker(this);
 		history = new GameHistory();
-		broadcastEventSender = new BroadcastEventSender(players.values().stream().map(Player::getEventSender).collect(Collectors.toList()));
+
+		Collection<EventSender> eventSenders = new ArrayList<>();
+		eventSenders.add(teamInfoTracker);
+		for (Player player : players.values())
+		{
+			eventSenders.add(player.getEventSender());
+		}
+		broadcastEventSender = new BroadcastEventSender(eventSenders);
 	}
 
 	public void start()
@@ -145,17 +155,22 @@ public class GameState
 		return talon;
 	}
 
+	public TeamInfoTracker getTeamInfoTracker()
+	{
+		return teamInfoTracker;
+	}
+
 	public GameHistory getHistory()
 	{
 		return history;
 	}
 
-	EventSender getBroadcastEventSender()
+	public EventSender getBroadcastEventSender()
 	{
 		return broadcastEventSender;
 	}
 
-	EventSender getPlayerEventSender(PlayerSeat player)
+	public EventSender getPlayerEventSender(PlayerSeat player)
 	{
 		return players.get(player).getEventSender();
 	}
@@ -174,6 +189,7 @@ public class GameState
 		eventSender.playerCards(playersCards.get(player));
 		history.sendCurrentStatusToPlayer(player, currentPhase.asEnum(), eventSender);
 		eventSender.phaseChanged(currentPhase.asEnum());
+		teamInfoTracker.sendStatusToPlayer(player);
 	}
 
 	public Phase getCurrentPhase()

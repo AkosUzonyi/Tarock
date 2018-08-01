@@ -16,6 +16,7 @@ public interface EventSender
 	default void readyForNewGame(PlayerSeat player) {}
 	default void throwCards(PlayerSeat player) {}
 	default void turn(PlayerSeat player) {}
+	default void playerTeamInfo(PlayerSeat player, Team team) {}
 	default void startGame(PlayerSeat seat, List<String> names, GameType gameType, PlayerSeat beginnerPlayer) {}
 	default void playerCards(PlayerCards cards) {}
 	default void phaseChanged(PhaseEnum phase) {}

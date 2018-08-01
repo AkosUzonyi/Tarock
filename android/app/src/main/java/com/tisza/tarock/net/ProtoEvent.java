@@ -26,6 +26,10 @@ public class ProtoEvent implements Event
 			case TURN:
 				handler.turn(event.getTurn().getPlayer());
 				break;
+			case PLAYER_TEAM_INFO:
+				EventProto.Event.PlayerTeamInfo playerTeamInfo = event.getPlayerTeamInfo();
+				handler.playerTeamInfo(playerTeamInfo.getPlayer(), playerTeamInfo.getIsCaller());
+				break;
 			case PLAYER_CARDS:
 				handler.cardsChanged(Utils.cardListFromProto(event.getPlayerCards().getCardList()));
 				break;

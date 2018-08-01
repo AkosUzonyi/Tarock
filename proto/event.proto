@@ -14,6 +14,7 @@ message Event
 		StartGame start_game = 1;
 		PlayerAction player_action = 2;
 		Turn turn = 13;
+		PlayerTeamInfo player_team_info = 14;
 		PlayerCards player_cards = 3;
 		PhaseChanged phase_changed = 4;
 		AvailableBids available_bids= 5;
@@ -40,6 +41,11 @@ message Event
 	message Turn
 	{
 		required int32 player = 1;
+	}
+	message PlayerTeamInfo
+	{
+		required int32 player = 1;
+		required bool is_caller = 2;
 	}
 	message PlayerCards
 	{

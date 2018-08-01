@@ -168,30 +168,48 @@
             style="@style/player_message"
             />
     </RelativeLayout>
-    
-    <LinearLayout
-		android:id="@+id/my_cards"
+
+	<RelativeLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		android:orientation="vertical"
-		android:gravity="center_horizontal"
 		android:background="@drawable/cards"
-        >
+		>
+
+		<View
+			android:id="@+id/cards_background_color"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_alignTop="@id/my_cards_1"
+			android:layout_alignBottom="@id/my_cards_0"
+			android:alpha="0.25"
+		/>
+
+		<View
+			android:id="@+id/cards_highlight"
+			android:layout_width="match_parent"
+			android:layout_height="0dp"
+			android:layout_alignTop="@id/my_cards_1"
+			android:layout_alignBottom="@id/my_cards_0"
+			android:background="@drawable/cards_highlight"
+		/>
 
 		<LinearLayout
 			android:id="@+id/my_cards_1"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
 			android:orientation="horizontal"
-			>
-		</LinearLayout> 	
-		
+		>
+		</LinearLayout>
+
 		<LinearLayout
 			android:id="@+id/my_cards_0"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
+			android:layout_below="@id/my_cards_1"
+			android:layout_centerHorizontal="true"
 			android:orientation="horizontal"
-			>
-		</LinearLayout>
-	</LinearLayout>
+		/>
+	</RelativeLayout>
 </LinearLayout>

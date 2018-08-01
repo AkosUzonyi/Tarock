@@ -30,7 +30,7 @@ public class Server implements Runnable
 		this.port = port;
 		this.keystoreFile = keystoreFile;
 
-		gameExecutorService = Executors.newSingleThreadScheduledExecutor(new GameThreadFactory());
+		gameExecutorService = new GameExecutorService();
 		gameSessionManager = new GameSessionManager(new RandomPlayerFactory());
 		facebookUserManager = new FacebookUserManager();
 	}

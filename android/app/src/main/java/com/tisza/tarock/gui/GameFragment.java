@@ -216,6 +216,13 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		cardsHighlightView.setVisibility(View.GONE);
 		cardsBackgroundColorView.setBackgroundDrawable(null);
 
+		statisticsGamepointsSelf.setText(null);
+		statisticsGamepointsOpponent.setText(null);
+		statisticsPointMultiplierView.setVisibility(View.GONE);
+		statisticsSelfEntriesView.removeAllViews();
+		statisticsOpponentEntriesView.removeAllViews();
+		statisticsSumPointsView.setText(null);
+
 		for (PlayedCardView playedCardView : playedCardViews)
 		{
 			playedCardView.clear();
@@ -558,22 +565,16 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	@Override
 	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points, int pointMultiplier)
 	{
-		statisticsGamepointsSelf.setText(selfGamePoints + "");
-		statisticsGamepointsOpponent.setText(opponentGamePoints + "");
+		statisticsGamepointsSelf.setText(String.valueOf(selfGamePoints));
+		statisticsGamepointsOpponent.setText(String.valueOf(opponentGamePoints));
 
 		statisticsPointMultiplierView.setVisibility(pointMultiplier == 1 ? View.GONE : View.VISIBLE);
 		statisticsPointMultiplierView.setText(getString(R.string.statictics_point_multiplier, pointMultiplier));
-		
-		statisticsSelfEntriesView.removeAllViews();
-		statisticsOpponentEntriesView.removeAllViews();
-		
-		appendHeaderToStatistics(statisticsSelfEntriesView, R.string.statictics_self, R.string.statictics_points);
+
 		appendEntriesToStatistics(statisticsSelfEntriesView, selfEntries);
-		
-		appendHeaderToStatistics(statisticsOpponentEntriesView, R.string.statictics_opponent, R.string.statictics_points);
 		appendEntriesToStatistics(statisticsOpponentEntriesView, opponentEntries);
 		
-		statisticsSumPointsView.setText(sumPoints + "");
+		statisticsSumPointsView.setText(String.valueOf(sumPoints));
 		statisticsSumPointsView.setTextColor(sumPoints >= 0 ? Color.BLACK : Color.RED);
 		
 		for (int i = 0; i < 4; i++)
@@ -583,23 +584,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			nameView.setGravity(Gravity.CENTER);
 			
 			TextView pointsView = statisticsPointsValueViews[i];
-			pointsView.setText(points.get(i) + "");
+			pointsView.setText(String.valueOf(points.get(i)));
 			pointsView.setGravity(Gravity.CENTER);
 		}
 	}
-	
-	private void appendHeaderToStatistics(ViewGroup viewToAppend, int res0, int res1)
-	{
-		View entryView = layoutInflater.inflate(R.layout.statistics_header, viewToAppend, false);
-		TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
-		TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
-		
-		nameView.setText(res0);
-		pointsView.setText(res1);
-		
-		viewToAppend.addView(entryView);
-	}
-	
+
 	private void appendEntriesToStatistics(ViewGroup viewToAppend, List<AnnouncementStaticticsEntry> entries)
 	{
 		for (AnnouncementStaticticsEntry entry : entries)
@@ -609,7 +598,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
 			
 			nameView.setText(entry.getAnnouncement().getDisplayText());
-			pointsView.setText(entry.getPoints() + "");
+			pointsView.setText(String.valueOf(entry.getPoints()));
 			pointsView.setTextColor(entry.getPoints() >= 0 ? Color.BLACK : Color.RED);
 			
 			viewToAppend.addView(entryView);

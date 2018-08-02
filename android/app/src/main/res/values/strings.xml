@@ -151,8 +151,8 @@
     <string name="announcement_kilenctarokk">kilenc tarokk</string>
 
     <string name="statictics_point_multiplier">Duplakör szorzó: %1$d</string>
-    <string name="statictics_self">Saját figurák</string>
-    <string name="statictics_opponent">Ellenfél figurái</string>
-    <string name="statictics_points">Pont</string>
+    <string name="statistics_self">Saját figurák</string>
+    <string name="statistics_opponent">Ellenfél figurái</string>
+    <string name="statistics_points">Pont</string>
     <string name="statictics_sum">Összesen:</string>
 </resources>

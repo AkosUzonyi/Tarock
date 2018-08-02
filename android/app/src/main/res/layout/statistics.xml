@@ -51,6 +51,31 @@
 		/>
 
 		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			>
+
+			<TextView
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.7"
+				android:text="@string/statistics_self"
+				android:textSize="@dimen/statistics_header_text_size"
+				style="@style/shadow_text"
+			/>
+
+			<TextView
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.3"
+				android:text="@string/statistics_points"
+				android:textSize="@dimen/statistics_header_text_size"
+				style="@style/shadow_text"
+			/>
+		</LinearLayout>
+
+		<LinearLayout
 		    android:id="@+id/statistics_self_entries_list"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
@@ -59,7 +84,32 @@
 		    android:padding="4dp"
 		    >
 		</LinearLayout>
-	    
+
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal"
+			>
+
+			<TextView
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.7"
+				android:text="@string/statistics_opponent"
+				android:textSize="@dimen/statistics_header_text_size"
+				style="@style/shadow_text"
+			/>
+
+			<TextView
+				android:layout_width="0dp"
+				android:layout_height="wrap_content"
+				android:layout_weight="0.3"
+				android:text="@string/statistics_points"
+				android:textSize="@dimen/statistics_header_text_size"
+				style="@style/shadow_text"
+			/>
+		</LinearLayout>
+
 		<LinearLayout
 		    android:id="@+id/statistics_opponent_entries_list"
 		    android:layout_width="match_parent"

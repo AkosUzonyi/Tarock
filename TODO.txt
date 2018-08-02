@@ -3,15 +3,18 @@ bugs:
 caller's skart is not shown
 round annoucement annoucablity
 silent trull, negykiral... after volat
+identity tracker: self skart called
 
 needs fix:
 check malicious accesstoken
+check accesstoken app id
 
 renames:
 
 little nice things:
 canBeAnnounced: remove AnnouncementBase's implementation
 create AnnouncementInstance class (Announcement, contraLevel, announcerteam)
+buffer messages
 
 features:
 error messages
@@ -23,6 +26,7 @@ save finished games
 log
 
 refactorizations:
+use separate executorservice for network
  
 other:
 final classes?

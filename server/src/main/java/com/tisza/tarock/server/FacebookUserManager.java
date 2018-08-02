@@ -1,6 +1,7 @@
 package com.tisza.tarock.server;
 
 import org.json.*;
+import sun.net.util.*;
 
 import java.io.*;
 import java.net.*;
@@ -41,6 +42,7 @@ public class FacebookUserManager
 			URL url = new URL("https://graph.facebook.com/me/?fields=id,name,picture,friends&access_token=" + accessToken);
 			HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
 			urlConnection.setRequestMethod("GET");
+			urlConnection.setReadTimeout(1000);
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 			StringBuffer response = new StringBuffer();

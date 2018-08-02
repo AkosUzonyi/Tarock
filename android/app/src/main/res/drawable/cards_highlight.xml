@@ -3,6 +3,6 @@
 
 	<stroke
 		android:width="3dp"
-		android:color="#00C000"
+		android:color="@color/turn0"
 		/>
 </shape>

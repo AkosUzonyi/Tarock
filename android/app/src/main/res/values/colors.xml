@@ -2,4 +2,7 @@
     <color name="unknown_team">#000000</color>
     <color name="caller_team">#000070</color>
     <color name="opponent_team">#900000</color>
+
+    <color name="turn0">#A000D000</color>
+    <color name="turn1">#A000A000</color>
 </resources>

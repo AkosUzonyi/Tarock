@@ -38,7 +38,22 @@ public class ZebiSounds
 		zebiSounds.add(new Jobbfelni(context));
 		zebiSounds.add(new Kontranemkontra(context));
 		zebiSounds.add(new Skizultimo(context));
-		zebiSounds.add(new Szuperlicit(context));
+		zebiSounds.add(new Licit1(context));
+		zebiSounds.add(new RandomSound(context, R.raw.aaa, R.raw.thisistherule, R.raw.csokoladetkivanok, R.raw.csanadipattanaatablara, R.raw.nemtiiranyitotok, R.raw.nincs, R.raw.szaramikororkenyszer, R.raw.beszarjatok));
+		zebiSounds.add(new Kemenyenbelecsap(context));
+		zebiSounds.add(new CardSound(context, Card.getTarockCard(9), R.raw.kilences));
+		zebiSounds.add(new CardSound(context, Card.getTarockCard(1), R.raw.egyesvarhato));
+		zebiSounds.add(new CardSound(context, Card.getTarockCard(4), R.raw.negyes));
+		zebiSounds.add(new CardSound(context, Card.getTarockCard(16), R.raw.tizenhat));
+		zebiSounds.add(new CardSound(context, Card.getTarockCard(19), R.raw.tizenkilenckemeny));
+		zebiSounds.add(new CardSound(context, Card.getTarockCard(20), R.raw.huszasmagasc));
+		zebiSounds.add(new TarokkKi(context, 12, R.raw.tizenkettotarokkki));
+		zebiSounds.add(new TarokkKi(context, 16, R.raw.tizenhattarokkkiultimegvan));
+		zebiSounds.add(new Urlap(context));
+		zebiSounds.add(new CatchXIX(context));
+		zebiSounds.add(new AnnouncementSound(context, new Announcement("jatek", 1), R.raw.kontraparti));
+		zebiSounds.add(new Indul(context));
+		zebiSounds.add(new AnnouncementSound(context, new Announcement("ketkiralyok", 0), R.raw.ketkiralyok));
 	}
 
 	public Collection<ZebiSound> getZebiSounds()

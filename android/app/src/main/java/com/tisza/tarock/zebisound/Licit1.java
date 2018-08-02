@@ -4,13 +4,13 @@ import android.content.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 
-class Szuperlicit extends ZebiSound
+class Licit1 extends ZebiSound
 {
 	private int lastBid;
 
-	public Szuperlicit(Context context)
+	public Licit1(Context context)
 	{
-		super(context, 0.3F, R.raw.szuperlicit);
+		super(context, 0.4F, R.raw.szuperlicit, R.raw.hemondomegy);
 	}
 
 	@Override

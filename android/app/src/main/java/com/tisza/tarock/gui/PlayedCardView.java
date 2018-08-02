@@ -1,5 +1,6 @@
 package com.tisza.tarock.gui;
 
+import android.annotation.*;
 import android.content.*;
 import android.util.*;
 import android.view.*;
@@ -9,11 +10,11 @@ import android.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.card.*;
 
+@SuppressLint("AppCompatCustomView")
 public class PlayedCardView extends ImageView
 {
 	private int orientation;
 	private boolean isAnimating = false;
-	private Card currentCard, pendingCard;
 
 	public PlayedCardView(Context context, int width, int height, int orientation)
 	{
@@ -36,41 +37,17 @@ public class PlayedCardView extends ImageView
 	
 	public void setCard(Card card)
 	{
-		if (currentCard == null)
-		{
-			setCurrentCard(card);
-		}
-		else
-		{
-			pendingCard = card;
-		}
-	}
-	
-	public void showPendingCard()
-	{
-		setCurrentCard(pendingCard);
-		pendingCard = null;
-	}
-
-	private void setCurrentCard(Card card)
-	{
-		currentCard = card;
-		if (currentCard == null)
-		{
+		if (card == null)
 			setImageBitmap(null);
-		}
 		else
-		{
-			setImageResource(getBitmapResForCard(currentCard));
-		}
+			setImageResource(getBitmapResForCard(card));
 	}
 
 	public void clear()
 	{
-		setCurrentCard(null);
-		pendingCard = null;
+		setCard(null);
 	}
-	
+
 	private Animation createPositionAnimation()
 	{
 		int w = getWidth();
@@ -186,9 +163,8 @@ public class PlayedCardView extends ImageView
 			public void onAnimationEnd(Animation animation)
 			{
 				if (!play)
-				{
-					showPendingCard();
-				}
+					clear();
+
 				startAnimation(createStaticPositionAnimation());
 				isAnimating = false;
 			}

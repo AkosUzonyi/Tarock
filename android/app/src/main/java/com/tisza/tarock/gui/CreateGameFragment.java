@@ -1,5 +1,6 @@
 package com.tisza.tarock.gui;
 
+import android.content.*;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
@@ -12,6 +13,10 @@ import java.util.*;
 
 public class CreateGameFragment extends MainActivityFragment implements AvailableUsersAdapter.UsersSelectedListener
 {
+	private static final String SHARED_PREF = "create_game_spinners";
+	private static final String GAME_TYPE_KEY = "game_type";
+	private static final String DOUBLE_ROUND_TYPE_KEY = "double_round_type";
+
 	private static final int SELECT_USER_COUNT = 3;
 
 	private Spinner gameTypeSpinner, doubleRoundTypeSpinner;
@@ -38,6 +43,10 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 		availableUsersView.addHeaderView(new View(getActivity()));
 		availableUsersView.setAdapter(availableUsersAdapter);
 
+		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
+		gameTypeSpinner.setSelection(sharedPreferences.getInt(GAME_TYPE_KEY, 0));
+		doubleRoundTypeSpinner.setSelection(sharedPreferences.getInt(DOUBLE_ROUND_TYPE_KEY, 0));
+
 		return view;
 	}
 
@@ -53,6 +62,12 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 	{
 		if (selectedUsers.size() > SELECT_USER_COUNT)
 			return;
+
+		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
+		sharedPreferences.edit()
+				.putInt(GAME_TYPE_KEY, gameTypeSpinner.getSelectedItemPosition())
+				.putInt(DOUBLE_ROUND_TYPE_KEY, doubleRoundTypeSpinner.getSelectedItemPosition())
+				.apply();
 
 		MainProto.CreateGame.Builder builder = MainProto.CreateGame.newBuilder();
 

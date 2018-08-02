@@ -14,6 +14,7 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
+import com.tisza.tarock.zebisound.*;
 
 import java.util.*;
 
@@ -29,6 +30,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 	private static final float cardImageRatio = 1.66F;
 	private int cardWidth, cardHeight;
+
+	private ZebiSounds zebiSounds;
 
 	private LayoutInflater layoutInflater;
 
@@ -74,6 +77,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		ResourceMappings.init(getActivity());
 
 		layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		zebiSounds = new ZebiSounds(getActivity());
 	}
 
 	private ActionSender getActionSender()
@@ -173,7 +177,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		statisticsPointsValueViews[2] = (TextView)contentView.findViewById(R.id.statistics_points_value_2);
 		statisticsPointsValueViews[3] = (TextView)contentView.findViewById(R.id.statistics_points_value_3);
 
-		getMainActivity().setEventHandler(this);
+		for (ZebiSound zebiSound : zebiSounds.getZebiSounds())
+		{
+			getMainActivity().addEventHandler(zebiSound);
+		}
+		getMainActivity().addEventHandler(this);
 		getMainActivity().getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
 				.setGameId(getArguments().getInt("gameID"))
 				.build())
@@ -186,7 +194,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	public void onDestroy()
 	{
 		super.onDestroy();
-		getMainActivity().setEventHandler(null);
+
+		for (ZebiSound zebiSound : zebiSounds.getZebiSounds())
+		{
+			getMainActivity().removeEventHandler(zebiSound);
+		}
+		getMainActivity().removeEventHandler(this);
 		getMainActivity().getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
 				.build())
 				.build());

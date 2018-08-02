@@ -71,9 +71,10 @@ public class Announcement implements Comparable<Announcement>
 		return suit;
 	}
 
-	public void setSuit(int suit)
+	public Announcement setSuit(int suit)
 	{
 		this.suit = suit;
+		return this;
 	}
 
 	public boolean hasCard()
@@ -86,9 +87,10 @@ public class Announcement implements Comparable<Announcement>
 		return card;
 	}
 
-	public void setCard(Card card)
+	public Announcement setCard(Card card)
 	{
 		this.card = card;
+		return this;
 	}
 
 	public boolean hasRound()
@@ -101,9 +103,10 @@ public class Announcement implements Comparable<Announcement>
 		return round;
 	}
 
-	public void setRound(int round)
+	public Announcement setRound(int round)
 	{
 		this.round = round;
+		return this;
 	}
 
 	@Override

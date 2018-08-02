@@ -33,7 +33,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	private boolean loggedIn = false;
 	private ProtoConnection connection;
 	private ActionSender actionSender;
-	private EventHandler eventHandler;
+	private Collection<EventHandler> eventHandlers = new ArrayList<>();
 
 	private GameListAdapter gameListAdapter;
 	private AvailableUsersAdapter availableUsersAdapter;
@@ -204,7 +204,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				break;
 
 			case EVENT:
-				if (eventHandler != null)
+				for (EventHandler eventHandler : eventHandlers)
 					new ProtoEvent(message.getEvent()).handle(eventHandler);
 
 				break;
@@ -271,9 +271,14 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		return connection;
 	}
 
-	public void setEventHandler(EventHandler eventHandler)
+	public void addEventHandler(EventHandler eventHandler)
 	{
-		this.eventHandler = eventHandler;
+		eventHandlers.add(eventHandler);
+	}
+
+	public void removeEventHandler(EventHandler eventHandler)
+	{
+		eventHandlers.remove(eventHandler);
 	}
 
 	public GameListAdapter getGameListAdapter()

@@ -85,7 +85,8 @@ public class TeamInfoTracker implements EventSender
 			addNewTeamInfo(p, p);
 		}
 
-		revealAllTeamInfoFor(game.getPlayerPairs().getCalled());
+		if (!game.getPlayerPairs().isSolo() || game.isSoloIntentional())
+			revealAllTeamInfoFor(game.getPlayerPairs().getCalled());
 
 		if (game.getInvitAccepted() != Invitation.NONE)
 		{

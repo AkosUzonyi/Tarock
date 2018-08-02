@@ -11,19 +11,7 @@ class Nanezzuk extends ZebiSound
 {
 	public Nanezzuk(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.nanezzuk;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 0.2F, R.raw.nanezzuk);
 	}
 
 	@Override

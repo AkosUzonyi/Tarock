@@ -6,25 +6,11 @@ import com.tisza.tarock.game.card.*;
 class CardSound extends ZebiSound
 {
 	private final Card card;
-	private final int[] audioResources;
 
 	public CardSound(Context context, Card card, int ... audioResources)
 	{
-		super(context);
+		super(context, 0.2F, audioResources);
 		this.card = card;
-		this.audioResources = audioResources;
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return audioResources[rnd.nextInt(audioResources.length)];
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
 	}
 
 	@Override

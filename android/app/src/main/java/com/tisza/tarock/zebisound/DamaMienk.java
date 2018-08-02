@@ -14,19 +14,7 @@ class DamaMienk extends ZebiSound
 
 	public DamaMienk(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.ezazdamamienk;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 1F, R.raw.ezazdamamienk);
 	}
 
 	@Override

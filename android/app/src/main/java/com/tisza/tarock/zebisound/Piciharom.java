@@ -10,19 +10,7 @@ class Piciharom extends ZebiSound
 {
 	public Piciharom(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.piciharom;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 0.3F, R.raw.piciharom);
 	}
 
 	@Override

@@ -10,19 +10,7 @@ class Szuperlicit extends ZebiSound
 
 	public Szuperlicit(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.szuperlicit;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 0.3F;
+		super(context, 0.3F, R.raw.szuperlicit);
 	}
 
 	@Override

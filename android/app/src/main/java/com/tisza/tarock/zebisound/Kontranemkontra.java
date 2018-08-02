@@ -14,19 +14,7 @@ class Kontranemkontra extends ZebiSound
 
 	public Kontranemkontra(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.kontranemkontra;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 1F, R.raw.kontranemkontra);
 	}
 
 	@Override
@@ -45,7 +33,7 @@ class Kontranemkontra extends ZebiSound
 				return;
 		}
 
-		activateDelayed(3000);
+		activateDelayed(3);
 	}
 
 	@Override

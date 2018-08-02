@@ -12,19 +12,7 @@ class Plicit extends ZebiSound
 
 	public Plicit(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.plicit;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 1F, R.raw.plicit);
 	}
 
 	@Override

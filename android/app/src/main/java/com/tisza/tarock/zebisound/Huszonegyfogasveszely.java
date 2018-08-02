@@ -14,19 +14,7 @@ class Huszonegyfogasveszely extends ZebiSound
 
 	public Huszonegyfogasveszely(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.huszonegyfogasveszely;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 1F, R.raw.huszonegyfogasveszely);
 	}
 
 	@Override

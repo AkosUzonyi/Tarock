@@ -10,19 +10,7 @@ public class DuplaFail extends ZebiSound
 {
 	public DuplaFail(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.duplatbovenelbuktatok;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 1F, R.raw.duplatbovenelbuktatok);
 	}
 
 	@Override

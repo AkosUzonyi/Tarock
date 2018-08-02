@@ -10,19 +10,7 @@ class TarokkFekszik extends ZebiSound
 {
 	public TarokkFekszik(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.tarokkfekszik;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 1F, R.raw.tarokkfekszik);
 	}
 
 	@Override

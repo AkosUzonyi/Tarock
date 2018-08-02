@@ -12,19 +12,7 @@ class SoloInvitGondolkodik extends ZebiSound
 
 	public SoloInvitGondolkodik(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.plicit;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 1F, R.raw.szoloinvitgondolkozik);
 	}
 
 	@Override
@@ -49,6 +37,6 @@ class SoloInvitGondolkodik extends ZebiSound
 	public void availableBids(List<Integer> bids)
 	{
 		if (twoNeedsToBeKept && bids.contains(0))
-			activateDelayed(2000);
+			activateDelayed(2);
 	}
 }

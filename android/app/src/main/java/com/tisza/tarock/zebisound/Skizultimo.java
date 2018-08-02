@@ -13,19 +13,7 @@ class Skizultimo extends ZebiSound
 
 	public Skizultimo(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.skizultimo;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 1F, R.raw.skizultimo);
 	}
 
 	@Override

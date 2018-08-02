@@ -14,19 +14,7 @@ class PagatMentikATrult extends ZebiSound
 
 	public PagatMentikATrult(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.pagatmentikatrult;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 1F, R.raw.pagatmentikatrult);
 	}
 
 	@Override

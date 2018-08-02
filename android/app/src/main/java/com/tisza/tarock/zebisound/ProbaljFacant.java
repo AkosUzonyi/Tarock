@@ -13,19 +13,7 @@ class ProbaljFacant extends ZebiSound
 
 	public ProbaljFacant(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.probaljfacant;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 0.3F;
+		super(context, 0.2F, R.raw.probaljfacant);
 	}
 
 	@Override

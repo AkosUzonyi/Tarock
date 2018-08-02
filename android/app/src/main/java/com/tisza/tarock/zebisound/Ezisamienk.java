@@ -13,19 +13,7 @@ class Ezisamienk extends ZebiSound
 
 	public Ezisamienk(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.nagyonszepezisamienk;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 1F, R.raw.nagyonszepezisamienk);
 	}
 
 	@Override

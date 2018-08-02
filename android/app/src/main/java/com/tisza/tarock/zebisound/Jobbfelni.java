@@ -14,19 +14,7 @@ class Jobbfelni extends ZebiSound
 
 	public Jobbfelni(Context context)
 	{
-		super(context);
-	}
-
-	@Override
-	protected int getAudioRes()
-	{
-		return R.raw.jobbfelni;
-	}
-
-	@Override
-	protected float getFrequency()
-	{
-		return 1F;
+		super(context, 0.7F, R.raw.jobbfelni);
 	}
 
 	@Override

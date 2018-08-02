@@ -13,29 +13,32 @@ public abstract class ZebiSound implements EventHandler
 	private final Handler handler;
 	protected final Random rnd = new Random();
 	private final Runnable activateRunnable = this::activate;
+	
+	private final int[] audioResources;
+	private final float frequency;
 
-	public ZebiSound(Context context)
+	public ZebiSound(Context context, float frequency, int ... audioResources)
 	{
 		this.context = context;
 		handler = new Handler(context.getMainLooper());
+		this.audioResources = audioResources;
+		this.frequency = frequency;
 	}
-
-	protected abstract int getAudioRes();
-	protected abstract float getFrequency();
 
 	protected final void activate()
 	{
-		if (rnd.nextFloat() >= getFrequency())
+		if (rnd.nextFloat() >= frequency)
 			return;
 
-		MediaPlayer mediaPlayer = MediaPlayer.create(context, getAudioRes());
+		int audioRes = audioResources[rnd.nextInt(audioResources.length)];
+		MediaPlayer mediaPlayer = MediaPlayer.create(context, audioRes);
 		mediaPlayer.start();
 		mediaPlayer.setOnCompletionListener(MediaPlayer::release);
 	}
 
-	protected final void activateDelayed(int delayMillis)
+	protected final void activateDelayed(int delaySec)
 	{
-		handler.postDelayed(activateRunnable, delayMillis);
+		handler.postDelayed(activateRunnable, delaySec * 1000);
 	}
 
 	protected final void cancelActivation()

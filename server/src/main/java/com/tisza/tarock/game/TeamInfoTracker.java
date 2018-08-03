@@ -10,7 +10,10 @@ import java.util.*;
 public class TeamInfoTracker implements EventSender
 {
 	private final GameState game;
+
 	private Set<TeamInfoKnowledge> teamInfoKnowledges = new HashSet<>();
+
+	private boolean inviterSkartedTarock = false;
 	private Card calledCard;
 
 	public TeamInfoTracker(GameState game)
@@ -76,22 +79,32 @@ public class TeamInfoTracker implements EventSender
 	}
 
 	@Override
+	public void startGame(PlayerSeat seat, List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
+	{
+		calledCard = null;
+		inviterSkartedTarock = false;
+	}
+
+	@Override
+	public void skartTarock(PlayerSeat.Map<Integer> counts)
+	{
+		if (game.getInvitSent() != Invitation.NONE && counts.get(game.getInvitingPlayer()) > 0)
+			inviterSkartedTarock = true;
+	}
+
+	@Override
 	public void call(PlayerSeat player, Card card)
 	{
 		calledCard = card;
 
 		for (PlayerSeat p : PlayerSeat.getAll())
-		{
 			addNewTeamInfo(p, p);
-		}
 
 		if (!game.getPlayerPairs().isSolo() || game.isSoloIntentional())
 			revealAllTeamInfoFor(game.getPlayerPairs().getCalled());
 
-		if (game.getInvitAccepted() != Invitation.NONE)
-		{
+		if (game.getInvitAccepted() != Invitation.NONE && !inviterSkartedTarock)
 			revealAllTeamInfo();
-		}
 	}
 
 	@Override

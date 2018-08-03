@@ -8,6 +8,8 @@ import java.util.*;
 
 class Announcing extends Phase implements IAnnouncing
 {
+	private static final int MAX_CONTRA_LEVEL = 7;
+
 	private PlayerSeat currentPlayer;
 	private boolean currentPlayerAnnounced = false;
 	private PlayerSeat lastAnnouncer = null;
@@ -120,7 +122,7 @@ class Announcing extends Phase implements IAnnouncing
 					if (a.canContra())
 					{
 						AnnouncementContra ac = new AnnouncementContra(a, getContraLevel(origAnnouncer, a) + 1);
-						if (ac.getContraLevel() < 7 && ac.getNextTeamToContra(origAnnouncer) == currentPlayerTeam)
+						if (ac.getContraLevel() < MAX_CONTRA_LEVEL && ac.getNextTeamToContra(origAnnouncer) == currentPlayerTeam)
 						{
 							list.add(ac);
 						}
@@ -159,6 +161,7 @@ class Announcing extends Phase implements IAnnouncing
 		if (ac.getContraLevel() == 0)
 		{
 			return (!needsIdentification() || !a.requireIdentification()) &&
+					!isAnnounced(currentPlayerTeam, a) &&
 					a.canBeAnnounced(this) &&
 					game.getGameType().hasParent(a.getGameType());
 		}
@@ -167,7 +170,7 @@ class Announcing extends Phase implements IAnnouncing
 			Team originalAnnouncer = ac.getNextTeamToContra(currentPlayerTeam);
 			
 			return a.canContra() &&
-			       ac.getContraLevel() < 7 &&
+			       ac.getContraLevel() < MAX_CONTRA_LEVEL &&
 			       isAnnounced(originalAnnouncer, a) &&
 			       ac.getContraLevel() == getContraLevel(originalAnnouncer, a) + 1;
 		}

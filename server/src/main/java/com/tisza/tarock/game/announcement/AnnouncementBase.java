@@ -71,9 +71,7 @@ public abstract class AnnouncementBase implements Announcement
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
-		Team team = announcing.getCurrentTeam();
-		
-		return !announcing.isAnnounced(team, this);
+		return true;
 	}
 	
 	@Override

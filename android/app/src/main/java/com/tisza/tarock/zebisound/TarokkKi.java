@@ -11,6 +11,7 @@ class TarokkKi extends ZebiSound
 {
 	private final int count;
 	private int tarocks, suits;
+	private boolean activated;
 
 	public TarokkKi(Context context, int count, int audioRes)
 	{
@@ -23,17 +24,24 @@ class TarokkKi extends ZebiSound
 	{
 		tarocks = 0;
 		suits = 0;
+		activated = false;
 	}
 
 	@Override
 	public void cardPlayed(int player, Card playedCard)
 	{
+		if (activated)
+			return;
+
 		if (playedCard instanceof TarockCard)
 			tarocks++;
 		else
 			suits++;
 
 		if (tarocks == count && suits < 6)
+		{
 			activate();
+			activated = true;
+		}
 	}
 }

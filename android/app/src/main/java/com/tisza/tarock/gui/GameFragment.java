@@ -4,6 +4,7 @@ import android.animation.*;
 import android.content.*;
 import android.graphics.*;
 import android.os.*;
+import android.support.v4.view.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
@@ -28,6 +29,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private static final int DELAY = 600;
 	private static final int CARDS_PER_ROW = 6;
 
+	private static final int MESSAGES_VIEW_INDEX = 0;
+	private static final int GAMEPLAY_VIEW_INDEX = 1;
+	private static final int STATISTICS_VIEW_INDEX = 2;
+
 	private static final float cardImageRatio = 1.66F;
 	private int cardWidth, cardHeight;
 
@@ -42,21 +47,23 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private LinearLayout myCardsView1;
 	private View cardsBackgroundColorView;
 	private View cardsHighlightView;
-	private FrameLayout centerSpace;
+	private ViewPager centerSpace;
 	private Button okButton;
 	private Button throwButton;
 
+	private View messagesFrame;
+
 	private View messagesView;
-	private View ultimoView;
 	private ScrollView messagesScrollView;
 	private TextView messagesTextView;
 	private LinearLayout availabeActionsView;
 
+	private View ultimoView;
 	private Button ultimoBackButton;
 	private UltimoViewManager ultimoViewManager;
 	private Button announceButton;
 
-	private RelativeLayout playedCardsView;
+	private RelativeLayout gameplayView;
 	private PlayedCardView[] playedCardViews;
 
 	private View statisticsView;
@@ -92,7 +99,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		cardWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth() / CARDS_PER_ROW;
 		cardHeight = (int)(cardWidth * cardImageRatio);
 
-		centerSpace = (FrameLayout)contentView.findViewById(R.id.center_space);
+		centerSpace = contentView.findViewById(R.id.center_space);
 
 		playerNameViews = new TextView[]
 		{
@@ -127,18 +134,18 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v -> getActionSender().throwCards());
 
-		layoutInflater.inflate(R.layout.messages, centerSpace);
-		messagesView = contentView.findViewById(R.id.messages_view);
-		messagesScrollView = (ScrollView)contentView.findViewById(R.id.messages_scroll);
-		messagesTextView = (TextView)contentView.findViewById(R.id.messages_text_view);
-		availabeActionsView = (LinearLayout)contentView.findViewById(R.id.available_actions);
+		messagesFrame = layoutInflater.inflate(R.layout.messages, centerSpace, false);
 
-		layoutInflater.inflate(R.layout.ultimo, centerSpace);
-		ultimoView = contentView.findViewById(R.id.ultimo_view);
-		ultimoBackButton = (Button)contentView.findViewById(R.id.ultimo_back_buton);
-		announceButton = (Button)contentView.findViewById(R.id.ultimo_announce_button);
-		ultimoViewManager = new UltimoViewManager(getActivity(), layoutInflater, (LinearLayout)contentView.findViewById(R.id.ultimo_spinner_list));
-		ultimoBackButton.setOnClickListener(v -> showCenterView(messagesView));
+		messagesView = messagesFrame.findViewById(R.id.messages_view);
+		messagesScrollView = (ScrollView)messagesFrame.findViewById(R.id.messages_scroll);
+		messagesTextView = (TextView)messagesFrame.findViewById(R.id.messages_text_view);
+		availabeActionsView = (LinearLayout)messagesFrame.findViewById(R.id.available_actions);
+
+		ultimoView = messagesFrame.findViewById(R.id.ultimo_view);
+		ultimoBackButton = (Button)messagesFrame.findViewById(R.id.ultimo_back_buton);
+		announceButton = (Button)messagesFrame.findViewById(R.id.ultimo_announce_button);
+		ultimoViewManager = new UltimoViewManager(getActivity(), layoutInflater, (LinearLayout)messagesFrame.findViewById(R.id.ultimo_spinner_list));
+		ultimoBackButton.setOnClickListener(v -> setUltimoViewVisible(false));
 
 		announceButton.setOnClickListener(v ->
 		{
@@ -150,32 +157,33 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			getActionSender().announce(announcement);
 		});
 
-		playedCardsView = new RelativeLayout(getActivity());
-		playedCardsView.setLayoutParams(new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+		gameplayView = (RelativeLayout)layoutInflater.inflate(R.layout.gameplay, centerSpace, false);
 		playedCardViews = new PlayedCardView[4];
 		for (int i = 0; i < 4; i++)
 		{
 			playedCardViews[i] = new PlayedCardView(getActivity(), cardWidth, cardHeight, i);
-			playedCardsView.addView(playedCardViews[i]);
+			gameplayView.addView(playedCardViews[i]);
 		}
-		centerSpace.addView(playedCardsView);
 
-		layoutInflater.inflate(R.layout.statistics, centerSpace);
-		statisticsView = contentView.findViewById(R.id.statistics_view);
-		statisticsGamepointsSelf = (TextView)contentView.findViewById(R.id.statistics_gamepoints_self);
-		statisticsGamepointsOpponent = (TextView)contentView.findViewById(R.id.statistics_gamepoints_opponent);
-		statisticsPointMultiplierView = (TextView)contentView.findViewById(R.id.statistics_point_multiplier);
-		statisticsSelfEntriesView = (LinearLayout)contentView.findViewById(R.id.statistics_self_entries_list);
-		statisticsOpponentEntriesView = (LinearLayout)contentView.findViewById(R.id.statistics_opponent_entries_list);
-		statisticsSumPointsView = (TextView)contentView.findViewById(R.id.statistics_sum_points);
-		statisticsPointsNameViews[0] = (TextView)contentView.findViewById(R.id.statistics_points_name_0);
-		statisticsPointsNameViews[1] = (TextView)contentView.findViewById(R.id.statistics_points_name_1);
-		statisticsPointsNameViews[2] = (TextView)contentView.findViewById(R.id.statistics_points_name_2);
-		statisticsPointsNameViews[3] = (TextView)contentView.findViewById(R.id.statistics_points_name_3);
-		statisticsPointsValueViews[0] = (TextView)contentView.findViewById(R.id.statistics_points_value_0);
-		statisticsPointsValueViews[1] = (TextView)contentView.findViewById(R.id.statistics_points_value_1);
-		statisticsPointsValueViews[2] = (TextView)contentView.findViewById(R.id.statistics_points_value_2);
-		statisticsPointsValueViews[3] = (TextView)contentView.findViewById(R.id.statistics_points_value_3);
+		statisticsView = layoutInflater.inflate(R.layout.statistics, centerSpace, false);
+		statisticsGamepointsSelf = (TextView)statisticsView.findViewById(R.id.statistics_gamepoints_self);
+		statisticsGamepointsOpponent = (TextView)statisticsView.findViewById(R.id.statistics_gamepoints_opponent);
+		statisticsPointMultiplierView = (TextView)statisticsView.findViewById(R.id.statistics_point_multiplier);
+		statisticsSelfEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_self_entries_list);
+		statisticsOpponentEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_opponent_entries_list);
+		statisticsSumPointsView = (TextView)statisticsView.findViewById(R.id.statistics_sum_points);
+		statisticsPointsNameViews[0] = (TextView)statisticsView.findViewById(R.id.statistics_points_name_0);
+		statisticsPointsNameViews[1] = (TextView)statisticsView.findViewById(R.id.statistics_points_name_1);
+		statisticsPointsNameViews[2] = (TextView)statisticsView.findViewById(R.id.statistics_points_name_2);
+		statisticsPointsNameViews[3] = (TextView)statisticsView.findViewById(R.id.statistics_points_name_3);
+		statisticsPointsValueViews[0] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_0);
+		statisticsPointsValueViews[1] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_1);
+		statisticsPointsValueViews[2] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_2);
+		statisticsPointsValueViews[3] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_3);
+
+		View[] centerViews = {messagesFrame, gameplayView, statisticsView};
+		int[] centerViewTitles = {R.string.pager_announcing, R.string.pager_gameplay, R.string.pager_statistics};
+		centerSpace.setAdapter(new CenterViewPagerAdapter(getActivity(), centerViews, centerViewTitles));
 
 		for (ZebiSound zebiSound : zebiSounds.getZebiSounds())
 		{
@@ -207,11 +215,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 	private void resetGameViews()
 	{
-		showCenterView(messagesView);
+		showCenterView(MESSAGES_VIEW_INDEX);
 		okButton.setVisibility(View.GONE);
 		throwButton.setVisibility(View.GONE);
 		messagesTextView.setText("");
 		availabeActionsView.removeAllViews();
+		setUltimoViewVisible(false);
 
 		cardsHighlightView.setVisibility(View.GONE);
 		cardsBackgroundColorView.setBackgroundDrawable(null);
@@ -294,32 +303,32 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 		if (phase == PhaseEnum.BIDDING)
 		{
-			showCenterView(messagesView);
+			showCenterView(MESSAGES_VIEW_INDEX);
 
 			if (myCards.canBeThrown())
 				throwButton.setVisibility(View.VISIBLE);
 		}
 		else if (phase == PhaseEnum.CHANGING)
 		{
-			showCenterView(messagesView);
+			showCenterView(MESSAGES_VIEW_INDEX);
 
 			higlightAllName();
 		}
 		else if (phase == PhaseEnum.CALLING)
 		{
-			showCenterView(messagesView);
+			showCenterView(MESSAGES_VIEW_INDEX);
 		}
 		else if (phase == PhaseEnum.ANNOUNCING)
 		{
-			showCenterView(messagesView);
+			showCenterView(MESSAGES_VIEW_INDEX);
 		}
 		else if (phase == PhaseEnum.GAMEPLAY)
 		{
-			showCenterViewDelayed(playedCardsView);
+			showCenterViewDelayed(GAMEPLAY_VIEW_INDEX);
 		}
 		else if (phase == PhaseEnum.END)
 		{
-			showCenterViewDelayed(statisticsView);
+			showCenterViewDelayed(STATISTICS_VIEW_INDEX);
 		}
 		else if (phase == PhaseEnum.INTERRUPTED)
 		{
@@ -422,7 +431,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		{
 			Button ultimoButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
 			ultimoButton.setText(ResourceMappings.roundNames[8]);
-			ultimoButton.setOnClickListener(v -> showCenterView(ultimoView));
+			ultimoButton.setOnClickListener(v -> setUltimoViewVisible(true));
 			availabeActionsView.addView(ultimoButton);
 		}
 
@@ -450,7 +459,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			availabeActionsView.removeAllViews();
 		}
 
-		showCenterView(messagesView);
+		setUltimoViewVisible(false);
+		showCenterView(MESSAGES_VIEW_INDEX);
 		
 		String msg = announcement.getDisplayText();
 		displayPlayerActionMessage(R.string.message_announce, player, msg);
@@ -459,7 +469,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	@Override
 	public void announcePassz(int player)
 	{
-		showCenterView(messagesView);
+		showCenterView(MESSAGES_VIEW_INDEX);
 
 		if (player == myID)
 		{
@@ -707,25 +717,26 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			cardsView.removeAllViews();
 		}
 	}
-	
-	private void showCenterView(final View v)
+
+	private void setUltimoViewVisible(boolean visible)
 	{
-		pendingCenterView = v;
-		int count = centerSpace.getChildCount();
-		for (int i = 0; i < count; i++)
-		{
-			View child = centerSpace.getChildAt(i);
-			child.setVisibility(child == v ? View.VISIBLE : View.GONE);
-		}
+		ultimoView.setVisibility(visible ? View.VISIBLE : View.GONE);
+		messagesView.setVisibility(visible ? View.GONE : View.VISIBLE);
 	}
 	
-	private View pendingCenterView;
-	private void showCenterViewDelayed(final View v)
+	private void showCenterView(int item)
 	{
-		pendingCenterView = v;
+		pendingCenterView = item;
+		centerSpace.setCurrentItem(item);
+	}
+	
+	private int pendingCenterView;
+	private void showCenterViewDelayed(int item)
+	{
+		pendingCenterView = item;
 		new Handler().postDelayed(() ->
 		{
-			if (pendingCenterView != v)
+			if (pendingCenterView != item)
 				return;
 
 			showCenterView(pendingCenterView);

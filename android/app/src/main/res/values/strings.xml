@@ -16,6 +16,10 @@
         <item quantity="other">Játék létrehozása %1$d robottal</item>
     </plurals>
 
+    <string name="pager_announcing">Bemondások</string>
+    <string name="pager_gameplay">Lejátszás</string>
+    <string name="pager_statistics">Pontok</string>
+
     <string name="ok">OK</string>
     <string name="throw_cards">Bedob</string>
     <string name="back">Vissza</string>

@@ -33,8 +33,8 @@ public class ZebiSounds
 		zebiSounds.add(new SoloInvitGondolkodik(context));
 		zebiSounds.add(new TarokkFekszik(context));
 		zebiSounds.add(new PikkKiralyIndul(context));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("banda", 1).setSuit(3), R.raw.kontrapikkbandadisznohus));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("banda", 1).setSuit(4), R.raw.kontratreffbanda));
+		zebiSounds.add(new AnnouncementSound(context, new Announcement("banda", 1).setSuit(2), R.raw.kontrapikkbandadisznohus));
+		zebiSounds.add(new AnnouncementSound(context, new Announcement("banda", 1).setSuit(3), R.raw.kontratreffbanda));
 		zebiSounds.add(new Jobbfelni(context));
 		zebiSounds.add(new Kontranemkontra(context));
 		zebiSounds.add(new Skizultimo(context));

@@ -17,6 +17,8 @@ public abstract class ZebiSound implements EventHandler
 	private final int[] audioResources;
 	private final float frequency;
 
+	private boolean enabled;
+
 	public ZebiSound(Context context, float frequency, int ... audioResources)
 	{
 		this.context = context;
@@ -25,8 +27,16 @@ public abstract class ZebiSound implements EventHandler
 		this.frequency = frequency;
 	}
 
+	public void setEnabled(boolean enabled)
+	{
+		this.enabled = enabled;
+	}
+
 	protected final void activate()
 	{
+		if (!enabled)
+			return;
+
 		if (rnd.nextFloat() >= frequency)
 			return;
 

@@ -267,6 +267,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		this.gameType = gameType;
 		this.beginnerPlayer = beginnerPlayer;
 
+		zebiSounds.setEnabled(gameType == GameType.ZEBI);
+
 		for (int i = 0; i < 4; i++)
 		{
 			int pos = getPositionFromPlayerID(i);

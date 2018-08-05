@@ -60,4 +60,12 @@ public class ZebiSounds
 	{
 		return zebiSounds;
 	}
+
+	public void setEnabled(boolean enabled)
+	{
+		for (ZebiSound zebiSound : zebiSounds)
+		{
+			zebiSound.setEnabled(enabled);
+		}
+	}
 }

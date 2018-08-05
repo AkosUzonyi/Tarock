@@ -7,7 +7,6 @@ identity tracker: self skart called
 
 needs fix:
 check malicious accesstoken
-check accesstoken app id
 
 renames:
 

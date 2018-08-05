@@ -9,7 +9,9 @@ import java.util.*;
 
 public class FacebookUserManager
 {
-	private static Map<String, User> idToUser = new HashMap<>();
+	private static final String APP_ID = "1735167250066232";
+
+	private Map<String, User> idToUser = new HashMap<>();
 
 	public Collection<User> listUsers()
 	{
@@ -23,60 +25,63 @@ public class FacebookUserManager
 
 	public User getUserByAccessToken(String accessToken)
 	{
-		User user = createUserFromToken(accessToken);
-
-		if (user == null)
-			return null;
-
-		if (idToUser.containsKey(user.getId()))
-			return idToUser.get(user.getId());
-
-		idToUser.put(user.getId(), user);
-		return user;
-	}
-
-	private User createUserFromToken(String accessToken)
-	{
 		try
 		{
-			URL url = new URL("https://graph.facebook.com/me/?fields=id,name,picture,friends&access_token=" + accessToken);
-			HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
-			urlConnection.setRequestMethod("GET");
-			urlConnection.setReadTimeout(1000);
+			JSONObject appJSON = downloadJSONFromURL("https://graph.facebook.com/app/?access_token=" + accessToken);
+			if (!appJSON.getString("id").equals(APP_ID))
+				return null;
 
-			BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-			StringBuffer response = new StringBuffer();
+			JSONObject userJSON = downloadJSONFromURL("https://graph.facebook.com/me/?fields=id,name,picture,friends&access_token=" + accessToken);
 
-			String inputLine;
-			while ((inputLine = in.readLine()) != null)
-			{
-				response.append(inputLine);
-			}
-			in.close();
+			String id = userJSON.getString("id");
+			if (idToUser.containsKey(id))
+				return idToUser.get(id);
 
-			JSONObject json = new JSONObject(response.toString());
-			String id = json.getString("id");
-			String name = json.getString("name");
-			String imgURL = json.getJSONObject("picture").getJSONObject("data").getString("url");
+			String name = userJSON.getString("name");
+
+			String imgURL = null;
+			if (userJSON.has("picture"))
+				imgURL = userJSON.getJSONObject("picture").getJSONObject("data").getString("url");
 
 			List<String> friendIDs = new ArrayList<>();
-			if (json.has("friends"))
+			if (userJSON.has("friends"))
 			{
-				for (Object friendJSON : json.getJSONObject("friends").getJSONArray("data"))
+				for (Object friendJSON : userJSON.getJSONObject("friends").getJSONArray("data"))
 				{
 					friendIDs.add(((JSONObject)friendJSON).getString("id"));
 				}
 			}
 
+			User user = new User(id, name, imgURL, friendIDs);
 			System.out.println("user created: " + name);
-
-			return new User(id, name, imgURL, friendIDs);
+			idToUser.put(id, user);
+			return user;
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	private JSONObject downloadJSONFromURL(String urlString) throws IOException
+	{
+		URL url = new URL(urlString);
+		HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+		urlConnection.setRequestMethod("GET");
+		urlConnection.setReadTimeout(1000);
+
+		BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+		StringBuffer response = new StringBuffer();
+
+		String inputLine;
+		while ((inputLine = in.readLine()) != null)
+		{
+			response.append(inputLine);
+		}
+		in.close();
+
+		return new JSONObject(response.toString());
 	}
 
 	public void shutdown()

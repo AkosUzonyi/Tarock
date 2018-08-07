@@ -108,7 +108,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		GameListFragment gameListFragment = new GameListFragment();
 
 		getFragmentManager().beginTransaction()
-				.add(R.id.fragment_container, gameListFragment, "gamelist")
+				.replace(R.id.fragment_container, gameListFragment, "gamelist")
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
@@ -119,7 +119,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		CreateGameFragment createGameFragment = new CreateGameFragment();
 
 		getFragmentManager().beginTransaction()
-				.add(R.id.fragment_container, createGameFragment, "create_game")
+				.replace(R.id.fragment_container, createGameFragment, "create_game")
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
@@ -135,7 +135,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		gameFragment.setArguments(args);
 
 		getFragmentManager().beginTransaction()
-				.add(R.id.fragment_container, gameFragment, "game")
+				.replace(R.id.fragment_container, gameFragment, "game")
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
@@ -235,17 +235,9 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 	private void popBackToLoginScreen()
 	{
-		FragmentManager fragmentManager = getFragmentManager();
-		FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-		for (String tag : new String[] {"gamelist", "create_game", "game"})
-		{
-			Fragment fragment = fragmentManager.findFragmentByTag(tag);
-			if (fragment != null)
-				fragmentTransaction.remove(fragment);
-		}
-
-		fragmentTransaction.commit();
+		getFragmentManager().beginTransaction()
+				.replace(R.id.fragment_container, new LoginFragment(), "login")
+				.commit();
 	}
 
 	@Override

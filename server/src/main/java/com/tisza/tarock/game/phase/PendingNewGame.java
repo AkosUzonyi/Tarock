@@ -39,8 +39,11 @@ class PendingNewGame extends Phase
 		if (!doubleRound)
 			game.sendStatistics();
 
-		if (!ready.get(player))
-			game.getBroadcastEventSender().pendingNewGame();
+		game.getBroadcastEventSender().pendingNewGame();
+
+		for (PlayerSeat p : PlayerSeat.getAll())
+			if (ready.get(p))
+				game.getBroadcastEventSender().readyForNewGame(p);
 	}
 
 	@Override

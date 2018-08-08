@@ -110,6 +110,11 @@ public class GameState
 		changePhase(new Bidding(this));
 	}
 
+	public void stop()
+	{
+		getBroadcastEventSender().deleteGame();
+	}
+
 	public List<String> getPlayerNames()
 	{
 		return players.values().stream().map(Player::getName).collect(Collectors.toList());

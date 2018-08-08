@@ -206,4 +206,10 @@ public class ProtoEventSender implements EventSender
 		Event.PendingNewGame e = Event.PendingNewGame.newBuilder().build();
 		sendEvent(Event.newBuilder().setPendingNewGame(e).build());
 	}
+
+	@Override public void deleteGame()
+	{
+		Event.DeleteGame e = Event.DeleteGame.newBuilder().build();
+		sendEvent(Event.newBuilder().setDeleteGame(e).build());
+	}
 }

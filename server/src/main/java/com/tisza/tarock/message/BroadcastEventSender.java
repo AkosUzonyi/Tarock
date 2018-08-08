@@ -204,4 +204,13 @@ public class BroadcastEventSender implements EventSender
 			eventSender.pendingNewGame();
 		}
 	}
+
+	@Override
+	public void deleteGame()
+	{
+		for (EventSender eventSender : eventSenders)
+		{
+			eventSender.deleteGame();
+		}
+	}
 }

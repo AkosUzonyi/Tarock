@@ -28,4 +28,5 @@ public interface EventSender
 	default void cardsTaken(PlayerSeat player) {}
 	default void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points, int pointMultiplier) {}
 	default void pendingNewGame() {}
+	default void deleteGame() {}
 }

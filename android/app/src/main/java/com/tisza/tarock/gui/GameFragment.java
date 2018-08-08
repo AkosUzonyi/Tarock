@@ -636,6 +636,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	}
 
 	@Override
+	public void deleteGame()
+	{
+		getActivity().getFragmentManager().popBackStack();
+	}
+
+	@Override
 	public void wrongAction()
 	{
 		displayMessage("error");

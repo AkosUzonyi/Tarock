@@ -25,6 +25,7 @@ message Event
 		CardsTaken cards_taken = 10;
 		AnnouncementStatistics announcement_statistics = 11;
 		PendingNewGame pending_new_game = 12;
+		DeleteGame delete_game = 15;
 	}
 	message StartGame
 	{
@@ -96,6 +97,9 @@ message Event
 		}
 	}
 	message PendingNewGame
+	{
+	}
+	message DeleteGame
 	{
 	}
 }

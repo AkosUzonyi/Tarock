@@ -46,6 +46,7 @@ public class GameSession implements GameFinishedListener
 
 	public void stopSession()
 	{
+		currentGame.stop();
 		currentGame = null;
 
 		for (Player p : players)

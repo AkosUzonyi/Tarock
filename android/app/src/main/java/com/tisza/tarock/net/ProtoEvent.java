@@ -72,6 +72,9 @@ public class ProtoEvent implements Event
 			case PENDING_NEW_GAME:
 				handler.pendingNewGame();
 				break;
+			case DELETE_GAME:
+				handler.deleteGame();
+				break;
 			case PLAYER_ACTION:
 				handlePlayerAction(handler, event.getPlayerAction().getPlayer(), event.getPlayerAction().getAction());
 				break;

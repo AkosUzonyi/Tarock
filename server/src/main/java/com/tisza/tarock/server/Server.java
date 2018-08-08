@@ -114,6 +114,9 @@ public class Server implements Runnable
 	{
 		for (Client client : clients)
 		{
+			if (client.getLoggedInUser() == null)
+				continue;
+
 			MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
 
 			for (GameInfo gameInfo : gameSessionManager.listGames())

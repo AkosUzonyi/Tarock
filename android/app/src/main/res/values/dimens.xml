@@ -15,4 +15,7 @@
     <dimen name="button_margin">4dp</dimen>
     <dimen name="skart_margin">2dp</dimen>
     <dimen name="user_margin">10dp</dimen>
+    <dimen name="statistics_margin">5dp</dimen>
+    <dimen name="statistics_margin_big">15dp</dimen>
+    <dimen name="statistics_indent">5dp</dimen>
 </resources>

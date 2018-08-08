@@ -9,7 +9,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.7"
-        android:layout_marginLeft="4dp"
+        android:layout_marginLeft="@dimen/statistics_indent"
         style="@style/shadow_text"
         />	
 

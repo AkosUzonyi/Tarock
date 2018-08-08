@@ -43,79 +43,46 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_gravity="center_horizontal"
-			android:layout_marginTop="10dp"
+			android:layout_marginTop="@dimen/statistics_margin"
 			android:textSize="@dimen/statistics_header_text_size"
 			android:textStyle="italic"
 			android:visibility="gone"
 			style="@style/shadow_text"
 		/>
 
-		<LinearLayout
-			android:layout_width="match_parent"
+		<TextView
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-			>
-
-			<TextView
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.7"
-				android:text="@string/statistics_self"
-				android:textSize="@dimen/statistics_header_text_size"
-				style="@style/shadow_text"
-			/>
-
-			<TextView
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.3"
-				android:text="@string/statistics_points"
-				android:textSize="@dimen/statistics_header_text_size"
-				style="@style/shadow_text"
-			/>
-		</LinearLayout>
+			android:layout_marginTop="@dimen/statistics_margin"
+			android:text="@string/statistics_self"
+			android:textSize="@dimen/statistics_header_text_size"
+			android:textStyle="bold"
+			style="@style/shadow_text"
+		/>
 
 		<LinearLayout
 		    android:id="@+id/statistics_self_entries_list"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:orientation="vertical"
-		    android:layout_marginTop="10dp"
-		    android:padding="4dp"
 		    >
 		</LinearLayout>
 
-		<LinearLayout
-			android:layout_width="match_parent"
+		<TextView
+			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:orientation="horizontal"
-			>
-
-			<TextView
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.7"
-				android:text="@string/statistics_opponent"
-				android:textSize="@dimen/statistics_header_text_size"
-				style="@style/shadow_text"
-			/>
-
-			<TextView
-				android:layout_width="0dp"
-				android:layout_height="wrap_content"
-				android:layout_weight="0.3"
-				android:text="@string/statistics_points"
-				android:textSize="@dimen/statistics_header_text_size"
-				style="@style/shadow_text"
-			/>
-		</LinearLayout>
+			android:layout_marginTop="@dimen/statistics_margin"
+			android:text="@string/statistics_opponent"
+			android:textSize="@dimen/statistics_header_text_size"
+			android:textStyle="bold"
+			style="@style/shadow_text"
+		/>
 
 		<LinearLayout
 		    android:id="@+id/statistics_opponent_entries_list"
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:orientation="vertical"
-		    android:layout_marginTop="5dp"
 		    >
 		</LinearLayout>
 	    
@@ -123,7 +90,7 @@
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
 		    android:orientation="horizontal"
-		    android:layout_marginTop="15dp"
+			android:layout_marginTop="@dimen/statistics_margin_big"
 		    >
 		
 		    <TextView
@@ -132,6 +99,7 @@
 		        android:layout_weight="0.7"
 		        android:text="@string/statictics_sum"
 		        android:textSize="@dimen/statistics_header_text_size"
+				android:textStyle="bold"
 		        style="@style/shadow_text"
 		        />	
 		
@@ -147,8 +115,8 @@
 		<LinearLayout
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:layout_marginTop="25dp"
 		    android:orientation="horizontal"
+			android:layout_marginTop="@dimen/statistics_margin_big"
 		    >
 		    
 		    <TextView
@@ -191,7 +159,7 @@
 		<LinearLayout
 		    android:layout_width="match_parent"
 		    android:layout_height="wrap_content"
-		    android:layout_marginTop="5dp"
+		    android:layout_marginTop="@dimen/statistics_margin"
 		    android:orientation="horizontal"
 		    >
 		    

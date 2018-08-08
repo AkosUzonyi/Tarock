@@ -461,7 +461,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 		setUltimoViewVisible(false);
 		showCenterView(MESSAGES_VIEW_INDEX);
-		
+
 		String msg = announcement.getDisplayText();
 		displayPlayerActionMessage(R.string.message_announce, player, msg);
 	}
@@ -583,26 +583,31 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		statisticsPointMultiplierView.setVisibility(pointMultiplier == 1 ? View.GONE : View.VISIBLE);
 		statisticsPointMultiplierView.setText(getString(R.string.statictics_point_multiplier, pointMultiplier));
 
-		appendEntriesToStatistics(statisticsSelfEntriesView, selfEntries);
-		appendEntriesToStatistics(statisticsOpponentEntriesView, opponentEntries);
+		addStatisticEntries(statisticsSelfEntriesView, selfEntries);
+		addStatisticEntries(statisticsOpponentEntriesView, opponentEntries);
 		
 		statisticsSumPointsView.setText(String.valueOf(sumPoints));
 		statisticsSumPointsView.setTextColor(sumPoints >= 0 ? Color.BLACK : Color.RED);
-		
-		for (int i = 0; i < 4; i++)
+
+		if (!points.isEmpty())
 		{
-			TextView nameView = statisticsPointsNameViews[i];
-			nameView.setText(playerNames.get(i));
-			nameView.setGravity(Gravity.CENTER);
-			
-			TextView pointsView = statisticsPointsValueViews[i];
-			pointsView.setText(String.valueOf(points.get(i)));
-			pointsView.setGravity(Gravity.CENTER);
+			for (int i = 0; i < 4; i++)
+			{
+				TextView nameView = statisticsPointsNameViews[i];
+				nameView.setText(playerNames.get(i));
+				nameView.setGravity(Gravity.CENTER);
+
+				TextView pointsView = statisticsPointsValueViews[i];
+				pointsView.setText(String.valueOf(points.get(i)));
+				pointsView.setGravity(Gravity.CENTER);
+			}
 		}
 	}
 
-	private void appendEntriesToStatistics(ViewGroup viewToAppend, List<AnnouncementStaticticsEntry> entries)
+	private void addStatisticEntries(ViewGroup viewToAppend, List<AnnouncementStaticticsEntry> entries)
 	{
+		viewToAppend.removeAllViews();
+
 		for (AnnouncementStaticticsEntry entry : entries)
 		{
 			View entryView = layoutInflater.inflate(R.layout.statistics_entry, viewToAppend, false);
@@ -611,6 +616,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			
 			nameView.setText(entry.getAnnouncement().getDisplayText());
 			pointsView.setText(String.valueOf(entry.getPoints()));
+			pointsView.setVisibility(entry.getPoints() == 0 ? View.GONE : View.VISIBLE);
 			pointsView.setTextColor(entry.getPoints() >= 0 ? Color.BLACK : Color.RED);
 			
 			viewToAppend.addView(entryView);

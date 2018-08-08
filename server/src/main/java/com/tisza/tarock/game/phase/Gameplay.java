@@ -25,6 +25,9 @@ class Gameplay extends Phase
 	{
 		currentRound = new Round(game.getBeginnerPlayer());
 		game.getBroadcastEventSender().turn(currentRound.getCurrentPlayer());
+
+		game.calculateInGameStatistics();
+		game.sendInGameStatistics();
 	}
 
 	@Override
@@ -37,6 +40,8 @@ class Gameplay extends Phase
 			game.getPlayerEventSender(player).playCard(cardPlayer, currentRound.getCardByPlayer(cardPlayer));
 		}
 		game.getPlayerEventSender(player).turn(currentRound.getCurrentPlayer());
+
+		game.sendInGameStatistics();
 	}
 
 	@Override

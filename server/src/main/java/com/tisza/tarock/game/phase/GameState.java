@@ -47,6 +47,7 @@ public class GameState
 	private List<Round> roundsPassed = new ArrayList<>();
 	private PlayerSeat.Map<Collection<Card>> wonCards = new PlayerSeat.Map<>();
 
+	private boolean inGameStatisticsCalculated = false;
 	private boolean statisticsCalculated = false;
 	private final int pointMultiplier;
 	private int[] points;
@@ -353,6 +354,49 @@ public class GameState
 		}
 
 		return points;
+	}
+
+	void calculateInGameStatistics()
+	{
+		inGameStatisticsCalculated = true;
+
+		statEntriesForTeams = new HashMap<>();
+
+		for (Team team : Team.values())
+		{
+			List<AnnouncementStaticticsEntry> entriesForTeam = new ArrayList<>();
+			statEntriesForTeams.put(team, entriesForTeam);
+
+			for (Announcement announcement : Announcements.getAll())
+			{
+				if (!gameType.hasParent(announcement.getGameType()))
+					continue;
+
+				if (!announcementsState.isAnnounced(team, announcement))
+					continue;
+
+				int acl = announcementsState.getContraLevel(team, announcement);
+				AnnouncementContra ac = new AnnouncementContra(announcement, acl);
+				entriesForTeam.add(new AnnouncementStaticticsEntry(ac, 0));
+			}
+		}
+	}
+
+	void sendInGameStatistics()
+	{
+		if (!inGameStatisticsCalculated)
+			throw new IllegalStateException();
+
+		for (PlayerSeat player : PlayerSeat.getAll())
+		{
+			Team team = playerPairs.getTeam(player);
+			int selfGamePoints = 0;
+			int opponentGamePoints = 0;
+			List<AnnouncementStaticticsEntry> selfEntries = statEntriesForTeams.get(team);
+			List<AnnouncementStaticticsEntry> opponentEntries = statEntriesForTeams.get(team.getOther());
+			int sumPoints = 0;
+			getPlayerEventSender(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, new int[0], pointMultiplier);
+		}
 	}
 
 	void calculateStatistics()

@@ -460,7 +460,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		}
 
 		setUltimoViewVisible(false);
-		showCenterView(MESSAGES_VIEW_INDEX);
 
 		String msg = announcement.getDisplayText();
 		displayPlayerActionMessage(R.string.message_announce, player, msg);
@@ -469,8 +468,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	@Override
 	public void announcePassz(int player)
 	{
-		showCenterView(MESSAGES_VIEW_INDEX);
-
 		if (player == myID)
 		{
 			okButton.setVisibility(View.GONE);

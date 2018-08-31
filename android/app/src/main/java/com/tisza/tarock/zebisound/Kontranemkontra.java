@@ -14,7 +14,7 @@ class Kontranemkontra extends ZebiSound
 
 	public Kontranemkontra(Context context)
 	{
-		super(context, 1F, R.raw.kontranemkontra);
+		super(context, 1F, R.raw.kontranemkontra, R.raw.gondolkozikkontra);
 	}
 
 	@Override

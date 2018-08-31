@@ -13,7 +13,7 @@ class Indul extends ZebiSound
 
 	public Indul(Context context)
 	{
-		super(context, 0.1F, R.raw.induloktisztan);
+		super(context, 0.1F, R.raw.induloktisztan, R.raw.indulok, R.raw.tessek);
 	}
 
 	@Override

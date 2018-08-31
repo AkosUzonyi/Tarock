@@ -12,7 +12,7 @@ class Plicit extends ZebiSound
 
 	public Plicit(Context context)
 	{
-		super(context, 1F, R.raw.plicit);
+		super(context, 1F, R.raw.plicit, R.raw.szornyu);
 	}
 
 	@Override

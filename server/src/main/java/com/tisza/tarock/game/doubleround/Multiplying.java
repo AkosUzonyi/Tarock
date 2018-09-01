@@ -9,6 +9,8 @@ class Multiplying implements DoubleRoundTracker
 	public void gameFinished()
 	{
 		pos++;
+		pos %= 4;
+
 		interruptionCounts[pos] = 0;
 	}
 

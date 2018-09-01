@@ -24,7 +24,7 @@ public class DuplaFail extends ZebiSound
 	{
 		for (AnnouncementStaticticsEntry entry : entries)
 		{
-			if (entry.getAnnouncement().getName().equals("dupla") && points < 65)
+			if (entry.getAnnouncement().getName().equals("dupla") && entry.getPoints() < 0 && points < 65)
 				activate();
 		}
 	}

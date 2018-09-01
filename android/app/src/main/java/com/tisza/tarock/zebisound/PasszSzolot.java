@@ -27,7 +27,7 @@ class PasszSzolot extends ZebiSound
 		if (bid == 0)
 			solo = true;
 
-		if (bid == -1)
+		if (bid == -1 && solo)
 			activate();
 	}
 }

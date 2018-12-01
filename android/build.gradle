@@ -7,7 +7,6 @@ task wrapper(type: Wrapper) {
 buildscript {
     repositories {
         jcenter()
-        mavenCentral()
         google()
     }
     dependencies {
@@ -18,10 +17,10 @@ buildscript {
     }
 }
 
-
 allprojects {
     repositories {
         jcenter()
+        google()
     }
 }
 

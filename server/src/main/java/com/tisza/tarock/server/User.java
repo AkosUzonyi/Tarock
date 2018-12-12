@@ -7,19 +7,16 @@ import java.util.*;
 public class User
 {
 	private final String id;
-	private final String name;
-	private final String imgURL;
-	private final List<String> friendIDs;
+	private String name;
+	private String imgURL;
+	private List<String> friendIDs = new ArrayList<>();
 
 	private boolean loggedIn = false;
 	private Map<Integer, ProtoPlayer> gameIDToPlayer = new HashMap<>();
 
-	public User(String id, String name, String imgURL, List<String> friendIDs)
+	public User(String id)
 	{
 		this.id = id;
-		this.name = name;
-		this.imgURL = imgURL;
-		this.friendIDs = friendIDs;
 	}
 
 	public String getId()
@@ -32,14 +29,34 @@ public class User
 		return name;
 	}
 
+	public void setName(String name)
+	{
+		this.name = name;
+	}
+
 	public String getImageURL()
 	{
 		return imgURL;
 	}
 
+	public void setImgURL(String imgURL)
+	{
+		this.imgURL = imgURL;
+	}
+
 	public boolean isFriendWith(User user)
 	{
 		return friendIDs.contains(user.getId());
+	}
+
+	public void addFriend(User user)
+	{
+		friendIDs.add(user.getId());
+	}
+
+	public void clearFriends()
+	{
+		friendIDs.clear();
 	}
 
 	public boolean isLoggedIn()

@@ -20,7 +20,6 @@ error messages
 VERSION CHECKING
 kibic
 nickname
-save users
 save finished games
 log
 

@@ -25,14 +25,14 @@ public class Server implements Runnable
 	private final GameSessionManager gameSessionManager;
 	private final FacebookUserManager facebookUserManager;
 
-	public Server(int port, File keystoreFile)
+	public Server(int port, File keystoreFile, File fbUsersDBFile)
 	{
 		this.port = port;
 		this.keystoreFile = keystoreFile;
 
 		gameExecutorService = new GameExecutorService();
 		gameSessionManager = new GameSessionManager(new RandomPlayerFactory());
-		facebookUserManager = new FacebookUserManager();
+		facebookUserManager = new FacebookUserManager(fbUsersDBFile);
 	}
 
 	public GameSessionManager getGameSessionManager()
@@ -79,6 +79,8 @@ public class Server implements Runnable
 	{
 		try
 		{
+			facebookUserManager.initialize();
+
 			createServerSocket();
 
 			while (!Thread.interrupted())

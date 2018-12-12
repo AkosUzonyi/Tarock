@@ -5,6 +5,7 @@ import android.content.*;
 import android.graphics.*;
 import android.os.*;
 import android.support.v4.view.*;
+import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
@@ -26,7 +27,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	public static final float PLAYED_CARD_DISTANCE = 0.65F;
 	public static final int PLAY_DURATION = 50;
 	public static final int TAKE_DURATION = 400;
-	private static final int DELAY = 600;
+	private static final int DELAY = BuildConfig.DEBUG ? 500 : 1500;
 	private static final int CARDS_PER_ROW = 6;
 
 	private static final int MESSAGES_VIEW_INDEX = 0;
@@ -276,7 +277,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		this.gameType = gameType;
 		this.beginnerPlayer = beginnerPlayer;
 
-		zebiSounds.setEnabled(gameType == GameType.ZEBI);
+		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
 
 		for (int i = 0; i < 4; i++)
 		{

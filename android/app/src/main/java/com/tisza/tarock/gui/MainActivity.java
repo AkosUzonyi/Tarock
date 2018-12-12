@@ -5,6 +5,7 @@ import android.content.*;
 import android.os.*;
 import com.facebook.*;
 import com.tisza.tarock.*;
+import com.tisza.tarock.BuildConfig;
 import com.tisza.tarock.R;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
@@ -322,7 +323,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 		protected ProtoConnection doInBackground(Void... voids)
 		{
-			final String host = "akos0.ddns.net";
+			final String host = BuildConfig.DEBUG ? "dell" : "akos0.ddns.net";
 			final int port = 8128;
 
 			try

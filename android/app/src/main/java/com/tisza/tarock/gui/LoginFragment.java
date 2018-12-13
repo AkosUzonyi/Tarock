@@ -16,7 +16,8 @@ public class LoginFragment extends MainActivityFragment
 		@Override
 		protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken)
 		{
-			playButton.setEnabled(currentAccessToken != null);
+			if (playButton != null)
+				playButton.setEnabled(currentAccessToken != null);
 		}
 	};
 

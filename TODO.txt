@@ -19,7 +19,6 @@ features:
 error messages
 kibic
 nickname
-save finished games
 log
 
 refactorizations:

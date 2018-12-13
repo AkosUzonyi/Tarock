@@ -11,14 +11,15 @@ import java.util.*;
 public class FacebookUserManager
 {
 	private static final String APP_ID = "1735167250066232";
+	private static final String DATABASE_FILENAME = "fbusers.db";
 
 	private final String dbURL;
 	private Connection databaseConnection;
 	private Map<String, User> idToUser = new HashMap<>();
 
-	public FacebookUserManager(File dbFile)
+	public FacebookUserManager(File dbDir)
 	{
-		dbURL = "jdbc:sqlite:" + dbFile.getAbsolutePath();
+		dbURL = "jdbc:sqlite:" + new File(dbDir, DATABASE_FILENAME).getAbsolutePath();
 	}
 
 	public void initialize() throws SQLException

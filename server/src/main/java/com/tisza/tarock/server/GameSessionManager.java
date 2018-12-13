@@ -4,19 +4,24 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.message.*;
 
+import java.io.*;
 import java.util.*;
 
 public class GameSessionManager
 {
+	private final File saveDir;
 	private final BotFactory botFactory;
 
 	private int nextID = 0;
 	private Map<Integer, GameSession> games = new HashMap<>();
 	private Map<Integer, List<User>> gameIDToUsers = new HashMap<>();
 
-	public GameSessionManager(BotFactory botFactory)
+	public GameSessionManager(File dataDir, BotFactory botFactory)
 	{
 		this.botFactory = botFactory;
+
+		saveDir = new File(dataDir, "games");
+		saveDir.mkdir();
 	}
 
 	public Collection<GameInfo> listGames()
@@ -54,7 +59,7 @@ public class GameSessionManager
 
 		Collections.shuffle(players);
 
-		GameSession game = new GameSession(type, players, doubleRoundType);
+		GameSession game = new GameSession(type, players, doubleRoundType, saveDir);
 		games.put(id, game);
 		game.startSession();
 

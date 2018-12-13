@@ -89,7 +89,7 @@ public class GameHistory
 		}
 	}
 
-	public void writeJSON(Writer writer) throws JSONException, IOException
+	public JSONObject toJSON()
 	{
 		JSONObject obj = new JSONObject();
 		obj.put("cards", playermaplistcardsToJSON(originalPlayersCards));
@@ -99,9 +99,7 @@ public class GameHistory
 		obj.put("called", cardToJSON(calledCard));
 		obj.put("announcements", announcements.stream().map(AnnouncementEntry::toJSON).collect(Collectors.toList()));
 		obj.put("rounds", rounds.stream().map(GameHistory::roundToJSON).collect(Collectors.toList()));
-		System.out.println(obj.toString());
-		obj.write(writer);
-		writer.flush();
+		return obj;
 	}
 
 	private static Object roundToJSON(Round round)

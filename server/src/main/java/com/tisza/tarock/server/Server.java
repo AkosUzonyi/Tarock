@@ -25,14 +25,14 @@ public class Server implements Runnable
 	private final GameSessionManager gameSessionManager;
 	private final FacebookUserManager facebookUserManager;
 
-	public Server(int port, File keystoreFile, File fbUsersDBFile)
+	public Server(int port, File keystoreFile, File dataDir)
 	{
 		this.port = port;
 		this.keystoreFile = keystoreFile;
 
 		gameExecutorService = new GameExecutorService();
-		gameSessionManager = new GameSessionManager(new RandomPlayerFactory());
-		facebookUserManager = new FacebookUserManager(fbUsersDBFile);
+		gameSessionManager = new GameSessionManager(dataDir, new RandomPlayerFactory());
+		facebookUserManager = new FacebookUserManager(dataDir);
 	}
 
 	public GameSessionManager getGameSessionManager()

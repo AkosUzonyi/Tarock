@@ -104,7 +104,7 @@ public class BiddingTest
 			players.add(new TestPlayer(getPlayerName(seat)));
 		}
 
-		GameSession gameSession = new GameSession(GameType.PASKIEVICS, players, DoubleRoundType.NONE);
+		GameSession gameSession = new GameSession(GameType.PASKIEVICS, players, DoubleRoundType.NONE, null);
 		gameSession.startSession();
 
 		GameState game = gameSession.getCurrentGame();

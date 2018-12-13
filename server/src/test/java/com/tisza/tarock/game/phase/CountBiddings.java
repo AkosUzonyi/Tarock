@@ -88,7 +88,7 @@ public class CountBiddings
 			players.add(new TestPlayer(""));
 		}
 
-		GameSession gameSession = new GameSession(GameType.PASKIEVICS, players, DoubleRoundType.NONE);
+		GameSession gameSession = new GameSession(GameType.PASKIEVICS, players, DoubleRoundType.NONE, null);
 		gameSession.startSession();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())

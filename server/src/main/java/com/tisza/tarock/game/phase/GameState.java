@@ -408,15 +408,6 @@ public class GameState
 
 		points = new int[4];
 
-		try
-		{
-			history.writeJSON(new OutputStreamWriter(System.out));
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-
 		statEntriesForTeams = new HashMap<>();
 		gamePointsForTeams = new HashMap<>();
 		pointsForCallerTeam = 0;

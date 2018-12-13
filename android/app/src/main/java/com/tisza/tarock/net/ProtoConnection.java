@@ -5,11 +5,15 @@ import com.tisza.tarock.proto.MainProto.*;
 
 import java.io.*;
 import java.net.*;
+import java.nio.*;
+import java.nio.charset.*;
 import java.util.*;
 import java.util.concurrent.*;
 
 public class ProtoConnection implements Closeable
 {
+	private static final String HELLO_STRING = "Tarokk";
+	private static final int VERSION = 0;
 	private static final int KEEP_ALIVE_DELAY = 8;
 	private static final int SOCKET_TIMEOUT = 10;
 
@@ -30,6 +34,20 @@ public class ProtoConnection implements Closeable
 		{
 			try
 			{
+				byte[] helloArr = new byte[10];
+				is.read(helloArr);
+				ByteBuffer helloByteBuffer = ByteBuffer.wrap(helloArr);
+				String serverHelloString = new String(helloArr, 0, 6);
+				int serverVersion = helloByteBuffer.getInt(6);
+				if (!serverHelloString.equals(HELLO_STRING))
+				{
+					error(MessageHandler.ErrorType.INVALID_HELLO);
+				}
+				else if (serverVersion != VERSION)
+				{
+					error(MessageHandler.ErrorType.VERSION_MISMATCH);
+				}
+
 				while (!closeRequested)
 				{
 					Message message = Message.parseDelimitedFrom(is);
@@ -125,6 +143,18 @@ public class ProtoConnection implements Closeable
 
 		is = socket.getInputStream();
 		os = socket.getOutputStream();
+	}
+
+	private void error(MessageHandler.ErrorType errorType) throws IOException
+	{
+		synchronized (packetHandlersLock)
+		{
+			for (MessageHandler handler : packetHandlers)
+			{
+				messageHandlerExecutor.execute(() -> handler.connectionError(errorType));
+			}
+		}
+		close();
 	}
 	
 	public synchronized void start()

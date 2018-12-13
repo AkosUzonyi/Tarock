@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="update_available">New version is available!</string>
+    <string name="update_please">Please update your application to play</string>
+    <string name="update_accept">Update</string>
+    <string name="update_deny">Exit</string>
+
     <string name="connecting">Connecting to server&#8230;</string>
     <string name="logging_in">Logging in&#8230;</string>
     <string name="new_game">Create game</string>

@@ -5,11 +5,15 @@ import com.tisza.tarock.proto.MainProto.*;
 
 import java.io.*;
 import java.net.*;
+import java.nio.*;
+import java.nio.charset.*;
 import java.util.*;
 import java.util.concurrent.*;
 
 public class ProtoConnection implements Closeable
 {
+	private static final String HELLO_STRING = "Tarokk";
+	private static final int VERSION = 0;
 	private static final int KEEP_ALIVE_DELAY = 8;
 	private static final int SOCKET_TIMEOUT = 10;
 
@@ -77,6 +81,11 @@ public class ProtoConnection implements Closeable
 		{
 			try
 			{
+				ByteBuffer helloByteBuffer = ByteBuffer.allocate(10);
+				helloByteBuffer.put(HELLO_STRING.getBytes(StandardCharsets.UTF_8), 0, 6);
+				helloByteBuffer.putInt(6, VERSION);
+				os.write(helloByteBuffer.array());
+
 				while (!closeRequested)
 				{
 					try

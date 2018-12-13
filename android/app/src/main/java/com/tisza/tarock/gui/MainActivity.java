@@ -1,8 +1,12 @@
 package com.tisza.tarock.gui;
 
 import android.app.*;
+import android.app.FragmentTransaction;
 import android.content.*;
+import android.net.*;
 import android.os.*;
+import android.support.v4.app.*;
+import android.widget.*;
 import com.facebook.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.BuildConfig;
@@ -234,6 +238,24 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		}
 	}
 
+	@Override
+	public void connectionError(ErrorType errorType)
+	{
+		switch (errorType)
+		{
+			case INVALID_HELLO:
+				break;
+			case VERSION_MISMATCH:
+				requireUpdate();
+				break;
+		}
+
+		if (progressDialog.isShowing())
+			progressDialog.dismiss();
+
+		connection = null;
+	}
+
 	private void popBackToLoginScreen()
 	{
 		getFragmentManager().beginTransaction()
@@ -282,6 +304,19 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	public AvailableUsersAdapter getAvailableUsersAdapter()
 	{
 		return availableUsersAdapter;
+	}
+
+	private void requireUpdate()
+	{
+		new AlertDialog.Builder(this)
+				.setTitle(R.string.update_available)
+				.setMessage(R.string.update_please)
+				.setPositiveButton(R.string.update_accept, (dialog, which) ->
+						startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName()))))
+				.setNegativeButton(R.string.update_deny, (dialog, which) ->
+						finish())
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.show();
 	}
 
 	private class DisconnectAsyncTask extends AsyncTask<Void, Void, Void>
@@ -345,7 +380,8 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				Socket socket = sc.getSocketFactory().createSocket();
 				socket.connect(new InetSocketAddress(host, port), 1000);
 
-				return new ProtoConnection(socket, uiThreadExecutor);
+				ProtoConnection protoConnection = new ProtoConnection(socket, uiThreadExecutor);
+				return protoConnection;
 			}
 			catch (Exception e)
 			{
@@ -361,14 +397,14 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 			if (progressDialog.isShowing())
 				progressDialog.dismiss();
 
-			if (resultProtoConnection != null)
-			{
-				connection = resultProtoConnection;
-				connection.addMessageHandler(MainActivity.this);
-				connection.start();
-				actionSender = new ProtoActionSender(connection);
-				login();
-			}
+			if (resultProtoConnection == null)
+				return;
+
+			connection = resultProtoConnection;
+			connection.addMessageHandler(MainActivity.this);
+			connection.start();
+			actionSender = new ProtoActionSender(connection);
+			login();
 		}
 	}
 }

@@ -2,6 +2,11 @@
     <string name="facebook_app_id" translatable="false">1735167250066232</string>
     <string name="fb_login_protocol_scheme" translatable="false">fb1735167250066232</string>
 
+    <string name="update_available">Új verzió elérhető!</string>
+    <string name="update_please">Frissítsd az alkalmazást a legújabb verzióra, hogy tudjál játszani</string>
+    <string name="update_accept">Frissítés</string>
+    <string name="update_deny">Kilépés</string>
+
     <string name="app_name" translatable="false">Tarokk</string>
     <string name="play" translatable="false">Play</string>
     <string name="new_game">Új játék</string>

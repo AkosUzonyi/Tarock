@@ -64,7 +64,7 @@
     </string-array>
 
     <string-array name="double_round_type_array">
-        <item>Fujsemijen</item>
+        <item>Nincs</item>
         <item>Sikkasztó</item>
         <item>Halmozódó</item>
         <item>Szorzódó</item>

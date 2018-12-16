@@ -1,3 +1,3 @@
 #!/bin/bash
 
-git describe --tags | cut -d - -f 1
+git describe --tags --long | cut -d - -f 1

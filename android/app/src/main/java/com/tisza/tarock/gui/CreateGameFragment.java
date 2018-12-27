@@ -42,7 +42,7 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 		availableUsersAdapter = getMainActivity().getAvailableUsersAdapter();
 		availableUsersAdapter.setUsersSelectedListener(this);
 		ListView availableUsersView = view.findViewById(R.id.available_users);
-		availableUsersView.addHeaderView(new View(getActivity()));
+		availableUsersView.addHeaderView(inflater.inflate(R.layout.users_header, availableUsersView, false));
 		availableUsersView.setAdapter(availableUsersAdapter);
 
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);

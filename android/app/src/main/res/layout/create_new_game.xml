@@ -64,6 +64,17 @@
 		android:headerDividersEnabled="true"
 	/>
 
+	<TextView
+		android:id="@+id/bot_warning"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:textAlignment="center"
+		android:background="@drawable/warning_background"
+		android:layout_margin="@dimen/button_margin"
+		android:text="@string/bot_warning"
+        style="@style/text_view"
+	/>
+
 	<Button
 		android:id="@+id/create_game_button"
 		android:layout_width="match_parent"

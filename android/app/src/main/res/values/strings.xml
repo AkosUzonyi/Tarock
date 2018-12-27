@@ -15,11 +15,13 @@
     <string name="join_game">Csatlakozás</string>
     <string name="delete_game">Törlés</string>
 
+    <string name="players">Játékosok</string>
     <string name="create_game">Játék létrehozása</string>
     <string name="too_much_user_selected">"Maximum 3 játékost jelölj meg!"</string>
     <plurals name="create_game_with_bots">
         <item quantity="other">Játék létrehozása %1$d robottal</item>
     </plurals>
+    <string name="bot_warning">"A robotok véletlenszerűen döntenek, a játék nem élvezhető velük (csak arra jók, ha ki szeretnéd próbálni, hogy mi hogyan működik játék közben).\nHívd meg barátaidat is, és játssz velük! ;)"</string>
 
     <string name="pager_announcing">Bemondások</string>
     <string name="pager_gameplay">Lejátszás</string>

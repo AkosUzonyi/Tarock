@@ -21,6 +21,7 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 
 	private Spinner gameTypeSpinner, doubleRoundTypeSpinner;
 	private AvailableUsersAdapter availableUsersAdapter;
+	private TextView botWarning;
 	private Button createButton;
 	private List<User> selectedUsers;
 
@@ -31,6 +32,7 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 
 		gameTypeSpinner = view.findViewById(R.id.game_type_spinner);
 		doubleRoundTypeSpinner = view.findViewById(R.id.double_round_type_spinner);
+		botWarning = view.findViewById(R.id.bot_warning);
 
 		createButton = view.findViewById(R.id.create_game_button);
 		createButton.setOnClickListener(v -> createButtonClicked());
@@ -96,14 +98,17 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 		if (botCount < 0)
 		{
 			createButton.setText(R.string.too_much_user_selected);
+			botWarning.setVisibility(View.GONE);
 		}
 		else if (botCount == 0)
 		{
 			createButton.setText(R.string.create_game);
+			botWarning.setVisibility(View.GONE);
 		}
 		else
 		{
 			createButton.setText(getResources().getQuantityString(R.plurals.create_game_with_bots, botCount, botCount));
+			botWarning.setVisibility(View.VISIBLE);
 		}
 	}
 }

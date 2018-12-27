@@ -15,7 +15,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="0.25"
-			style="@style/text_view"
+			android:textAlignment="center"
 		/>
 
 		<TextView
@@ -23,7 +23,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="0.25"
-			style="@style/text_view"
+			android:textAlignment="center"
 		/>
 
 		<TextView
@@ -31,7 +31,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="0.25"
-			style="@style/text_view"
+			android:textAlignment="center"
 		/>
 
 		<TextView
@@ -39,7 +39,7 @@
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
 			android:layout_weight="0.25"
-			style="@style/text_view"
+			android:textAlignment="center"
 		/>
 	</LinearLayout>
 
@@ -56,7 +56,6 @@
 			android:layout_weight="0.5"
 			android:layout_margin="@dimen/button_margin"
 			android:text="@string/join_game"
-			style="@style/button"
 		/>
 
 		<Button

@@ -3,6 +3,7 @@
     <dimen name="user_name_size">25sp</dimen>
     <dimen name="text_size">14sp</dimen>
     <dimen name="large_text_size">20sp</dimen>
+    <dimen name="button_text_size">16sp</dimen>
     <dimen name="player_message_size">20sp</dimen>
     <dimen name="statistics_header_text_size">14sp</dimen>
     <dimen name="button_min_height">40dp</dimen>

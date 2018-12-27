@@ -24,7 +24,7 @@
 				android:id="@+id/messages_text_view"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				style="@style/shadow_text"
+				android:textAppearance="@style/shadow_text"
 				/>
 		</ScrollView>
 
@@ -79,7 +79,6 @@
 				android:layout_height="wrap_content"
 				android:layout_marginTop="@dimen/button_margin"
 				android:text="@string/announce"
-				style="@style/button"
 				/>
 		</LinearLayout>
 	</ScrollView>

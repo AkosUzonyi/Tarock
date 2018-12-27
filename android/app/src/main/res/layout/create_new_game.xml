@@ -18,7 +18,7 @@
 			android:layout_weight="0.4"
 			android:text="@string/game_type"
 			android:textSize="@dimen/large_text_size"
-			style="@style/text_view"
+			android:textAlignment="center"
 		/>
 
 		<Spinner
@@ -27,7 +27,6 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="0.6"
 			android:entries="@array/game_type_array"
-			style="@style/spinner"
 		/>
 	</LinearLayout>
 
@@ -43,7 +42,7 @@
 			android:layout_weight="0.4"
 			android:text="@string/double_round_type"
 			android:textSize="@dimen/large_text_size"
-			style="@style/text_view"
+			android:textAlignment="center"
 		/>
 
 		<Spinner
@@ -52,7 +51,6 @@
 			android:layout_height="wrap_content"
 			android:layout_weight="0.6"
 			android:entries="@array/double_round_type_array"
-			style="@style/spinner"
 		/>
 	</LinearLayout>
 
@@ -72,14 +70,12 @@
 		android:background="@drawable/warning_background"
 		android:layout_margin="@dimen/button_margin"
 		android:text="@string/bot_warning"
-        style="@style/text_view"
 	/>
 
 	<Button
 		android:id="@+id/create_game_button"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-		style="@style/button"
 	/>
 
 </LinearLayout>

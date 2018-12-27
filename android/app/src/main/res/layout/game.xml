@@ -72,7 +72,6 @@
 			android:padding="@dimen/default_padding"
             android:visibility="gone"
             android:text="@string/ok"
-            style="@style/button"
             />
 	    
         <Button
@@ -83,7 +82,6 @@
             android:layout_alignParentLeft="true"
             android:visibility="gone"
             android:text="@string/throw_cards"
-            style="@style/button"
             />
         
         <com.tisza.tarock.gui.VerticalTextView

@@ -16,12 +16,14 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 	private static final String SHARED_PREF = "create_game_spinners";
 	private static final String GAME_TYPE_KEY = "game_type";
 	private static final String DOUBLE_ROUND_TYPE_KEY = "double_round_type";
+	private static final String BOT_WARNING_IGNORED_KEY = "bot_warning_ignored";
 
 	private static final int SELECT_USER_COUNT = 3;
 
 	private Spinner gameTypeSpinner, doubleRoundTypeSpinner;
 	private AvailableUsersAdapter availableUsersAdapter;
 	private TextView botWarning;
+	private boolean botWarningIgnored;
 	private Button createButton;
 	private List<User> selectedUsers;
 
@@ -48,6 +50,8 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
 		gameTypeSpinner.setSelection(sharedPreferences.getInt(GAME_TYPE_KEY, 0));
 		doubleRoundTypeSpinner.setSelection(sharedPreferences.getInt(DOUBLE_ROUND_TYPE_KEY, 0));
+		botWarningIgnored = sharedPreferences.getBoolean(BOT_WARNING_IGNORED_KEY, false);
+		botWarning.setVisibility(botWarningIgnored ? View.GONE : View.VISIBLE);
 
 		return view;
 	}
@@ -65,10 +69,14 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 		if (selectedUsers.size() > SELECT_USER_COUNT)
 			return;
 
+		if (selectedUsers.size() == SELECT_USER_COUNT)
+			botWarningIgnored = true;
+
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
 		sharedPreferences.edit()
 				.putInt(GAME_TYPE_KEY, gameTypeSpinner.getSelectedItemPosition())
 				.putInt(DOUBLE_ROUND_TYPE_KEY, doubleRoundTypeSpinner.getSelectedItemPosition())
+				.putBoolean(BOT_WARNING_IGNORED_KEY, botWarningIgnored)
 				.apply();
 
 		MainProto.CreateGame.Builder builder = MainProto.CreateGame.newBuilder();
@@ -94,21 +102,19 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 		int botCount = SELECT_USER_COUNT - selectedUsers.size();
 
 		createButton.setEnabled(botCount >= 0);
+		botWarning.setVisibility(botCount > 0 && !botWarningIgnored ? View.VISIBLE : View.GONE);
 
 		if (botCount < 0)
 		{
 			createButton.setText(R.string.too_much_user_selected);
-			botWarning.setVisibility(View.GONE);
 		}
 		else if (botCount == 0)
 		{
 			createButton.setText(R.string.create_game);
-			botWarning.setVisibility(View.GONE);
 		}
 		else
 		{
 			createButton.setText(getResources().getQuantityString(R.plurals.create_game_with_bots, botCount, botCount));
-			botWarning.setVisibility(View.VISIBLE);
 		}
 	}
 }

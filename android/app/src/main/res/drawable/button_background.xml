@@ -1,14 +1,5 @@
-<shape xmlns:android="http://schemas.android.com/apk/res/android"> 
-    <gradient
-        android:startColor="#E0E000"
-        android:endColor="#E08000"
-        android:angle="45"
-        />
-    
-    <stroke
-        android:width="2dp"
-        android:color="#000000"
-        />
-    
-    <corners android:radius="10dp"/>
-</shape>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true"
+          android:drawable="@drawable/button_background_pressed"/>
+    <item android:drawable="@drawable/button_background_default"/>
+</selector>

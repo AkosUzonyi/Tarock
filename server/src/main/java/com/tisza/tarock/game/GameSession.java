@@ -16,6 +16,7 @@ public class GameSession implements GameFinishedListener
 	private final File saveDir;
 	private final GameType gameType;
 	private final PlayerSeat.Map<Player> players = new PlayerSeat.Map<>();
+	private final Set<Player> kibices = new HashSet<>();
 
 	private final DoubleRoundTracker doubleRoundTracker;
 
@@ -61,6 +62,24 @@ public class GameSession implements GameFinishedListener
 		}
 	}
 
+	public void addKibic(Player player)
+	{
+		if (kibices.add(player))
+		{
+			player.onAddedToGame(new GameSessionActionHandler(this), null);
+			currentGame.addKibic(player);
+		}
+	}
+
+	public void removeKibic(Player player)
+	{
+		if (kibices.remove(player))
+		{
+			currentGame.removeKibic(player);
+			player.onRemovedFromGame();
+		}
+	}
+
 	public GameType getGameType()
 	{
 		return gameType;
@@ -79,6 +98,8 @@ public class GameSession implements GameFinishedListener
 	private void startNewGame()
 	{
 		currentGame = new GameState(gameType, players, currentBeginnerPlayer, this, doubleRoundTracker.getCurrentMultiplier());
+		for (Player kibic : kibices)
+			currentGame.addKibic(kibic);
 		currentGame.start();
 	}
 

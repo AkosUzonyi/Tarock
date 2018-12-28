@@ -18,7 +18,7 @@ public class GameState
 	private final PlayerSeat beginnerPlayer;
 
 	private final GameFinishedListener gameFinishedListener;
-	private EventSender broadcastEventSender;
+	private BroadcastEventSender broadcastEventSender = new BroadcastEventSender();
 
 	private TeamInfoTracker teamInfoTracker;
 
@@ -80,12 +80,11 @@ public class GameState
 		history = new GameHistory();
 
 		Collection<EventSender> eventSenders = new ArrayList<>();
-		eventSenders.add(teamInfoTracker);
+		broadcastEventSender.addEventSender(teamInfoTracker);
 		for (Player player : players.values())
 		{
-			eventSenders.add(player.getEventSender());
+			broadcastEventSender.addEventSender(player.getEventSender());
 		}
-		broadcastEventSender = new BroadcastEventSender(eventSenders);
 	}
 
 	public void start()
@@ -119,6 +118,16 @@ public class GameState
 	public List<String> getPlayerNames()
 	{
 		return players.values().stream().map(Player::getName).collect(Collectors.toList());
+	}
+
+	public void addKibic(Player player)
+	{
+		broadcastEventSender.addEventSender(player.getEventSender());
+	}
+
+	public void removeKibic(Player player)
+	{
+		broadcastEventSender.removeEventSender(player.getEventSender());
 	}
 
 	public void finish()
@@ -188,14 +197,14 @@ public class GameState
 		currentPhase.onStart();
 	}
 
-	public void sendHistoryToPlayer(PlayerSeat player)
+	public void sendHistoryToPlayer(PlayerSeat player, EventSender eventSender)
 	{
-		EventSender eventSender = getPlayerEventSender(player);
 		eventSender.startGame(player, getPlayerNames(), gameType, beginnerPlayer);
-		eventSender.playerCards(playersCards.get(player));
+		if (player != null)
+			eventSender.playerCards(playersCards.get(player));
 		history.sendCurrentStatusToPlayer(player, currentPhase.asEnum(), eventSender);
 		eventSender.phaseChanged(currentPhase.asEnum());
-		teamInfoTracker.sendStatusToPlayer(player);
+		teamInfoTracker.sendStatusToPlayer(player, eventSender);
 	}
 
 	public Phase getCurrentPhase()

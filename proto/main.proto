@@ -44,6 +44,7 @@ message Game
     required int32 id = 1;
     required GameType type = 2;
     repeated string player_name = 3;
+    required bool my = 4;
 }
 
 message CreateGame

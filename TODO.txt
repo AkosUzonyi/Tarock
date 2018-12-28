@@ -17,7 +17,6 @@ buffer messages
 
 features:
 error messages
-kibic
 nickname
 log
 

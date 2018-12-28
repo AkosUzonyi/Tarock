@@ -15,6 +15,7 @@ public class GameSessionManager
 	private int nextID = 0;
 	private Map<Integer, GameSession> games = new HashMap<>();
 	private Map<Integer, List<User>> gameIDToUsers = new HashMap<>();
+	private Map<Integer, Collection<User>> gameIDTokibices = new HashMap<>();
 
 	public GameSessionManager(File dataDir, BotFactory botFactory)
 	{
@@ -64,13 +65,14 @@ public class GameSessionManager
 		game.startSession();
 
 		gameIDToUsers.put(id, users);
+		gameIDTokibices.put(id, new HashSet<>());
 
 		System.out.println("game created with id: " + id);
 
 		return id;
 	}
 
-	public boolean hasUserPermissionToDelete(int id, User user)
+	public boolean isGameOwnedBy(int id, User user)
 	{
 		return gameIDToUsers.get(id).contains(user);
 	}
@@ -79,13 +81,34 @@ public class GameSessionManager
 	{
 		GameSession game = games.remove(id);
 		List<User> users = gameIDToUsers.remove(id);
+		Collection<User> kibices = gameIDTokibices.remove(id);
 
 		for (User user : users)
 		{
 			user.removePlayerForGame(id);
 		}
 
+		for (User kibic : kibices)
+		{
+			kibic.removePlayerForGame(id);
+		}
+
 		game.stopSession();
+	}
+
+	public ProtoPlayer addKibic(User user, int gameID)
+	{
+		ProtoPlayer player = user.createPlayerForGame(gameID);
+		games.get(gameID).addKibic(player);
+		gameIDTokibices.get(gameID).add(user);
+		return player;
+	}
+
+	public void removeKibic(User user, int gameID)
+	{
+		games.get(gameID).removeKibic(user.getPlayerForGame(gameID));
+		user.removePlayerForGame(gameID);
+		gameIDTokibices.get(gameID).remove(user);
 	}
 
 	public void shutdown()

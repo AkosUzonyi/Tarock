@@ -44,6 +44,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private TextView[] playerNameViews;
 	private TextView[] playerMessageViews;
 	private View[] skartViews;
+	private View myCardsView;
 	private LinearLayout myCardsView0;
 	private LinearLayout myCardsView1;
 	private View cardsBackgroundColorView;
@@ -104,7 +105,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 		playerNameViews = new TextView[]
 		{
-				null,
+				(TextView)contentView.findViewById(R.id.player_name_0),
 				(TextView)contentView.findViewById(R.id.player_name_1),
 				(TextView)contentView.findViewById(R.id.player_name_2),
 				(TextView)contentView.findViewById(R.id.player_name_3),
@@ -126,6 +127,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 				contentView.findViewById(R.id.skart_3),
 		};
 
+		myCardsView = contentView.findViewById(R.id.cards);
 		myCardsView0 = (LinearLayout)contentView.findViewById(R.id.my_cards_0);
 		myCardsView1 = (LinearLayout)contentView.findViewById(R.id.my_cards_1);
 		cardsBackgroundColorView = contentView.findViewById(R.id.cards_background_color);
@@ -240,8 +242,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 		for (TextView nameView : playerNameViews)
 		{
-			if (nameView != null)
-				nameView.setTextColor(getResources().getColor(R.color.unknown_team));
+			nameView.setTextColor(getResources().getColor(R.color.unknown_team));
 		}
 
 		for (View skartView : skartViews)
@@ -279,13 +280,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
 
+		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
+		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
 		for (int i = 0; i < 4; i++)
 		{
 			int pos = getPositionFromPlayerID(i);
-			if (pos != 0)
-			{
-				playerNameViews[pos].setText(playerNames.get(i));
-			}
+			playerNameViews[pos].setText(playerNames.get(i));
 		}
 		messages = "";
 	}
@@ -306,7 +306,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		{
 			showCenterView(MESSAGES_VIEW_INDEX);
 
-			if (myCards.canBeThrown())
+			if (myCards != null && myCards.canBeThrown())
 				throwButton.setVisibility(View.VISIBLE);
 		}
 		else if (phase == PhaseEnum.CHANGING)
@@ -486,7 +486,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		playedCardView.bringToFront();
 		playedCardView.animatePlay();
 		
-		if (player == myID)
+		if (myCards != null && player == myID)
 		{
 			myCards.removeCard(card);
 
@@ -547,7 +547,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			okButton.setVisibility(View.VISIBLE);
 			okButton.setOnClickListener(v -> getActionSender().change(cardsToSkart));
 
-			if (myCards.canBeThrown())
+			if (myCards != null && myCards.canBeThrown())
 				throwButton.setVisibility(View.VISIBLE);
 		}
 		else
@@ -566,10 +566,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		{
 			cardsBackgroundColorView.setBackgroundColor(color);
 		}
-		else
-		{
-			playerNameViews[pos].setTextColor(color);
-		}
+
+		playerNameViews[pos].setTextColor(color);
 	}
 
 	@Override
@@ -624,8 +622,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	@Override
 	public void pendingNewGame()
 	{
-		okButton.setVisibility(View.VISIBLE);
-		okButton.setOnClickListener(v -> getActionSender().readyForNewGame());
+		if (!isKibic())
+		{
+			okButton.setVisibility(View.VISIBLE);
+			okButton.setOnClickListener(v -> getActionSender().readyForNewGame());
+		}
 
 		higlightAllName();
 	}
@@ -654,6 +655,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private void arrangeCards()
 	{
 		removeAllMyCardsView();
+
+		if (myCards == null)
+			return;
 		
 		myCards.sort();
 		
@@ -824,21 +828,25 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		{
 			cardsHighlightView.setVisibility(val ? View.VISIBLE : View.GONE);
 		}
+
+		if (val)
+		{
+			playerNameViews[pos].setBackgroundResource(R.drawable.name_highlight);
+		}
 		else
 		{
-			if (val)
-			{
-				playerNameViews[pos].setBackgroundResource(R.drawable.name_highlight);
-			}
-			else
-			{
-				playerNameViews[pos].setBackgroundColor(Color.TRANSPARENT);
-			}
+			playerNameViews[pos].setBackgroundColor(Color.TRANSPARENT);
 		}
+	}
+
+	private boolean isKibic()
+	{
+		return myID < 0;
 	}
 	
 	private int getPositionFromPlayerID(int id)
 	{
-		return (id - myID + 4) % 4;
+		int viewID = isKibic() ? 0 : myID;
+		return (id - viewID + 4) % 4;
 	}
 }

@@ -2,6 +2,7 @@ package com.tisza.tarock.game.phase;
 
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.message.*;
 
 import java.util.*;
 
@@ -31,15 +32,15 @@ class Gameplay extends Phase
 	}
 
 	@Override
-	public void requestHistory(PlayerSeat player)
+	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player);
+		super.requestHistory(player, eventSender);
 
 		for (PlayerSeat cardPlayer = currentRound.getBeginnerPlayer(); cardPlayer != currentRound.getCurrentPlayer(); cardPlayer = cardPlayer.nextPlayer())
 		{
-			game.getPlayerEventSender(player).playCard(cardPlayer, currentRound.getCardByPlayer(cardPlayer));
+			eventSender.playCard(cardPlayer, currentRound.getCardByPlayer(cardPlayer));
 		}
-		game.getPlayerEventSender(player).turn(currentRound.getCurrentPlayer());
+		eventSender.turn(currentRound.getCurrentPlayer());
 
 		game.sendInGameStatistics();
 	}

@@ -14,6 +14,7 @@ public class Client implements MessageHandler
 	private ProtoConnection connection;
 	private User loggedInUser = null;
 	private ProtoPlayer currentPlayer = null;
+	private int currentGameID = -1;
 
 	public Client(Server server, ProtoConnection connection)
 	{
@@ -102,7 +103,7 @@ public class Client implements MessageHandler
 			{
 				int gameID = message.getDeleteGame().getGameId();
 
-				if (server.getGameSessionManager().hasUserPermissionToDelete(gameID, loggedInUser))
+				if (server.getGameSessionManager().isGameOwnedBy(gameID, loggedInUser))
 				{
 					server.getGameSessionManager().deleteGame(gameID);
 				}
@@ -113,12 +114,17 @@ public class Client implements MessageHandler
 			case JOIN_GAME:
 			{
 				if (currentPlayer != null)
+				{
 					currentPlayer.useConnection(null);
+					server.getGameSessionManager().removeKibic(loggedInUser, currentGameID);
+				}
 
 				if (message.getJoinGame().hasGameId())
 				{
-					int gameID = message.getJoinGame().getGameId();
-					currentPlayer = loggedInUser.getPlayerForGame(gameID);
+					currentGameID = message.getJoinGame().getGameId();
+					currentPlayer = loggedInUser.getPlayerForGame(currentGameID);
+					if (currentPlayer == null)
+						currentPlayer = server.getGameSessionManager().addKibic(loggedInUser, currentGameID);
 				}
 				else
 				{

@@ -33,6 +33,7 @@ public class TeamInfoTracker implements EventSender
 		{
 			addNewTeamInfo(p, player);
 		}
+		game.getBroadcastEventSender().playerTeamInfo(player, game.getPlayerPairs().getTeam(player));
 	}
 
 	private void revealAllTeamInfoFor(PlayerSeat player)
@@ -47,10 +48,7 @@ public class TeamInfoTracker implements EventSender
 	{
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			for (PlayerSeat otherPlayer : PlayerSeat.getAll())
-			{
-				addNewTeamInfo(player, otherPlayer);
-			}
+			revealAllTeamInfoOf(player);
 		}
 	}
 
@@ -69,12 +67,13 @@ public class TeamInfoTracker implements EventSender
 		return teamInfoKnowledges.contains(new TeamInfoKnowledge(player, otherPlayer));
 	}
 
-	public void sendStatusToPlayer(PlayerSeat player)
+	public void sendStatusToPlayer(PlayerSeat player, EventSender eventSender)
 	{
 		for (PlayerSeat p : PlayerSeat.getAll())
 		{
-			if (hasTeamInfo(player, p))
-				game.getPlayerEventSender(player).playerTeamInfo(p, game.getPlayerPairs().getTeam(p));
+			boolean sendInfo = player == null ? isTeamInfoGlobalOf(p) : hasTeamInfo(player, p);
+			if (sendInfo)
+				eventSender.playerTeamInfo(p, game.getPlayerPairs().getTeam(p));
 		}
 	}
 

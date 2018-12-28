@@ -45,7 +45,7 @@ public class MixedPlayer implements Player
 		{
 			activePlayer.onAddedToGame(actionHandler, seat);
 			eventSender.setEventSenders(Arrays.asList(activePlayer.getEventSender(), phaseTrackerEventSender));
-			actionHandler.requestHistory(seat);
+			actionHandler.requestHistory(seat, eventSender);
 		}
 	}
 

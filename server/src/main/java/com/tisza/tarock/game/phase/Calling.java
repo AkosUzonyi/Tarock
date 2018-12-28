@@ -3,6 +3,7 @@ package com.tisza.tarock.game.phase;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.message.*;
 
 import java.util.*;
 
@@ -41,11 +42,11 @@ class Calling extends Phase
 	}
 
 	@Override
-	public void requestHistory(PlayerSeat player)
+	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player);
+		super.requestHistory(player, eventSender);
 
-		game.getPlayerEventSender(player).turn(callerPlayer);
+		eventSender.turn(callerPlayer);
 		if (player == callerPlayer)
 			sendAvailableCalls();
 	}

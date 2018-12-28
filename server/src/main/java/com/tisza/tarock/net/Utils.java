@@ -9,6 +9,8 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.*;
 
+import java.util.stream.*;
+
 public class Utils
 {
 	public static ProtoUtils.Card cardToProto(Card c)
@@ -156,12 +158,13 @@ public class Utils
 		return builder.build();
 	}
 
-	public static MainProto.Game gameInfoToProto(GameInfo gameInfo)
+	public static MainProto.Game gameInfoToProto(GameInfo gameInfo, boolean my)
 	{
 		return MainProto.Game.newBuilder()
 				.setId(gameInfo.getId())
 				.setType(gameTypeToProto(gameInfo.getType()))
 				.addAllPlayerName(gameInfo.getPlayerNames())
+				.setMy(my)
 				.build();
 	}
 

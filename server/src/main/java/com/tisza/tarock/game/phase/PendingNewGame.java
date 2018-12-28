@@ -1,6 +1,7 @@
 package com.tisza.tarock.game.phase;
 
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.message.*;
 
 class PendingNewGame extends Phase
 {
@@ -32,14 +33,14 @@ class PendingNewGame extends Phase
 	}
 
 	@Override
-	public void requestHistory(PlayerSeat player)
+	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player);
+		super.requestHistory(player, eventSender);
 
 		if (!doubleRound)
 			game.sendStatistics();
 
-		game.getBroadcastEventSender().pendingNewGame();
+		eventSender.pendingNewGame();
 
 		for (PlayerSeat p : PlayerSeat.getAll())
 			if (ready.get(p))

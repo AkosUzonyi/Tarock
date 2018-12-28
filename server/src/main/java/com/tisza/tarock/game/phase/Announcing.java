@@ -3,6 +3,7 @@ package com.tisza.tarock.game.phase;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.message.*;
 
 import java.util.*;
 
@@ -34,11 +35,11 @@ class Announcing extends Phase implements IAnnouncing
 	}
 
 	@Override
-	public void requestHistory(PlayerSeat player)
+	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player);
+		super.requestHistory(player, eventSender);
 
-		game.getPlayerEventSender(player).turn(currentPlayer);
+		eventSender.turn(currentPlayer);
 		if (player == currentPlayer)
 			sendAvailableAnnouncements();
 	}

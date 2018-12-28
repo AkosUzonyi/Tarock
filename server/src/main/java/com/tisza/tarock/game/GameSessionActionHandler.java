@@ -20,9 +20,9 @@ public class GameSessionActionHandler implements ActionHandler
 	}
 
 	@Override
-	public void requestHistory(PlayerSeat player)
+	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		getCurrentHandler().requestHistory(player);
+		getCurrentHandler().requestHistory(player, eventSender);
 	}
 
 	@Override

@@ -22,7 +22,9 @@ public class GameListAdapter extends BaseAdapter
 
 	public void setGames(Collection<GameInfo> games)
 	{
-		this.games = new ArrayList<>(games);
+		this.games.clear();
+		this.games.addAll(games);
+		Collections.sort(this.games);
 		notifyDataSetChanged();
 	}
 
@@ -77,7 +79,9 @@ public class GameListAdapter extends BaseAdapter
 			holder.userNameViews[i].setText(gameInfo.getPlayerNames().get(i));
 		}
 
+		holder.joinGameButton.setText(gameInfo.isMy() ? R.string.join_game : R.string.join_game_kibic);
 		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGame(gameInfo.getId()));
+		holder.deleteGameButton.setVisibility(gameInfo.isMy() ? View.VISIBLE : View.GONE);
 		holder.deleteGameButton.setOnClickListener(v -> gameAdapterListener.deleteGame(gameInfo.getId()));
 
 		return view;

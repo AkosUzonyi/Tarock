@@ -196,7 +196,7 @@ public class Utils
 
 	public static GameInfo gameInfoFromProto(MainProto.Game gameProto)
 	{
-		return new GameInfo(gameProto.getId(), gameTypeFromProto(gameProto.getType()), gameProto.getPlayerNameList());
+		return new GameInfo(gameProto.getId(), gameTypeFromProto(gameProto.getType()), gameProto.getPlayerNameList(), gameProto.getMy());
 	}
 
 	public static ProtoUtils.DoubleRoundType doubleRoundTypeToProto(DoubleRoundType doubleRoundTypeProto)

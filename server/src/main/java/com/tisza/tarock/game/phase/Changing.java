@@ -3,6 +3,7 @@ package com.tisza.tarock.game.phase;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.message.*;
 
 import java.util.*;
 
@@ -32,19 +33,19 @@ class Changing extends Phase
 	}
 
 	@Override
-	public void requestHistory(PlayerSeat player)
+	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player);
+		super.requestHistory(player, eventSender);
 
 		for (PlayerSeat otherPlayer : PlayerSeat.getAll())
 		{
 			if (donePlayer.get(otherPlayer))
 			{
-				game.getPlayerEventSender(player).changeDone(otherPlayer);
+				eventSender.changeDone(otherPlayer);
 			}
 		}
 
-		if (!donePlayer.get(player))
+		if (player != null && !donePlayer.get(player))
 			game.getPlayerEventSender(player).turn(player);
 	}
 

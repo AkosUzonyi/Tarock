@@ -123,7 +123,7 @@ public class Server implements Runnable
 
 			for (GameInfo gameInfo : gameSessionManager.listGames())
 			{
-				builder.addAvailableGame(Utils.gameInfoToProto(gameInfo));
+				builder.addAvailableGame(Utils.gameInfoToProto(gameInfo, gameSessionManager.isGameOwnedBy(gameInfo.getId(), client.getLoggedInUser())));
 			}
 
 			for (User user : facebookUserManager.listUsers())

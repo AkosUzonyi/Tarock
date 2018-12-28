@@ -107,7 +107,7 @@ public class ProtoEventSender implements EventSender
 		startEventSent = true;
 
 		Event.StartGame e = Event.StartGame.newBuilder()
-				.setMyId(seat.asInt())
+				.setMyId(seat == null ? -1 : seat.asInt())
 				.addAllPlayerName(names)
 				.setGameType(Utils.gameTypeToProto(gameType))
 				.setBeginnerPlayer(beginnerPlayer.asInt())

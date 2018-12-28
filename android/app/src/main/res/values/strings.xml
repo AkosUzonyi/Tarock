@@ -12,7 +12,8 @@
     <string name="new_game">Új játék</string>
     <string name="connecting">Csatlakozás a szerverhez&#8230;</string>
     <string name="logging_in">Bejelentkezés&#8230;</string>
-    <string name="join_game">Csatlakozás</string>
+    <string name="join_game">Belépés</string>
+    <string name="join_game_kibic">Kibic</string>
     <string name="delete_game">Törlés</string>
 
     <string name="players">Játékosok</string>

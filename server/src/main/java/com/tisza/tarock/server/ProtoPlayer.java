@@ -23,7 +23,7 @@ public class ProtoPlayer implements Player
 
 		if (connection != null)
 		{
-			actionHandler.requestHistory(seat);
+			actionHandler.requestHistory(seat, eventSender);
 		}
 	}
 

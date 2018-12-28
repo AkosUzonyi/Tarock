@@ -1,23 +1,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:background="@drawable/wood_texture"
-	android:padding="@dimen/default_padding"
-	>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/wood_texture"
+    android:padding="@dimen/default_padding"
+    >
 
-	<ListView
-		android:id="@+id/game_list"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"
-	/>
+    <ListView
+        android:id="@+id/game_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+    />
 
-	<Button
-		android:id="@+id/new_game_button"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:text="@string/new_game"
-		>
-	</Button>
+    <Button
+        android:id="@+id/new_game_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/new_game"
+        >
+    </Button>
 </LinearLayout>

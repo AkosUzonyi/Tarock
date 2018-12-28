@@ -3,65 +3,65 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     >
-	
+    
     <RelativeLayout
-	    android:layout_width="match_parent"
-	    android:layout_height="0dp"
-	    android:layout_weight="1"
-	    android:background="@drawable/wood_texture"
-	    >
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/wood_texture"
+        >
 
-		<ImageView
-			android:id="@+id/skart_0"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_toLeftOf="@+id/center_space"
-			android:layout_alignParentBottom="true"
-			android:layout_alignParentLeft="true"
-			android:layout_margin="@dimen/skart_margin"
-			android:src="@drawable/card_back"
-			android:adjustViewBounds="true"
-			android:visibility="gone"
-		/>
+        <ImageView
+            android:id="@+id/skart_0"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/center_space"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="@dimen/skart_margin"
+            android:src="@drawable/card_back"
+            android:adjustViewBounds="true"
+            android:visibility="gone"
+        />
 
-		<ImageView
-			android:id="@+id/skart_1"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_toRightOf="@+id/center_space"
-			android:layout_alignParentBottom="true"
-			android:layout_alignParentRight="true"
-			android:layout_margin="@dimen/skart_margin"
-			android:src="@drawable/card_back"
-			android:adjustViewBounds="true"
-			android:visibility="gone"
-		/>
+        <ImageView
+            android:id="@+id/skart_1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/center_space"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/skart_margin"
+            android:src="@drawable/card_back"
+            android:adjustViewBounds="true"
+            android:visibility="gone"
+        />
 
-		<ImageView
-			android:id="@+id/skart_2"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_toRightOf="@+id/center_space"
-			android:layout_alignParentTop="true"
-			android:layout_alignParentRight="true"
-			android:layout_margin="@dimen/skart_margin"
-			android:src="@drawable/card_back"
-			android:adjustViewBounds="true"
-			android:visibility="gone"
-		/>
+        <ImageView
+            android:id="@+id/skart_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/center_space"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="@dimen/skart_margin"
+            android:src="@drawable/card_back"
+            android:adjustViewBounds="true"
+            android:visibility="gone"
+        />
 
-		<ImageView
-			android:id="@+id/skart_3"
-			android:layout_width="0dp"
-			android:layout_height="wrap_content"
-			android:layout_toLeftOf="@+id/center_space"
-			android:layout_alignParentTop="true"
-			android:layout_alignParentLeft="true"
-			android:layout_margin="@dimen/skart_margin"
-			android:src="@drawable/card_back"
-			android:adjustViewBounds="true"
-			android:visibility="gone"
-		/>
+        <ImageView
+            android:id="@+id/skart_3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/center_space"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_margin="@dimen/skart_margin"
+            android:src="@drawable/card_back"
+            android:adjustViewBounds="true"
+            android:visibility="gone"
+        />
 
         <Button
             android:id="@+id/ok_button"
@@ -69,11 +69,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentRight="true"
-			android:padding="@dimen/default_padding"
+            android:padding="@dimen/default_padding"
             android:visibility="gone"
             android:text="@string/ok"
             />
-	    
+        
         <Button
             android:id="@+id/throw_button"
             android:layout_width="wrap_content"
@@ -84,61 +84,61 @@
             android:text="@string/throw_cards"
             />
 
-		<TextView
-			android:id="@+id/player_name_0"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
-			android:layout_centerHorizontal="true"
-			style="@style/player_name"
-		/>
+        <TextView
+            android:id="@+id/player_name_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            style="@style/player_name"
+        />
         <com.tisza.tarock.gui.VerticalTextView
             android:id="@+id/player_name_1"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-		    android:gravity="top"
+            android:gravity="top"
             style="@style/player_name"
-        	/>
+            />
         <TextView
             android:id="@+id/player_name_2"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             style="@style/player_name"
-        	/>
+            />
         <com.tisza.tarock.gui.VerticalTextView
             android:id="@+id/player_name_3"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-		    android:gravity="bottom"
+            android:gravity="bottom"
             style="@style/player_name"
-        	/>
+            />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/center_space"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:background="@drawable/poker_texture"
-			android:layout_above="@id/player_name_0"
+            android:layout_above="@id/player_name_0"
             android:layout_toLeftOf="@id/player_name_1"
             android:layout_below="@id/player_name_2"
             android:layout_toRightOf="@id/player_name_3"
-			android:layout_alignWithParentIfMissing="true"
+            android:layout_alignWithParentIfMissing="true"
             >
 
-			<android.support.v4.view.PagerTabStrip
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_gravity="bottom"
+            <android.support.v4.view.PagerTabStrip
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
                 android:textColor="#000000"
-				android:textSize="@dimen/text_size"
-				/>
-		</android.support.v4.view.ViewPager>
+                android:textSize="@dimen/text_size"
+                />
+        </android.support.v4.view.ViewPager>
             
         <TextView
             android:id="@+id/player_message_0"
@@ -185,48 +185,48 @@
             />
     </RelativeLayout>
 
-	<RelativeLayout
-		android:id="@+id/cards"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="@drawable/cards"
-		>
+    <RelativeLayout
+        android:id="@+id/cards"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/cards"
+        >
 
-		<View
-			android:id="@+id/cards_background_color"
-			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_alignTop="@id/my_cards_1"
-			android:layout_alignBottom="@id/my_cards_0"
-			android:alpha="0.25"
-		/>
+        <View
+            android:id="@+id/cards_background_color"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_alignTop="@id/my_cards_1"
+            android:layout_alignBottom="@id/my_cards_0"
+            android:alpha="0.25"
+        />
 
-		<View
-			android:id="@+id/cards_highlight"
-			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:layout_alignTop="@id/my_cards_1"
-			android:layout_alignBottom="@id/my_cards_0"
-			android:background="@drawable/cards_highlight"
-		/>
+        <View
+            android:id="@+id/cards_highlight"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_alignTop="@id/my_cards_1"
+            android:layout_alignBottom="@id/my_cards_0"
+            android:background="@drawable/cards_highlight"
+        />
 
-		<LinearLayout
-			android:id="@+id/my_cards_1"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentTop="true"
-			android:layout_centerHorizontal="true"
-			android:orientation="horizontal"
-		>
-		</LinearLayout>
+        <LinearLayout
+            android:id="@+id/my_cards_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal"
+        >
+        </LinearLayout>
 
-		<LinearLayout
-			android:id="@+id/my_cards_0"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_below="@id/my_cards_1"
-			android:layout_centerHorizontal="true"
-			android:orientation="horizontal"
-		/>
-	</RelativeLayout>
+        <LinearLayout
+            android:id="@+id/my_cards_0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/my_cards_1"
+            android:layout_centerHorizontal="true"
+            android:orientation="horizontal"
+        />
+    </RelativeLayout>
 </LinearLayout>

@@ -11,7 +11,7 @@
         android:layout_weight="0.7"
         android:layout_marginLeft="@dimen/statistics_indent"
         style="@style/shadow_text"
-        />	
+        />    
 
     <TextView
         android:id="@+id/statistics_sum_points"

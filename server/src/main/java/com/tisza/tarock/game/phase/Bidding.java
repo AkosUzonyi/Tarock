@@ -13,7 +13,7 @@ class Bidding extends Phase
 	private int lastBidValue = 4;
 	private boolean isKept = false;
 	
-	private PlayerSeat.Map<BidState> playersState = new PlayerSeat.Map<>(BidState.INITIAL);
+	private PlayerSeatMap<BidState> playersState = new PlayerSeatMap<>(BidState.INITIAL);
 	
 	public Bidding(GameState game)
 	{

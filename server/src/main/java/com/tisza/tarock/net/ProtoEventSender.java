@@ -155,7 +155,7 @@ public class ProtoEventSender implements EventSender
 		sendEvent(Event.newBuilder().setChangeDone(e).build());
 	}
 
-	@Override public void skartTarock(PlayerSeat.Map<Integer> counts)
+	@Override public void skartTarock(PlayerSeatMap<Integer> counts)
 	{
 		Event.SkartTarock.Builder e = Event.SkartTarock.newBuilder();
 

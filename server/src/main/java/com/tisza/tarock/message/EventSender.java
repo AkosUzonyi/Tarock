@@ -23,7 +23,7 @@ public interface EventSender
 	default void availabeBids(Collection<Integer> bids) {}
 	default void availabeCalls(Collection<Card> cards) {}
 	default void changeDone(PlayerSeat player) {}
-	default void skartTarock(PlayerSeat.Map<Integer> counts) {}
+	default void skartTarock(PlayerSeatMap<Integer> counts) {}
 	default void availableAnnouncements(List<AnnouncementContra> announcements) {}
 	default void cardsTaken(PlayerSeat player) {}
 	default void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points, int pointMultiplier) {}

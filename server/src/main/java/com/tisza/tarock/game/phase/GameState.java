@@ -5,7 +5,6 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 
-import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -14,7 +13,7 @@ public class GameState
 	public static final int ROUND_COUNT = 9;
 
 	private final GameType gameType;
-	private final PlayerSeat.Map<Player> players;
+	private final PlayerSeatMap<Player> players;
 	private final PlayerSeat beginnerPlayer;
 
 	private final GameFinishedListener gameFinishedListener;
@@ -26,7 +25,7 @@ public class GameState
 
 	private Phase currentPhase;
 
-	private PlayerSeat.Map<PlayerCards> playersCards = new PlayerSeat.Map<>();
+	private PlayerSeatMap<PlayerCards> playersCards = new PlayerSeatMap<>();
 	private List<Card> talon;
 
 	private Invitation invitSent = Invitation.NONE;
@@ -45,7 +44,7 @@ public class GameState
 	private AnnouncementsState announcementsState = new AnnouncementsState();
 
 	private List<Round> roundsPassed = new ArrayList<>();
-	private PlayerSeat.Map<Collection<Card>> wonCards = new PlayerSeat.Map<>();
+	private PlayerSeatMap<Collection<Card>> wonCards = new PlayerSeatMap<>();
 
 	private boolean inGameStatisticsCalculated = false;
 	private boolean statisticsCalculated = false;
@@ -68,7 +67,7 @@ public class GameState
 		}
 	}
 
-	public GameState(GameType gameType, PlayerSeat.Map<Player> players, PlayerSeat beginnerPlayer, GameFinishedListener gameFinishedListener, int pointMultiplier)
+	public GameState(GameType gameType, PlayerSeatMap<Player> players, PlayerSeat beginnerPlayer, GameFinishedListener gameFinishedListener, int pointMultiplier)
 	{
 		this.gameType = gameType;
 		this.players = players;

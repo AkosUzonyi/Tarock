@@ -85,7 +85,7 @@ public class TeamInfoTracker implements EventSender
 	}
 
 	@Override
-	public void skartTarock(PlayerSeat.Map<Integer> counts)
+	public void skartTarock(PlayerSeatMap<Integer> counts)
 	{
 		if (game.getInvitSent() != Invitation.NONE && counts.get(game.getInvitingPlayer()) > 0)
 			inviterSkartedTarock = true;

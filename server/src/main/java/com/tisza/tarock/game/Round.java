@@ -9,7 +9,7 @@ public class Round
 	private final PlayerSeat beginnerPlayer;
 	private PlayerSeat currentPlayer;
 	private PlayerSeat winnerPlayer;
-	private PlayerSeat.Map<Card> cards = new PlayerSeat.Map<>();
+	private PlayerSeatMap<Card> cards = new PlayerSeatMap<>();
 	private boolean finished = false;
 	
 	public Round(PlayerSeat beginnerPlayer)

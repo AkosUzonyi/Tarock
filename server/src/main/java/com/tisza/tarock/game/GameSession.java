@@ -7,7 +7,6 @@ import org.json.*;
 
 import java.io.*;
 import java.text.*;
-import java.time.format.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -15,7 +14,7 @@ public class GameSession implements GameFinishedListener
 {
 	private final File saveDir;
 	private final GameType gameType;
-	private final PlayerSeat.Map<Player> players = new PlayerSeat.Map<>();
+	private final PlayerSeatMap<Player> players = new PlayerSeatMap<>();
 	private final Set<Player> kibices = new HashSet<>();
 
 	private final DoubleRoundTracker doubleRoundTracker;

@@ -6,16 +6,15 @@ import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import org.json.*;
 
-import java.io.*;
 import java.util.*;
 import java.util.stream.*;
 
 public class GameHistory
 {
-	private PlayerSeat.Map<List<Card>> originalPlayersCards = new PlayerSeat.Map<>();
+	private PlayerSeatMap<List<Card>> originalPlayersCards = new PlayerSeatMap<>();
 	private List<BidEntry> bids = new ArrayList<>();
-	private PlayerSeat.Map<List<Card>> cardsFromTalon = new PlayerSeat.Map<>();
-	private PlayerSeat.Map<List<Card>> skartedCards = new PlayerSeat.Map<>();
+	private PlayerSeatMap<List<Card>> cardsFromTalon = new PlayerSeatMap<>();
+	private PlayerSeatMap<List<Card>> skartedCards = new PlayerSeatMap<>();
 	private PlayerSeat callerPlayer;
 	private Card calledCard;
 	private List<AnnouncementEntry> announcements = new ArrayList<>();
@@ -113,7 +112,7 @@ public class GameHistory
 		return result;
 	}
 
-	private static Object playermaplistcardsToJSON(PlayerSeat.Map<List<Card>> cards)
+	private static Object playermaplistcardsToJSON(PlayerSeatMap<List<Card>> cards)
 	{
 		return new JSONArray(cards.values().stream().map(list -> list.stream().map(GameHistory::cardToJSON).collect(Collectors.toList())).collect(Collectors.toList()));
 	}

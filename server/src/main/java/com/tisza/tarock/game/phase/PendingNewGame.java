@@ -6,7 +6,7 @@ import com.tisza.tarock.message.*;
 class PendingNewGame extends Phase
 {
 	private boolean doubleRound;
-	private PlayerSeat.Map<Boolean> ready = new PlayerSeat.Map<>(false);
+	private PlayerSeatMap<Boolean> ready = new PlayerSeatMap<>(false);
 
 	public PendingNewGame(GameState game, boolean doubleRound)
 	{

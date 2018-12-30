@@ -85,7 +85,7 @@ public class JatekDuplaVolatPoints
 	@Before
 	public void createGameState()
 	{
-		PlayerSeat.Map<Player> players = new PlayerSeat.Map<>();
+		PlayerSeatMap<Player> players = new PlayerSeatMap<>();
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{
 			players.put(seat, new TestPlayer(""));

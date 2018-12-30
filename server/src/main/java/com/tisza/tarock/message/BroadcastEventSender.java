@@ -162,7 +162,7 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void skartTarock(PlayerSeat.Map<Integer> counts)
+	public void skartTarock(PlayerSeatMap<Integer> counts)
 	{
 		for (EventSender eventSender : eventSenders)
 		{

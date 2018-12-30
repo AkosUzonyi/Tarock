@@ -180,7 +180,7 @@ public class RandomPlayer implements Player
 		}
 
 		@Override public void changeDone(PlayerSeat player) {}
-		@Override public void skartTarock(PlayerSeat.Map<Integer> counts) {}
+		@Override public void skartTarock(PlayerSeatMap<Integer> counts) {}
 
 		@Override public void availableAnnouncements(List<AnnouncementContra> announcements)
 		{

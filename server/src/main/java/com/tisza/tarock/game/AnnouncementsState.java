@@ -9,7 +9,7 @@ public class AnnouncementsState
 	private Map<Team, Map<Announcement, Integer>> announcementContraLevels = new HashMap<>();
 
 	private boolean callerXXIUltimoDeactivated = false, opponentXIUltimoDeactivated = false;
-	private PlayerSeat.Map<TarockCount> tarockCountAnnounced = new PlayerSeat.Map<>(null);
+	private PlayerSeatMap<TarockCount> tarockCountAnnounced = new PlayerSeatMap<>(null);
 
 	public AnnouncementsState()
 	{

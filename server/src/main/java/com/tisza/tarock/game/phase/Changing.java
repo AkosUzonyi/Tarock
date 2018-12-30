@@ -11,8 +11,8 @@ class Changing extends Phase
 {
 	private final SkartableCardFilter cardFilter;
 	
-	private PlayerSeat.Map<Boolean> donePlayer = new PlayerSeat.Map<>(false);
-	private PlayerSeat.Map<Integer> tarockCounts = new PlayerSeat.Map<>();
+	private PlayerSeatMap<Boolean> donePlayer = new PlayerSeatMap<>(false);
+	private PlayerSeatMap<Integer> tarockCounts = new PlayerSeatMap<>();
 	
 	public Changing(GameState game)
 	{

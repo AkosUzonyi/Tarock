@@ -68,10 +68,12 @@ public class ProtoEvent implements Event
 				int sumPoints = statisticsEvent.getSumPoints();
 				int pointsMultiplier = statisticsEvent.getPointMultiplier();
 				handler.statistics(callerGamePoints, opponentGamePoints, announcementResults, sumPoints, pointsMultiplier);
+				break;
 			case PLAYER_POINTS:
 				EventProto.Event.PlayerPoints playerPointsEvent = event.getPlayerPoints();
 				List<Integer> playerPoints = playerPointsEvent.getPlayerPointList();
 				handler.playerPoints(playerPoints);
+				break;
 			case PENDING_NEW_GAME:
 				handler.pendingNewGame();
 				break;

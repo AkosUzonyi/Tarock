@@ -25,7 +25,7 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 	private TextView botWarning;
 	private boolean botWarningIgnored;
 	private Button createButton;
-	private List<User> selectedUsers;
+	private Collection<User> selectedUsers;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -95,7 +95,7 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 	}
 
 	@Override
-	public void usersSelected(List<User> users)
+	public void usersSelected(Collection<User> users)
 	{
 		selectedUsers = users;
 

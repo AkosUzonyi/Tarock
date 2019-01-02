@@ -14,7 +14,7 @@ public class AvailableUsersAdapter extends BaseAdapter
 
 	private final LayoutInflater inflater;
 	private List<User> users = new ArrayList<>();
-	private List<User> selectedUsers = new ArrayList<>();
+	private Set<User> selectedUsers = new HashSet<>();
 	private UsersSelectedListener usersSelectedListener;
 
 	public AvailableUsersAdapter(Context context)
@@ -37,7 +37,7 @@ public class AvailableUsersAdapter extends BaseAdapter
 		notifyDataSetChanged();
 	}
 
-	public List<User> getSelectedUsers()
+	public Collection<User> getSelectedUsers()
 	{
 		return selectedUsers;
 	}
@@ -103,6 +103,7 @@ public class AvailableUsersAdapter extends BaseAdapter
 		holder.isFriendView.setVisibility(user.isFriend() ? View.VISIBLE : View.GONE);
 		holder.isOnlineView.setImageResource(user.isOnline() ? R.drawable.online : R.drawable.offline);
 
+		holder.checkBox.setOnCheckedChangeListener(null);
 		holder.checkBox.setChecked(selectedUsers.contains(user));
 		holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
 		{
@@ -133,6 +134,6 @@ public class AvailableUsersAdapter extends BaseAdapter
 
 	public static interface UsersSelectedListener
 	{
-		public void usersSelected(List<User> users);
+		public void usersSelected(Collection<User> users);
 	}
 }

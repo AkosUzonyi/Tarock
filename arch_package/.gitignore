@@ -1,6 +1,4 @@
 *.pkg.tar.xz
 /src
 /pkg
-/version
-/revision
 /tarock-server.tar

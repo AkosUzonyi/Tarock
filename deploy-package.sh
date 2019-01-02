@@ -7,10 +7,9 @@ HOST=akos0.ddns.net
 PORT=3125
 
 PKG_NAME=tarock-server
-VERSION=$("$PROJECT_DIR/get-version.sh")
-REVISION=$("$PROJECT_DIR/get-revision-number.sh")
+VERSION=$(cat "$PROJECT_DIR/version")
 
-PKG_FILE="arch_package/$PKG_NAME-$VERSION-$REVISION-any.pkg.tar.xz"
+PKG_FILE="arch_package/$PKG_NAME-$VERSION-1-any.pkg.tar.xz"
 TMP_FILE="/tmp/$PKG_NAME.tar.xz"
 
 scp -P "$PORT" "$PKG_FILE" "$USER@$HOST:$TMP_FILE"

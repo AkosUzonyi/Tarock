@@ -5,8 +5,8 @@
 
 # Maintainer: Your Name <youremail@domain.com>
 pkgname=tarock-server
-pkgver=$(cat version)
-pkgrel=$(cat revision)
+pkgver=$(cat ../version)
+pkgrel=1
 epoch=
 pkgdesc="Tarock server for android app"
 arch=('any')
@@ -31,7 +31,7 @@ validpgpkeys=()
 
 package() {
 	mkdir -p "${pkgdir}/usr"
-	mv "$pkgname-$pkgver-$pkgrel"/* "${pkgdir}/usr"
+	mv "$pkgname-$pkgver"/* "${pkgdir}/usr"
 	install -Dm644 "$pkgname.service" "${pkgdir}/usr/lib/systemd/system/$pkgname.service"
 	install -Dm644 "$pkgname.conf" "${pkgdir}/usr/lib/sysusers.d/$pkgname.conf"
 	install -dm700 -o 812 -g 812 "${pkgdir}/var/lib/tarock"

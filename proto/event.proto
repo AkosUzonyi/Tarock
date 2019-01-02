@@ -24,6 +24,7 @@ message Event
 		AvailableAnnouncements available_announcements = 9;
 		CardsTaken cards_taken = 10;
 		Statistics statistics = 11;
+		PlayerPoints player_points = 16;
 		PendingNewGame pending_new_game = 12;
 		DeleteGame delete_game = 15;
 	}
@@ -86,8 +87,7 @@ message Event
 		required sint32 opponent_game_points = 2;
 		repeated AnnouncementResult announcement_result = 3;
 		required sint32 sum_points = 4;
-		repeated sint32 player_point = 5;
-		required int32 point_multiplier = 6;
+		required int32 point_multiplier = 5;
 
 		message AnnouncementResult
 		{
@@ -95,6 +95,10 @@ message Event
 			required sint32 points = 2;
 			required bool caller_team = 3;
 		}
+	}
+	message PlayerPoints
+	{
+		repeated sint32 player_point = 1;
 	}
 	message PendingNewGame
 	{

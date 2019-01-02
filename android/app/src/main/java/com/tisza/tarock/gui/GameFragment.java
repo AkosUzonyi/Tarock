@@ -573,7 +573,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	}
 
 	@Override
-	public void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, List<Integer> playerPoints, int pointMultiplier)
+	public void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
 	{
 		Team selfTeam = myTeam == null ? Team.CALLER : myTeam;
 
@@ -606,19 +606,20 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		int selfSumPoints = sumPoints * (selfTeam == Team.CALLER ? 1 : -1);
 		statisticsSumPointsView.setText(String.valueOf(selfSumPoints));
 		statisticsSumPointsView.setTextColor(selfSumPoints >= 0 ? Color.BLACK : Color.RED);
+	}
 
-		if (!playerPoints.isEmpty())
+	@Override
+	public void playerPoints(List<Integer> playerPoints)
+	{
+		for (int i = 0; i < 4; i++)
 		{
-			for (int i = 0; i < 4; i++)
-			{
-				TextView nameView = statisticsPointsNameViews[i];
-				nameView.setText(playerNames.get(i));
-				nameView.setGravity(Gravity.CENTER);
+			TextView nameView = statisticsPointsNameViews[i];
+			nameView.setText(playerNames.get(i));
+			nameView.setGravity(Gravity.CENTER);
 
-				TextView pointsView = statisticsPointsValueViews[i];
-				pointsView.setText(String.valueOf(playerPoints.get(i)));
-				pointsView.setGravity(Gravity.CENTER);
-			}
+			TextView pointsView = statisticsPointsValueViews[i];
+			pointsView.setText(String.valueOf(playerPoints.get(i)));
+			pointsView.setGravity(Gravity.CENTER);
 		}
 	}
 

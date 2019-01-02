@@ -35,7 +35,7 @@ public class GameState
 
 	private Map<Team, List<Card>> skartForTeams = new HashMap<>();
 	private PlayerSeat playerSkarted20 = null;
-	
+
 	private PlayerPairs playerPairs = null;
 	private boolean isSoloIntentional = false;
 	private Invitation invitAccepted = Invitation.NONE;
@@ -49,7 +49,6 @@ public class GameState
 	private boolean inGameStatisticsCalculated = false;
 	private boolean statisticsCalculated = false;
 	private final int pointMultiplier;
-	private int[] points;
 	private int pointsForCallerTeam;
 	private List<AnnouncementResult> announcementResults = new ArrayList<>();
 	private int callerGamePoints, opponentGamePoints;
@@ -204,6 +203,7 @@ public class GameState
 		history.sendCurrentStatusToPlayer(player, currentPhase.asEnum(), eventSender);
 		eventSender.phaseChanged(currentPhase.asEnum());
 		teamInfoTracker.sendStatusToPlayer(player, eventSender);
+		sendPlayerPoints();
 	}
 
 	public Phase getCurrentPhase()
@@ -229,7 +229,7 @@ public class GameState
 	{
 		return invitingPlayer;
 	}
-	
+
 	void setBidResult(PlayerSeat bidWinnerPlayer, int winnerBid)
 	{
 		this.bidWinnerPlayer = bidWinnerPlayer;
@@ -263,7 +263,7 @@ public class GameState
 	{
 		this.playerSkarted20 = playerSkarted20;
 	}
-	
+
 	public PlayerSeat getPlayerSkarted20()
 	{
 		return playerSkarted20;
@@ -313,17 +313,17 @@ public class GameState
 	{
 		return playerToAnnounceSolo;
 	}
-	
+
 	public AnnouncementsState getAnnouncementsState()
 	{
 		return announcementsState;
 	}
-	
+
 	void addRound(Round round)
 	{
 		roundsPassed.add(round);
 	}
-	
+
 	boolean areAllRoundsPassed()
 	{
 		return roundsPassed.size() >= ROUND_COUNT;
@@ -333,7 +333,7 @@ public class GameState
 	{
 		return roundsPassed.get(index);
 	}
-	
+
 	void addWonCards(PlayerSeat player, Collection<Card> collection)
 	{
 		wonCards.get(player).addAll(collection);
@@ -355,7 +355,7 @@ public class GameState
 				points += c.getPoints();
 			}
 		}
-		
+
 		for (Card c : getSkartForTeam(team))
 		{
 			points += c.getPoints();
@@ -395,7 +395,7 @@ public class GameState
 		int callerGamePoints = 0;
 		int opponentGamePoints = 0;
 		int sumPoints = 0;
-		getBroadcastEventSender().announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, sumPoints, new int[0], pointMultiplier);
+		getBroadcastEventSender().announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, sumPoints, pointMultiplier);
 	}
 
 	void calculateStatistics()
@@ -405,7 +405,7 @@ public class GameState
 
 		statisticsCalculated = true;
 
-		points = new int[4];
+		int[] points = new int[4];
 
 		announcementResults.clear();
 		pointsForCallerTeam = 0;
@@ -454,7 +454,7 @@ public class GameState
 		points[playerPairs.getCaller().asInt()] += pointsForCallerTeam * 2;
 		points[playerPairs.getCalled().asInt()] += pointsForCallerTeam * 2;
 
-		points = gameFinishedListener.pointsEarned(points);
+		gameFinishedListener.pointsEarned(points);
 	}
 
 	void sendStatistics()
@@ -462,7 +462,11 @@ public class GameState
 		if (!statisticsCalculated)
 			throw new IllegalStateException();
 
+		getBroadcastEventSender().announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, pointsForCallerTeam, pointMultiplier);
+	}
 
-		getBroadcastEventSender().announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, pointsForCallerTeam, points, pointMultiplier);
+	void sendPlayerPoints()
+	{
+		getBroadcastEventSender().playerPoints(gameFinishedListener.getPlayerPoints());
 	}
 }

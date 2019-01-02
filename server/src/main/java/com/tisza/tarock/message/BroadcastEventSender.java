@@ -189,11 +189,20 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
-	public void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int[] points, int pointMultiplier)
+	public void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
 	{
 		for (EventSender eventSender : eventSenders)
 		{
-			eventSender.announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, sumPoints, points, pointMultiplier);
+			eventSender.announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, sumPoints, pointMultiplier);
+		}
+	}
+
+	@Override
+	public void playerPoints(int[] points)
+	{
+		for (EventSender eventSender : eventSenders)
+		{
+			eventSender.playerPoints(points);
 		}
 	}
 

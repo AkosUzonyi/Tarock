@@ -27,6 +27,7 @@ class PendingNewGame extends Phase
 		{
 			game.calculateStatistics();
 			game.sendStatistics();
+			game.sendPlayerPoints();
 		}
 
 		game.getBroadcastEventSender().pendingNewGame();

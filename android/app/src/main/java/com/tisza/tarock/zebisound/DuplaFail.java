@@ -15,7 +15,7 @@ public class DuplaFail extends ZebiSound
 	}
 
 	@Override
-	public void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, List<Integer> playerPoints, int pointMultiplier)
+	public void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
 	{
 		for (AnnouncementResult announcementResult : announcementResults)
 		{

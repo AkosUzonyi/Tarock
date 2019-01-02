@@ -103,13 +103,18 @@ public class GameSession implements GameFinishedListener
 	}
 
 	@Override
-	public int[] pointsEarned(int[] points)
+	public int[] getPlayerPoints()
+	{
+		return points;
+	}
+
+	@Override
+	public void pointsEarned(int[] points)
 	{
 		for (int i = 0; i < 4; i++)
 		{
 			this.points[i] += points[i];
 		}
-		return this.points;
 	}
 
 	private void saveGame()

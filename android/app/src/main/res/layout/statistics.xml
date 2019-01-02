@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/statistics_header_text_size"
-                android:textAlignment="center"
+                android:gravity="center"
                 android:textAppearance="@style/shadow_text"
                 />    
         
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                 android:textSize="@dimen/statistics_header_text_size"
-                android:textAlignment="center"
+                android:gravity="center"
                 android:textAppearance="@style/shadow_text"
                 />    
         </LinearLayout>
@@ -128,6 +128,7 @@
                 android:layout_weight="0.25"
                 android:textSize="@dimen/statistics_header_text_size"
                 android:textAppearance="@style/shadow_text"
+                android:gravity="center"
                 />
             
             <TextView
@@ -137,6 +138,7 @@
                 android:layout_weight="0.25"
                 android:textSize="@dimen/statistics_header_text_size"
                 android:textAppearance="@style/shadow_text"
+                android:gravity="center"
                 />
             
             <TextView
@@ -146,6 +148,7 @@
                 android:layout_weight="0.25"
                 android:textSize="@dimen/statistics_header_text_size"
                 android:textAppearance="@style/shadow_text"
+                android:gravity="center"
                 />
             
             <TextView
@@ -155,6 +158,7 @@
                 android:layout_weight="0.25"
                 android:textSize="@dimen/statistics_header_text_size"
                 android:textAppearance="@style/shadow_text"
+                android:gravity="center"
                 />
            </LinearLayout>
         
@@ -172,6 +176,7 @@
                 android:layout_weight="0.25"
                 android:textSize="@dimen/statistics_header_text_size"
                 android:textAppearance="@style/shadow_text"
+                android:gravity="center"
                 />
             
             <TextView
@@ -181,6 +186,7 @@
                 android:layout_weight="0.25"
                 android:textSize="@dimen/statistics_header_text_size"
                 android:textAppearance="@style/shadow_text"
+                android:gravity="center"
                 />
             
             <TextView
@@ -190,6 +196,7 @@
                 android:layout_weight="0.25"
                 android:textSize="@dimen/statistics_header_text_size"
                 android:textAppearance="@style/shadow_text"
+                android:gravity="center"
                 />
             
             <TextView
@@ -199,6 +206,7 @@
                 android:layout_weight="0.25"
                 android:textSize="@dimen/statistics_header_text_size"
                 android:textAppearance="@style/shadow_text"
+                android:gravity="center"
                 />
         </LinearLayout>
                 

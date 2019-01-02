@@ -18,7 +18,7 @@
             android:layout_weight="0.4"
             android:text="@string/game_type"
             android:textSize="@dimen/large_text_size"
-            android:textAlignment="center"
+            android:gravity="center"
         />
 
         <Spinner
@@ -42,7 +42,7 @@
             android:layout_weight="0.4"
             android:text="@string/double_round_type"
             android:textSize="@dimen/large_text_size"
-            android:textAlignment="center"
+            android:gravity="center"
         />
 
         <Spinner
@@ -66,7 +66,7 @@
         android:id="@+id/bot_warning"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAlignment="center"
+        android:gravity="center"
         android:background="@drawable/warning_background"
         android:layout_margin="@dimen/button_margin"
         android:text="@string/bot_warning"

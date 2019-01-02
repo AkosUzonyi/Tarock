@@ -615,11 +615,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		{
 			TextView nameView = statisticsPointsNameViews[i];
 			nameView.setText(playerNames.get(i));
-			nameView.setGravity(Gravity.CENTER);
 
 			TextView pointsView = statisticsPointsValueViews[i];
 			pointsView.setText(String.valueOf(playerPoints.get(i)));
-			pointsView.setGravity(Gravity.CENTER);
 		}
 	}
 

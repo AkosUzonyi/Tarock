@@ -8,7 +8,7 @@ import java.util.*;
 public interface EventHandler
 {
 	default void startGame(int myID, List<String> playerNames, GameType gameType, int beginnerPlayer) {}
-	default void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points, int pointMultiplier) {}
+	default void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, List<Integer> playerPoints, int pointMultiplier) {}
 	default void announce(int player, Announcement announcementContra) {}
 	default void announcePassz(int player) {}
 	default void availableAnnouncements(List<Announcement> announcements) {}
@@ -24,7 +24,7 @@ public interface EventHandler
 	default void cardsChanged(List<Card> pc) {}
 	default void skartTarock(int[] counts) {}
 	default void turn(int player) {}
-	default void playerTeamInfo(int player, boolean callerTeam) {}
+	default void playerTeamInfo(int player, Team team) {}
 	default void wrongAction() {}
 	default void pendingNewGame() {}
 	default void readyForNewGame(int player) {}

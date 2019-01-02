@@ -26,7 +26,7 @@ public interface EventSender
 	default void skartTarock(PlayerSeatMap<Integer> counts) {}
 	default void availableAnnouncements(List<AnnouncementContra> announcements) {}
 	default void cardsTaken(PlayerSeat player) {}
-	default void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points, int pointMultiplier) {}
+	default void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int[] points, int pointMultiplier) {}
 	default void pendingNewGame() {}
 	default void deleteGame() {}
 }

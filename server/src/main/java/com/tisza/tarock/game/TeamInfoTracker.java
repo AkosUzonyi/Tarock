@@ -135,6 +135,15 @@ public class TeamInfoTracker implements EventSender
 		}
 	}
 
+	@Override
+	public void phaseChanged(PhaseEnum phase)
+	{
+		if (phase == PhaseEnum.END)
+		{
+			revealAllTeamInfo();
+		}
+	}
+
 	private static class TeamInfoKnowledge
 	{
 		private final PlayerSeat player, otherPlayer;

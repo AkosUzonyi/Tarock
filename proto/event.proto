@@ -23,7 +23,7 @@ message Event
 		SkartTarock skart_tarock = 8;
 		AvailableAnnouncements available_announcements = 9;
 		CardsTaken cards_taken = 10;
-		AnnouncementStatistics announcement_statistics = 11;
+		Statistics statistics = 11;
 		PendingNewGame pending_new_game = 12;
 		DeleteGame delete_game = 15;
 	}
@@ -80,20 +80,20 @@ message Event
 	{
 		required int32 player = 1;
 	}
-	message AnnouncementStatistics
+	message Statistics
 	{
-		required sint32 self_game_points = 1;
+		required sint32 caller_game_points = 1;
 		required sint32 opponent_game_points = 2;
-		repeated Entry self_entry = 3;
-		repeated Entry opponent_entry = 4;
-		required sint32 sum_points = 5;
-		repeated sint32 player_point = 6;
-		required int32 point_multiplier = 7;
+		repeated AnnouncementResult announcement_result = 3;
+		required sint32 sum_points = 4;
+		repeated sint32 player_point = 5;
+		required int32 point_multiplier = 6;
 
-		message Entry
+		message AnnouncementResult
 		{
 			required Announcement announcement = 1;
-			required sint32 points = 3;
+			required sint32 points = 2;
+			required bool caller_team = 3;
 		}
 	}
 	message PendingNewGame

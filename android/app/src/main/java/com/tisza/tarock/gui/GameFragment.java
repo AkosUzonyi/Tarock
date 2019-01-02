@@ -5,7 +5,6 @@ import android.content.*;
 import android.graphics.*;
 import android.os.*;
 import android.support.v4.view.*;
-import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
@@ -254,6 +253,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private List<String> playerNames;
 	protected PlayerCards myCards;
 	private int myID = -1;
+	private Team myTeam;
 	private GameType gameType;
 	private int beginnerPlayer;
 
@@ -277,6 +277,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		this.playerNames = playerNames;
 		this.gameType = gameType;
 		this.beginnerPlayer = beginnerPlayer;
+		myTeam = null;
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
 
@@ -557,13 +558,14 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	}
 
 	@Override
-	public void playerTeamInfo(int player, boolean callerTeam)
+	public void playerTeamInfo(int player, Team team)
 	{
 		int pos = getPositionFromPlayerID(player);
-		int color = getResources().getColor(callerTeam ? R.color.caller_team : R.color.opponent_team);
+		int color = getResources().getColor(team == Team.CALLER ? R.color.caller_team : R.color.opponent_team);
 
-		if (pos == 0)
+		if (player == myID)
 		{
+			myTeam = team;
 			cardsBackgroundColorView.setBackgroundColor(color);
 		}
 
@@ -571,21 +573,41 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	}
 
 	@Override
-	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points, int pointMultiplier)
+	public void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, List<Integer> playerPoints, int pointMultiplier)
 	{
-		statisticsGamepointsSelf.setText(String.valueOf(selfGamePoints));
-		statisticsGamepointsOpponent.setText(String.valueOf(opponentGamePoints));
+		Team selfTeam = myTeam == null ? Team.CALLER : myTeam;
+
+		statisticsGamepointsSelf.setText(String.valueOf(selfTeam == Team.CALLER ? callerGamePoints : opponentGamePoints));
+		statisticsGamepointsOpponent.setText(String.valueOf(selfTeam == Team.CALLER ? opponentGamePoints : callerGamePoints));
 
 		statisticsPointMultiplierView.setVisibility(pointMultiplier == 1 ? View.GONE : View.VISIBLE);
 		statisticsPointMultiplierView.setText(getString(R.string.statictics_point_multiplier, pointMultiplier));
 
-		addStatisticEntries(statisticsSelfEntriesView, selfEntries);
-		addStatisticEntries(statisticsOpponentEntriesView, opponentEntries);
-		
-		statisticsSumPointsView.setText(String.valueOf(sumPoints));
-		statisticsSumPointsView.setTextColor(sumPoints >= 0 ? Color.BLACK : Color.RED);
+		statisticsSelfEntriesView.removeAllViews();
+		statisticsOpponentEntriesView.removeAllViews();
+		for (AnnouncementResult announcementResult : announcementResults)
+		{
+			boolean self = announcementResult.getTeam() == selfTeam;
+			ViewGroup viewToAppend = self ? statisticsSelfEntriesView : statisticsOpponentEntriesView;
 
-		if (!points.isEmpty())
+			View entryView = layoutInflater.inflate(R.layout.statistics_entry, viewToAppend, false);
+			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
+			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
+
+			nameView.setText(announcementResult.getAnnouncement().getDisplayText());
+			int points = announcementResult.getPoints() * (self ? 1 : -1);
+			pointsView.setText(String.valueOf(points));
+			pointsView.setVisibility(points == 0 ? View.GONE : View.VISIBLE);
+			pointsView.setTextColor(points >= 0 ? Color.BLACK : Color.RED);
+
+			viewToAppend.addView(entryView);
+		}
+
+		int selfSumPoints = sumPoints * (selfTeam == Team.CALLER ? 1 : -1);
+		statisticsSumPointsView.setText(String.valueOf(selfSumPoints));
+		statisticsSumPointsView.setTextColor(selfSumPoints >= 0 ? Color.BLACK : Color.RED);
+
+		if (!playerPoints.isEmpty())
 		{
 			for (int i = 0; i < 4; i++)
 			{
@@ -594,28 +616,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 				nameView.setGravity(Gravity.CENTER);
 
 				TextView pointsView = statisticsPointsValueViews[i];
-				pointsView.setText(String.valueOf(points.get(i)));
+				pointsView.setText(String.valueOf(playerPoints.get(i)));
 				pointsView.setGravity(Gravity.CENTER);
 			}
-		}
-	}
-
-	private void addStatisticEntries(ViewGroup viewToAppend, List<AnnouncementStaticticsEntry> entries)
-	{
-		viewToAppend.removeAllViews();
-
-		for (AnnouncementStaticticsEntry entry : entries)
-		{
-			View entryView = layoutInflater.inflate(R.layout.statistics_entry, viewToAppend, false);
-			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
-			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
-			
-			nameView.setText(entry.getAnnouncement().getDisplayText());
-			pointsView.setText(String.valueOf(entry.getPoints()));
-			pointsView.setVisibility(entry.getPoints() == 0 ? View.GONE : View.VISIBLE);
-			pointsView.setTextColor(entry.getPoints() >= 0 ? Color.BLACK : Color.RED);
-			
-			viewToAppend.addView(entryView);
 		}
 	}
 

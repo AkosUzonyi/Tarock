@@ -10,19 +10,19 @@ import java.util.*;
 
 public class Utils
 {
-	public static AnnouncementStaticticsEntry staticticsFromProto(Event.AnnouncementStatistics.Entry entry)
+	public static AnnouncementResult announcementResultFromProto(Event.Statistics.AnnouncementResult entry)
 	{
-		return new AnnouncementStaticticsEntry(announcementFromProto(entry.getAnnouncement()), entry.getPoints());
+		return new AnnouncementResult(announcementFromProto(entry.getAnnouncement()), entry.getPoints(), entry.getCallerTeam() ? Team.CALLER : Team.OPPONENT);
 	}
 
-	public static List<AnnouncementStaticticsEntry> staticticsListFromProto(List<Event.AnnouncementStatistics.Entry> statisticsProtoList)
+	public static List<AnnouncementResult> staticticsListFromProto(List<Event.Statistics.AnnouncementResult> announcementResultProtoList)
 	{
-		List<AnnouncementStaticticsEntry> announcements = new ArrayList<>();
-		for (Event.AnnouncementStatistics.Entry statistics : statisticsProtoList)
+		List<AnnouncementResult> announcementResultList = new ArrayList<>();
+		for (Event.Statistics.AnnouncementResult announcementResult : announcementResultProtoList)
 		{
-			announcements.add(Utils.staticticsFromProto(statistics));
+			announcementResultList.add(Utils.announcementResultFromProto(announcementResult));
 		}
-		return announcements;
+		return announcementResultList;
 	}
 
 	public static List<Announcement> announcementListFromProto(List<ProtoUtils.Announcement> announcementProtoList)

@@ -9,8 +9,6 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.*;
 
-import java.util.stream.*;
-
 public class Utils
 {
 	public static ProtoUtils.Card cardToProto(Card c)
@@ -75,11 +73,12 @@ public class Utils
 		return builder.build();
 	}
 
-	public static EventProto.Event.AnnouncementStatistics.Entry statisticsEntryToProto(AnnouncementStaticticsEntry entry)
+	public static EventProto.Event.Statistics.AnnouncementResult announcementResultToProto(AnnouncementResult entry)
 	{
-		return EventProto.Event.AnnouncementStatistics.Entry.newBuilder()
+		return EventProto.Event.Statistics.AnnouncementResult.newBuilder()
 				.setAnnouncement(announcementToProto(entry.getAnnouncementContra()))
 				.setPoints(entry.getPoints())
+				.setCallerTeam(entry.getTeam() == Team.CALLER)
 				.build();
 	}
 

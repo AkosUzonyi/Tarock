@@ -1,5 +1,6 @@
 package com.tisza.tarock.net;
 
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 
@@ -28,7 +29,7 @@ public class ProtoEvent implements Event
 				break;
 			case PLAYER_TEAM_INFO:
 				EventProto.Event.PlayerTeamInfo playerTeamInfo = event.getPlayerTeamInfo();
-				handler.playerTeamInfo(playerTeamInfo.getPlayer(), playerTeamInfo.getIsCaller());
+				handler.playerTeamInfo(playerTeamInfo.getPlayer(), playerTeamInfo.getIsCaller() ? Team.CALLER : Team.OPPONENT);
 				break;
 			case PLAYER_CARDS:
 				handler.cardsChanged(Utils.cardListFromProto(event.getPlayerCards().getCardList()));
@@ -59,16 +60,15 @@ public class ProtoEvent implements Event
 			case CARDS_TAKEN:
 				handler.cardsTaken(event.getCardsTaken().getPlayer());
 				break;
-			case ANNOUNCEMENT_STATISTICS:
-				EventProto.Event.AnnouncementStatistics statisticsEvent = event.getAnnouncementStatistics();
-				int selfGamePoints = statisticsEvent.getSelfGamePoints();
+			case STATISTICS:
+				EventProto.Event.Statistics statisticsEvent = event.getStatistics();
+				int callerGamePoints = statisticsEvent.getCallerGamePoints();
 				int opponentGamePoints = statisticsEvent.getOpponentGamePoints();
-				List<AnnouncementStaticticsEntry> selfStatisticsEntries = Utils.staticticsListFromProto(statisticsEvent.getSelfEntryList());
-				List<AnnouncementStaticticsEntry> opponentStatisticsEntries = Utils.staticticsListFromProto(statisticsEvent.getOpponentEntryList());
+				List<AnnouncementResult> announcementResults = Utils.staticticsListFromProto(statisticsEvent.getAnnouncementResultList());
 				int sumPoints = statisticsEvent.getSumPoints();
 				List<Integer> playerPoints = statisticsEvent.getPlayerPointList();
 				int pointsMultiplier = statisticsEvent.getPointMultiplier();
-				handler.statistics(selfGamePoints, opponentGamePoints, selfStatisticsEntries, opponentStatisticsEntries, sumPoints, playerPoints, pointsMultiplier);
+				handler.statistics(callerGamePoints, opponentGamePoints, announcementResults, sumPoints, playerPoints, pointsMultiplier);
 			case PENDING_NEW_GAME:
 				handler.pendingNewGame();
 				break;

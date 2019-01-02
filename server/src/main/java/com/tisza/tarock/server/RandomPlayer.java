@@ -198,7 +198,7 @@ public class RandomPlayer implements Player
 		}
 
 		@Override public void cardsTaken(PlayerSeat player) {}
-		@Override public void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points, int pointMultiplier) {}
+		@Override public void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int[] points, int pointMultiplier) {}
 
 		@Override
 		public void pendingNewGame()

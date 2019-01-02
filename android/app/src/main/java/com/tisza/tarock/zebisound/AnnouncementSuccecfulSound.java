@@ -1,7 +1,6 @@
 package com.tisza.tarock.zebisound;
 
 import android.content.*;
-import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 
@@ -18,17 +17,11 @@ public class AnnouncementSuccecfulSound extends ZebiSound
 	}
 
 	@Override
-	public void statistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, List<Integer> points, int pointMultiplier)
+	public void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, List<Integer> playerPoints, int pointMultiplier)
 	{
-		teamStatistics(selfGamePoints, selfEntries);
-		teamStatistics(opponentGamePoints, opponentEntries);
-	}
-
-	private void teamStatistics(int points, List<AnnouncementStaticticsEntry> entries)
-	{
-		for (AnnouncementStaticticsEntry entry : entries)
+		for (AnnouncementResult announcementResult : announcementResults)
 		{
-			if (entry.getAnnouncement().equals(announcement) && entry.getPoints() > 0)
+			if (announcementResult.getAnnouncement().equals(announcement) && announcementResult.getPoints() > 0)
 				activate();
 		}
 	}

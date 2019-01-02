@@ -51,8 +51,8 @@ public class GameState
 	private final int pointMultiplier;
 	private int[] points;
 	private int pointsForCallerTeam;
-	private Map<Team, List<AnnouncementStaticticsEntry>> statEntriesForTeams;
-	private Map<Team, Integer> gamePointsForTeams;
+	private List<AnnouncementResult> announcementResults = new ArrayList<>();
+	private int callerGamePoints, opponentGamePoints;
 
 	{
 		for (PlayerSeat player : PlayerSeat.getAll())
@@ -368,13 +368,10 @@ public class GameState
 	{
 		inGameStatisticsCalculated = true;
 
-		statEntriesForTeams = new HashMap<>();
+		announcementResults.clear();
 
 		for (Team team : Team.values())
 		{
-			List<AnnouncementStaticticsEntry> entriesForTeam = new ArrayList<>();
-			statEntriesForTeams.put(team, entriesForTeam);
-
 			for (Announcement announcement : Announcements.getAll())
 			{
 				if (!gameType.hasParent(announcement.getGameType()))
@@ -385,7 +382,7 @@ public class GameState
 
 				int acl = announcementsState.getContraLevel(team, announcement);
 				AnnouncementContra ac = new AnnouncementContra(announcement, acl);
-				entriesForTeam.add(new AnnouncementStaticticsEntry(ac, 0));
+				announcementResults.add(new AnnouncementResult(ac, 0, team));
 			}
 		}
 	}
@@ -395,16 +392,10 @@ public class GameState
 		if (!inGameStatisticsCalculated)
 			throw new IllegalStateException();
 
-		for (PlayerSeat player : PlayerSeat.getAll())
-		{
-			Team team = playerPairs.getTeam(player);
-			int selfGamePoints = 0;
-			int opponentGamePoints = 0;
-			List<AnnouncementStaticticsEntry> selfEntries = statEntriesForTeams.get(team);
-			List<AnnouncementStaticticsEntry> opponentEntries = statEntriesForTeams.get(team.getOther());
-			int sumPoints = 0;
-			getPlayerEventSender(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, new int[0], pointMultiplier);
-		}
+		int callerGamePoints = 0;
+		int opponentGamePoints = 0;
+		int sumPoints = 0;
+		getBroadcastEventSender().announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, sumPoints, new int[0], pointMultiplier);
 	}
 
 	void calculateStatistics()
@@ -416,16 +407,15 @@ public class GameState
 
 		points = new int[4];
 
-		statEntriesForTeams = new HashMap<>();
-		gamePointsForTeams = new HashMap<>();
+		announcementResults.clear();
 		pointsForCallerTeam = 0;
 
 		for (Team team : Team.values())
 		{
-			gamePointsForTeams.put(team, calculateGamePoints(team));
-
-			List<AnnouncementStaticticsEntry> entriesForTeam = new ArrayList<>();
-			statEntriesForTeams.put(team, entriesForTeam);
+			if (team == Team.CALLER)
+				callerGamePoints = calculateGamePoints(team);
+			else
+				opponentGamePoints = calculateGamePoints(team);
 
 			for (Announcement announcement : Announcements.getAll())
 			{
@@ -441,7 +431,7 @@ public class GameState
 				{
 					int acl = announcementsState.isAnnounced(team, announcement) ? announcementsState.getContraLevel(team, announcement) : -1;
 					AnnouncementContra ac = new AnnouncementContra(announcement, acl);
-					entriesForTeam.add(new AnnouncementStaticticsEntry(ac, annoucementPoints));
+					announcementResults.add(new AnnouncementResult(ac, annoucementPoints, team));
 				}
 			}
 		}
@@ -472,15 +462,7 @@ public class GameState
 		if (!statisticsCalculated)
 			throw new IllegalStateException();
 
-		for (PlayerSeat player : PlayerSeat.getAll())
-		{
-			Team team = playerPairs.getTeam(player);
-			int selfGamePoints = gamePointsForTeams.get(team);
-			int opponentGamePoints = gamePointsForTeams.get(team.getOther());
-			List<AnnouncementStaticticsEntry> selfEntries = statEntriesForTeams.get(team);
-			List<AnnouncementStaticticsEntry> opponentEntries = statEntriesForTeams.get(team.getOther());
-			int sumPoints = pointsForCallerTeam * (team == Team.CALLER ? 1 : -1);
-			getPlayerEventSender(player).announcementStatistics(selfGamePoints, opponentGamePoints, selfEntries, opponentEntries, sumPoints, points, pointMultiplier);
-		}
+
+		getBroadcastEventSender().announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, pointsForCallerTeam, points, pointMultiplier);
 	}
 }

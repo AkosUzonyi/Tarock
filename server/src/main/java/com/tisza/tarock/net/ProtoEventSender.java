@@ -183,13 +183,12 @@ public class ProtoEventSender implements EventSender
 		sendEvent(Event.newBuilder().setCardsTaken(e).build());
 	}
 
-	@Override public void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementStaticticsEntry> selfEntries, List<AnnouncementStaticticsEntry> opponentEntries, int sumPoints, int[] points, int pointMultiplier)
+	@Override public void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int[] points, int pointMultiplier)
 	{
-		Event.AnnouncementStatistics.Builder e = Event.AnnouncementStatistics.newBuilder()
-				.setSelfGamePoints(selfGamePoints)
+		Event.Statistics.Builder e = Event.Statistics.newBuilder()
+				.setCallerGamePoints(callerGamePoints)
 				.setOpponentGamePoints(opponentGamePoints)
-				.addAllSelfEntry(selfEntries.stream().map(Utils::statisticsEntryToProto).collect(Collectors.toList()))
-				.addAllOpponentEntry(opponentEntries.stream().map(Utils::statisticsEntryToProto).collect(Collectors.toList()))
+				.addAllAnnouncementResult(announcementResults.stream().map(Utils::announcementResultToProto).collect(Collectors.toList()))
 				.setSumPoints(sumPoints)
 				.setPointMultiplier(pointMultiplier);
 
@@ -198,7 +197,7 @@ public class ProtoEventSender implements EventSender
 			e.addPlayerPoint(point);
 		}
 
-		sendEvent(Event.newBuilder().setAnnouncementStatistics(e).build());
+		sendEvent(Event.newBuilder().setStatistics(e).build());
 	}
 
 	@Override public void pendingNewGame()

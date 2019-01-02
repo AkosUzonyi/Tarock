@@ -98,17 +98,25 @@ public class GameSessionManager
 
 	public ProtoPlayer addKibic(User user, int gameID)
 	{
-		ProtoPlayer player = user.createPlayerForGame(gameID);
-		games.get(gameID).addKibic(player);
-		gameIDTokibices.get(gameID).add(user);
-		return player;
+		if (gameIDTokibices.get(gameID).add(user))
+		{
+			ProtoPlayer player = user.createPlayerForGame(gameID);
+			games.get(gameID).addKibic(player);
+			return player;
+		}
+		else
+		{
+			return user.getPlayerForGame(gameID);
+		}
 	}
 
 	public void removeKibic(User user, int gameID)
 	{
-		games.get(gameID).removeKibic(user.getPlayerForGame(gameID));
-		user.removePlayerForGame(gameID);
-		gameIDTokibices.get(gameID).remove(user);
+		if (gameIDTokibices.get(gameID).remove(user))
+		{
+			games.get(gameID).removeKibic(user.getPlayerForGame(gameID));
+			user.removePlayerForGame(gameID);
+		}
 	}
 
 	public void shutdown()

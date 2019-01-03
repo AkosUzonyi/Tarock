@@ -13,28 +13,22 @@ import com.tisza.tarock.game.card.*;
 @SuppressLint("AppCompatCustomView")
 public class PlayedCardView extends ImageView
 {
-	private int orientation;
+	private final int width;
+	private final int orientation;
 	private boolean isAnimating = false;
 
-	public PlayedCardView(Context context, int width, int height, int orientation)
+	public PlayedCardView(Context context, int width, int orientation)
 	{
 		super(context);
 		this.orientation = orientation;
-		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(width, height);
+		this.width = width;
+		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
 		lp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 		setLayoutParams(lp);
+		setAdjustViewBounds(true);
+		resetPosition();
 	}
-	
-	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh)
-	{
-		super.onSizeChanged(w, h, oldw, oldh);
-		if (!isAnimating)
-		{
-			startAnimation(createStaticPositionAnimation());
-		}
-	}
-	
+
 	public void setCard(Card card)
 	{
 		if (card == null)
@@ -50,31 +44,19 @@ public class PlayedCardView extends ImageView
 
 	private Animation createPositionAnimation()
 	{
-		int w = getWidth();
-		int h = getHeight();
+		Animation rotateAnim = new RotateAnimation(0, (orientation % 2) * 90, RotateAnimation.RELATIVE_TO_SELF, 0.5F,RotateAnimation.RELATIVE_TO_SELF, 0.5F);
 
-		Animation rotateAnim = new RotateAnimation(0, (orientation % 2) * 90, w / 2, h / 2);
-		
 		float tx = 0;
 		float ty = 0;
-		if (orientation == 0)
+		switch (orientation)
 		{
-			ty = 1;
+			case 0: ty = 1; break;
+			case 1: tx = 1; break;
+			case 2: ty = -1; break;
+			case 3: tx = -1; break;
 		}
-		else if (orientation == 1)
-		{
-			tx = 1;
-		}
-		else if (orientation == 2)
-		{
-			ty = -1;
-		}
-		else if (orientation == 3)
-		{
-			tx = -1;
-		}
-		tx *= h * GameFragment.PLAYED_CARD_DISTANCE;
-		ty *= h * GameFragment.PLAYED_CARD_DISTANCE;
+		tx *= width * GameFragment.PLAYED_CARD_DISTANCE;
+		ty *= width * GameFragment.PLAYED_CARD_DISTANCE;
 		Animation translateAnim = new TranslateAnimation(0, tx, 0, ty);
 
 		AnimationSet animSet = new AnimationSet(true);
@@ -84,13 +66,13 @@ public class PlayedCardView extends ImageView
 		return animSet;
 	}
 
-	private Animation createStaticPositionAnimation()
+	private void resetPosition()
 	{
 		Animation animation = createPositionAnimation();
 		animation.setDuration(0);
 		animation.setInterpolator(new EndInterpolator());
 		animation.setFillAfter(true);
-		return animation;
+		startAnimation(animation);
 	}
 	
 	public void animatePlay()
@@ -110,33 +92,23 @@ public class PlayedCardView extends ImageView
 		{
 			currentAnimation.cancel();
 		}
-		
+
 		isAnimating = true;
 
-		View parent = (View)getParent();
 		float tx = 0;
 		float ty = 0;
-		if (dir == 0)
+		switch (dir)
 		{
-			ty = parent.getHeight() / 2;
-		}
-		else if (dir == 1)
-		{
-			tx = parent.getWidth() / 2;
-		}
-		else if (dir == 2)
-		{
-			ty = -parent.getHeight() / 2;
-		}
-		else if (dir == 3)
-		{
-			tx = -parent.getWidth() / 2;
+			case 0: ty = 0.5F; break;
+			case 1: tx = 0.5F; break;
+			case 2: ty = -0.5F; break;
+			case 3: tx = -0.5F; break;
 		}
 
 		Interpolator interpolator = play ? new LinearInterpolator() : new ReverseInterpolator();
 		int duration = play ? GameFragment.PLAY_DURATION : GameFragment.TAKE_DURATION;
 
-		Animation moveAnim = new TranslateAnimation(tx, 0, ty, 0);
+		Animation moveAnim = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, tx, TranslateAnimation.RELATIVE_TO_PARENT, 0, TranslateAnimation.RELATIVE_TO_PARENT, ty, TranslateAnimation.RELATIVE_TO_PARENT, 0);
 		Animation positionAnim = createPositionAnimation();
 		moveAnim.setInterpolator(interpolator);
 		positionAnim.setInterpolator(interpolator);
@@ -165,7 +137,7 @@ public class PlayedCardView extends ImageView
 				if (!play)
 					clear();
 
-				startAnimation(createStaticPositionAnimation());
+				resetPosition();
 				isAnimating = false;
 			}
 		});

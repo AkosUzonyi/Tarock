@@ -23,18 +23,17 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 {
 	public static final String LOG_TAG = "Tarokk";
 
-	public static final float PLAYED_CARD_DISTANCE = 0.65F;
+	public static final float PLAYED_CARD_DISTANCE = 1F;
 	public static final int PLAY_DURATION = 50;
 	public static final int TAKE_DURATION = 400;
-	private static final int DELAY = BuildConfig.DEBUG ? 500 : 1500;
-	private static final int CARDS_PER_ROW = 6;
+	public static final int DELAY = BuildConfig.DEBUG ? 500 : 1500;
+	public static final int CARDS_PER_ROW = 6;
 
 	private static final int MESSAGES_VIEW_INDEX = 0;
 	private static final int GAMEPLAY_VIEW_INDEX = 1;
 	private static final int STATISTICS_VIEW_INDEX = 2;
 
-	private static final float cardImageRatio = 1.66F;
-	private int cardWidth, cardHeight;
+	public int cardWidth;
 
 	private ZebiSounds zebiSounds;
 
@@ -98,7 +97,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		View contentView = inflater.inflate(R.layout.game, container, false);
 
 		cardWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth() / CARDS_PER_ROW;
-		cardHeight = (int)(cardWidth * cardImageRatio);
 
 		centerSpace = contentView.findViewById(R.id.center_space);
 
@@ -163,7 +161,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		playedCardViews = new PlayedCardView[4];
 		for (int i = 0; i < 4; i++)
 		{
-			playedCardViews[i] = new PlayedCardView(getActivity(), cardWidth, cardHeight, i);
+			playedCardViews[i] = new PlayedCardView(getActivity(), cardWidth, i);
 			gameplayView.addView(playedCardViews[i]);
 		}
 

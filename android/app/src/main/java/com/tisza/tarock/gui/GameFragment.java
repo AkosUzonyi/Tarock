@@ -234,7 +234,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 
 		for (PlayedCardView playedCardView : playedCardViews)
 		{
-			playedCardView.clear();
+			playedCardView.setCard(null);
 		}
 
 		for (TextView nameView : playerNameViews)
@@ -264,8 +264,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private List<Card> cardsToSkart = new ArrayList<>();
 	private boolean skarting = false;
 
-	private boolean waitingForTakeAnimation;
-	
 	@Override
 	public void startGame(int myID, List<String> playerNames, GameType gameType, int beginnerPlayer)
 	{
@@ -525,15 +523,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	@Override
 	public void cardsTaken(final int winnerPlayer)
 	{
-		waitingForTakeAnimation = true;
-		new Handler().postDelayed(() ->
+		for (PlayedCardView playedCardView : playedCardViews)
 		{
-			for (PlayedCardView playedCardView : playedCardViews)
-			{
-				playedCardView.animateTake(getPositionFromPlayerID(winnerPlayer));
-				waitingForTakeAnimation = false;
-			}
-		}, DELAY);
+			playedCardView.animateTake(getPositionFromPlayerID(winnerPlayer));
+		}
 	}
 	
 	@Override
@@ -707,7 +700,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 							v.startAnimation(a);
 						}
 					}
-					else if (gamePhase == PhaseEnum.GAMEPLAY && !waitingForTakeAnimation && !playedCardViews[0].isAnimating())
+					else if (gamePhase == PhaseEnum.GAMEPLAY && !playedCardViews[0].isTaking())
 					{
 						getActionSender().playCard(card);
 					}

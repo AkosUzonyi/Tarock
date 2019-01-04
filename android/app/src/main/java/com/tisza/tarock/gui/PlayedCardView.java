@@ -2,6 +2,7 @@ package com.tisza.tarock.gui;
 
 import android.annotation.*;
 import android.content.*;
+import android.os.*;
 import android.util.*;
 import android.view.*;
 import android.view.animation.*;
@@ -13,13 +14,17 @@ import com.tisza.tarock.game.card.*;
 @SuppressLint("AppCompatCustomView")
 public class PlayedCardView extends ImageView
 {
+	private final Handler handler;
+	private Card pendingCard = null;
+
 	private final int width;
 	private final int orientation;
-	private boolean isAnimating = false;
+	private boolean isTaking = false;
 
 	public PlayedCardView(Context context, int width, int orientation)
 	{
 		super(context);
+		handler = new Handler();
 		this.orientation = orientation;
 		this.width = width;
 		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -31,15 +36,19 @@ public class PlayedCardView extends ImageView
 
 	public void setCard(Card card)
 	{
-		if (card == null)
-			setImageBitmap(null);
-		else
-			setImageResource(getBitmapResForCard(card));
+		pendingCard = card;
+		if (!isTaking)
+			showPendingCard();
 	}
 
-	public void clear()
+	private void showPendingCard()
 	{
-		setCard(null);
+		if (pendingCard == null)
+			setImageBitmap(null);
+		else
+			setImageResource(getBitmapResForCard(pendingCard));
+
+		pendingCard = null;
 	}
 
 	private Animation createPositionAnimation()
@@ -68,6 +77,12 @@ public class PlayedCardView extends ImageView
 
 	private void resetPosition()
 	{
+		Animation currentAnimation = getAnimation();
+		if (currentAnimation != null)
+		{
+			currentAnimation.cancel();
+		}
+
 		Animation animation = createPositionAnimation();
 		animation.setDuration(0);
 		animation.setInterpolator(new EndInterpolator());
@@ -77,12 +92,22 @@ public class PlayedCardView extends ImageView
 	
 	public void animatePlay()
 	{
+		if (isTaking)
+			return;
+
 		startTakePlayAnimation(true, orientation);
 	}
 	
 	public void animateTake(int dir)
 	{
-		startTakePlayAnimation(false, dir);
+		if (isTaking)
+		{
+			pendingCard = null;
+			return;
+		}
+
+		isTaking = true;
+		handler.postDelayed(() -> startTakePlayAnimation(false, dir), GameFragment.DELAY);
 	}
 	
 	private void startTakePlayAnimation(boolean play, int dir)
@@ -92,8 +117,6 @@ public class PlayedCardView extends ImageView
 		{
 			currentAnimation.cancel();
 		}
-
-		isAnimating = true;
 
 		float tx = 0;
 		float ty = 0;
@@ -134,18 +157,20 @@ public class PlayedCardView extends ImageView
 			@Override
 			public void onAnimationEnd(Animation animation)
 			{
-				if (!play)
-					clear();
+				if (!play && isTaking)
+				{
+					isTaking = false;
+					showPendingCard();
+				}
 
 				resetPosition();
-				isAnimating = false;
 			}
 		});
 	}
 	
-	public boolean isAnimating()
+	public boolean isTaking()
 	{
-		return isAnimating;
+		return isTaking;
 	}
 	
 	public static int getBitmapResForCard(Card card)

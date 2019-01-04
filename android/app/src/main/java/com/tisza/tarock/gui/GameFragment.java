@@ -669,9 +669,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			
 			ImageView cardView = new ImageView(getActivity());
 			cardView.setAdjustViewBounds(true);
-			int padding = (int)(cardWidth * 0.1F / 2);
-			cardView.setPadding(padding, padding, padding, padding);
-			cardView.setLayoutParams(new LinearLayout.LayoutParams(cardWidth, LinearLayout.LayoutParams.WRAP_CONTENT));
+			int margin = (int)(cardWidth * 0.1F / 2);
+			LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(cardWidth - margin * 2, LinearLayout.LayoutParams.WRAP_CONTENT);
+			lp.setMargins(margin, margin, margin, margin);
+			cardView.setLayoutParams(lp);
 			if (card != null)
 				cardView.setImageResource(PlayedCardView.getBitmapResForCard(card));
 			

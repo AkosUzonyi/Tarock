@@ -584,17 +584,18 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
 
 			nameView.setText(announcementResult.getAnnouncement().getDisplayText());
-			int points = announcementResult.getPoints() * (self ? 1 : -1);
-			pointsView.setText(String.valueOf(points));
-			pointsView.setVisibility(points == 0 ? View.GONE : View.VISIBLE);
-			pointsView.setTextColor(points >= 0 ? Color.BLACK : Color.RED);
+			int announcerPoints = announcementResult.getPoints();
+			if (announcerPoints < 0)
+				nameView.setTextColor(getResources().getColor(R.color.announcement_failed));
+			int myPoints = announcerPoints * (self ? 1 : -1);
+			pointsView.setText(String.valueOf(myPoints));
+			pointsView.setVisibility(myPoints == 0 ? View.GONE : View.VISIBLE);
 
 			viewToAppend.addView(entryView);
 		}
 
 		int selfSumPoints = sumPoints * (selfTeam == Team.CALLER ? 1 : -1);
 		statisticsSumPointsView.setText(String.valueOf(selfSumPoints));
-		statisticsSumPointsView.setTextColor(selfSumPoints >= 0 ? Color.BLACK : Color.RED);
 	}
 
 	@Override

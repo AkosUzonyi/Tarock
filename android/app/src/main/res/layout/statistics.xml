@@ -24,19 +24,17 @@
                 android:id="@+id/statistics_gamepoints_self"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/statistics_header_text_size"
                 android:gravity="center"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 />    
         
             <TextView
                 android:id="@+id/statistics_gamepoints_opponent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                android:textSize="@dimen/statistics_header_text_size"
+                android:layout_marginLeft="20dp"
                 android:gravity="center"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 />    
         </LinearLayout>
 
@@ -46,10 +44,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/statistics_margin"
-            android:textSize="@dimen/statistics_header_text_size"
             android:textStyle="italic"
             android:visibility="gone"
-            android:textAppearance="@style/shadow_text"
+            android:textAppearance="@style/game_text"
         />
 
         <TextView
@@ -57,9 +54,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/statistics_margin"
             android:text="@string/statistics_self"
-            android:textSize="@dimen/statistics_header_text_size"
             android:textStyle="bold"
-            android:textAppearance="@style/shadow_text"
+            android:textAppearance="@style/game_text"
         />
 
         <LinearLayout
@@ -75,9 +71,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/statistics_margin"
             android:text="@string/statistics_opponent"
-            android:textSize="@dimen/statistics_header_text_size"
             android:textStyle="bold"
-            android:textAppearance="@style/shadow_text"
+            android:textAppearance="@style/game_text"
         />
 
         <LinearLayout
@@ -98,20 +93,20 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.7"
+                android:layout_weight="0.8"
                 android:text="@string/statictics_sum"
-                android:textSize="@dimen/statistics_header_text_size"
                 android:textStyle="bold"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 />    
         
             <TextView
                 android:id="@+id/statistics_sum_points"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.3"
-                android:textSize="@dimen/statistics_header_text_size"
-                />    
+                android:layout_weight="0.2"
+                android:textStyle="bold"
+                android:textAppearance="@style/game_text"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -126,8 +121,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:textSize="@dimen/statistics_header_text_size"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 android:gravity="center"
                 />
             
@@ -136,8 +130,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:textSize="@dimen/statistics_header_text_size"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 android:gravity="center"
                 />
             
@@ -146,8 +139,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:textSize="@dimen/statistics_header_text_size"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 android:gravity="center"
                 />
             
@@ -156,8 +148,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:textSize="@dimen/statistics_header_text_size"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 android:gravity="center"
                 />
            </LinearLayout>
@@ -174,8 +165,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:textSize="@dimen/statistics_header_text_size"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 android:gravity="center"
                 />
             
@@ -184,8 +174,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:textSize="@dimen/statistics_header_text_size"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 android:gravity="center"
                 />
             
@@ -194,8 +183,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:textSize="@dimen/statistics_header_text_size"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 android:gravity="center"
                 />
             
@@ -204,8 +192,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.25"
-                android:textSize="@dimen/statistics_header_text_size"
-                android:textAppearance="@style/shadow_text"
+                android:textAppearance="@style/game_text"
                 android:gravity="center"
                 />
         </LinearLayout>

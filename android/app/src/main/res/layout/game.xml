@@ -136,7 +136,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:textColor="#000000"
-                android:textSize="@dimen/text_size"
+                android:textSize="@dimen/game_text_size"
                 />
         </android.support.v4.view.ViewPager>
             

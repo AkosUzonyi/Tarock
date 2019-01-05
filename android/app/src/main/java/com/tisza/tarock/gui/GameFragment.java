@@ -81,8 +81,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	{
 		super.onCreate(savedInstanceState);
 
-		ResourceMappings.init(getActivity());
-
 		layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		zebiSounds = new ZebiSounds(getActivity());
 	}

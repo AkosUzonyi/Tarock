@@ -54,12 +54,10 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		FacebookSdk.sdkInitialize(this.getApplicationContext());
 		callbackManager = CallbackManager.Factory.create();
 
+		ResourceMappings.init(this);
 		uiThreadExecutor = new UIThreadExecutor();
-
 		setContentView(R.layout.main);
-
 		progressDialog = new ProgressDialog(this);
-
 		handler = new Handler();
 
 		gameListAdapter = new GameListAdapter(this, this);

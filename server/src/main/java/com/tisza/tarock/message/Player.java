@@ -6,6 +6,5 @@ public interface Player
 {
 	public String getName();
 	public EventSender getEventSender();
-	public void onAddedToGame(ActionHandler actionHandler, PlayerSeat seat);
-	public void onRemovedFromGame();
+	public void setGame(Game game, PlayerSeat seat);
 }

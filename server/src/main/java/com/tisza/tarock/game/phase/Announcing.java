@@ -37,8 +37,6 @@ class Announcing extends Phase implements IAnnouncing
 	@Override
 	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player, eventSender);
-
 		eventSender.turn(currentPlayer);
 		if (player == currentPlayer)
 			sendAvailableAnnouncements();

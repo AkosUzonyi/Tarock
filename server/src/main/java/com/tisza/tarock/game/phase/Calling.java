@@ -44,8 +44,6 @@ class Calling extends Phase
 	@Override
 	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player, eventSender);
-
 		eventSender.turn(callerPlayer);
 		if (player == callerPlayer)
 			sendAvailableCalls();

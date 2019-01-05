@@ -6,7 +6,7 @@ import com.tisza.tarock.message.*;
 public class TestPlayer implements Player
 {
 	private final String name;
-	private ActionHandler actionHandler;
+	private Game game;
 	private PlayerSeat seat;
 
 	public TestPlayer(String name)
@@ -16,7 +16,7 @@ public class TestPlayer implements Player
 
 	public void bid(int bid)
 	{
-		actionHandler.bid(seat, bid);
+		game.action(Action.bid(seat, bid));
 	}
 
 	@Override
@@ -32,15 +32,10 @@ public class TestPlayer implements Player
 	}
 
 	@Override
-	public void onAddedToGame(ActionHandler actionHandler, PlayerSeat seat)
+	public void setGame(Game game, PlayerSeat seat)
 	{
-		this.actionHandler = actionHandler;
+		this.game = game;
 		this.seat = seat;
 	}
 
-	@Override
-	public void onRemovedFromGame()
-	{
-		actionHandler = null;
-	}
 }

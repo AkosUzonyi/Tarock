@@ -9,7 +9,7 @@ public class ProtoPlayer implements Player
 {
 	private String name;
 	private ProtoEventSender eventSender = new ProtoEventSender();
-	private ActionHandler actionHandler;
+	private Game game;
 	private PlayerSeat seat;
 
 	public ProtoPlayer(String name)
@@ -23,13 +23,13 @@ public class ProtoPlayer implements Player
 
 		if (connection != null)
 		{
-			actionHandler.requestHistory(seat, eventSender);
+			game.requestHistory(seat, eventSender);
 		}
 	}
 
 	public void queueAction(String action)
 	{
-		new Action(seat, action).handle(actionHandler);
+		game.action(new Action(seat, action));
 	}
 
 	@Override
@@ -45,16 +45,10 @@ public class ProtoPlayer implements Player
 	}
 
 	@Override
-	public void onAddedToGame(ActionHandler actionHandler, PlayerSeat seat)
+	public void setGame(Game game, PlayerSeat seat)
 	{
-		this.actionHandler = actionHandler;
+		this.game = game;
 		this.seat = seat;
 	}
 
-	@Override
-	public void onRemovedFromGame()
-	{
-		actionHandler = null;
-		seat = null;
-	}
 }

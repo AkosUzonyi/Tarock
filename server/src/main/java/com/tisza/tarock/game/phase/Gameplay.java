@@ -34,8 +34,6 @@ class Gameplay extends Phase
 	@Override
 	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player, eventSender);
-
 		for (PlayerSeat cardPlayer = currentRound.getBeginnerPlayer(); cardPlayer != currentRound.getCurrentPlayer(); cardPlayer = cardPlayer.nextPlayer())
 		{
 			eventSender.playCard(cardPlayer, currentRound.getCardByPlayer(cardPlayer));

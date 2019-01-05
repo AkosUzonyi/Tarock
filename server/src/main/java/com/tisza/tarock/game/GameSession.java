@@ -42,11 +42,6 @@ public class GameSession implements GameFinishedListener
 
 	public void startSession()
 	{
-		for (PlayerSeat seat : PlayerSeat.getAll())
-		{
-			players.get(seat).onAddedToGame(new GameSessionActionHandler(this), seat);
-		}
-
 		startNewGame();
 	}
 
@@ -54,18 +49,17 @@ public class GameSession implements GameFinishedListener
 	{
 		currentGame.stop();
 		currentGame = null;
-
-		for (Player p : players)
-		{
-			p.onRemovedFromGame();
-		}
+		for (Player player : players)
+			player.setGame(null, null);
+		for (Player kibic : kibices)
+			kibic.setGame(null, null);
 	}
 
 	public void addKibic(Player player)
 	{
 		if (kibices.add(player))
 		{
-			player.onAddedToGame(new GameSessionActionHandler(this), null);
+			player.setGame(currentGame, null);
 			currentGame.addKibic(player);
 		}
 	}
@@ -74,8 +68,8 @@ public class GameSession implements GameFinishedListener
 	{
 		if (kibices.remove(player))
 		{
+			player.setGame(null, null);
 			currentGame.removeKibic(player);
-			player.onRemovedFromGame();
 		}
 	}
 
@@ -97,8 +91,13 @@ public class GameSession implements GameFinishedListener
 	private void startNewGame()
 	{
 		currentGame = new GameState(gameType, players, currentBeginnerPlayer, this, doubleRoundTracker.getCurrentMultiplier());
+		for (PlayerSeat seat : PlayerSeat.getAll())
+			players.get(seat).setGame(currentGame, seat);
 		for (Player kibic : kibices)
+		{
+			kibic.setGame(currentGame, null);
 			currentGame.addKibic(kibic);
+		}
 		currentGame.start();
 	}
 

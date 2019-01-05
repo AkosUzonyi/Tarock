@@ -8,7 +8,7 @@ import com.tisza.tarock.message.*;
 import java.util.*;
 import java.util.stream.*;
 
-public class GameState
+public class GameState implements Game
 {
 	public static final int ROUND_COUNT = 9;
 
@@ -77,7 +77,6 @@ public class GameState
 		teamInfoTracker = new TeamInfoTracker(this);
 		history = new GameHistory();
 
-		Collection<EventSender> eventSenders = new ArrayList<>();
 		broadcastEventSender.addEventSender(teamInfoTracker);
 		for (Player player : players.values())
 		{
@@ -111,6 +110,25 @@ public class GameState
 	public void stop()
 	{
 		getBroadcastEventSender().deleteGame();
+	}
+
+	@Override
+	public void action(Action action)
+	{
+		action.handle(currentPhase);
+	}
+
+	@Override
+	public void requestHistory(PlayerSeat player, EventSender eventSender)
+	{
+		eventSender.startGame(player, getPlayerNames(), gameType, beginnerPlayer);
+		if (player != null)
+			eventSender.playerCards(playersCards.get(player));
+		history.sendCurrentStatusToPlayer(player, currentPhase.asEnum(), eventSender);
+		eventSender.phaseChanged(currentPhase.asEnum());
+		teamInfoTracker.sendStatusToPlayer(player, eventSender);
+		sendPlayerPoints();
+		currentPhase.requestHistory(player, eventSender);
 	}
 
 	public List<String> getPlayerNames()
@@ -193,17 +211,6 @@ public class GameState
 		currentPhase = phase;
 		getBroadcastEventSender().phaseChanged(currentPhase.asEnum());
 		currentPhase.onStart();
-	}
-
-	public void sendHistoryToPlayer(PlayerSeat player, EventSender eventSender)
-	{
-		eventSender.startGame(player, getPlayerNames(), gameType, beginnerPlayer);
-		if (player != null)
-			eventSender.playerCards(playersCards.get(player));
-		history.sendCurrentStatusToPlayer(player, currentPhase.asEnum(), eventSender);
-		eventSender.phaseChanged(currentPhase.asEnum());
-		teamInfoTracker.sendStatusToPlayer(player, eventSender);
-		sendPlayerPoints();
 	}
 
 	public Phase getCurrentPhase()

@@ -19,11 +19,7 @@ abstract class Phase implements ActionHandler
 
 	public abstract PhaseEnum asEnum();
 	public abstract void onStart();
-
-	public void requestHistory(PlayerSeat player, EventSender eventSender)
-	{
-		game.sendHistoryToPlayer(player, eventSender);
-	}
+	public abstract void requestHistory(PlayerSeat player, EventSender eventSender);
 
 	@Override
 	public void announce(PlayerSeat player, AnnouncementContra announcementContra)

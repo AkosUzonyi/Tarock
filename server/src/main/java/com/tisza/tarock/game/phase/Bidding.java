@@ -36,8 +36,6 @@ class Bidding extends Phase
 	@Override
 	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player, eventSender);
-
 		eventSender.turn(currentPlayer);
 		if (player == currentPlayer)
 			sendAvailableBids();

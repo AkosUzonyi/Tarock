@@ -36,8 +36,6 @@ class PendingNewGame extends Phase
 	@Override
 	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player, eventSender);
-
 		if (!doubleRound)
 			game.sendStatistics();
 

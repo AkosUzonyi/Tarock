@@ -16,7 +16,7 @@ public class MixedPlayer implements Player
 	private PhaseEnum currentPhase;
 
 	private BroadcastEventSender eventSender = new BroadcastEventSender();
-	private ActionHandler actionHandler;
+	private Game game;
 	private PlayerSeat seat;
 
 	public MixedPlayer(Player player0, Player player1, PhaseEnum changePhase)
@@ -36,16 +36,16 @@ public class MixedPlayer implements Player
 
 		if (activePlayer != null)
 		{
-			activePlayer.onRemovedFromGame();
+			activePlayer.setGame(null, null);
 		}
 
 		activePlayer = player;
 
 		if (activePlayer != null)
 		{
-			activePlayer.onAddedToGame(actionHandler, seat);
+			activePlayer.setGame(game, seat);
 			eventSender.setEventSenders(Arrays.asList(activePlayer.getEventSender(), phaseTrackerEventSender));
-			actionHandler.requestHistory(seat, eventSender);
+			game.requestHistory(seat, eventSender);
 		}
 	}
 
@@ -62,18 +62,12 @@ public class MixedPlayer implements Player
 	}
 
 	@Override
-	public void onAddedToGame(ActionHandler actionHandler, PlayerSeat seat)
+	public void setGame(Game game, PlayerSeat seat)
 	{
-		this.actionHandler = actionHandler;
+		this.game = game;
 		this.seat = seat;
 
 		changeActivePlayer(player0);
-	}
-
-	@Override
-	public void onRemovedFromGame()
-	{
-		changeActivePlayer(null);
 	}
 
 	private EventSender phaseTrackerEventSender = new EventSender()

@@ -19,7 +19,7 @@ public class RandomPlayer implements Player
 	private Random rnd = new Random();
 
 	private PlayerSeat seat;
-	private ActionHandler actionHandler;
+	private Game game;
 
 	public RandomPlayer(String name, ScheduledExecutorService executorService)
 	{
@@ -47,23 +47,16 @@ public class RandomPlayer implements Player
 	}
 
 	@Override
-	public void onAddedToGame(ActionHandler actionHandler, PlayerSeat seat)
+	public void setGame(Game game, PlayerSeat seat)
 	{
-		this.actionHandler = actionHandler;
+		this.game = game;
 		this.seat = seat;
-	}
-
-	@Override
-	public void onRemovedFromGame()
-	{
-		actionHandler = null;
-		seat = null;
 	}
 
 	private void doAction(Action action)
 	{
-		if (actionHandler != null)
-			action.handle(actionHandler);
+		if (game != null)
+			game.action(action);
 	}
 
 	private void enqueueAction(Action action)

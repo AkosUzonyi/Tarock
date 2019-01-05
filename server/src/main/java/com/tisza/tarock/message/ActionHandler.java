@@ -7,7 +7,6 @@ import java.util.*;
 
 public interface ActionHandler
 {
-	default void requestHistory(PlayerSeat player, EventSender eventSender) {}
 	default void announce(PlayerSeat player, AnnouncementContra announcementContra) {}
 	default void announcePassz(PlayerSeat player) {}
 	default void bid(PlayerSeat player, int bid) {}

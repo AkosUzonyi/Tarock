@@ -35,8 +35,6 @@ class Changing extends Phase
 	@Override
 	public void requestHistory(PlayerSeat player, EventSender eventSender)
 	{
-		super.requestHistory(player, eventSender);
-
 		for (PlayerSeat otherPlayer : PlayerSeat.getAll())
 		{
 			if (donePlayer.get(otherPlayer))

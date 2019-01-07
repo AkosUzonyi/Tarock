@@ -6,19 +6,29 @@ import android.widget.*;
 
 import java.io.*;
 import java.net.*;
-import java.util.concurrent.*;
+import java.util.*;
 
 public class ProfilePictureLoader
 {
-	private ConcurrentMap<String, Bitmap> urlToBitmap = new ConcurrentHashMap<>();
+	private Map<String, Bitmap> urlToBitmap = new HashMap<>();
+	private Map<ImageView, ImageDownloadTask> imageViewToTask = new HashMap<>();
 
-	public void loadPictre(String url, ImageView imageView)
+	public void cancelDownload(ImageView imageView)
+	{
+		ImageDownloadTask imageDownloadTask = imageViewToTask.remove(imageView);
+		if (imageDownloadTask != null)
+			imageDownloadTask.cancel(true);
+	}
+
+	public void loadPicture(String url, ImageView imageView)
 	{
 		Bitmap bitmap = urlToBitmap.get(url);
 
 		if (bitmap == null)
 		{
-			new ImageDonwloadTask(url, imageView).execute();
+			imageView.setImageDrawable(null);
+			ImageDownloadTask imageDownloadTask = new ImageDownloadTask(url, imageView);
+			imageDownloadTask.execute();
 		}
 		else
 		{
@@ -26,12 +36,12 @@ public class ProfilePictureLoader
 		}
 	}
 
-	private class ImageDonwloadTask extends AsyncTask<Void, Void, Bitmap>
+	private class ImageDownloadTask extends AsyncTask<Void, Void, Bitmap>
 	{
 		private String url;
 		private ImageView imageView;
 
-		public ImageDonwloadTask(String url, ImageView imageView)
+		public ImageDownloadTask(String url, ImageView imageView)
 		{
 			this.url = url;
 			this.imageView = imageView;
@@ -40,7 +50,7 @@ public class ProfilePictureLoader
 		@Override
 		protected void onPreExecute()
 		{
-			super.onPreExecute();
+			imageViewToTask.put(imageView, this);
 		}
 
 		@Override
@@ -69,6 +79,7 @@ public class ProfilePictureLoader
 				imageView.setImageBitmap(bitmap);
 				urlToBitmap.put(url, bitmap);
 			}
+			imageViewToTask.remove(imageView);
 		}
 	}
 }

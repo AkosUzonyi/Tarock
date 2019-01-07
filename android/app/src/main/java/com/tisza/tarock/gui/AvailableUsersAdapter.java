@@ -97,8 +97,9 @@ public class AvailableUsersAdapter extends BaseAdapter
 
 		holder.nameView.setText(user.getName());
 
+		profilePictureLoader.cancelDownload(holder.profilePictureView);
 		if (user.getImageURL() != null)
-			profilePictureLoader.loadPictre(user.getImageURL(), holder.profilePictureView);
+			profilePictureLoader.loadPicture(user.getImageURL(), holder.profilePictureView);
 
 		holder.isFriendView.setVisibility(user.isFriend() ? View.VISIBLE : View.GONE);
 		holder.isOnlineView.setImageResource(user.isOnline() ? R.drawable.online : R.drawable.offline);

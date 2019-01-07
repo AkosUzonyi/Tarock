@@ -32,7 +32,7 @@ public class FacebookUserManager
 		ResultSet resultSet;
 
 		statement = databaseConnection.createStatement();
-		statement.execute("create table if not exists users (id varchar(255) primary key, name varchar(255), imgURL varchar(255));");
+		statement.execute("create table if not exists users (id varchar(255) primary key, name varchar(255), imgURL varchar(255), registration_time int);");
 		statement.execute("create table if not exists friendships (id0 varchar(255), id1 varchar(255), primary key (id0, id1));");
 		statement.execute("select id, name, imgURL from users;");
 		resultSet = statement.getResultSet();
@@ -73,6 +73,8 @@ public class FacebookUserManager
 
 	public User getUserByAccessToken(String accessToken)
 	{
+		PreparedStatement preparedStatement;
+
 		try
 		{
 			JSONObject appJSON = downloadJSONFromURL("https://graph.facebook.com/app/?access_token=" + accessToken);
@@ -101,7 +103,7 @@ public class FacebookUserManager
 					user.addFriend(friendUser);
 					friendUser.addFriend(user);
 
-					PreparedStatement preparedStatement = databaseConnection.prepareStatement("delete from friendships where id0=? and id1=?;");
+					preparedStatement = databaseConnection.prepareStatement("delete from friendships where id0=? and id1=?;");
 					preparedStatement.setString(1, id);
 					preparedStatement.setString(2, friendID);
 					preparedStatement.executeUpdate();
@@ -115,15 +117,17 @@ public class FacebookUserManager
 				}
 			}
 
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("delete from users where id=?;");
-			preparedStatement.setString(1, id);
+			preparedStatement = databaseConnection.prepareStatement("update users set name=?, imgURL=? where id=?;");
+			preparedStatement.setString(1, name);
+			preparedStatement.setString(2, imgURL);
+			preparedStatement.setString(3, id);
 			preparedStatement.executeUpdate();
 			preparedStatement.close();
-
-			preparedStatement = databaseConnection.prepareStatement("insert into users(id, name, imgURL) values (?, ?, ?);");
+			preparedStatement = databaseConnection.prepareStatement("insert or ignore into users(id, name, imgURL, registration_time) values (?, ?, ?, ?);");
 			preparedStatement.setString(1, id);
 			preparedStatement.setString(2, name);
 			preparedStatement.setString(3, imgURL);
+			preparedStatement.setLong(4, System.currentTimeMillis());
 			preparedStatement.executeUpdate();
 			preparedStatement.close();
 

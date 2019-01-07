@@ -136,8 +136,6 @@ public class FacebookUserManager
 			preparedStatement.executeUpdate();
 			preparedStatement.close();
 
-			System.out.println("user created: " + name);
-
 			return newUser;
 		}
 		catch (Exception e)

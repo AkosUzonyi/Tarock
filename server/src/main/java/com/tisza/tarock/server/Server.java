@@ -86,6 +86,7 @@ public class Server implements Runnable
 			while (!Thread.interrupted())
 			{
 				SSLSocket socket = (SSLSocket)serverSocket.accept();
+				System.out.println("accepted connection from: " + socket.getRemoteSocketAddress());
 				ProtoConnection connection = new ProtoConnection(socket, gameExecutorService);
 				clients.add(new Client(this, connection));
 				connection.start();

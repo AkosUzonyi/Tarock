@@ -18,7 +18,6 @@ buffer messages
 features:
 error messages
 nickname
-log
 
 refactorizations:
 use separate executorservice for network

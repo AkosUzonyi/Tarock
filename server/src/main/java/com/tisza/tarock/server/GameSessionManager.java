@@ -67,7 +67,7 @@ public class GameSessionManager
 		gameIDToUsers.put(id, users);
 		gameIDTokibices.put(id, new HashSet<>());
 
-		System.out.println("game created with id: " + id);
+		System.out.println("game session created: users: " + users + " id: " + id);
 
 		return id;
 	}
@@ -94,6 +94,8 @@ public class GameSessionManager
 		}
 
 		game.stopSession();
+
+		System.out.println("game session deleted: users: "  + users + " id: " + id);
 	}
 
 	public ProtoPlayer addKibic(User user, int gameID)

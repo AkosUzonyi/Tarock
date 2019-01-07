@@ -72,6 +72,8 @@ public class User
 	public void setLoggedIn(boolean loggedIn)
 	{
 		this.loggedIn = loggedIn;
+
+		System.out.println("user logged " + (loggedIn ? "in" : "out") + ": " + name + " (id: " + id + ")");
 	}
 
 	public ProtoPlayer createPlayerForGame(int gameID)

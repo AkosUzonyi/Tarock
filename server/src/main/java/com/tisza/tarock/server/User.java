@@ -54,6 +54,11 @@ public class User
 		friendIDs.add(user.getId());
 	}
 
+	public void removeFriend(User user)
+	{
+		friendIDs.remove(user.getId());
+	}
+
 	public void clearFriends()
 	{
 		friendIDs.clear();

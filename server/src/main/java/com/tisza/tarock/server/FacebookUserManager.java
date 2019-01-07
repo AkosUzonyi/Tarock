@@ -88,11 +88,22 @@ public class FacebookUserManager
 			if (userJSON.has("picture"))
 				imgURL = userJSON.getJSONObject("picture").getJSONObject("data").getString("url");
 
-			User user = addUser(id, name, imgURL);
+			User newUser = addUser(id, name, imgURL);
+
+			for (User user : listUsers())
+			{
+				user.removeFriend(newUser);
+			}
+
+			preparedStatement = databaseConnection.prepareStatement("delete from friendships where id0=? or id1=?;");
+			preparedStatement.setString(1, newUser.getId());
+			preparedStatement.setString(2, newUser.getId());
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
 
 			if (userJSON.has("friends"))
 			{
-				user.clearFriends();
+				newUser.clearFriends();
 				for (Object friendJSON : userJSON.getJSONObject("friends").getJSONArray("data"))
 				{
 					String friendID = ((JSONObject)friendJSON).getString("id");
@@ -100,16 +111,10 @@ public class FacebookUserManager
 					if (friendUser == null)
 						continue;
 
-					user.addFriend(friendUser);
-					friendUser.addFriend(user);
+					newUser.addFriend(friendUser);
+					friendUser.addFriend(newUser);
 
-					preparedStatement = databaseConnection.prepareStatement("delete from friendships where id0=? and id1=?;");
-					preparedStatement.setString(1, id);
-					preparedStatement.setString(2, friendID);
-					preparedStatement.executeUpdate();
-					preparedStatement.close();
-
-					preparedStatement = databaseConnection.prepareStatement("insert into friendships(id0, id1) values (?, ?);");
+					preparedStatement = databaseConnection.prepareStatement("insert or ignore into friendships(id0, id1) values (?, ?);");
 					preparedStatement.setString(1, id);
 					preparedStatement.setString(2, friendID);
 					preparedStatement.executeUpdate();
@@ -133,7 +138,7 @@ public class FacebookUserManager
 
 			System.out.println("user created: " + name);
 
-			return user;
+			return newUser;
 		}
 		catch (Exception e)
 		{

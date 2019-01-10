@@ -18,6 +18,8 @@ buffer messages
 features:
 error messages
 nickname
+view last round
+public/game chat
 
 refactorizations:
 use separate executorservice for network

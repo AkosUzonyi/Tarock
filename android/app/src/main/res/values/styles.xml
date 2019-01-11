@@ -44,7 +44,7 @@
     <style name="spinner" parent="android:Widget.Spinner">
         <item name="android:textSize">@dimen/button_text_size</item>
         <item name="android:textAlignment">center</item>
-        <item name="android:background">@drawable/button_background</item>
+        <item name="android:background">@drawable/spinner_background</item>
         <item name="android:minHeight">@dimen/button_min_height</item>
         <item name="android:padding">@dimen/button_padding</item>
         <item name="android:popupBackground">@drawable/button_background</item>

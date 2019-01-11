@@ -1,0 +1,4 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/button_background"/>
+    <item android:drawable="@drawable/ic_arrow_drop_down_black_30dp" android:gravity="center_vertical|right" android:right="10dp"/>
+</layer-list>

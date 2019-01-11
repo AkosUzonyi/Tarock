@@ -94,6 +94,24 @@ public class Client implements MessageHandler
 
 				int gameID = server.getGameSessionManager().createNewGame(gameType, users, doubleRoundType);
 
+				List<String> playerNames = server.getGameSessionManager().getPlayerNames(gameID);
+				for (User user : users)
+				{
+					for (String fcmToken : user.getFCMTokens())
+					{
+						try
+						{
+							boolean valid = server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, loggedInUser.getName(), playerNames);
+							if (!valid)
+								server.getFacebookUserManager().registerFCMToken(fcmToken, null);
+						}
+						catch (IOException e)
+						{
+							e.printStackTrace();
+						}
+					}
+				}
+
 				server.broadcastStatus();
 
 				break;

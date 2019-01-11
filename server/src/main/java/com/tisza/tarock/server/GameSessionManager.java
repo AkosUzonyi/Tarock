@@ -25,6 +25,11 @@ public class GameSessionManager
 		saveDir.mkdir();
 	}
 
+	public List<String> getPlayerNames(int gameID)
+	{
+		return games.get(gameID).getPlayerNames();
+	}
+
 	public Collection<GameInfo> listGames()
 	{
 		Collection<GameInfo> result = new ArrayList<>();

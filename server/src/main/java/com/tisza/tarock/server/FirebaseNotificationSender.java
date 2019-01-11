@@ -18,13 +18,14 @@ public class FirebaseNotificationSender
 		this.jsonFile = jsonFile;
 	}
 
-	public boolean sendNewGameNotification(String token, String creatorName) throws IOException
+	public boolean sendNewGameNotification(String token, String creatorName, List<String> playerNames) throws IOException
 	{
 		JSONObject notificationJSON = new JSONObject();
 		notificationJSON.put("sound", "default");
-		notificationJSON.put("title_loc_key", "notification_title_game_created");
+		notificationJSON.put("title_loc_key", "game_created_notification_title");
 		notificationJSON.put("title_loc_args", Arrays.asList(creatorName));
-		notificationJSON.put("body_loc_key", "notification_body_game_created");
+		notificationJSON.put("body_loc_key", "game_created_notification_body");
+		notificationJSON.put("body_loc_args", playerNames);
 
 		JSONObject androidJSON = new JSONObject();
 		androidJSON.put("ttl", "60s");

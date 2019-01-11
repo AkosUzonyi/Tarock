@@ -5,7 +5,10 @@ import android.view.*;
 import android.widget.*;
 import com.facebook.*;
 import com.facebook.login.widget.*;
+import com.google.firebase.iid.*;
 import com.tisza.tarock.R;
+
+import java.io.*;
 
 public class LoginFragment extends MainActivityFragment
 {
@@ -18,6 +21,12 @@ public class LoginFragment extends MainActivityFragment
 		{
 			if (playButton != null)
 				playButton.setEnabled(currentAccessToken != null);
+
+			if (currentAccessToken == null)
+			{
+				getMainActivity().disconnect();
+				new FCMDeleteTokenAsyncTask().execute();
+			}
 		}
 	};
 
@@ -47,5 +56,22 @@ public class LoginFragment extends MainActivityFragment
 	{
 		super.onDestroy();
 		accessTokenTracker.stopTracking();
+	}
+
+	private class FCMDeleteTokenAsyncTask extends AsyncTask<Void, Void, Void>
+	{
+		@Override
+		protected Void doInBackground(Void... voids)
+		{
+			try
+			{
+				FirebaseInstanceId.getInstance().deleteInstanceId();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+			return null;
+		}
 	}
 }

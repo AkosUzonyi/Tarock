@@ -1,14 +1,12 @@
 package com.tisza.tarock.gui;
 
 import android.app.*;
-import android.app.FragmentTransaction;
 import android.content.*;
 import android.net.*;
 import android.os.*;
-import android.support.v4.app.*;
-import android.widget.*;
 import com.facebook.*;
-import com.tisza.tarock.*;
+import com.google.android.gms.tasks.*;
+import com.google.firebase.iid.*;
 import com.tisza.tarock.BuildConfig;
 import com.tisza.tarock.R;
 import com.tisza.tarock.game.*;
@@ -67,6 +65,9 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		getFragmentManager().beginTransaction()
 				.add(R.id.fragment_container, loginFragment, "login")
 				.commit();
+
+		if (getIntent().hasExtra("game_id"))
+			onPlayButtonClicked();
 	}
 
 	@Override
@@ -108,6 +109,15 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	{
 		popBackToLoginScreen();
 
+		FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult ->
+		{
+			if (loggedIn)
+				connection.sendMessage(MainProto.Message.newBuilder().setFcmToken(MainProto.FCMToken.newBuilder()
+						.setFcmToken(instanceIdResult.getToken())
+						.setActive(true)
+						.build()).build());
+		});
+
 		GameListFragment gameListFragment = new GameListFragment();
 
 		getFragmentManager().beginTransaction()
@@ -115,6 +125,13 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
+
+		String gameID = getIntent().getStringExtra("game_id");
+		if (gameID != null)
+		{
+			getIntent().removeExtra("game_id");
+			joinGame(Integer.parseInt(gameID));
+		}
 	}
 
 	public void createNewGame()
@@ -152,7 +169,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				.build());
 	}
 
-	private void disconnect()
+	public void disconnect()
 	{
 		if (connection != null)
 			new DisconnectAsyncTask().execute();
@@ -332,6 +349,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				{
 					e.printStackTrace();
 				}
+				connection = null;
 			}
 
 			return null;

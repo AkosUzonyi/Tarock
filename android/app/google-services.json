@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "622849615637",
+    "firebase_url": "https://tarokk-3f659.firebaseio.com",
+    "project_id": "tarokk-3f659",
+    "storage_bucket": "tarokk-3f659.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:622849615637:android:a4709b1a184b039f",
+        "android_client_info": {
+          "package_name": "com.tisza.tarock"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "622849615637-hn7peq0o1ofbs1p9oicum1ggiclmj5mb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL6P0rN9uPetCJDYLettew6eONHo17nd8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -16,6 +16,7 @@ public class FacebookUserManager
 	private final String dbURL;
 	private Connection databaseConnection;
 	private Map<String, User> idToUser = new HashMap<>();
+	private Map<String, User> fcmTokenToUser = new HashMap<>();
 
 	public FacebookUserManager(File dbDir)
 	{
@@ -34,6 +35,7 @@ public class FacebookUserManager
 		statement = databaseConnection.createStatement();
 		statement.execute("create table if not exists users (id varchar(255) primary key, name varchar(255), imgURL varchar(255), registration_time int);");
 		statement.execute("create table if not exists friendships (id0 varchar(255), id1 varchar(255), primary key (id0, id1));");
+		statement.execute("create table if not exists fcm_token (token varchar(255) primary key, user_id varchar(255));");
 		statement.execute("select id, name, imgURL from users;");
 		resultSet = statement.getResultSet();
 		while (resultSet.next())
@@ -48,6 +50,16 @@ public class FacebookUserManager
 			User user1 = getUserByID(resultSet.getString("id1"));
 			user0.addFriend(user1);
 			user1.addFriend(user0);
+		}
+		statement.close();
+		statement.execute("select token, user_id from fcm_token;");
+		resultSet = statement.getResultSet();
+		while (resultSet.next())
+		{
+			String token = resultSet.getString("token");
+			User user = getUserByID(resultSet.getString("user_id"));
+			fcmTokenToUser.put(token, user);
+			user.addFCMToken(token);
 		}
 		statement.close();
 	}
@@ -71,6 +83,40 @@ public class FacebookUserManager
 		return idToUser.get(id);
 	}
 
+	public void registerFCMToken(String token, User user)
+	{
+		PreparedStatement preparedStatement;
+
+		try
+		{
+			System.out.println("fcm token for: " + (user == null ? null : user.getName()));
+
+			preparedStatement = databaseConnection.prepareStatement("delete from fcm_token where token=?;");
+			preparedStatement.setString(1, token);
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
+			User oldUser = fcmTokenToUser.remove(token);
+			if (oldUser != null)
+				oldUser.removeFCMToken(token);
+
+			if (user != null)
+			{
+				preparedStatement = databaseConnection.prepareStatement("insert into fcm_token (token, user_id) values (?, ?);");
+				preparedStatement.setString(1, token);
+				preparedStatement.setString(2, user.getId());
+				preparedStatement.executeUpdate();
+				preparedStatement.close();
+				fcmTokenToUser.put(token, user);
+				user.addFCMToken(token);
+			}
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+
+	}
+
 	public User getUserByAccessToken(String accessToken)
 	{
 		PreparedStatement preparedStatement;
@@ -79,6 +125,7 @@ public class FacebookUserManager
 		{
 			JSONObject appJSON = downloadJSONFromURL("https://graph.facebook.com/app/?access_token=" + accessToken);
 			if (!appJSON.getString("id").equals(APP_ID))
+
 				return null;
 
 			JSONObject userJSON = downloadJSONFromURL("https://graph.facebook.com/me/?fields=id,name,picture,friends&access_token=" + accessToken);

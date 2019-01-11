@@ -24,15 +24,17 @@ public class Server implements Runnable
 
 	private final GameSessionManager gameSessionManager;
 	private final FacebookUserManager facebookUserManager;
+	private final FirebaseNotificationSender firebaseNotificationSender;
 
-	public Server(int port, File keystoreFile, File dataDir)
+	public Server(int port, File staticDir, File dataDir)
 	{
 		this.port = port;
-		this.keystoreFile = keystoreFile;
+		this.keystoreFile = new File(staticDir, "keystore");
 
 		gameExecutorService = new GameExecutorService();
 		gameSessionManager = new GameSessionManager(dataDir, new RandomPlayerFactory());
 		facebookUserManager = new FacebookUserManager(dataDir);
+		firebaseNotificationSender = new FirebaseNotificationSender(new File(staticDir, "fcm-service-account.json"));
 	}
 
 	public GameSessionManager getGameSessionManager()
@@ -43,6 +45,11 @@ public class Server implements Runnable
 	public FacebookUserManager getFacebookUserManager()
 	{
 		return facebookUserManager;
+	}
+
+	public FirebaseNotificationSender getFirebaseNotificationSender()
+	{
+		return firebaseNotificationSender;
 	}
 
 	public void removeClient(Client client)

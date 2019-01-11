@@ -52,7 +52,7 @@ public class FirebaseNotificationSender
 				refreshAccessToken();
 				error = doHTTPRequest(json);
 				break;
-			case "UNAUTHORIZED":
+			case "NOT_FOUND":
 				return false;
 		}
 

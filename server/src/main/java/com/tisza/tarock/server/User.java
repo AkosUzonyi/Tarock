@@ -10,6 +10,7 @@ public class User
 	private String name;
 	private String imgURL;
 	private List<String> friendIDs = new ArrayList<>();
+	private Set<String> fcmTokens = new HashSet<>();
 
 	private boolean loggedIn = false;
 	private Map<Integer, ProtoPlayer> gameIDToPlayer = new HashMap<>();
@@ -62,6 +63,21 @@ public class User
 	public void clearFriends()
 	{
 		friendIDs.clear();
+	}
+
+	public void addFCMToken(String token)
+	{
+		fcmTokens.add(token);
+	}
+
+	public void removeFCMToken(String token)
+	{
+		fcmTokens.remove(token);
+	}
+
+	public Collection<String> getFCMTokens()
+	{
+		return fcmTokens;
 	}
 
 	public boolean isLoggedIn()

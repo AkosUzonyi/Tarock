@@ -137,6 +137,14 @@ public class Client implements MessageHandler
 				break;
 			}
 
+			case FCM_TOKEN:
+			{
+				String token = message.getFcmToken().getFcmToken();
+				boolean active = message.getFcmToken().getActive();
+				server.getFacebookUserManager().registerFCMToken(token, active ? loggedInUser : null);
+				break;
+			}
+
 			default:
 				System.err.println("unhandled message type: " + message.getMessageTypeCase());
 				break;

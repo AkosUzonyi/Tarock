@@ -14,6 +14,7 @@ message Message
     {
         KeepAlive keepAlive = 1;
         Login login = 2;
+        FCMToken fcm_token = 9;
         Action action = 3;
         Event event = 4;
         CreateGame create_game = 5;
@@ -37,6 +38,12 @@ message User
 message Login
 {
     optional string facebook_token = 1;
+}
+
+message FCMToken
+{
+    required string fcm_token = 1;
+    required bool active = 2;
 }
 
 message Game

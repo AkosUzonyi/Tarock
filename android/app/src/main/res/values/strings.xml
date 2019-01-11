@@ -7,6 +7,9 @@
     <string name="update_accept">Frissítés</string>
     <string name="update_deny">Kilépés</string>
 
+    <string name="notification_title_game_created">%1$s játszani szeretne veled</string>
+    <string name="notification_body_game_created">mennyél már</string>
+
     <string name="app_name" translatable="false">Tarokk</string>
     <string name="play" translatable="false">Play</string>
     <string name="new_game">Új játék</string>

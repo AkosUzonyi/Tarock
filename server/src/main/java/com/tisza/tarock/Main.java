@@ -9,9 +9,9 @@ public class Main
 {
 	public static void main(String[] args)
 	{
-		File keystoreFile = new File("/usr/share/tarock/keystore");
+		File staticDir = new File("/usr/share/tarock");
 		File dataDir = new File("/var/lib/tarock");
-		Server server = new Server(8128, keystoreFile, dataDir);
+		Server server = new Server(8128, staticDir, dataDir);
 		server.start();
 	}
 }

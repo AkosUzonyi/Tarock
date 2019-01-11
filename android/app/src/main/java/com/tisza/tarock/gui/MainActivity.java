@@ -65,6 +65,9 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		getFragmentManager().beginTransaction()
 				.add(R.id.fragment_container, loginFragment, "login")
 				.commit();
+
+		if (getIntent().hasExtra("game_id"))
+			onPlayButtonClicked();
 	}
 
 	@Override
@@ -122,6 +125,13 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
+
+		String gameID = getIntent().getStringExtra("game_id");
+		if (gameID != null)
+		{
+			getIntent().removeExtra("game_id");
+			joinGame(Integer.parseInt(gameID));
+		}
 	}
 
 	public void createNewGame()

@@ -101,7 +101,7 @@ public class Client implements MessageHandler
 					{
 						try
 						{
-							boolean valid = server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, loggedInUser.getName(), playerNames);
+							boolean valid = server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameID, loggedInUser.getName(), playerNames);
 							if (!valid)
 								server.getFacebookUserManager().registerFCMToken(fcmToken, null);
 						}

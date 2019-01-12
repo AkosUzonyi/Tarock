@@ -2,7 +2,7 @@ package com.tisza.tarock.game.phase;
 
 public enum PhaseEnum
 {
-	BIDDING, CHANGING, CALLING, ANNOUNCING, GAMEPLAY, FINISHED, END, INTERRUPTED;
+	BIDDING, CHANGING, CALLING, ANNOUNCING, GAMEPLAY, END, INTERRUPTED;
 	
 	public boolean isAfter(PhaseEnum phase)
 	{

@@ -16,9 +16,14 @@ android {
         debug {
             versionNameSuffix ".debug"
             resValue "string", "app_version", "v${defaultConfig.versionName}${versionNameSuffix}"
+            buildConfigField "String", 'SERVER_HOSTNAME', "\"dell\""
+            buildConfigField "int", 'SERVER_PORT', "8128"
         }
         release {
             resValue "string", "app_version", "v${defaultConfig.versionName}"
+            buildConfigField "String", 'SERVER_HOSTNAME', "\"akos0.ddns.net\""
+            buildConfigField "int", 'SERVER_PORT', "8128"
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

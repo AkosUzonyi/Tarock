@@ -374,9 +374,6 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 		protected ProtoConnection doInBackground(Void... voids)
 		{
-			final String host = BuildConfig.DEBUG ? "dell" : "akos0.ddns.net";
-			final int port = 8128;
-
 			try
 			{
 				String trustStoreFile = "truststore.bks";
@@ -394,7 +391,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
 				Socket socket = sc.getSocketFactory().createSocket();
-				socket.connect(new InetSocketAddress(host, port), 1000);
+				socket.connect(new InetSocketAddress(BuildConfig.SERVER_HOSTNAME, BuildConfig.SERVER_PORT), 1000);
 
 				ProtoConnection protoConnection = new ProtoConnection(socket, uiThreadExecutor);
 				return protoConnection;

@@ -480,7 +480,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		availableActionsAdapter.addAll(announcements);
 
 		okButton.setVisibility(View.VISIBLE);
-		okButton.setOnClickListener(v -> getActionSender().announcePassz());
+		okButton.setOnClickListener(v ->
+		{
+			if (ultimoView.getVisibility() == View.GONE)
+				getActionSender().announcePassz();
+		});
 	}
 
 	@Override

@@ -114,6 +114,9 @@ public class ProtoEvent implements Event
 			case THROW_CARDS:
 				handler.cardsThrown(player, null);
 				break;
+			case CHAT:
+				handler.chat(player, action.getChat().getMessage());
+				break;
 			case READY_FOR_NEW_GAME:
 				handler.readyForNewGame(player);
 				break;

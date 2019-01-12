@@ -90,6 +90,15 @@ public class BroadcastEventSender implements EventSender
 	}
 
 	@Override
+	public void chat(PlayerSeat player, String message)
+	{
+		for (EventSender eventSender : eventSenders)
+		{
+			eventSender.chat(player, message);
+		}
+	}
+
+	@Override
 	public void turn(PlayerSeat player)
 	{
 		for (EventSender eventSender : eventSenders)

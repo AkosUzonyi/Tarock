@@ -196,6 +196,13 @@
                 android:gravity="center"
                 />
         </LinearLayout>
-                
+
+        <include
+            android:id="@+id/statistics_chat_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/statistics_margin_big"
+            layout="@layout/chat_edit_text"
+        />
     </LinearLayout>
 </ScrollView>

@@ -15,4 +15,5 @@ public interface ActionSender
 	default void playCard(Card card) {}
 	default void readyForNewGame() {}
 	default void throwCards() {}
+	default void chat(String message) {}
 }

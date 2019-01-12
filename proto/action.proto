@@ -18,6 +18,7 @@ message Action
 		PlayCard play_card = 6;
 		ReadyForNewGame ready_for_new_game = 7;
 		ThrowCards throw_cards = 8;
+		Chat chat = 9;
 	}
 	message Bid
 	{
@@ -47,6 +48,10 @@ message Action
 	}
 	message ThrowCards
 	{
+	}
+	message Chat
+	{
+		required string message = 1;
 	}
 }
 

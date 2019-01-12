@@ -5,10 +5,12 @@ import android.content.*;
 import android.graphics.*;
 import android.os.*;
 import android.support.v4.view.*;
+import android.text.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
 import android.view.animation.Animation.*;
+import android.view.inputmethod.*;
 import android.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
@@ -19,7 +21,7 @@ import com.tisza.tarock.zebisound.*;
 
 import java.util.*;
 
-public class GameFragment extends MainActivityFragment implements EventHandler
+public class GameFragment extends MainActivityFragment implements EventHandler, TextView.OnEditorActionListener
 {
 	public static final String LOG_TAG = "Tarokk";
 
@@ -57,6 +59,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private ScrollView messagesScrollView;
 	private TextView messagesTextView;
 	private LinearLayout availabeActionsView;
+	private EditText messagesChatEditText;
 
 	private View ultimoView;
 	private Button ultimoBackButton;
@@ -75,6 +78,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 	private TextView statisticsSumPointsView;
 	private TextView[] statisticsPointsNameViews = new TextView[4];
 	private TextView[] statisticsPointsValueViews = new TextView[4];
+	private EditText statisticsChatEditText;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -138,6 +142,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		messagesScrollView = (ScrollView)messagesFrame.findViewById(R.id.messages_scroll);
 		messagesTextView = (TextView)messagesFrame.findViewById(R.id.messages_text_view);
 		availabeActionsView = (LinearLayout)messagesFrame.findViewById(R.id.available_actions);
+		messagesChatEditText = messagesFrame.findViewById(R.id.messages_chat_edit_text);
+		messagesChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+		messagesChatEditText.setOnEditorActionListener(this);
 
 		ultimoView = messagesFrame.findViewById(R.id.ultimo_view);
 		ultimoBackButton = (Button)messagesFrame.findViewById(R.id.ultimo_back_buton);
@@ -178,6 +185,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		statisticsPointsValueViews[1] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_1);
 		statisticsPointsValueViews[2] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_2);
 		statisticsPointsValueViews[3] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_3);
+		statisticsChatEditText = statisticsView.findViewById(R.id.statistics_chat_edit_text);
+		statisticsChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
+		statisticsChatEditText.setOnEditorActionListener(this);
 
 		View[] centerViews = {messagesFrame, gameplayView, statisticsView};
 		int[] centerViewTitles = {R.string.pager_announcing, R.string.pager_gameplay, R.string.pager_statistics};
@@ -284,7 +294,31 @@ public class GameFragment extends MainActivityFragment implements EventHandler
 		}
 		messages = "";
 	}
-	
+
+	@Override
+	public void chat(int player, String message)
+	{
+		displayPlayerActionMessage(R.string.message_generic, player, message);
+	}
+
+	@Override
+	public boolean onEditorAction(TextView view, int actionId, KeyEvent event)
+	{
+		if ((view == messagesChatEditText || view == statisticsChatEditText) && actionId == EditorInfo.IME_ACTION_SEND)
+		{
+			Editable text = ((EditText)view).getText();
+			if (text.length() == 0)
+				return false;
+			getActionSender().chat(text.toString());
+			text.clear();
+			InputMethodManager imm = (InputMethodManager)getMainActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+			return true;
+		}
+
+		return false;
+	}
+
 	@Override
 	public void cardsChanged(List<Card> cards)
 	{

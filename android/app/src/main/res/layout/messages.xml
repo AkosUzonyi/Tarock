@@ -2,6 +2,8 @@
     android:id="@+id/messages_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="@dimen/default_padding"
+    android:paddingBottom="0dp"
     >
 
     <LinearLayout
@@ -9,24 +11,37 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:padding="@dimen/default_padding"
         android:baselineAligned="false"
         >
-        <ScrollView
-            android:id="@+id/messages_scroll"
+
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.7"
-            android:scrollbars="vertical"
-            android:fillViewport="true"
+            android:orientation="vertical"
             >
-            <TextView
-                android:id="@+id/messages_text_view"
+
+            <ScrollView
+                android:id="@+id/messages_scroll"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/game_text"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:scrollbars="vertical"
+                android:fillViewport="true"
+                >
+                <TextView
+                    android:id="@+id/messages_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/game_text"
                 />
-        </ScrollView>
+            </ScrollView>
+
+            <include
+                android:id="@+id/messages_chat_edit_text"
+                layout="@layout/chat_edit_text"
+            />
+        </LinearLayout>
 
         <ScrollView
             android:layout_width="0dp"

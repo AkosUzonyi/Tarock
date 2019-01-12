@@ -105,6 +105,9 @@ public class GameSessionManager
 
 	public ProtoPlayer addKibic(User user, int gameID)
 	{
+		if (!games.containsKey(gameID))
+			return null;
+
 		if (gameIDTokibices.get(gameID).add(user))
 		{
 			ProtoPlayer player = user.createPlayerForGame(gameID);

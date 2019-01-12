@@ -19,7 +19,7 @@ features:
 error messages
 nickname
 view last round
-public/game chat
+public chat
 
 refactorizations:
 use separate executorservice for network

@@ -30,4 +30,5 @@ public interface EventHandler
 	default void pendingNewGame() {}
 	default void readyForNewGame(int player) {}
 	default void deleteGame() {}
+	default void chat(int player, String message) {}
 }

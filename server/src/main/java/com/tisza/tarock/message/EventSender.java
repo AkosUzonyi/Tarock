@@ -30,4 +30,5 @@ public interface EventSender
 	default void playerPoints(int[] points) {}
 	default void pendingNewGame() {}
 	default void deleteGame() {}
+	default void chat(PlayerSeat player, String message) {}
 }

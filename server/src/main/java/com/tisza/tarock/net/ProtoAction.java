@@ -46,6 +46,9 @@ public class ProtoAction implements Action
 			case THROW_CARDS:
 				handler.throwCards(player);
 				break;
+			case CHAT:
+				handler.chat(player, actionProto.getChat().getMessage());
+				break;
 			default:
 				System.err.println("unkown action: " + actionProto.getActionTypeCase());
 				break;

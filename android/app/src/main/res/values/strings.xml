@@ -35,6 +35,7 @@
     <string name="throw_cards">Bedob</string>
     <string name="back">Vissza</string>
     <string name="announce">Bemond</string>
+    <string name="chat_hint">Üzenet...</string>
 
     <string name="turn_bid">Licitálás</string>
     <string name="turn_call">Hívás</string>

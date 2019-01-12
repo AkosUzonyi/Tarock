@@ -85,6 +85,12 @@ public class ProtoEventSender implements EventSender
 		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setThrowCards(ActionProto.Action.ThrowCards.newBuilder()).build());
 	}
 
+	@Override
+	public void chat(PlayerSeat player, String message)
+	{
+		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setChat(ActionProto.Action.Chat.newBuilder().setMessage(message).build()).build());
+	}
+
 	@Override public void turn(PlayerSeat player)
 	{
 		Event.Turn e = Event.Turn.newBuilder()

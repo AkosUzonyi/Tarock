@@ -72,4 +72,10 @@ public class GameSessionActionHandler implements ActionHandler
 	{
 		getCurrentHandler().throwCards(player);
 	}
+
+	@Override
+	public void chat(PlayerSeat player, String message)
+	{
+		getCurrentHandler().chat(player, message);
+	}
 }

@@ -1,0 +1,11 @@
+<EditText xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="@dimen/default_padding"
+    android:padding="2dp"
+    android:imeOptions="actionSend"
+    android:inputType="textCapSentences|textMultiLine"
+    android:textSize="@dimen/game_text_size"
+    android:hint="@string/chat_hint"
+    android:background="#CCCCCC"
+/>

@@ -16,4 +16,5 @@ public interface ActionHandler
 	default void playCard(PlayerSeat player, Card card) {}
 	default void readyForNewGame(PlayerSeat player) {}
 	default void throwCards(PlayerSeat player) {}
+	void chat(PlayerSeat player, String message);
 }

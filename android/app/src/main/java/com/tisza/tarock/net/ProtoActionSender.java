@@ -69,4 +69,10 @@ public class ProtoActionSender implements ActionSender
 	{
 		doAction(Action.newBuilder().setThrowCards(Action.ThrowCards.newBuilder()).build());
 	}
+
+	@Override
+	public void chat(String message)
+	{
+		doAction(Action.newBuilder().setChat(Action.Chat.newBuilder().setMessage(message)).build());
+	}
 }

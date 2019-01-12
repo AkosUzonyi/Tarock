@@ -1,8 +1,12 @@
 package com.tisza.tarock.game.card;
 
+import com.tisza.tarock.game.*;
+import com.tisza.tarock.gui.*;
+import com.tisza.tarock.message.*;
+
 import java.util.*;
 
-public abstract class Card
+public abstract class Card implements ActionButtonItem
 {
 	private static final Collection<Card> all = new ArrayList<>();
 	private static final TarockCard[] tarockCards = new TarockCard[22];
@@ -61,6 +65,18 @@ public abstract class Card
 	private static boolean isValidId(int id)
 	{
 		return id >= 0 && id < 42;
+	}
+
+	@Override
+	public void doAction(ActionSender actionSender)
+	{
+		actionSender.call(this);
+	}
+
+	@Override
+	public String toString()
+	{
+		return ResourceMappings.cardToName.get(this);
 	}
 
 	static

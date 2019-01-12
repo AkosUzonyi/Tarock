@@ -50,9 +50,4 @@ public class TarockCard extends Card
 	{
 		return value - 1 + 20;
 	}
-
-	public String toString()
-	{
-		return "Tarock " + getValue();
-	}
 }

@@ -43,20 +43,14 @@
             />
         </LinearLayout>
 
-        <ScrollView
+        <ListView
+            android:id="@+id/available_actions_list"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.3"
-            android:scrollbars="vertical"
-            android:fillViewport="true"
-            >
-            <LinearLayout
-                android:id="@+id/available_actions"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-        </ScrollView>
+            android:divider="@null"
+            android:dividerHeight="@dimen/button_margin"
+        />
     </LinearLayout>
 
 

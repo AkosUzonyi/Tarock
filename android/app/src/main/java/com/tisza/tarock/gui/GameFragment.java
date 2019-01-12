@@ -58,7 +58,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private View messagesView;
 	private ScrollView messagesScrollView;
 	private TextView messagesTextView;
-	private LinearLayout availabeActionsView;
+	private ListView availableActionsListView;
+	private ArrayAdapter<ActionButtonItem> availableActionsAdapter;
 	private EditText messagesChatEditText;
 
 	private View ultimoView;
@@ -136,12 +137,24 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v -> getActionSender().throwCards());
 
+		availableActionsAdapter = new ArrayAdapter<ActionButtonItem>(getActivity(), R.layout.button)
+		{
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent)
+			{
+				View view = super.getView(position, convertView, parent);
+				view.setOnClickListener(v -> getItem(position).doAction(getActionSender()));
+				return view;
+			}
+		};
+
 		messagesFrame = layoutInflater.inflate(R.layout.messages, centerSpace, false);
 
 		messagesView = messagesFrame.findViewById(R.id.messages_view);
 		messagesScrollView = (ScrollView)messagesFrame.findViewById(R.id.messages_scroll);
 		messagesTextView = (TextView)messagesFrame.findViewById(R.id.messages_text_view);
-		availabeActionsView = (LinearLayout)messagesFrame.findViewById(R.id.available_actions);
+		availableActionsListView = messagesFrame.findViewById(R.id.available_actions_list);
+		availableActionsListView.setAdapter(availableActionsAdapter);
 		messagesChatEditText = messagesFrame.findViewById(R.id.messages_chat_edit_text);
 		messagesChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
 		messagesChatEditText.setOnEditorActionListener(this);
@@ -227,7 +240,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		okButton.setVisibility(View.GONE);
 		throwButton.setVisibility(View.GONE);
 		messagesTextView.setText("");
-		availabeActionsView.removeAllViews();
+		availableActionsAdapter.clear();
 		setUltimoViewVisible(false);
 
 		cardsHighlightView.setVisibility(View.GONE);
@@ -362,7 +375,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 		else if (phase == PhaseEnum.INTERRUPTED)
 		{
-			availabeActionsView.removeAllViews();
+			availableActionsAdapter.clear();
 			displayMessage(R.string.press_ok);
 		}
 
@@ -378,21 +391,16 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void availableBids(List<Integer> bids)
 	{
-		availabeActionsView.removeAllViews();
-		for (final int bid : bids)
-		{
-			Button bidButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
-			bidButton.setText(ResourceMappings.bidToName.get(bid));
-			bidButton.setOnClickListener(v -> getActionSender().bid(bid));
-			availabeActionsView.addView(bidButton);
-		}
+		availableActionsAdapter.clear();
+		for (int bid : bids)
+			availableActionsAdapter.add(new Bid(bid));
 	}
 	
 	@Override
 	public void bid(int player, int bid)
 	{
 		if (player == myID)
-			availabeActionsView.removeAllViews();
+			availableActionsAdapter.clear();
 
 		String msg = ResourceMappings.bidToName.get(bid);
 		displayPlayerActionMessage(R.string.message_bid, player, msg);
@@ -428,21 +436,15 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void availableCalls(List<Card> calls)
 	{
-		availabeActionsView.removeAllViews();
-		for (final Card card : calls)
-		{
-			Button callButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
-			callButton.setText(ResourceMappings.uppercaseCardName(card));
-			callButton.setOnClickListener(v -> getActionSender().call(card));
-			availabeActionsView.addView(callButton);
-		}
+		availableActionsAdapter.clear();
+		availableActionsAdapter.addAll(calls);
 	}
 	
 	@Override
 	public void call(int player, Card card)
 	{
 		if (player == myID)
-			availabeActionsView.removeAllViews();
+			availableActionsAdapter.clear();
 
 		displayPlayerActionMessage(R.string.message_call, player, ResourceMappings.uppercaseCardName(card));
 	}
@@ -450,7 +452,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void availableAnnouncements(List<Announcement> announcements)
 	{
-		availabeActionsView.removeAllViews();
+		availableActionsAdapter.clear();
 
 		Collections.sort(announcements);
 
@@ -459,20 +461,24 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		if (ultimoViewManager.hasAnyUltimo())
 		{
-			Button ultimoButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
-			ultimoButton.setText(ResourceMappings.roundNames[8]);
-			ultimoButton.setOnClickListener(v -> setUltimoViewVisible(true));
-			availabeActionsView.addView(ultimoButton);
+			availableActionsAdapter.add(new ActionButtonItem()
+			{
+				@Override
+				public void doAction(ActionSender actionSender)
+				{
+					setUltimoViewVisible(true);
+				}
+
+				@Override
+				public String toString()
+				{
+					return ResourceMappings.roundNames[8];
+				}
+			});
 		}
 
-		for (Announcement announcement : announcements)
-		{
-			Button announceButton = (Button)layoutInflater.inflate(R.layout.button, availabeActionsView, false);
-			announceButton.setText(announcement.getDisplayText());
-			announceButton.setOnClickListener(v -> getActionSender().announce(announcement));
-			availabeActionsView.addView(announceButton);
-		}
-		
+		availableActionsAdapter.addAll(announcements);
+
 		okButton.setVisibility(View.VISIBLE);
 		okButton.setOnClickListener(v -> getActionSender().announcePassz());
 	}
@@ -486,12 +492,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (player == myID)
 		{
 			okButton.setVisibility(View.GONE);
-			availabeActionsView.removeAllViews();
+			availableActionsAdapter.clear();
 		}
 
 		setUltimoViewVisible(false);
 
-		String msg = announcement.getDisplayText();
+		String msg = announcement.toString();
 		displayPlayerActionMessage(R.string.message_announce, player, msg);
 	}
 
@@ -501,7 +507,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (player == myID)
 		{
 			okButton.setVisibility(View.GONE);
-			availabeActionsView.removeAllViews();
+			availableActionsAdapter.clear();
 		}
 	}
 
@@ -617,7 +623,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
 			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
 
-			nameView.setText(announcementResult.getAnnouncement().getDisplayText());
+			nameView.setText(announcementResult.getAnnouncement().toString());
 			int announcerPoints = announcementResult.getPoints();
 			if (announcerPoints < 0)
 				nameView.setTextColor(getResources().getColor(R.color.announcement_failed));

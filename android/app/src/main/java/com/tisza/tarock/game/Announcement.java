@@ -2,10 +2,11 @@ package com.tisza.tarock.game;
 
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.gui.*;
+import com.tisza.tarock.message.*;
 
 import java.util.*;
 
-public class Announcement implements Comparable<Announcement>
+public class Announcement implements Comparable<Announcement>, ActionButtonItem
 {
 	private String name;
 	private int suit = -1;
@@ -22,7 +23,7 @@ public class Announcement implements Comparable<Announcement>
 		this.contraLevel = contraLevel;
 	}
 
-	public String getDisplayText()
+	public String toString()
 	{
 		SentenceBuilder builder = new SentenceBuilder();
 
@@ -44,6 +45,12 @@ public class Announcement implements Comparable<Announcement>
 		builder.appendWord(nameText);
 
 		return builder.toString();
+	}
+
+	@Override
+	public void doAction(ActionSender actionSender)
+	{
+		actionSender.announce(this);
 	}
 
 	public String getName()

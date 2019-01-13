@@ -82,8 +82,8 @@ public class Client implements MessageHandler
 				if (createGame.getUserIDCount() > 3)
 					break;
 
-				GameType gameType = Utils.gameTypeFromProto(createGame.getType());
-				DoubleRoundType doubleRoundType = Utils.doubleRoundTypeFromProto(createGame.getDoubleRoundType());
+				GameType gameType = GameType.fromID(createGame.getType());
+				DoubleRoundType doubleRoundType = DoubleRoundType.fromID(createGame.getDoubleRoundType());
 
 				List<User> users = new ArrayList<>();
 				users.add(loggedInUser);

@@ -100,28 +100,6 @@ public class Utils
 		}
 	}
 
-	public static PhaseEnum phaseFromProto(ProtoUtils.Phase pe)
-	{
-		switch (pe)
-		{
-			case BIDDING:
-				return PhaseEnum.BIDDING;
-			case CHANGING:
-				return PhaseEnum.CHANGING;
-			case CALLING:
-				return PhaseEnum.CALLING;
-			case ANNOUNCING:
-				return PhaseEnum.ANNOUNCING;
-			case GAMEPLAY:
-				return PhaseEnum.GAMEPLAY;
-			case END:
-				return PhaseEnum.END;
-			case INTERRUPTED:
-				return PhaseEnum.INTERRUPTED;
-		}
-		return null;
-	}
-
 	public static List<ProtoUtils.Card> cardListToProto(List<Card> cardList)
 	{
 		List<ProtoUtils.Card> cards = new ArrayList<>();
@@ -155,38 +133,6 @@ public class Utils
 		return protocard.build();
 	}
 
-	public static GameType gameTypeFromProto(ProtoUtils.GameType gameTypeProto)
-	{
-		switch (gameTypeProto)
-		{
-			case PASKIEVICS:
-				return GameType.PASKIEVICS;
-			case ILLUSZTRALT:
-				return GameType.ILLUSZTRALT;
-			case MAGAS:
-				return GameType.MAGAS;
-			case ZEBI:
-				return GameType.ZEBI;
-		}
-		throw new RuntimeException();
-	}
-
-	public static ProtoUtils.GameType gameTypeToProto(GameType gameTypeProto)
-	{
-		switch (gameTypeProto)
-		{
-			case PASKIEVICS:
-				return ProtoUtils.GameType.PASKIEVICS;
-			case ILLUSZTRALT:
-				return ProtoUtils.GameType.ILLUSZTRALT;
-			case MAGAS:
-				return ProtoUtils.GameType.MAGAS;
-			case ZEBI:
-				return ProtoUtils.GameType.ZEBI;
-		}
-		throw new RuntimeException();
-	}
-
 	public static User userFromProto(MainProto.User userProto)
 	{
 		String imgURL = userProto.hasImageUrl() ? userProto.getImageUrl() : null;
@@ -196,22 +142,6 @@ public class Utils
 
 	public static GameInfo gameInfoFromProto(MainProto.Game gameProto)
 	{
-		return new GameInfo(gameProto.getId(), gameTypeFromProto(gameProto.getType()), gameProto.getPlayerNameList(), gameProto.getMy());
-	}
-
-	public static ProtoUtils.DoubleRoundType doubleRoundTypeToProto(DoubleRoundType doubleRoundTypeProto)
-	{
-		switch (doubleRoundTypeProto)
-		{
-			case NONE:
-				return ProtoUtils.DoubleRoundType.NONE;
-			case PECULATING:
-				return ProtoUtils.DoubleRoundType.PECULATING;
-			case STACKING:
-				return ProtoUtils.DoubleRoundType.STACKING;
-			case MULTIPLYING:
-				return ProtoUtils.DoubleRoundType.MULTIPLYING;
-		}
-		throw new RuntimeException();
+		return new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), gameProto.getPlayerNameList(), gameProto.getMy());
 	}
 }

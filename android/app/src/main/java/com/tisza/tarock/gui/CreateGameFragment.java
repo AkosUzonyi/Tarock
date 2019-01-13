@@ -81,8 +81,8 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 
 		MainProto.CreateGame.Builder builder = MainProto.CreateGame.newBuilder();
 
-		builder.setType(Utils.gameTypeToProto(GameType.values()[gameTypeSpinner.getSelectedItemPosition()]));
-		builder.setDoubleRoundType(Utils.doubleRoundTypeToProto(DoubleRoundType.values()[doubleRoundTypeSpinner.getSelectedItemPosition()]));
+		builder.setType(GameType.values()[gameTypeSpinner.getSelectedItemPosition()].getID());
+		builder.setDoubleRoundType(DoubleRoundType.values()[doubleRoundTypeSpinner.getSelectedItemPosition()].getID());
 
 		for (User user : selectedUsers)
 		{

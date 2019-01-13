@@ -22,7 +22,7 @@ public class ProtoEvent implements Event
 		{
 			case START_GAME:
 				EventProto.Event.StartGame startGame = event.getStartGame();
-				handler.startGame(startGame.getMyId(), startGame.getPlayerNameList(), Utils.gameTypeFromProto(startGame.getGameType()), startGame.getBeginnerPlayer());
+				handler.startGame(startGame.getMyId(), startGame.getPlayerNameList(), GameType.fromID(startGame.getGameType()), startGame.getBeginnerPlayer());
 				break;
 			case TURN:
 				handler.turn(event.getTurn().getPlayer());
@@ -35,7 +35,7 @@ public class ProtoEvent implements Event
 				handler.cardsChanged(Utils.cardListFromProto(event.getPlayerCards().getCardList()));
 				break;
 			case PHASE_CHANGED:
-				handler.phaseChanged(Utils.phaseFromProto(event.getPhaseChanged().getPhase()));
+				handler.phaseChanged(PhaseEnum.fromID(event.getPhaseChanged().getPhase()));
 				break;
 			case AVAILABLE_BIDS:
 				handler.availableBids(event.getAvailableBids().getBidList());

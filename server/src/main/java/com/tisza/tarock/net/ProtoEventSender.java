@@ -115,7 +115,7 @@ public class ProtoEventSender implements EventSender
 		Event.StartGame e = Event.StartGame.newBuilder()
 				.setMyId(seat == null ? -1 : seat.asInt())
 				.addAllPlayerName(names)
-				.setGameType(Utils.gameTypeToProto(gameType))
+				.setGameType(gameType.getID())
 				.setBeginnerPlayer(beginnerPlayer.asInt())
 				.build();
 		sendEvent(Event.newBuilder().setStartGame(e).build());
@@ -132,7 +132,7 @@ public class ProtoEventSender implements EventSender
 	@Override public void phaseChanged(PhaseEnum phase)
 	{
 		Event.PhaseChanged e = Event.PhaseChanged.newBuilder()
-				.setPhase(phaseToProto(phase))
+				.setPhase(phase.getID())
 				.build();
 		sendEvent(Event.newBuilder().setPhaseChanged(e).build());
 	}

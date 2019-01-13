@@ -32,30 +32,3 @@ message Announcement
 	optional Card card = 4;
 	optional int32 round = 5;
 }
-
-enum Phase
-{
-	BIDDING = 0;
-	CHANGING = 1;
-	CALLING = 2;
-	ANNOUNCING = 3;
-	GAMEPLAY = 4;
-	END = 5;
-	INTERRUPTED = 6;
-}
-
-enum GameType
-{
-	PASKIEVICS = 0;
-	ILLUSZTRALT = 1;
-	MAGAS = 2;
-	ZEBI = 3;
-}
-
-enum DoubleRoundType
-{
-	NONE = 0;
-	PECULATING = 1;
-	STACKING = 2;
-	MULTIPLYING = 3;
-}

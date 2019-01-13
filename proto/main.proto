@@ -49,16 +49,16 @@ message FCMToken
 message Game
 {
     required int32 id = 1;
-    required GameType type = 2;
+    required string type = 2;
     repeated string player_name = 3;
     required bool my = 4;
 }
 
 message CreateGame
 {
-    required GameType type = 1;
+    required string type = 1;
     repeated string userID = 2;
-    required DoubleRoundType double_round_type = 3;
+    required string double_round_type = 3;
 }
 
 message DeleteGame

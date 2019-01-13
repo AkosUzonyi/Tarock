@@ -34,28 +34,6 @@ public class Utils
 		return protocard.build();
 	}
 
-	public static ProtoUtils.Phase phaseToProto(PhaseEnum pe)
-	{
-		switch (pe)
-		{
-			case BIDDING:
-				return ProtoUtils.Phase.BIDDING;
-			case CHANGING:
-				return ProtoUtils.Phase.CHANGING;
-			case CALLING:
-				return ProtoUtils.Phase.CALLING;
-			case ANNOUNCING:
-				return ProtoUtils.Phase.ANNOUNCING;
-			case GAMEPLAY:
-				return ProtoUtils.Phase.GAMEPLAY;
-			case END:
-				return ProtoUtils.Phase.END;
-			case INTERRUPTED:
-				return ProtoUtils.Phase.INTERRUPTED;
-		}
-		return null;
-	}
-
 	public static ProtoUtils.Announcement announcementToProto(AnnouncementContra ac)
 	{
 		AnnouncementID aid = ac.getAnnouncement().getID();
@@ -110,38 +88,6 @@ public class Utils
 		return new AnnouncementContra(Announcements.getByID(aid), announcementProto.getContraLevel());
 	}
 
-	public static GameType gameTypeFromProto(ProtoUtils.GameType gameTypeProto)
-	{
-		switch (gameTypeProto)
-		{
-			case PASKIEVICS:
-				return GameType.PASKIEVICS;
-			case ILLUSZTRALT:
-				return GameType.ILLUSZTRALT;
-			case MAGAS:
-				return GameType.MAGAS;
-			case ZEBI:
-				return GameType.ZEBI;
-		}
-		throw new RuntimeException();
-	}
-
-	public static ProtoUtils.GameType gameTypeToProto(GameType gameTypeProto)
-	{
-		switch (gameTypeProto)
-		{
-			case PASKIEVICS:
-				return ProtoUtils.GameType.PASKIEVICS;
-			case ILLUSZTRALT:
-				return ProtoUtils.GameType.ILLUSZTRALT;
-			case MAGAS:
-				return ProtoUtils.GameType.MAGAS;
-			case ZEBI:
-				return ProtoUtils.GameType.ZEBI;
-		}
-		throw new RuntimeException();
-	}
-
 	public static MainProto.User userToProto(User user, boolean isFriend)
 	{
 		MainProto.User.Builder builder = MainProto.User.newBuilder()
@@ -161,25 +107,9 @@ public class Utils
 	{
 		return MainProto.Game.newBuilder()
 				.setId(gameInfo.getId())
-				.setType(gameTypeToProto(gameInfo.getType()))
+				.setType(gameInfo.getType().getID())
 				.addAllPlayerName(gameInfo.getPlayerNames())
 				.setMy(my)
 				.build();
-	}
-
-	public static DoubleRoundType doubleRoundTypeFromProto(ProtoUtils.DoubleRoundType doubleRoundTypeProto)
-	{
-		switch (doubleRoundTypeProto)
-		{
-			case NONE:
-				return DoubleRoundType.NONE;
-			case PECULATING:
-				return DoubleRoundType.PECULATING;
-			case STACKING:
-				return DoubleRoundType.STACKING;
-			case MULTIPLYING:
-				return DoubleRoundType.MULTIPLYING;
-		}
-		throw new RuntimeException();
 	}
 }

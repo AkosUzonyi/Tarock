@@ -26,4 +26,28 @@ public enum GameType
 
 		return false;
 	}
+
+	public String getID()
+	{
+		switch (this)
+		{
+			case PASKIEVICS: return "paskievics";
+			case ILLUSZTRALT: return "illusztralt";
+			case MAGAS: return "magas";
+			case ZEBI: return "zebi";
+		}
+		throw new RuntimeException();
+	}
+
+	public static GameType fromID(String id)
+	{
+		switch (id)
+		{
+			case "paskievics": return PASKIEVICS;
+			case "illusztralt": return ILLUSZTRALT;
+			case "magas": return MAGAS;
+			case "zebi": return ZEBI;
+		}
+		throw new IllegalArgumentException();
+	}
 }

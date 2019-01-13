@@ -32,7 +32,7 @@ message Event
 	{
 		required int32 my_id = 1;
 		repeated string player_name = 2;
-		required GameType game_type = 3;
+		required string game_type = 3;
 		required int32 beginner_player = 4;
 	}
 	message PlayerAction
@@ -55,7 +55,7 @@ message Event
 	}
 	message PhaseChanged
 	{
-		required Phase phase = 1;
+		required string phase = 1;
 	}
 	message AvailableBids
 	{

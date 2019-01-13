@@ -193,7 +193,7 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 			return suit - other.suit;
 
 		if (hasCard() && other.hasCard() && !card.equals(other.card))
-			return card.getID() - other.card.getID();
+			return card.compareTo(other.card);
 
 		if (hasRound() && other.hasRound() && round != other.round)
 			return (round - other.round) * (name.equals("ultimo") ? -1 : 1);

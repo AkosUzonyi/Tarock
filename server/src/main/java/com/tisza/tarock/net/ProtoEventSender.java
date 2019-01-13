@@ -64,13 +64,13 @@ public class ProtoEventSender implements EventSender
 	@Override
 	public void call(PlayerSeat player, Card card)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setCall(ActionProto.Action.Call.newBuilder().setCard(Utils.cardToProto(card))).build());
+		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setCall(ActionProto.Action.Call.newBuilder().setCard(card.getID())).build());
 	}
 
 	@Override
 	public void playCard(PlayerSeat player, Card card)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setPlayCard(ActionProto.Action.PlayCard.newBuilder().setCard(Utils.cardToProto(card))).build());
+		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setPlayCard(ActionProto.Action.PlayCard.newBuilder().setCard(card.getID())).build());
 	}
 
 	@Override
@@ -124,7 +124,8 @@ public class ProtoEventSender implements EventSender
 	@Override public void playerCards(PlayerCards cards)
 	{
 		Event.PlayerCards e = Event.PlayerCards.newBuilder()
-				.addAllCard(cards.getCards().stream().map(Utils::cardToProto).collect(Collectors.toList()))
+				.addAllCard(cards.getCards().stream().map(Card::getID).collect(Collectors.toList()))
+				.setCanBeThrown(cards.canBeThrown())
 				.build();
 		sendEvent(Event.newBuilder().setPlayerCards(e).build());
 	}
@@ -148,7 +149,7 @@ public class ProtoEventSender implements EventSender
 	@Override public void availabeCalls(Collection<Card> cards)
 	{
 		Event.AvailableCalls e = Event.AvailableCalls.newBuilder()
-				.addAllCard(cards.stream().map(Utils::cardToProto).collect(Collectors.toList()))
+				.addAllCard(cards.stream().map(Card::getID).collect(Collectors.toList()))
 				.build();
 		sendEvent(Event.newBuilder().setAvailableCalls(e).build());
 	}

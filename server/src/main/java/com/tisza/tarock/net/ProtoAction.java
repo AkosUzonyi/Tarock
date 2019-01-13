@@ -1,6 +1,7 @@
 package com.tisza.tarock.net;
 
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 
@@ -26,10 +27,10 @@ public class ProtoAction implements Action
 				handler.bid(player, actionProto.getBid().getBid());
 				break;
 			case CHANGE:
-				handler.change(player, actionProto.getChange().getCardList().stream().map(Utils::cardFromProto).collect(Collectors.toList()));
+				handler.change(player, actionProto.getChange().getCardList().stream().map(Card::fromId).collect(Collectors.toList()));
 				break;
 			case CALL:
-				handler.call(player, Utils.cardFromProto(actionProto.getCall().getCard()));
+				handler.call(player, Card.fromId(actionProto.getCall().getCard()));
 				break;
 			case ANNOUNCE:
 				handler.announce(player, Utils.announcementFromProto(actionProto.getAnnounce().getAnnouncement()));
@@ -38,7 +39,7 @@ public class ProtoAction implements Action
 				handler.announcePassz(player);
 				break;
 			case PLAY_CARD:
-				handler.playCard(player, Utils.cardFromProto(actionProto.getPlayCard().getCard()));
+				handler.playCard(player, Card.fromId((actionProto.getPlayCard().getCard())));
 				break;
 			case READY_FOR_NEW_GAME:
 				handler.readyForNewGame(player);

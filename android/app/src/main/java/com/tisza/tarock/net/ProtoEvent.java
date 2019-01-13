@@ -1,6 +1,7 @@
 package com.tisza.tarock.net;
 
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 
@@ -13,6 +14,16 @@ public class ProtoEvent implements Event
 	public ProtoEvent(EventProto.Event event)
 	{
 		this.event = event;
+	}
+
+	private static List<Card> cardIDsToCards(List<String> cardIDs)
+	{
+		List<Card> cards = new ArrayList<>();
+		for (String cardID : cardIDs)
+		{
+			cards.add(Card.fromId(cardID));
+		}
+		return cards;
 	}
 
 	@Override
@@ -32,7 +43,7 @@ public class ProtoEvent implements Event
 				handler.playerTeamInfo(playerTeamInfo.getPlayer(), playerTeamInfo.getIsCaller() ? Team.CALLER : Team.OPPONENT);
 				break;
 			case PLAYER_CARDS:
-				handler.cardsChanged(Utils.cardListFromProto(event.getPlayerCards().getCardList()));
+				handler.cardsChanged(cardIDsToCards(event.getPlayerCards().getCardList()), event.getPlayerCards().getCanBeThrown());
 				break;
 			case PHASE_CHANGED:
 				handler.phaseChanged(PhaseEnum.fromID(event.getPhaseChanged().getPhase()));
@@ -41,7 +52,7 @@ public class ProtoEvent implements Event
 				handler.availableBids(event.getAvailableBids().getBidList());
 				break;
 			case AVAILABLE_CALLS:
-				handler.availableCalls(Utils.cardListFromProto(event.getAvailableCalls().getCardList()));
+				handler.availableCalls(cardIDsToCards(event.getAvailableCalls().getCardList()));
 				break;
 			case CHANGE_DONE:
 				handler.changeDone(event.getChangeDone().getPlayer());
@@ -97,7 +108,7 @@ public class ProtoEvent implements Event
 				handler.bid(player, action.getBid().getBid());
 				break;
 			case CALL:
-				handler.call(player, Utils.cardFromProto(action.getCall().getCard()));
+				handler.call(player, Card.fromId(action.getCall().getCard()));
 				break;
 			case CHANGE:
 				System.err.println("change action should not be broadcasted");
@@ -109,7 +120,7 @@ public class ProtoEvent implements Event
 				handler.announcePassz(player);
 				break;
 			case PLAY_CARD:
-				handler.cardPlayed(player, Utils.cardFromProto(action.getPlayCard().getCard()));
+				handler.cardPlayed(player, Card.fromId(action.getPlayCard().getCard()));
 				break;
 			case THROW_CARDS:
 				handler.cardsThrown(player, null);

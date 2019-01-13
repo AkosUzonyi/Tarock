@@ -1,7 +1,6 @@
 package com.tisza.tarock.game.card;
 
 import com.tisza.tarock.game.card.filter.*;
-import com.tisza.tarock.game.card.sort.*;
 
 import java.util.*;
 
@@ -67,11 +66,6 @@ public class PlayerCards
 	public List<Card> getCards()
 	{
 		return cards;
-	}
-	
-	public void sort()
-	{
-		Collections.sort(cards, new IDSort());
 	}
 
 	public List<Card> getPlaceableCards(Card firstCard)

@@ -4,31 +4,11 @@ package com.tisza.tarock;
 option java_package = "com.tisza.tarock.proto";
 option java_outer_classname = "ProtoUtils";
 
-message Card
-{
-	oneof card_type
-	{
-		SuitCard suit_card = 1;
-		TarockCard tarock_card = 2;
-	}
-}
-
-message SuitCard
-{
-	required int32 suit = 1;
-	required int32 value = 2;
-}
-
-message TarockCard
-{
-	required int32 value = 1;
-}
-
 message Announcement
 {
 	required string name = 1;
 	required int32 contra_level = 2;
 	optional int32 suit = 3;
-	optional Card card = 4;
+	optional string card = 4;
 	optional int32 round = 5;
 }

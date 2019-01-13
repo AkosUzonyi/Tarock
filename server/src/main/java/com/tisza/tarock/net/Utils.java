@@ -11,29 +11,6 @@ import com.tisza.tarock.server.*;
 
 public class Utils
 {
-	public static ProtoUtils.Card cardToProto(Card c)
-	{
-		ProtoUtils.Card.Builder protocard = ProtoUtils.Card.newBuilder();
-
-		if (c instanceof SuitCard)
-		{
-			protocard.setSuitCard(ProtoUtils.SuitCard.newBuilder()
-					.setSuit(((SuitCard)c).getSuit())
-					.setValue(((SuitCard)c).getValue()));
-		}
-		else if (c instanceof TarockCard)
-		{
-			protocard.setTarockCard(ProtoUtils.TarockCard.newBuilder()
-					.setValue(((TarockCard)c).getValue()));
-		}
-		else
-		{
-			throw new Error();
-		}
-
-		return protocard.build();
-	}
-
 	public static ProtoUtils.Announcement announcementToProto(AnnouncementContra ac)
 	{
 		AnnouncementID aid = ac.getAnnouncement().getID();
@@ -44,7 +21,7 @@ public class Utils
 		if (aid.hasSuit())
 			builder.setSuit(aid.getSuit());
 		if (aid.hasCard())
-			builder.setCard(cardToProto(aid.getCard()));
+			builder.setCard(aid.getCard().getID());
 		if (aid.hasRound())
 			builder.setRound(aid.getRound());
 
@@ -60,28 +37,13 @@ public class Utils
 				.build();
 	}
 
-	public static Card cardFromProto(ProtoUtils.Card cardProto)
-	{
-		switch (cardProto.getCardTypeCase())
-		{
-			case SUIT_CARD:
-				ProtoUtils.SuitCard suitCardProto = cardProto.getSuitCard();
-				return Card.getSuitCard(suitCardProto.getSuit(), suitCardProto.getValue());
-			case TAROCK_CARD:
-				ProtoUtils.TarockCard tarockCardProto = cardProto.getTarockCard();
-				return Card.getTarockCard(tarockCardProto.getValue());
-			default:
-				throw new IllegalArgumentException();
-		}
-	}
-
 	public static AnnouncementContra announcementFromProto(ProtoUtils.Announcement announcementProto)
 	{
 		AnnouncementID aid = new AnnouncementID(announcementProto.getName());
 		if (announcementProto.hasSuit())
 			aid.setSuit(announcementProto.getSuit());
 		if (announcementProto.hasCard())
-			aid.setCard(cardFromProto(announcementProto.getCard()));
+			aid.setCard(Card.fromId(announcementProto.getCard()));
 		if (announcementProto.hasRound())
 			aid.setRound(announcementProto.getRound());
 

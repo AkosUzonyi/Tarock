@@ -4,30 +4,30 @@ import java.util.*;
 
 public abstract class Card
 {
-	private static final Collection<Card> all = new ArrayList<>();
+	private static final Map<String, Card> idToCard = new HashMap<>();
 	private static final TarockCard[] tarockCards = new TarockCard[22];
 	private static final SuitCard[][] suitCards = new SuitCard[4][5];
 
 	public abstract int getPoints();
-	public abstract int getID();
+	public abstract String getID();
 	public abstract boolean isHonor();
 	public abstract boolean doesBeat(Card otherCard);
 
 	public int hashCode()
 	{
-		return getID();
+		return getID().hashCode();
 	}
 
 	public boolean equals(Object o)
 	{
 		if (!(o instanceof Card)) return false;
 		Card other = (Card)o;
-		return getID() == other.getID();
+		return getID().equals(other.getID());
 	}
 
 	public static Collection<Card> getAll()
 	{
-		return all;
+		return idToCard.values();
 	}
 
 	public static TarockCard getTarockCard(int value)
@@ -40,27 +40,12 @@ public abstract class Card
 		return suitCards[suit][value - 1];
 	}
 
-	public static Card fromId(int id)
+	public static Card fromId(String id)
 	{
-		if (!isValidId(id))
+		if (!idToCard.containsKey(id))
 			throw new IllegalArgumentException();
-		
-		if (id < 20)
-		{
-			int suit = id / 5;
-			int value = id % 5 + 1;
-			return getSuitCard(suit, value);
-		}
-		else
-		{
-			int value = id - 20 + 1;
-			return getTarockCard(value);
-		}
-	}
-	
-	private static boolean isValidId(int id)
-	{
-		return id >= 0 && id < 42;
+
+		return idToCard.get(id);
 	}
 
 	static
@@ -71,14 +56,14 @@ public abstract class Card
 			{
 				SuitCard suitCard = new SuitCard(s, v);
 				suitCards[s][v - 1] = suitCard;
-				all.add(suitCard);
+				idToCard.put(suitCard.getID(), suitCard);
 			}
 		}
 		for (int v = 1; v <= 22; v++)
 		{
 			TarockCard tarockCard = new TarockCard(v);
 			tarockCards[v - 1] = tarockCard;
-			all.add(tarockCard);
+			idToCard.put(tarockCard.getID(), tarockCard);
 		}
 	}
 }

@@ -270,7 +270,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	private List<String> playerNames;
-	protected PlayerCards myCards;
+	protected List<Card> myCards;
 	private int myID = -1;
 	private Team myTeam;
 	private GameType gameType;
@@ -333,10 +333,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	@Override
-	public void cardsChanged(List<Card> cards)
+	public void cardsChanged(List<Card> cards, boolean canBeThrown)
 	{
-		myCards = new PlayerCards(cards);
+		myCards = cards;
 		arrangeCards();
+		throwButton.setVisibility(canBeThrown ? View.VISIBLE : View.GONE);
 	}
 
 	@Override
@@ -347,9 +348,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (phase == PhaseEnum.BIDDING)
 		{
 			showCenterView(MESSAGES_VIEW_INDEX);
-
-			if (myCards != null && myCards.canBeThrown())
-				throwButton.setVisibility(View.VISIBLE);
 		}
 		else if (phase == PhaseEnum.CHANGING)
 		{
@@ -383,7 +381,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	@Override
-	public void cardsThrown(int player, PlayerCards thrownCards)
+	public void cardsThrown(int player, List<Card> thrownCards)
 	{
 		displayPlayerActionMessage(R.string.message_generic, player, getString(R.string.cards_thrown));
 	}
@@ -527,7 +525,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		
 		if (myCards != null && player == myID)
 		{
-			myCards.removeCard(card);
+			myCards.remove(card);
 
 			View myCardView = cardToViewMapping.remove(card);
 			if (myCardView != null)
@@ -552,7 +550,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 						myCardsView0.removeView(myCardView);
 						myCardsView1.removeView(myCardView);
 
-						if (myCards.getCards().size() == CARDS_PER_ROW)
+						if (myCards.size() == CARDS_PER_ROW)
 						{
 							arrangeCards();
 						}
@@ -580,9 +578,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 			okButton.setVisibility(View.VISIBLE);
 			okButton.setOnClickListener(v -> getActionSender().change(cardsToSkart));
-
-			if (myCards != null && myCards.canBeThrown())
-				throwButton.setVisibility(View.VISIBLE);
 		}
 		else
 		{
@@ -695,13 +690,13 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (myCards == null)
 			return;
 		
-		myCards.sort();
+		Collections.sort(myCards);
 		
-		int cardCount = myCards.getCards().size();
+		int cardCount = myCards.size();
 		int cardsUp = cardCount <= CARDS_PER_ROW ? 0 : cardCount / 2;
 		for (int i = 0; i < cardCount; i++)
 		{
-			final Card card = myCards.getCards().get(i);
+			final Card card = myCards.get(i);
 			
 			ImageView cardView = new ImageView(getActivity());
 			cardView.setAdjustViewBounds(true);

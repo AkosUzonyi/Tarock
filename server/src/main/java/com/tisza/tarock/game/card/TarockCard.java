@@ -46,9 +46,9 @@ public class TarockCard extends Card
 	}
 
 	@Override
-	public int getID()
+	public String getID()
 	{
-		return value - 1 + 20;
+		return "t" + value;
 	}
 
 	public String toString()

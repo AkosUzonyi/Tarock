@@ -18,11 +18,11 @@ public interface EventHandler
 	default void bid(int player, int bid) {}
 	default void call(int player, Card card) {}
 	default void cardsTaken(int winnerPlayer) {}
-	default void cardsThrown(int player, PlayerCards thrownCards) {}
+	default void cardsThrown(int player, List<Card> thrownCards) {}
 	default void changeDone(int player) {}
 	default void phaseChanged(PhaseEnum phase) {}
 	default void cardPlayed(int player, Card card) {}
-	default void cardsChanged(List<Card> pc) {}
+	default void cardsChanged(List<Card> pc, boolean canBeThrown) {}
 	default void skartTarock(int[] counts) {}
 	default void turn(int player) {}
 	default void playerTeamInfo(int player, Team team) {}

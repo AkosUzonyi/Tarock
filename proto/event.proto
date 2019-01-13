@@ -51,7 +51,8 @@ message Event
 	}
 	message PlayerCards
 	{
-		repeated Card card = 1;
+		repeated string card = 1;
+		required bool can_be_thrown = 2;
 	}
 	message PhaseChanged
 	{
@@ -63,7 +64,7 @@ message Event
 	}
 	message AvailableCalls
 	{
-		repeated Card card = 1;
+		repeated string card = 1;
 	}
 	message ChangeDone
 	{

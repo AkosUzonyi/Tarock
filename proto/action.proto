@@ -26,11 +26,11 @@ message Action
 	}
 	message Call
 	{
-		required Card card = 1;
+		required string card = 1;
 	}
 	message Change
 	{
-		repeated Card card = 1;
+		repeated string card = 1;
 	}
 	message Announce
 	{
@@ -41,7 +41,7 @@ message Action
 	}
 	message PlayCard
 	{
-		required Card card = 1;
+		required string card = 1;
 	}
 	message ReadyForNewGame
 	{

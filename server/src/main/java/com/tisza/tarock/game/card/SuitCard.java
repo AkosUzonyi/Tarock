@@ -53,9 +53,9 @@ public class SuitCard extends Card
 	}
 
 	@Override
-	public int getID()
+	public String getID()
 	{
-		return suit * 5 + value - 1;
+		return "abcd".substring(suit, suit + 1) + value;
 	}
 
 	public String toString()

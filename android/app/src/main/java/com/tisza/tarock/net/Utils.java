@@ -42,7 +42,7 @@ public class Utils
 				.setContraLevel(announcement.getContraLevel());
 
 		if (announcement.hasCard())
-			builder.setCard(cardToProto(announcement.getCard()));
+			builder.setCard(announcement.getCard().getID());
 		if (announcement.hasRound())
 			builder.setRound(announcement.getRound());
 		if (announcement.hasSuit())
@@ -68,69 +68,11 @@ public class Utils
 		if (announcementProto.hasSuit())
 			announcement.setSuit(announcementProto.getSuit());
 		if (announcementProto.hasCard())
-			announcement.setCard(cardFromProto(announcementProto.getCard()));
+			announcement.setCard(Card.fromId(announcementProto.getCard()));
 		if (announcementProto.hasRound())
 			announcement.setRound(announcementProto.getRound());
 
 		return announcement;
-	}
-
-	public static List<Card> cardListFromProto(List<ProtoUtils.Card> cardProtoList)
-	{
-		List<Card> cards = new ArrayList<>();
-		for (ProtoUtils.Card card : cardProtoList)
-		{
-			cards.add(Utils.cardFromProto(card));
-		}
-		return cards;
-	}
-
-	public static Card cardFromProto(ProtoUtils.Card cardProto)
-	{
-		switch (cardProto.getCardTypeCase())
-		{
-			case SUIT_CARD:
-				ProtoUtils.SuitCard suitCardProto = cardProto.getSuitCard();
-				return Card.getSuitCard(suitCardProto.getSuit(), suitCardProto.getValue());
-			case TAROCK_CARD:
-				ProtoUtils.TarockCard tarockCardProto = cardProto.getTarockCard();
-				return Card.getTarockCard(tarockCardProto.getValue());
-			default:
-				throw new IllegalArgumentException();
-		}
-	}
-
-	public static List<ProtoUtils.Card> cardListToProto(List<Card> cardList)
-	{
-		List<ProtoUtils.Card> cards = new ArrayList<>();
-		for (Card card : cardList)
-		{
-			cards.add(Utils.cardToProto(card));
-		}
-		return cards;
-	}
-
-	public static ProtoUtils.Card cardToProto(Card c)
-	{
-		ProtoUtils.Card.Builder protocard = ProtoUtils.Card.newBuilder();
-
-		if (c instanceof SuitCard)
-		{
-			protocard.setSuitCard(ProtoUtils.SuitCard.newBuilder()
-					.setSuit(((SuitCard)c).getSuit())
-					.setValue(((SuitCard)c).getValue()));
-		}
-		else if (c instanceof TarockCard)
-		{
-			protocard.setTarockCard(ProtoUtils.TarockCard.newBuilder()
-					.setValue(((TarockCard)c).getValue()));
-		}
-		else
-		{
-			throw new Error();
-		}
-
-		return protocard.build();
 	}
 
 	public static User userFromProto(MainProto.User userProto)

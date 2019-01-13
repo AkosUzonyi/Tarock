@@ -43,19 +43,22 @@ public class ProtoActionSender implements ActionSender
 	@Override
 	public void call(Card card)
 	{
-		doAction(Action.newBuilder().setCall(Action.Call.newBuilder().setCard(Utils.cardToProto(card))).build());
+		doAction(Action.newBuilder().setCall(Action.Call.newBuilder().setCard(card.getID())).build());
 	}
 
 	@Override
 	public void change(List<Card> cards)
 	{
-		doAction(Action.newBuilder().setChange(Action.Change.newBuilder().addAllCard(Utils.cardListToProto(cards))).build());
+		Action.Change.Builder changeAction = Action.Change.newBuilder();
+		for (Card card : cards)
+			changeAction.addCard(card.getID());
+		doAction(Action.newBuilder().setChange(changeAction).build());
 	}
 
 	@Override
 	public void playCard(Card card)
 	{
-		doAction(Action.newBuilder().setPlayCard(Action.PlayCard.newBuilder().setCard(Utils.cardToProto(card))).build());
+		doAction(Action.newBuilder().setPlayCard(Action.PlayCard.newBuilder().setCard(card.getID())).build());
 	}
 
 	@Override

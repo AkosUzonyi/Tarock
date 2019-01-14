@@ -195,16 +195,8 @@ public class GameHistory
 		{
 			JSONObject obj = new JSONObject();
 			obj.put("player", player);
-
-			AnnouncementID aid = announcement.getAnnouncement().getID();
-			obj.put("announcement", aid.getName());
+			obj.put("announcement", announcement.getAnnouncement().getID());
 			obj.put("contraLevel", announcement.getContraLevel());
-			if (aid.hasSuit())
-				obj.put("suit", aid.getSuit());
-			if (aid.hasCard())
-				obj.put("card", cardToJSON(aid.getCard()));
-			if (aid.hasRound())
-				obj.put("round", aid.getRound());
 
 			return obj;
 		}

@@ -25,7 +25,7 @@ public class ProtoActionSender implements ActionSender
 	@Override
 	public void announce(Announcement announcement)
 	{
-		doAction(Action.newBuilder().setAnnounce(Action.Announce.newBuilder().setAnnouncement(Utils.announcementToProto(announcement))).build());
+		doAction(Action.newBuilder().setAnnounce(Action.Announce.newBuilder().setAnnouncement(announcement.getID())).build());
 	}
 
 	@Override

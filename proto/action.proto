@@ -4,8 +4,6 @@ package com.tisza.tarock;
 option java_package = "com.tisza.tarock.proto";
 option java_outer_classname = "ActionProto";
 
-import "utils.proto";
-
 message Action
 {
 	oneof action_type
@@ -34,7 +32,7 @@ message Action
 	}
 	message Announce
 	{
-		required Announcement announcement = 1;
+		required string announcement = 1;
 	}
 	message AnnouncePassz
 	{

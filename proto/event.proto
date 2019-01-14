@@ -5,7 +5,6 @@ option java_package = "com.tisza.tarock.proto";
 option java_outer_classname = "EventProto";
 
 import "action.proto";
-import "utils.proto";
 
 message Event
 {
@@ -76,7 +75,7 @@ message Event
 	}
 	message AvailableAnnouncements
 	{
-		repeated Announcement announcement = 1;
+		repeated string announcement = 1;
 	}
 	message CardsTaken
 	{
@@ -92,7 +91,7 @@ message Event
 
 		message AnnouncementResult
 		{
-			required Announcement announcement = 1;
+			required string announcement = 1;
 			required sint32 points = 2;
 			required bool caller_team = 3;
 		}

@@ -92,8 +92,8 @@ public class ResourceMappings
 		}
 		catch (Resources.NotFoundException e)
 		{
-			System.err.println(name);
-			return name;
+			System.err.println("no string resource found for announcement: " + name);
+			return null;
 		}
 	}
 }

@@ -8,9 +8,9 @@ public class Trull extends TakeCards
 	Trull(){}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("trull");
+		return "trull";
 	}
 
 	@Override

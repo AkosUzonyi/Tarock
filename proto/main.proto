@@ -6,7 +6,6 @@ option java_outer_classname = "MainProto";
 
 import "action.proto";
 import "event.proto";
-import "utils.proto";
 
 message Message
 {

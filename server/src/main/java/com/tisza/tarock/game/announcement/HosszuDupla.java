@@ -11,9 +11,9 @@ public class HosszuDupla extends AnnouncementWrapper
 	}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("hosszudupla");
+		return "hosszudupla";
 	}
 
 	@Override

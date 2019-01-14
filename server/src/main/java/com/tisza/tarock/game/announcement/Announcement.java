@@ -5,7 +5,7 @@ import com.tisza.tarock.game.phase.*;
 
 public interface Announcement
 {
-	public AnnouncementID getID();
+	public String getID();
 	public int calculatePoints(GameState gameState, Team team);
 	public GameType getGameType();
 	public boolean canBeAnnounced(IAnnouncing announcing);

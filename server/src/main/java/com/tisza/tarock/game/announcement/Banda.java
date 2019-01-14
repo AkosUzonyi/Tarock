@@ -16,9 +16,9 @@ public class Banda extends TakeCards
 	}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("banda").setSuit(suit);
+		return "banda" + "S" + SuitCard.suitToString(suit);
 	}
 
 	public int getSuit()

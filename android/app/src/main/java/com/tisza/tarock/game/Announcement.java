@@ -8,19 +8,103 @@ import java.util.*;
 
 public class Announcement implements Comparable<Announcement>, ActionButtonItem
 {
-	private String name;
-	private int suit = -1;
-	private Card card = null;
-	private int round = -1;
-	private int contraLevel;
+	private final String id;
+	private final String name;
+	private final int contraLevel;
+	private final int suit;
+	private final Card card;
+	private final int round;
 
-	public Announcement(String name, int contraLevel)
+	private Announcement(String id, String name, int suit, Card card, int round, int contraLevel)
 	{
-		if (name == null)
+		this.id = id;
+		this.name = name;
+		this.suit = suit;
+		this.card = card;
+		this.round = round;
+		this.contraLevel = contraLevel;
+	}
+
+	public String getID()
+	{
+		return id;
+	}
+
+	public static Announcement fromID(String id)
+	{
+		if (id == null)
 			throw new NullPointerException();
 
-		this.name = name;
-		this.contraLevel = contraLevel;
+		String name;
+		int contraLevel;
+		int suit = -1;
+		Card card = null;
+		int round = -1;
+
+		int pos = 0;
+
+		char contraLevelChar = id.charAt(pos++);
+		if (contraLevelChar == 's')
+			contraLevel = -1;
+		else
+			if (Character.isDigit(contraLevelChar))
+				contraLevel = Character.digit(contraLevelChar, 10);
+			else
+				throw new IllegalArgumentException();
+
+		name = id.substring(pos, pos = nextUppercase(id, pos));
+
+		while (pos < id.length())
+		{
+			char c = id.charAt(pos++);
+			String substr = id.substring(pos, pos = nextUppercase(id, pos));
+
+			switch (c)
+			{
+				case 'S':
+					suit = parseSuit(substr);
+					break;
+				case 'C':
+					card = Card.fromId(substr);
+					break;
+				case 'R':
+					try
+					{
+						round = Integer.parseInt(substr);
+					}
+					catch (NumberFormatException e)
+					{
+						throw new IllegalArgumentException();
+					}
+					break;
+				default:
+					throw new IllegalArgumentException();
+			}
+		}
+
+		return new Announcement(id, name, suit, card, round, contraLevel);
+	}
+
+	private static int parseSuit(String str)
+	{
+		if (str.length() != 1)
+			throw new IllegalArgumentException();
+
+		char c = str.charAt(0);
+
+		if (c < 'a' || c > 'd')
+			throw new IllegalArgumentException();
+
+		return c - 'a';
+	}
+
+	private static int nextUppercase(String str, int from)
+	{
+		int i;
+		for (i = from; i < str.length(); i++)
+			if (Character.isUpperCase(str.charAt(i)))
+				break;
+		return i;
 	}
 
 	public String toString()
@@ -78,12 +162,6 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		return suit;
 	}
 
-	public Announcement setSuit(int suit)
-	{
-		this.suit = suit;
-		return this;
-	}
-
 	public boolean hasCard()
 	{
 		return card != null;
@@ -94,12 +172,6 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		return card;
 	}
 
-	public Announcement setCard(Card card)
-	{
-		this.card = card;
-		return this;
-	}
-
 	public boolean hasRound()
 	{
 		return round >= 0;
@@ -108,12 +180,6 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 	public int getRound()
 	{
 		return round;
-	}
-
-	public Announcement setRound(int round)
-	{
-		this.round = round;
-		return this;
 	}
 
 	@Override

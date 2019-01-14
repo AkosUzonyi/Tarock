@@ -8,9 +8,9 @@ public class Zaroparos extends LastRounds
 	Zaroparos(){}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("zaroparos");
+		return "zaroparos";
 	}
 
 	@Override

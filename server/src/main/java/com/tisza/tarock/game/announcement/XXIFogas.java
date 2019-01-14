@@ -9,9 +9,9 @@ public class XXIFogas extends AnnouncementBase
 	XXIFogas(){}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("xxifogas");
+		return "xxifogas";
 	}
 
 	@Override

@@ -114,7 +114,7 @@ public class ProtoEvent implements Event
 				System.err.println("change action should not be broadcasted");
 				break;
 			case ANNOUNCE:
-				handler.announce(player, Utils.announcementFromProto(action.getAnnounce().getAnnouncement()));
+				handler.announce(player, Announcement.fromID(action.getAnnounce().getAnnouncement()));
 				break;
 			case ANNOUCE_PASSZ:
 				handler.announcePassz(player);

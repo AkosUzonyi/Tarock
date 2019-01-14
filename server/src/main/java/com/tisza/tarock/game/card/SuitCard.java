@@ -55,11 +55,19 @@ public class SuitCard extends Card
 	@Override
 	public String getID()
 	{
-		return "abcd".substring(suit, suit + 1) + value;
+		return suitToString(suit) + value;
 	}
 
 	public String toString()
 	{
 		return "Suit " + getSuit() + "-" + getValue();
+	}
+
+	public static String suitToString(int suit)
+	{
+		if (suit < 0 || suit >= 4)
+			throw new IllegalArgumentException();
+
+		return String.valueOf((char)('a' + suit));
 	}
 }

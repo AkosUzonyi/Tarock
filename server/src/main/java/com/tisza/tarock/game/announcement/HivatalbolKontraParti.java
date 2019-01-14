@@ -10,9 +10,9 @@ public class HivatalbolKontraParti extends AnnouncementWrapper
 	}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("hkp");
+		return "hkp";
 	}
 
 	@Override

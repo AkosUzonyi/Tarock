@@ -6,9 +6,9 @@ import com.tisza.tarock.game.phase.*;
 public class Jatek extends AnnouncementBase
 {
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("jatek");
+		return "jatek";
 	}
 
 	@Override

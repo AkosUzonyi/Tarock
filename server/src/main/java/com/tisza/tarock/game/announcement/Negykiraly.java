@@ -8,9 +8,9 @@ public class Negykiraly extends TakeCards
 	Negykiraly(){}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("negykiraly");
+		return "negykiraly";
 	}
 
 	@Override

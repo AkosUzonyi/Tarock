@@ -16,9 +16,9 @@ public abstract class Ultimo extends RoundAnnouncement
 	}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("ultimo").setCard(cardToTakeWith).setRound(roundIndex);
+		return "ultimo" + "C" + cardToTakeWith.getID() + "R" + roundIndex;
 	}
 
 	public final Card getCard()

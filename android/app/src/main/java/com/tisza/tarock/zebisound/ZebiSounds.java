@@ -33,8 +33,8 @@ public class ZebiSounds
 		zebiSounds.add(new SoloInvitGondolkodik(context));
 		zebiSounds.add(new TarokkFekszik(context));
 		zebiSounds.add(new PikkKiralyIndul(context));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("banda", 1).setSuit(2), R.raw.kontrapikkbandadisznohus));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("banda", 1).setSuit(3), R.raw.kontratreffbanda));
+		zebiSounds.add(new AnnouncementSound(context, Announcement.fromID("1bandaSc"), R.raw.kontrapikkbandadisznohus));
+		zebiSounds.add(new AnnouncementSound(context, Announcement.fromID("1bandaSd"), R.raw.kontratreffbanda));
 		zebiSounds.add(new Jobbfelni(context));
 		zebiSounds.add(new Kontranemkontra(context));
 		zebiSounds.add(new Skizultimo(context));
@@ -51,20 +51,20 @@ public class ZebiSounds
 		zebiSounds.add(new TarokkKi(context, 16, R.raw.tizenhattarokkkiultimegvan));
 		zebiSounds.add(new Urlap(context));
 		zebiSounds.add(new CatchXIX(context));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("jatek", 1), R.raw.kontraparti));
+		zebiSounds.add(new AnnouncementSound(context, Announcement.fromID("1jatek"), R.raw.kontraparti));
 		zebiSounds.add(new Indul(context));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("ketkiralyok", 0), R.raw.ketkiralyok));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("dupla", 0), R.raw.duplaelfogjabukni));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("kiralyultimo", 0), R.raw.kkkkkiralyultimo, R.raw.haromtarokkoskiralyulti));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("hosszudupla", 0), R.raw.hosszuduplaengedem, R.raw.haromtarokkoskiralyulti));
+		zebiSounds.add(new AnnouncementSound(context, Announcement.fromID("0ketkiralyok"), R.raw.ketkiralyok));
+		zebiSounds.add(new AnnouncementSound(context, Announcement.fromID("0dupla"), R.raw.duplaelfogjabukni));
+		zebiSounds.add(new AnnouncementSound(context, Announcement.fromID("0kiralyultimo"), R.raw.kkkkkiralyultimo, R.raw.haromtarokkoskiralyulti));
+		zebiSounds.add(new AnnouncementSound(context, Announcement.fromID("0hosszudupla"), R.raw.hosszuduplaengedem, R.raw.haromtarokkoskiralyulti));
 		zebiSounds.add(new CardSound(context, Card.getSuitCard(1, 5), R.raw.karokiraly));
 		zebiSounds.add(new PasszSzolot(context));
 		zebiSounds.add(new SlowPlay(context));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("banda", 0).setSuit(1), R.raw.karobandita));
-		zebiSounds.add(new AnnouncementSound(context, new Announcement("banda", 0).setSuit(2), R.raw.pikkbanda));
+		zebiSounds.add(new AnnouncementSound(context, Announcement.fromID("0bandaSb"), R.raw.karobandita));
+		zebiSounds.add(new AnnouncementSound(context, Announcement.fromID("0bandaSc"), R.raw.pikkbanda));
 		zebiSounds.add(new CardSound(context, Card.getSuitCard(2, 4), R.raw.pikkdama));
 		zebiSounds.add(new CardSound(context, Card.getTarockCard(12), R.raw.tizenkettesezaz));
-		zebiSounds.add(new AnnouncementSuccecfulSound(context, new Announcement("volat", -1), R.raw.volatszep));
+		zebiSounds.add(new AnnouncementSuccecfulSound(context, Announcement.fromID("svolat"), R.raw.volatszep));
 	}
 
 	public Collection<ZebiSound> getZebiSounds()

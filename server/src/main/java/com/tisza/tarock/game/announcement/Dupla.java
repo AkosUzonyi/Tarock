@@ -6,9 +6,9 @@ import com.tisza.tarock.game.phase.*;
 public class Dupla extends AnnouncementBase
 {
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("dupla");
+		return "dupla";
 	}
 
 	@Override

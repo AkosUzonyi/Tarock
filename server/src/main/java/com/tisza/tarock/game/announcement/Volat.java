@@ -8,9 +8,9 @@ public class Volat extends TakeCards
 	Volat(){}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("volat");
+		return "volat";
 	}
 
 	@Override

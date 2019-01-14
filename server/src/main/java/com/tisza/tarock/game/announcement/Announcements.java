@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Announcements
 {
-	private static final Map<AnnouncementID, Announcement> idmap = new HashMap<>();
+	private static final Map<String, Announcement> idmap = new HashMap<>();
 	private static final List<Announcement> list = new ArrayList<>();
 
 	private static final List<RoundAnnouncement> roundAnnouncements = new ArrayList<>();
@@ -44,7 +44,7 @@ public class Announcements
 		return roundAnnouncements;
 	}
 
-	public static Announcement getByID(AnnouncementID id)
+	public static Announcement getByID(String id)
 	{
 		return idmap.get(id);
 	}

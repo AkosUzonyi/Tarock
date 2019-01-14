@@ -16,9 +16,9 @@ public class KezbeVacak extends RoundAnnouncement
 	}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID("kezbevacak").setRound(roundIndex);
+		return "kezbevacak" + "R" + roundIndex;
 	}
 
 	public int getRound()

@@ -18,9 +18,9 @@ public class Szincsalad extends LastRounds
 	}
 
 	@Override
-	public AnnouncementID getID()
+	public String getID()
 	{
-		return new AnnouncementID(kis ? "kisszincsalad" : "nagyszincsalad").setSuit(suit);
+		return (kis ? "kisszincsalad" : "nagyszincsalad") + "S" + SuitCard.suitToString(suit);
 	}
 
 	public final int getSuit()

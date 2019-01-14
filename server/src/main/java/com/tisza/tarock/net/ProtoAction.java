@@ -1,6 +1,7 @@
 package com.tisza.tarock.net;
 
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
@@ -33,7 +34,7 @@ public class ProtoAction implements Action
 				handler.call(player, Card.fromId(actionProto.getCall().getCard()));
 				break;
 			case ANNOUNCE:
-				handler.announce(player, Utils.announcementFromProto(actionProto.getAnnounce().getAnnouncement()));
+				handler.announce(player, AnnouncementContra.fromID(actionProto.getAnnounce().getAnnouncement()));
 				break;
 			case ANNOUCE_PASSZ:
 				handler.announcePassz(player);

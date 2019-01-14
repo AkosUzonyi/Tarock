@@ -46,7 +46,7 @@ public class ProtoEventSender implements EventSender
 	@Override
 	public void announce(PlayerSeat player, AnnouncementContra announcement)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setAnnounce(ActionProto.Action.Announce.newBuilder().setAnnouncement(Utils.announcementToProto(announcement))).build());
+		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setAnnounce(ActionProto.Action.Announce.newBuilder().setAnnouncement(announcement.getID())).build());
 	}
 
 	@Override
@@ -177,7 +177,7 @@ public class ProtoEventSender implements EventSender
 	@Override public void availableAnnouncements(List<AnnouncementContra> announcements)
 	{
 		Event.AvailableAnnouncements e = Event.AvailableAnnouncements.newBuilder()
-				.addAllAnnouncement(announcements.stream().map(Utils::announcementToProto).collect(Collectors.toList()))
+				.addAllAnnouncement(announcements.stream().map(AnnouncementContra::getID).collect(Collectors.toList()))
 				.build();
 		sendEvent(Event.newBuilder().setAvailableAnnouncements(e).build());
 	}

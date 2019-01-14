@@ -16,6 +16,19 @@ public class AnnouncementContra implements Comparable<AnnouncementContra>
 		this.contraLevel = contraLevel;
 	}
 
+	public String getID()
+	{
+		return (isAnnounced() ? contraLevel : "s") + announcement.getID();
+	}
+
+	public static AnnouncementContra fromID(String id)
+	{
+		Announcement announcement = Announcements.getByID(id.substring(1));
+		int contraLevel = id.charAt(0) == 's' ? -1 : Integer.parseInt(id.substring(0, 1));
+
+		return new AnnouncementContra(announcement, contraLevel);
+	}
+
 	public Announcement getAnnouncement()
 	{
 		return announcement;

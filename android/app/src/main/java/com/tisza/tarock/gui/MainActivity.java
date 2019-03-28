@@ -33,6 +33,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	private ProgressDialog progressDialog;
 
 	private boolean loggedIn = false;
+	private SSLSocketFactory socketFactory;
 	private ProtoConnection connection;
 	private Collection<EventHandler> eventHandlers = new ArrayList<>();
 
@@ -58,6 +59,25 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 		gameListAdapter = new GameListAdapter(this, this);
 		availableUsersAdapter = new AvailableUsersAdapter(this);
+
+		try
+		{
+			SSLSessionCache sslSessionCache = new SSLSessionCache(this);
+			SSLCertificateSocketFactory sslCertificateSocketFactory = (SSLCertificateSocketFactory)SSLCertificateSocketFactory.getDefault(0, sslSessionCache);
+
+			String trustStoreFile = "truststore.bks";
+			KeyStore ks = KeyStore.getInstance("BKS");
+			ks.load(getAssets().open(trustStoreFile), "000000".toCharArray());
+			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			tmf.init(ks);
+
+			sslCertificateSocketFactory.setTrustManagers(tmf.getTrustManagers());
+			socketFactory = sslCertificateSocketFactory;
+		}
+		catch (Exception e)
+		{
+			throw new RuntimeException(e);
+		}
 
 		LoginFragment loginFragment = new LoginFragment();
 		getFragmentManager().beginTransaction()
@@ -374,23 +394,8 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		{
 			try
 			{
-				String trustStoreFile = "truststore.bks";
-
-				KeyStore ks = KeyStore.getInstance("BKS");
-				ks.load(getAssets().open(trustStoreFile), "000000".toCharArray());
-
-				KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-				kmf.init(ks, "000000".toCharArray());
-
-				TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-				tmf.init(ks);
-
-				SSLContext sc = SSLContext.getInstance("TLS");
-				sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
-
-				Socket socket = sc.getSocketFactory().createSocket();
+				Socket socket = socketFactory.createSocket();
 				socket.connect(new InetSocketAddress(BuildConfig.SERVER_HOSTNAME, BuildConfig.SERVER_PORT), 1000);
-
 				ProtoConnection protoConnection = new ProtoConnection(socket, uiThreadExecutor);
 				return protoConnection;
 			}

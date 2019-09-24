@@ -76,8 +76,8 @@ public class FacebookUserManager
 		try
 		{
 			JSONObject appJSON = downloadJSONFromURL("https://graph.facebook.com/app/?access_token=" + accessToken);
-			if (!appJSON.getString("id").equals(APP_ID))
-				return null;
+			/*if (!appJSON.getString("id").equals(APP_ID))
+				return null;*/
 
 			JSONObject userJSON = downloadJSONFromURL("https://graph.facebook.com/me/?fields=id,name,picture,friends&access_token=" + accessToken);
 			String id = userJSON.getString("id");

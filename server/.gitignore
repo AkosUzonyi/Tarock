@@ -6,6 +6,10 @@
 /build
 /captures
 .externalNativeBuild
+/.idea/caches
+/.idea/gradle.xml
+/.idea/assetWizardSettings.xml
+/.idea/modules.xml
 
 /out
 /src/main/lite

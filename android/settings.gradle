@@ -1,4 +1,4 @@
-rootProject.name = 'tarock_android'
+rootProject.name = 'tarock-android'
 
 include ':app'
 

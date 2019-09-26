@@ -1,9 +1,9 @@
 package com.tisza.tarock.gui;
 
 import android.content.*;
-import android.support.v4.view.*;
+import androidx.core.view.*;
 import android.view.*;
-import com.tisza.tarock.*;
+import androidx.viewpager.widget.PagerAdapter;
 
 public class CenterViewPagerAdapter extends PagerAdapter
 {

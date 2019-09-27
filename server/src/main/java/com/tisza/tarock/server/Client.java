@@ -97,7 +97,7 @@ public class Client implements MessageHandler
 				List<String> playerNames = server.getGameSessionManager().getPlayerNames(gameID);
 				for (User user : users)
 				{
-					for (String fcmToken : user.getFCMTokens())
+					for (String fcmToken : new ArrayList<>(user.getFCMTokens()))
 					{
 						try
 						{

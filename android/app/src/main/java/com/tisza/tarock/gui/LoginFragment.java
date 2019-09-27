@@ -46,7 +46,7 @@ public class LoginFragment extends MainActivityFragment
 		accessTokenTracker.startTracking();
 
 		LoginButton loginButton = view.findViewById(R.id.fb_login_button);
-		loginButton.setReadPermissions("public_profile, user_friends");
+		loginButton.setPermissions("public_profile, user_friends");
 
 		return view;
 	}

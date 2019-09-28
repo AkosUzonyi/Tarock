@@ -34,7 +34,7 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 	{
 		super.onCreate(savedInstanceState);
 
-		connectionViewModel = ViewModelProviders.of(getMainActivity()).get(ConnectionViewModel.class);
+		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 
 		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setCreateGame(builder).build());
 
-		getMainActivity().getSupportFragmentManager().popBackStack();
+		getActivity().getSupportFragmentManager().popBackStack();
 	}
 
 	@Override

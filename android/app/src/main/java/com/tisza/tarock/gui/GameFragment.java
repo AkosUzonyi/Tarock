@@ -335,7 +335,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				return false;
 			doAction(Action.chat(text.toString()));
 			text.clear();
-			InputMethodManager imm = (InputMethodManager)getMainActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+			InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
 			return true;
 		}

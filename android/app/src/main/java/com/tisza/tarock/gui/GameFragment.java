@@ -11,8 +11,10 @@ import android.view.animation.*;
 import android.view.animation.Animation.*;
 import android.view.inputmethod.*;
 import android.widget.*;
+import androidx.lifecycle.*;
 import androidx.viewpager.widget.ViewPager;
 import com.tisza.tarock.*;
+import com.tisza.tarock.R;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
@@ -81,6 +83,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private TextView[] statisticsPointsValueViews = new TextView[4];
 	private EditText statisticsChatEditText;
 
+	private ConnectionViewModel connectionViewModel;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -88,6 +92,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		zebiSounds = new ZebiSounds(getActivity());
+		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -209,10 +214,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		for (ZebiSound zebiSound : zebiSounds.getZebiSounds())
 		{
-			getMainActivity().addEventHandler(zebiSound);
+			connectionViewModel.addEventHandler(zebiSound);
 		}
-		getMainActivity().addEventHandler(this);
-		getMainActivity().getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
+		connectionViewModel.addEventHandler(this);
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
 				.setGameId(getArguments().getInt("gameID"))
 				.build())
 				.build());
@@ -227,10 +232,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		for (ZebiSound zebiSound : zebiSounds.getZebiSounds())
 		{
-			getMainActivity().removeEventHandler(zebiSound);
+			connectionViewModel.removeEventHandler(zebiSound);
 		}
-		getMainActivity().removeEventHandler(this);
-		getMainActivity().getConnection().sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
+		connectionViewModel.removeEventHandler(this);
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
 				.build())
 				.build());
 	}
@@ -311,7 +316,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private void doAction(Action action)
 	{
-		getMainActivity().doAction(action);
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setAction(action.getId()).build());
 	}
 
 	@Override

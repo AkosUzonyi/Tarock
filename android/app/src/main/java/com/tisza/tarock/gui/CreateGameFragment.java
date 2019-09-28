@@ -4,7 +4,8 @@ import android.content.*;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
-import com.tisza.tarock.*;
+import androidx.lifecycle.*;
+import com.tisza.tarock.R;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.proto.*;
 
@@ -26,6 +27,16 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 	private Button createButton;
 	private Collection<User> selectedUsers;
 
+	private ConnectionViewModel connectionViewModel;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+		connectionViewModel = ViewModelProviders.of(getMainActivity()).get(ConnectionViewModel.class);
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -40,8 +51,9 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 
 		usersSelected(Collections.EMPTY_LIST);
 
-		availableUsersAdapter = getMainActivity().getAvailableUsersAdapter();
+		availableUsersAdapter = new AvailableUsersAdapter(getActivity());
 		availableUsersAdapter.setUsersSelectedListener(this);
+		connectionViewModel.getUsers().observe(this, availableUsersAdapter::setUsers);
 		ListView availableUsersView = view.findViewById(R.id.available_users);
 		availableUsersView.addHeaderView(inflater.inflate(R.layout.users_header, availableUsersView, false));
 		availableUsersView.setAdapter(availableUsersAdapter);
@@ -88,7 +100,7 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 			builder.addUserID(user.getId());
 		}
 
-		getMainActivity().getConnection().sendMessage(MainProto.Message.newBuilder().setCreateGame(builder).build());
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setCreateGame(builder).build());
 
 		getMainActivity().getSupportFragmentManager().popBackStack();
 	}

@@ -3,6 +3,7 @@ package com.tisza.tarock.gui;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
+import androidx.lifecycle.*;
 import com.facebook.*;
 import com.facebook.login.widget.*;
 import com.google.firebase.iid.*;
@@ -13,6 +14,7 @@ import java.io.*;
 public class LoginFragment extends MainActivityFragment
 {
 	private Button playButton;
+	private ConnectionViewModel connectionViewModel;
 
 	private final AccessTokenTracker accessTokenTracker = new AccessTokenTracker()
 	{
@@ -24,15 +26,18 @@ public class LoginFragment extends MainActivityFragment
 
 			if (currentAccessToken == null)
 			{
-				getMainActivity().disconnect();
+				connectionViewModel.disconnect();
 				new FCMDeleteTokenAsyncTask().execute();
 			}
 		}
 	};
 
+	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
 	}
 
 	@Override
@@ -40,8 +45,8 @@ public class LoginFragment extends MainActivityFragment
 	{
 		View view = inflater.inflate(R.layout.login, container, false);
 
-		playButton = view.findViewById(R.id.play_button);
-		playButton.setOnClickListener(v -> getMainActivity().onPlayButtonClicked());
+		playButton = view.findViewById(com.tisza.tarock.R.id.play_button);
+		playButton.setOnClickListener(v -> connectionViewModel.login());
 		playButton.setEnabled(AccessToken.getCurrentAccessToken() != null);
 		accessTokenTracker.startTracking();
 

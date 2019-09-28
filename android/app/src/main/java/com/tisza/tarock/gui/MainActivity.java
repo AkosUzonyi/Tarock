@@ -7,44 +7,22 @@ import android.os.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.*;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.*;
 import com.facebook.*;
-import com.google.firebase.iid.*;
-import com.tisza.tarock.BuildConfig;
 import com.tisza.tarock.R;
-import com.tisza.tarock.game.*;
-import com.tisza.tarock.message.*;
-import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
 
-import javax.net.ssl.*;
-import java.io.*;
-import java.net.*;
-import java.security.*;
-import java.util.*;
-import java.util.concurrent.*;
-
-public class MainActivity extends AppCompatActivity implements MessageHandler, GameListAdapter.GameAdapterListener
+public class MainActivity extends AppCompatActivity implements GameListAdapter.GameAdapterListener
 {
 	private static final int DISCONNECT_DELAY_SEC = 40;
 
-	private Executor uiThreadExecutor;
-
 	private CallbackManager callbackManager;
 
-	private boolean started = false;
-
+	private ConnectionViewModel connectionViewModel;
 	private ProgressDialog progressDialog;
 
-	private boolean loggedIn = false;
-	private SSLSocketFactory socketFactory;
-	private ProtoConnection connection;
-	private Collection<EventHandler> eventHandlers = new ArrayList<>();
-
-	private GameListAdapter gameListAdapter;
-	private AvailableUsersAdapter availableUsersAdapter;
-
 	private Handler handler;
-	private final Runnable disconnectRunnable = this::disconnect;
+	private Runnable disconnectRunnable;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -55,32 +33,12 @@ public class MainActivity extends AppCompatActivity implements MessageHandler, G
 		callbackManager = CallbackManager.Factory.create();
 
 		ResourceMappings.init(this);
-		uiThreadExecutor = new UIThreadExecutor();
-		setContentView(com.tisza.tarock.R.layout.main);
+		setContentView(R.layout.main);
+		connectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
+		connectionViewModel.getConnectionState().observe(this, this::connectionStateChanged);
 		progressDialog = new ProgressDialog(this);
 		handler = new Handler();
-
-		gameListAdapter = new GameListAdapter(this, this);
-		availableUsersAdapter = new AvailableUsersAdapter(this);
-
-		try
-		{
-			SSLSessionCache sslSessionCache = new SSLSessionCache(this);
-			SSLCertificateSocketFactory sslCertificateSocketFactory = (SSLCertificateSocketFactory)SSLCertificateSocketFactory.getDefault(0, sslSessionCache);
-
-			String trustStoreFile = "truststore.bks";
-			KeyStore ks = KeyStore.getInstance("BKS");
-			ks.load(getAssets().open(trustStoreFile), "000000".toCharArray());
-			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			tmf.init(ks);
-
-			sslCertificateSocketFactory.setTrustManagers(tmf.getTrustManagers());
-			socketFactory = sslCertificateSocketFactory;
-		}
-		catch (Exception e)
-		{
-			throw new RuntimeException(e);
-		}
+		disconnectRunnable = connectionViewModel::disconnect;
 
 		LoginFragment loginFragment = new LoginFragment();
 		getSupportFragmentManager().beginTransaction()
@@ -88,7 +46,34 @@ public class MainActivity extends AppCompatActivity implements MessageHandler, G
 				.commit();
 
 		if (getIntent().hasExtra("game_id"))
-			onPlayButtonClicked();
+			connectionViewModel.login();
+	}
+
+	private void connectionStateChanged(ConnectionViewModel.ConnectionState connectionState)
+	{
+		switch (connectionState)
+		{
+			case DISCONNECTED:
+			case CONNECTED:
+				popBackToLoginScreen();
+				break;
+			case CONNECTING:
+				progressDialog.setMessage(getResources().getString(R.string.connecting));
+				progressDialog.setOnDismissListener(x -> connectionViewModel.disconnect());
+				progressDialog.show();
+				break;
+			case LOGGING_IN:
+				progressDialog.setMessage(getResources().getString(R.string.logging_in));
+				progressDialog.show();
+				break;
+			case LOGGED_IN:
+				onSuccessfulLogin();
+				break;
+			case DISCONNECTED_OUTDATED:
+				popBackToLoginScreen();
+				requireUpdate();
+				break;
+		}
 	}
 
 	@Override
@@ -98,46 +83,9 @@ public class MainActivity extends AppCompatActivity implements MessageHandler, G
 		callbackManager.onActivityResult(requestCode, resultCode, data);
 	}
 
-	public void onPlayButtonClicked()
-	{
-		if (connection != null)
-		{
-			login();
-			return;
-		}
-
-		new ConnectAsyncTask().execute();
-	}
-
-	private void login()
-	{
-		if (loggedIn)
-		{
-			onSuccesfulLogin();
-			return;
-		}
-
-		connection.sendMessage(MainProto.Message.newBuilder().setLogin(MainProto.Login.newBuilder()
-				.setFacebookToken(AccessToken.getCurrentAccessToken().getToken())
-				.build())
-				.build());
-
-		progressDialog.setMessage(getResources().getString(R.string.logging_in));
-		progressDialog.show();
-	}
-
-	private void onSuccesfulLogin()
+	private void onSuccessfulLogin()
 	{
 		popBackToLoginScreen();
-
-		FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult ->
-		{
-			if (loggedIn)
-				connection.sendMessage(MainProto.Message.newBuilder().setFcmToken(MainProto.FCMToken.newBuilder()
-						.setFcmToken(instanceIdResult.getToken())
-						.setActive(true)
-						.build()).build());
-		});
 
 		GameListFragment gameListFragment = new GameListFragment();
 
@@ -185,161 +133,34 @@ public class MainActivity extends AppCompatActivity implements MessageHandler, G
 	@Override
 	public void deleteGame(int gameID)
 	{
-		connection.sendMessage(MainProto.Message.newBuilder().setDeleteGame(MainProto.DeleteGame.newBuilder()
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setDeleteGame(MainProto.DeleteGame.newBuilder()
 				.setGameId(gameID))
 				.build());
-	}
-
-	public void doAction(Action action)
-	{
-		if (connection != null)
-			connection.sendMessage(MainProto.Message.newBuilder().setAction(action.getId()).build());
-	}
-
-	public void disconnect()
-	{
-		if (connection != null)
-			new DisconnectAsyncTask().execute();
 	}
 
 	@Override
 	protected void onStart()
 	{
 		super.onStart();
-		started = true;
 		handler.removeCallbacks(disconnectRunnable);
-
-		if (connection == null)
-			popBackToLoginScreen();
 	}
 
 	@Override
 	protected void onStop()
 	{
 		super.onStop();
-		started = false;
 		handler.postDelayed(disconnectRunnable,  DISCONNECT_DELAY_SEC * 1000);
-	}
-
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
-		disconnect();
-	}
-
-	@Override
-	public void handleMessage(MainProto.Message message)
-	{
-		switch (message.getMessageTypeCase())
-		{
-			case LOGIN:
-				loggedIn = message.getLogin().hasFacebookToken();
-
-				if (loggedIn)
-				{
-					onSuccesfulLogin();
-				}
-				else
-				{
-					popBackToLoginScreen();
-				}
-
-				if (progressDialog.isShowing())
-					progressDialog.dismiss();
-
-				break;
-
-			case EVENT:
-				for (EventHandler eventHandler : eventHandlers)
-					new ProtoEvent(message.getEvent()).handle(eventHandler);
-
-				break;
-
-			case SERVER_STATUS:
-				List<GameInfo> games = new ArrayList<>();
-				for (MainProto.Game gameProto : message.getServerStatus().getAvailableGameList())
-				{
-					games.add(Utils.gameInfoFromProto(gameProto));
-				}
-
-				List<User> users = new ArrayList<>();
-				for (MainProto.User userProto : message.getServerStatus().getAvailableUserList())
-				{
-					users.add(Utils.userFromProto(userProto));
-				}
-
-				gameListAdapter.setGames(games);
-				availableUsersAdapter.setUsers(users);
-
-				break;
-
-			default:
-				System.err.println("unhandled message type: " + message.getMessageTypeCase());
-				break;
-		}
-	}
-
-	@Override
-	public void connectionError(ErrorType errorType)
-	{
-		switch (errorType)
-		{
-			case INVALID_HELLO:
-				break;
-			case VERSION_MISMATCH:
-				requireUpdate();
-				break;
-		}
-
-		if (progressDialog.isShowing())
-			progressDialog.dismiss();
-
-		connection = null;
 	}
 
 	private void popBackToLoginScreen()
 	{
+		progressDialog.setOnDismissListener(null);
+		if (progressDialog.isShowing())
+			progressDialog.dismiss();
+
 		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.fragment_container, new LoginFragment(), "login")
 				.commit();
-	}
-
-	@Override
-	public void connectionClosed()
-	{
-		connection = null;
-		loggedIn = false;
-
-		if (!started)
-			return;
-
-		popBackToLoginScreen();
-	}
-
-	public ProtoConnection getConnection()
-	{
-		return connection;
-	}
-
-	public void addEventHandler(EventHandler eventHandler)
-	{
-		eventHandlers.add(eventHandler);
-	}
-
-	public void removeEventHandler(EventHandler eventHandler)
-	{
-		eventHandlers.remove(eventHandler);
-	}
-
-	public GameListAdapter getGameListAdapter()
-	{
-		return gameListAdapter;
-	}
-
-	public AvailableUsersAdapter getAvailableUsersAdapter()
-	{
-		return availableUsersAdapter;
 	}
 
 	private void requireUpdate()
@@ -353,76 +174,5 @@ public class MainActivity extends AppCompatActivity implements MessageHandler, G
 						finish())
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.show();
-	}
-
-	private class DisconnectAsyncTask extends AsyncTask<Void, Void, Void>
-	{
-		@Override
-		protected Void doInBackground(Void... voids)
-		{
-			if (connection != null)
-			{
-				try
-				{
-					connection.close();
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
-				}
-				connection = null;
-			}
-
-			return null;
-		}
-	}
-
-	private class ConnectAsyncTask extends AsyncTask<Void, Void, ProtoConnection> implements DialogInterface.OnDismissListener
-	{
-		@Override
-		public void onDismiss(DialogInterface dialog)
-		{
-			cancel(true);
-		}
-
-		@Override
-		protected void onPreExecute()
-		{
-			progressDialog.setMessage(getResources().getString(R.string.connecting));
-			progressDialog.setOnDismissListener(this);
-			progressDialog.show();
-		}
-
-		protected ProtoConnection doInBackground(Void... voids)
-		{
-			try
-			{
-				Socket socket = socketFactory.createSocket();
-				socket.connect(new InetSocketAddress(BuildConfig.SERVER_HOSTNAME, BuildConfig.SERVER_PORT), 1000);
-				ProtoConnection protoConnection = new ProtoConnection(socket, uiThreadExecutor);
-				return protoConnection;
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return null;
-			}
-		}
-
-		protected void onPostExecute(ProtoConnection resultProtoConnection)
-		{
-			progressDialog.setOnDismissListener(null);
-
-			if (progressDialog.isShowing())
-				progressDialog.dismiss();
-
-			if (resultProtoConnection == null)
-				return;
-
-			connection = resultProtoConnection;
-			connection.addMessageHandler(MainActivity.this);
-			connection.start();
-			login();
-		}
 	}
 }

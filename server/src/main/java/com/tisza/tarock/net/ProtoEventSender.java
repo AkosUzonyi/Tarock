@@ -15,20 +15,15 @@ import static com.tisza.tarock.proto.EventProto.*;
 public class ProtoEventSender implements EventSender
 {
 	private ProtoConnection connection;
-	private boolean startEventSent = false;
 
 	public void useConnection(ProtoConnection connection)
 	{
 		this.connection = connection;
-		startEventSent = false;
 	}
 
 	private void sendEvent(Event event)
 	{
 		if (connection == null)
-			return;
-
-		if (!startEventSent)
 			return;
 
 		connection.sendMessage(MainProto.Message.newBuilder().setEvent(event).build());
@@ -110,8 +105,6 @@ public class ProtoEventSender implements EventSender
 
 	@Override public void startGame(PlayerSeat seat, List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
 	{
-		startEventSent = true;
-
 		Event.StartGame e = Event.StartGame.newBuilder()
 				.setMyId(seat == null ? -1 : seat.asInt())
 				.addAllPlayerName(names)

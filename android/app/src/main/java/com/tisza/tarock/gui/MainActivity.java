@@ -5,7 +5,6 @@ import android.content.*;
 import android.net.*;
 import android.os.*;
 import com.facebook.*;
-import com.google.android.gms.tasks.*;
 import com.google.firebase.iid.*;
 import com.tisza.tarock.BuildConfig;
 import com.tisza.tarock.R;
@@ -35,7 +34,6 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 	private boolean loggedIn = false;
 	private ProtoConnection connection;
-	private ActionSender actionSender;
 	private Collection<EventHandler> eventHandlers = new ArrayList<>();
 
 	private GameListAdapter gameListAdapter;
@@ -169,6 +167,12 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				.build());
 	}
 
+	public void doAction(Action action)
+	{
+		if (connection != null)
+			connection.sendMessage(MainProto.Message.newBuilder().setAction(action.getId()).build());
+	}
+
 	public void disconnect()
 	{
 		if (connection != null)
@@ -282,18 +286,12 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	public void connectionClosed()
 	{
 		connection = null;
-		actionSender = null;
 		loggedIn = false;
 
 		if (!started)
 			return;
 
 		popBackToLoginScreen();
-	}
-
-	public ActionSender getActionSender()
-	{
-		return actionSender;
 	}
 
 	public ProtoConnection getConnection()
@@ -416,7 +414,6 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 			connection = resultProtoConnection;
 			connection.addMessageHandler(MainActivity.this);
 			connection.start();
-			actionSender = new ProtoActionSender(connection);
 			login();
 		}
 	}

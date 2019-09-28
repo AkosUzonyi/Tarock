@@ -4,7 +4,6 @@ import android.animation.*;
 import android.content.*;
 import android.graphics.*;
 import android.os.*;
-import androidx.core.view.*;
 import android.text.*;
 import android.view.*;
 import android.view.View.*;
@@ -91,11 +90,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		zebiSounds = new ZebiSounds(getActivity());
 	}
 
-	private ActionSender getActionSender()
-	{
-		return getMainActivity().getActionSender();
-	}
-
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View contentView = inflater.inflate(R.layout.game, container, false);
@@ -136,7 +130,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
-		throwButton.setOnClickListener(v -> getActionSender().throwCards());
+		throwButton.setOnClickListener(v -> doAction(Action.throwCards()));
 
 		availableActionsAdapter = new ArrayAdapter<ActionButtonItem>(getActivity(), R.layout.button)
 		{
@@ -144,7 +138,13 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			public View getView(int position, View convertView, ViewGroup parent)
 			{
 				View view = super.getView(position, convertView, parent);
-				view.setOnClickListener(v -> getItem(position).doAction(getActionSender()));
+				view.setOnClickListener(v ->
+				{
+					ActionButtonItem actionButton = getItem(position);
+					if (actionButton.getAction() != null)
+						doAction(actionButton.getAction());
+					actionButton.onClicked();
+				});
 				return view;
 			}
 		};
@@ -173,7 +173,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			if (announcement == null)
 				throw new RuntimeException();
 
-			getActionSender().announce(announcement);
+			doAction(Action.announce(announcement));
 		});
 
 		gameplayView = (RelativeLayout)layoutInflater.inflate(R.layout.gameplay, centerSpace, false);
@@ -309,6 +309,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		messages = "";
 	}
 
+	private void doAction(Action action)
+	{
+		getMainActivity().doAction(action);
+	}
+
 	@Override
 	public void chat(int player, String message)
 	{
@@ -323,7 +328,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			Editable text = ((EditText)view).getText();
 			if (text.length() == 0)
 				return false;
-			getActionSender().chat(text.toString());
+			doAction(Action.chat(text.toString()));
 			text.clear();
 			InputMethodManager imm = (InputMethodManager)getMainActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -382,7 +387,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	@Override
-	public void cardsThrown(int player, List<Card> thrownCards)
+	public void throwCards(int player)
 	{
 		displayPlayerActionMessage(R.string.message_generic, player, getString(R.string.cards_thrown));
 	}
@@ -463,9 +468,15 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			availableActionsAdapter.add(new ActionButtonItem()
 			{
 				@Override
-				public void doAction(ActionSender actionSender)
+				public void onClicked()
 				{
 					setUltimoViewVisible(true);
+				}
+
+				@Override
+				public Action getAction()
+				{
+					return null;
 				}
 
 				@Override
@@ -482,7 +493,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		okButton.setOnClickListener(v ->
 		{
 			if (ultimoView.getVisibility() == View.GONE)
-				getActionSender().announcePassz();
+				doAction(Action.announcePassz());
 		});
 	}
 
@@ -515,7 +526,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	@Override
-	public void cardPlayed(int player, Card card)
+	public void playCard(int player, Card card)
 	{
 		int pos = getPositionFromPlayerID(player);
 		final PlayedCardView playedCardView = playedCardViews[pos];
@@ -578,7 +589,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			skarting = true;
 
 			okButton.setVisibility(View.VISIBLE);
-			okButton.setOnClickListener(v -> getActionSender().change(cardsToSkart));
+			okButton.setOnClickListener(v -> doAction(Action.skart(cardsToSkart)));
 		}
 		else
 		{
@@ -657,7 +668,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (!isKibic())
 		{
 			okButton.setVisibility(View.VISIBLE);
-			okButton.setOnClickListener(v -> getActionSender().readyForNewGame());
+			okButton.setOnClickListener(v -> doAction(Action.readyForNewGame()));
 		}
 
 		higlightAllName();
@@ -741,7 +752,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 					}
 					else if (gamePhase == PhaseEnum.GAMEPLAY && !playedCardViews[0].isTaking())
 					{
-						getActionSender().playCard(card);
+						doAction(Action.play(card));
 					}
 				}
 			});

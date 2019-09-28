@@ -1,8 +1,8 @@
 package com.tisza.tarock.net;
 
-import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.phase.*;
+import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 
@@ -34,11 +34,11 @@ public class ProtoEventSender implements EventSender
 		connection.sendMessage(MainProto.Message.newBuilder().setEvent(event).build());
 	}
 
-	private void sendPlayerActionEvent(PlayerSeat player, ActionProto.Action action)
+	private void sendPlayerActionEvent(PlayerSeat player, Action action)
 	{
 		Event.PlayerAction event = Event.PlayerAction.newBuilder()
 				.setPlayer(player.asInt())
-				.setAction(action)
+				.setAction(action.getId())
 				.build();
 		sendEvent(Event.newBuilder().setPlayerAction(event).build());
 	}
@@ -46,49 +46,49 @@ public class ProtoEventSender implements EventSender
 	@Override
 	public void announce(PlayerSeat player, AnnouncementContra announcement)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setAnnounce(ActionProto.Action.Announce.newBuilder().setAnnouncement(announcement.getID())).build());
+		sendPlayerActionEvent(player, Action.announce(player, announcement));
 	}
 
 	@Override
 	public void announcePassz(PlayerSeat player)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setAnnoucePassz(ActionProto.Action.AnnouncePassz.newBuilder()).build());
+		sendPlayerActionEvent(player, Action.announcePassz(player));
 	}
 
 	@Override
 	public void bid(PlayerSeat player, int bid)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setBid(ActionProto.Action.Bid.newBuilder().setBid(bid)).build());
+		sendPlayerActionEvent(player, Action.bid(player, bid));
 	}
 
 	@Override
 	public void call(PlayerSeat player, Card card)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setCall(ActionProto.Action.Call.newBuilder().setCard(card.getID())).build());
+		sendPlayerActionEvent(player, Action.call(player, card));
 	}
 
 	@Override
 	public void playCard(PlayerSeat player, Card card)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setPlayCard(ActionProto.Action.PlayCard.newBuilder().setCard(card.getID())).build());
+		sendPlayerActionEvent(player, Action.play(player, card));
 	}
 
 	@Override
 	public void readyForNewGame(PlayerSeat player)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setReadyForNewGame(ActionProto.Action.ReadyForNewGame.newBuilder()).build());
+		sendPlayerActionEvent(player, Action.readyForNewGame(player));
 	}
 
 	@Override
 	public void throwCards(PlayerSeat player)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setThrowCards(ActionProto.Action.ThrowCards.newBuilder()).build());
+		sendPlayerActionEvent(player, Action.throwCards(player));
 	}
 
 	@Override
 	public void chat(PlayerSeat player, String message)
 	{
-		sendPlayerActionEvent(player, ActionProto.Action.newBuilder().setChat(ActionProto.Action.Chat.newBuilder().setMessage(message).build()).build());
+		sendPlayerActionEvent(player, Action.chat(player, message));
 	}
 
 	@Override public void turn(PlayerSeat player)

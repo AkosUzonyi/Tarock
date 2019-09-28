@@ -53,9 +53,9 @@ public abstract class Card implements ActionButtonItem, Comparable<Card>
 	}
 
 	@Override
-	public void doAction(ActionSender actionSender)
+	public Action getAction()
 	{
-		actionSender.call(this);
+		return Action.call(this);
 	}
 
 	@Override

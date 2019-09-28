@@ -132,9 +132,9 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 	}
 
 	@Override
-	public void doAction(ActionSender actionSender)
+	public Action getAction()
 	{
-		actionSender.announce(this);
+		return Action.announce(this);
 	}
 
 	public String getName()

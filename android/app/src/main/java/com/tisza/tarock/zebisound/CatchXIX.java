@@ -23,7 +23,7 @@ class CatchXIX extends ZebiSound
 	}
 
 	@Override
-	public void cardPlayed(int player, Card playedCard)
+	public void playCard(int player, Card playedCard)
 	{
 		if (playedCard instanceof TarockCard)
 		{

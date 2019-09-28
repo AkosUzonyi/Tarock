@@ -7,6 +7,7 @@ import com.tisza.tarock.proto.EventProto.Event;
 import com.tisza.tarock.proto.*;
 
 import java.util.*;
+import java.util.function.*;
 
 public class Utils
 {
@@ -45,5 +46,13 @@ public class Utils
 	public static GameInfo gameInfoFromProto(MainProto.Game gameProto)
 	{
 		return new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), gameProto.getPlayerNameList(), gameProto.getMy());
+	}
+
+	public static <T0, T1> List<T1> map(List<T0> list, Function<T0, T1> f)
+	{
+		List<T1> result = new ArrayList<>();
+		for (T0 t : list)
+			result.add(f.apply(t));
+		return result;
 	}
 }

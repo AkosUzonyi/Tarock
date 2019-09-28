@@ -12,7 +12,7 @@ class SlowPlay extends ZebiSound
 	}
 
 	@Override
-	public void cardPlayed(int player, Card playedCard)
+	public void playCard(int player, Card playedCard)
 	{
 		cancelActivation();
 		activateDelayed(5000);

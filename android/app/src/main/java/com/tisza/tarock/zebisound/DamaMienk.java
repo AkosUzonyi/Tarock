@@ -24,7 +24,7 @@ class DamaMienk extends ZebiSound
 	}
 
 	@Override
-	public void cardPlayed(int player, Card playedCard)
+	public void playCard(int player, Card playedCard)
 	{
 		lastCards[player] = playedCard;
 	}

@@ -32,7 +32,7 @@ class PagatMentikATrult extends ZebiSound
 	}
 
 	@Override
-	public void cardPlayed(int player, Card card)
+	public void playCard(int player, Card card)
 	{
 		if (trullAnnounced && firstCardNext && card instanceof TarockCard && ((TarockCard)card).getValue() == 1)
 			activate();

@@ -5,6 +5,9 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.*;
 
+import java.util.*;
+import java.util.function.*;
+
 public class Utils
 {
 	public static EventProto.Event.Statistics.AnnouncementResult announcementResultToProto(AnnouncementResult entry)
@@ -39,5 +42,13 @@ public class Utils
 				.addAllPlayerName(gameInfo.getPlayerNames())
 				.setMy(my)
 				.build();
+	}
+
+	public static <T0, T1> List<T1> map(List<T0> list, Function<T0, T1> f)
+	{
+		List<T1> result = new ArrayList<>();
+		for (T0 t : list)
+			result.add(f.apply(t));
+		return result;
 	}
 }

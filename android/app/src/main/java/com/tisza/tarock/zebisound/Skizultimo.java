@@ -29,7 +29,7 @@ class Skizultimo extends ZebiSound
 	}
 
 	@Override
-	public void cardPlayed(int player, Card card)
+	public void playCard(int player, Card card)
 	{
 		if (roundIndex == 8 && card.equals(Card.getTarockCard(22)))
 			activate();

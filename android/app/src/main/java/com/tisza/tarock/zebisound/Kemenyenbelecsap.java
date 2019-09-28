@@ -23,7 +23,7 @@ class Kemenyenbelecsap extends ZebiSound
 	}
 
 	@Override
-	public void cardPlayed(int player, Card playedCard)
+	public void playCard(int player, Card playedCard)
 	{
 		if (firstCard == null)
 			firstCard = playedCard;

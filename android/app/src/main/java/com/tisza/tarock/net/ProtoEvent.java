@@ -100,40 +100,8 @@ public class ProtoEvent implements Event
 		}
 	}
 
-	private void handlePlayerAction(EventHandler handler, int player, ActionProto.Action action)
+	private void handlePlayerAction(EventHandler handler, int player, String action)
 	{
-		switch (action.getActionTypeCase())
-		{
-			case BID:
-				handler.bid(player, action.getBid().getBid());
-				break;
-			case CALL:
-				handler.call(player, Card.fromId(action.getCall().getCard()));
-				break;
-			case CHANGE:
-				System.err.println("change action should not be broadcasted");
-				break;
-			case ANNOUNCE:
-				handler.announce(player, Announcement.fromID(action.getAnnounce().getAnnouncement()));
-				break;
-			case ANNOUCE_PASSZ:
-				handler.announcePassz(player);
-				break;
-			case PLAY_CARD:
-				handler.cardPlayed(player, Card.fromId(action.getPlayCard().getCard()));
-				break;
-			case THROW_CARDS:
-				handler.cardsThrown(player, null);
-				break;
-			case CHAT:
-				handler.chat(player, action.getChat().getMessage());
-				break;
-			case READY_FOR_NEW_GAME:
-				handler.readyForNewGame(player);
-				break;
-			default:
-				System.err.println("unhandled event");
-				break;
-		}
+		new Action(action).handle(handler, player);
 	}
 }

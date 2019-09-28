@@ -27,9 +27,9 @@ public class ProtoPlayer implements Player
 		}
 	}
 
-	public void queueAction(ActionProto.Action action)
+	public void queueAction(String action)
 	{
-		new ProtoAction(seat, action).handle(actionHandler);
+		new Action(seat, action).handle(actionHandler);
 	}
 
 	@Override

@@ -16,9 +16,9 @@ public class Bid implements ActionButtonItem
 	}
 
 	@Override
-	public void doAction(ActionSender actionSender)
+	public Action getAction()
 	{
-		actionSender.bid(bid);
+		return Action.bid(bid);
 	}
 
 	@Override

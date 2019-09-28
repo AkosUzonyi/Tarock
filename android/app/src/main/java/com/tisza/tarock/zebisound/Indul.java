@@ -23,7 +23,7 @@ class Indul extends ZebiSound
 	}
 
 	@Override
-	public void cardPlayed(int player, Card card)
+	public void playCard(int player, Card card)
 	{
 		if (firstCard)
 			activate();

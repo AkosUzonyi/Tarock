@@ -4,7 +4,6 @@ package com.tisza.tarock;
 option java_package = "com.tisza.tarock.proto";
 option java_outer_classname = "MainProto";
 
-import "action.proto";
 import "event.proto";
 
 message Message
@@ -14,7 +13,7 @@ message Message
         KeepAlive keepAlive = 1;
         Login login = 2;
         FCMToken fcm_token = 9;
-        Action action = 3;
+        string action = 3;
         Event event = 4;
         CreateGame create_game = 5;
         ServerStatus server_status = 6;

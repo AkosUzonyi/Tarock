@@ -6,7 +6,6 @@ import android.view.*;
 import android.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
 
 import java.util.*;
@@ -91,7 +90,7 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 
 		getMainActivity().getConnection().sendMessage(MainProto.Message.newBuilder().setCreateGame(builder).build());
 
-		getMainActivity().getFragmentManager().popBackStack();
+		getMainActivity().getSupportFragmentManager().popBackStack();
 	}
 
 	@Override

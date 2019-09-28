@@ -4,6 +4,9 @@ import android.app.*;
 import android.content.*;
 import android.net.*;
 import android.os.*;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.*;
+import androidx.fragment.app.FragmentTransaction;
 import com.facebook.*;
 import com.google.firebase.iid.*;
 import com.tisza.tarock.BuildConfig;
@@ -20,7 +23,7 @@ import java.security.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class MainActivity extends Activity implements MessageHandler, GameListAdapter.GameAdapterListener
+public class MainActivity extends AppCompatActivity implements MessageHandler, GameListAdapter.GameAdapterListener
 {
 	private static final int DISCONNECT_DELAY_SEC = 40;
 
@@ -53,7 +56,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 		ResourceMappings.init(this);
 		uiThreadExecutor = new UIThreadExecutor();
-		setContentView(R.layout.main);
+		setContentView(com.tisza.tarock.R.layout.main);
 		progressDialog = new ProgressDialog(this);
 		handler = new Handler();
 
@@ -80,7 +83,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		}
 
 		LoginFragment loginFragment = new LoginFragment();
-		getFragmentManager().beginTransaction()
+		getSupportFragmentManager().beginTransaction()
 				.add(R.id.fragment_container, loginFragment, "login")
 				.commit();
 
@@ -138,7 +141,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 		GameListFragment gameListFragment = new GameListFragment();
 
-		getFragmentManager().beginTransaction()
+		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.fragment_container, gameListFragment, "gamelist")
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
@@ -156,7 +159,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 	{
 		CreateGameFragment createGameFragment = new CreateGameFragment();
 
-		getFragmentManager().beginTransaction()
+		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.fragment_container, createGameFragment, "create_game")
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
@@ -172,7 +175,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 		args.putInt("gameID", gameID);
 		gameFragment.setArguments(args);
 
-		getFragmentManager().beginTransaction()
+		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.fragment_container, gameFragment, "game")
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
@@ -297,7 +300,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 	private void popBackToLoginScreen()
 	{
-		getFragmentManager().beginTransaction()
+		getSupportFragmentManager().beginTransaction()
 				.replace(R.id.fragment_container, new LoginFragment(), "login")
 				.commit();
 	}

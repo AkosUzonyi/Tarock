@@ -1,6 +1,6 @@
 package com.tisza.tarock.gui;
 
-import android.app.*;
+import androidx.fragment.app.*;
 
 public class MainActivityFragment extends Fragment
 {

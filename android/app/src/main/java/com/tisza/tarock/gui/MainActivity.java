@@ -6,6 +6,7 @@ import android.net.*;
 import android.os.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.*;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.*;
 import com.facebook.*;
@@ -41,13 +42,16 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		handler = new Handler();
 		disconnectRunnable = connectionViewModel::disconnect;
 
-		LoginFragment loginFragment = new LoginFragment();
-		getSupportFragmentManager().beginTransaction()
-				.add(R.id.fragment_container, loginFragment, LoginFragment.TAG)
-				.commit();
+		if (savedInstanceState == null)
+		{
+			LoginFragment loginFragment = new LoginFragment();
+			getSupportFragmentManager().beginTransaction()
+					.add(R.id.fragment_container, loginFragment, LoginFragment.TAG)
+					.commit();
 
-		if (getIntent().hasExtra(GameFragment.KEY_GAME_ID))
-			connectionViewModel.login();
+			if (getIntent().hasExtra(GameFragment.KEY_GAME_ID))
+				connectionViewModel.login();
+		}
 	}
 
 	private void connectionStateChanged(ConnectionViewModel.ConnectionState connectionState)
@@ -114,6 +118,10 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 
 	private void onSuccessfulLogin()
 	{
+		Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+		if (currentFragment != null && !LoginFragment.TAG.equals(currentFragment.getTag()))
+			return;
+
 		popBackToLoginScreen();
 
 		GameListFragment gameListFragment = new GameListFragment();

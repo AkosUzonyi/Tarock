@@ -7,6 +7,13 @@
     <string name="update_accept">Frissítés</string>
     <string name="update_deny">Kilépés</string>
 
+    <string name="error_no_network_title">Nincs internetkapcsolat</string>
+    <string name="error_no_network_message">A játékhoz internetkapcsolat szükséges</string>
+    <string name="error_server_down_title">Szerver leállt</string>
+    <string name="error_server_down_message">A Tarokk szerver sajnos jelenleg nem elérhető. Próbáld meg később!</string>
+    <string name="error_server_error_title">Szerverhiba</string>
+    <string name="error_server_error_message">""</string>
+
     <string name="game_created_notification_title">%1$s tarokkozni szeretne veled</string>
     <string name="game_created_notification_body">Játékosok: %1$s, %2$s, %3$s, %4$s</string>
 

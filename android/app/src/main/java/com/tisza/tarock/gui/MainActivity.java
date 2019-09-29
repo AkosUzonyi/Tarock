@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		setContentView(R.layout.main);
 		connectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
 		connectionViewModel.getConnectionState().observe(this, this::connectionStateChanged);
+		connectionViewModel.getErrorState().observe(this, this::error);
 		progressDialog = new ProgressDialog(this);
 		handler = new Handler();
 		disconnectRunnable = connectionViewModel::disconnect;
@@ -69,11 +70,39 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			case LOGGED_IN:
 				onSuccessfulLogin();
 				break;
-			case DISCONNECTED_OUTDATED:
-				popBackToLoginScreen();
+		}
+	}
+
+	private void error(ConnectionViewModel.ErrorState errorState)
+	{
+		if (errorState == null)
+			return;
+
+		switch (errorState)
+		{
+			case OUTDATED:
 				requireUpdate();
 				break;
+			case NO_NETWORK:
+				showErrorDialog(R.string.error_no_network_title, R.string.error_no_network_message);
+				break;
+			case SERVER_DOWN:
+				showErrorDialog(R.string.error_server_down_title, R.string.error_server_down_message);
+				break;
+			case SERVER_ERROR:
+				showErrorDialog(R.string.error_server_error_title, R.string.error_server_error_message);
+				break;
 		}
+	}
+
+	private void showErrorDialog(int title, int message)
+	{
+		new AlertDialog.Builder(this)
+				.setTitle(title)
+				.setMessage(message)
+				.setNeutralButton(R.string.ok, (dialog, which) -> {})
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.show();
 	}
 
 	@Override

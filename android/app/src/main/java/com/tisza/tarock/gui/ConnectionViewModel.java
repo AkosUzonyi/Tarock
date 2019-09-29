@@ -1,6 +1,7 @@
 package com.tisza.tarock.gui;
 
 import android.app.*;
+import android.content.*;
 import android.net.*;
 import android.os.*;
 import androidx.lifecycle.*;
@@ -26,14 +27,18 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 	private ConnectAsyncTask connectAsyncTask = null;
 	private Collection<EventHandler> eventHandlers = new ArrayList<>();
 	private Executor uiThreadExecutor = new UIThreadExecutor();
+	private ConnectivityManager connectivityManager;
 
 	private MutableLiveData<ConnectionState> connectionState = new MutableLiveData<>(ConnectionState.DISCONNECTED);
+	private MutableLiveData<ErrorState> errorState = new MutableLiveData<>(null);
 	private MutableLiveData<List<GameInfo>> games = new MutableLiveData<>(new ArrayList<>());
 	private MutableLiveData<List<User>> users = new MutableLiveData<>(new ArrayList<>());
 
 	public ConnectionViewModel(Application application) throws IOException, GeneralSecurityException
 	{
 		super(application);
+
+		connectivityManager = (ConnectivityManager)application.getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		SSLSessionCache sslSessionCache = new SSLSessionCache(application);
 		SSLCertificateSocketFactory sslCertificateSocketFactory = (SSLCertificateSocketFactory)SSLCertificateSocketFactory.getDefault(0, sslSessionCache);
@@ -51,6 +56,11 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 	public LiveData<ConnectionState> getConnectionState()
 	{
 		return connectionState;
+	}
+
+	public LiveData<ErrorState> getErrorState()
+	{
+		return errorState;
 	}
 
 	public LiveData<List<GameInfo>> getGames()
@@ -78,8 +88,11 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		switch (connectionState.getValue())
 		{
 			case DISCONNECTED:
-			case DISCONNECTED_OUTDATED:
-				new ConnectAsyncTask().execute();
+				NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+				if (activeNetworkInfo == null || !activeNetworkInfo.isConnected())
+					errorState.setValue(ErrorState.NO_NETWORK);
+				else
+					new ConnectAsyncTask().execute();
 				break;
 			case CONNECTING:
 			case LOGGING_IN:
@@ -99,7 +112,6 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		switch (connectionState.getValue())
 		{
 			case DISCONNECTED:
-			case DISCONNECTED_OUTDATED:
 				break;
 			case CONNECTING:
 				connectAsyncTask.cancel(true);
@@ -171,13 +183,14 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		switch (errorType)
 		{
 			case INVALID_HELLO:
-				connectionState.setValue(ConnectionState.DISCONNECTED);
+				errorState.setValue(ErrorState.SERVER_ERROR);
 				break;
 			case VERSION_MISMATCH:
-				connectionState.setValue(ConnectionState.DISCONNECTED_OUTDATED);
+				errorState.setValue(ErrorState.OUTDATED);
 				break;
 		}
 
+		connectionState.setValue(ConnectionState.DISCONNECTED);
 		connection = null;
 	}
 
@@ -246,6 +259,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 
 			if (resultProtoConnection == null)
 			{
+				errorState.setValue(ErrorState.SERVER_DOWN);
 				connectionState.setValue(ConnectionState.DISCONNECTED);
 				return;
 			}
@@ -267,6 +281,11 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 
 	public static enum ConnectionState
 	{
-		DISCONNECTED, CONNECTING, CONNECTED, LOGGING_IN, LOGGED_IN, DISCONNECTED_OUTDATED;
+		DISCONNECTED, CONNECTING, CONNECTED, LOGGING_IN, LOGGED_IN;
+	}
+
+	public static enum ErrorState
+	{
+		OUTDATED, NO_NETWORK, SERVER_DOWN, SERVER_ERROR;
 	}
 }

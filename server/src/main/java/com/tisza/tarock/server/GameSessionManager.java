@@ -46,7 +46,7 @@ public class GameSessionManager
 	public int createNewGame(GameType type, List<User> users, DoubleRoundType doubleRoundType)
 	{
 		if (users.size() > 4)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("users.size() > 4: " + users.size());
 
 		int id = nextID++;
 

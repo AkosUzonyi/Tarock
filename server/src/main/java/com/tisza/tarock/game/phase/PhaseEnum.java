@@ -39,6 +39,6 @@ public enum PhaseEnum
 			case "end": return END;
 			case "interrupted": return INTERRUPTED;
 		}
-		throw new IllegalArgumentException();
+		throw new IllegalArgumentException("invalid phase: " + id);
 	}
 }

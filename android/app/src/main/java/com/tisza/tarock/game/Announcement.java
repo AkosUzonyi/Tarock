@@ -50,7 +50,7 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 			if (Character.isDigit(contraLevelChar))
 				contraLevel = Character.digit(contraLevelChar, 10);
 			else
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("invalid card id: " + id);
 
 		name = id.substring(pos, pos = nextUppercase(id, pos));
 
@@ -74,11 +74,11 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 					}
 					catch (NumberFormatException e)
 					{
-						throw new IllegalArgumentException();
+						throw new IllegalArgumentException("invalid round number: " + round);
 					}
 					break;
 				default:
-					throw new IllegalArgumentException();
+					throw new IllegalArgumentException("invalid announcement modifier: " + c);
 			}
 		}
 
@@ -88,12 +88,12 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 	private static int parseSuit(String str)
 	{
 		if (str.length() != 1)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("invalid suit: " + str);
 
 		char c = str.charAt(0);
 
 		if (c < 'a' || c > 'd')
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("invalid suit: " + str);
 
 		return c - 'a';
 	}

@@ -12,7 +12,7 @@ public class PlayerPairs
 	public PlayerPairs(PlayerSeat caller, PlayerSeat called)
 	{
 		if (caller == null || called == null)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("PlayerSeat: caller == null || called == null");
 		
 		this.caller = caller;
 		this.called = called;
@@ -36,7 +36,7 @@ public class PlayerPairs
 	public Team getTeam(PlayerSeat player)
 	{
 		if (player == null)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("team == null");
 		
 		return player == caller || player == called ? Team.CALLER : Team.OPPONENT;
 	}

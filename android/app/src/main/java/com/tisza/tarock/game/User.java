@@ -11,7 +11,7 @@ public class User implements Comparable<User>
 	public User(String id, String name, String imgURL, boolean isFriend, boolean online)
 	{
 		if (id == null || name == null)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("id == null || name == null");
 
 		this.id = id;
 		this.name = name;

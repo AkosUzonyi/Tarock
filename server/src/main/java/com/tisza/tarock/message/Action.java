@@ -103,7 +103,7 @@ public class Action
 				handler.chat(player, actionParams);
 				break;
 			default:
-				throw new IllegalArgumentException();
+				throw new IllegalArgumentException("invalid action: " + actionType);
 		}
 	}
 }

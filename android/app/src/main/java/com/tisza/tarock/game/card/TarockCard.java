@@ -6,7 +6,8 @@ public class TarockCard extends Card
 
 	TarockCard(int v)
 	{
-		if (v < 1 || v >= 23) throw new IllegalArgumentException();
+		if (v < 1 || v >= 23)
+			throw new IllegalArgumentException("invalid tarock value: " + v);
 		value = v;
 	}
 	

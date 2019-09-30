@@ -6,8 +6,9 @@ public class SuitCard extends Card
 
 	SuitCard(int suit, int value)
 	{
-		if (suit < 0 || suit >= 4 || value < 1 || value >= 6)
-			throw new IllegalArgumentException();
+		checkSuitValid(suit);
+		if (value < 1 || value >= 6)
+			throw new IllegalArgumentException("invalid suit card value: " + value);
 		this.suit = suit;
 		this.value = value;
 	}
@@ -48,7 +49,7 @@ public class SuitCard extends Card
 		}
 		else
 		{
-			throw new IllegalArgumentException("Unknown card type: " + otherCard.getClass().getName());
+			throw new IllegalArgumentException("invalid card type: " + otherCard.getClass().getName());
 		}
 	}
 
@@ -63,11 +64,15 @@ public class SuitCard extends Card
 		return "Suit " + getSuit() + "-" + getValue();
 	}
 
-	public static String suitToString(int suit)
+	public static void checkSuitValid(int suit)
 	{
 		if (suit < 0 || suit >= 4)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("invalid suit: " + suit);
+	}
 
+	public static String suitToString(int suit)
+	{
+		checkSuitValid(suit);
 		return String.valueOf((char)('a' + suit));
 	}
 }

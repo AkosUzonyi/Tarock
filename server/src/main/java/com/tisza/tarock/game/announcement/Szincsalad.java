@@ -11,7 +11,7 @@ public class Szincsalad extends LastRounds
 	Szincsalad(int suit, boolean kis)
 	{
 		if (suit < 0 || suit >= 4)
-			throw new IllegalArgumentException();
+			SuitCard.checkSuitValid(suit);
 
 		this.suit = suit;
 		this.kis = kis;

@@ -10,7 +10,7 @@ public class Bid implements ActionButtonItem
 	public Bid(int bid)
 	{
 		if (bid < -1 || bid >= 4)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("invalid bid: " + bid);
 
 		this.bid = bid;
 	}

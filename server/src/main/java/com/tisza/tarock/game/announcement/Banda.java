@@ -9,9 +9,7 @@ public class Banda extends TakeCards
 	
 	Banda(int suit)
 	{
-		if (suit < 0 || suit >= 4)
-			throw new IllegalArgumentException();
-		
+		SuitCard.checkSuitValid(suit);
 		this.suit = suit;
 	}
 

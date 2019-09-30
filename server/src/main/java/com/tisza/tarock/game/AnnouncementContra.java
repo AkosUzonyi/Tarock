@@ -10,8 +10,8 @@ public class AnnouncementContra implements Comparable<AnnouncementContra>
 	public AnnouncementContra(Announcement a, int contraLevel)
 	{
 		if (a == null)
-			throw new IllegalArgumentException();
-		
+			throw new IllegalArgumentException("announcement cannot be null");
+
 		this.announcement = a;
 		this.contraLevel = contraLevel;
 	}

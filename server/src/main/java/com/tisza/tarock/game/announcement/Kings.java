@@ -12,7 +12,7 @@ public class Kings extends LastRounds
 	Kings(int count)
 	{
 		if (count < 1 || count >= 4)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("invalid kings count: " + count);
 		
 		this.count = count;
 	}

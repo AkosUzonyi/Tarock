@@ -47,7 +47,7 @@ public abstract class Card implements ActionButtonItem, Comparable<Card>
 	public static Card fromId(String id)
 	{
 		if (!idToCard.containsKey(id))
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("invalid card: " + id);
 
 		return idToCard.get(id);
 	}

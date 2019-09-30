@@ -27,7 +27,7 @@ public class GameSession implements Game
 	public GameSession(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, File saveDir)
 	{
 		if (playerList.size() != 4)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("GameSession: playerList.size() != 4");
 
 		this.saveDir = saveDir;
 		this.gameType = gameType;

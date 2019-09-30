@@ -15,7 +15,7 @@ public class Round
 	public Round(PlayerSeat beginnerPlayer)
 	{
 		if (beginnerPlayer == null)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("beginnerPlayer == null");
 		
 		this.beginnerPlayer = beginnerPlayer;
 		currentPlayer = beginnerPlayer;

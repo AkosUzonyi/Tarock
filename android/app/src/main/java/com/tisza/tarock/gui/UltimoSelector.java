@@ -44,7 +44,7 @@ public class UltimoSelector
 	public boolean selectProperty(int pos, UltimoProperty property)
 	{
 		if (pos >= availableProperties.size())
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("pos >= availableProperties.size(): " + pos + " >= " + availableProperties.size());
 
 		if (pos < selectedProperties.size() && selectedProperties.get(pos).equals(property))
 			return false;

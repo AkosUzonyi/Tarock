@@ -11,7 +11,7 @@ public class TarockCount implements Announcement
 	TarockCount(int count)
 	{
 		if (count < 8 || count >= 10)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("invalid tarock count: " + count);
 
 		this.count = count;
 	}

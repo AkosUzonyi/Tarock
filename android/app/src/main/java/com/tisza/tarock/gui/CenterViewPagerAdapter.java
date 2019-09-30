@@ -14,7 +14,7 @@ public class CenterViewPagerAdapter extends PagerAdapter
 	public CenterViewPagerAdapter(Context context, View[] views, int[] titles)
 	{
 		if (views.length != titles.length)
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("views.length != titles.length: " + views.length + " != " + titles.length);
 
 		this.context = context;
 		this.views = views;

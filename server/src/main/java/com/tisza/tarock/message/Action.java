@@ -5,6 +5,7 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.net.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 public class Action
 {
@@ -29,7 +30,7 @@ public class Action
 
 	public static Action skart(PlayerSeat player, List<Card> cards)
 	{
-		return new Action(player,  "skart:" + String.join(",", Utils.map(cards, Card::getID)));
+		return new Action(player,  "skart:" + cards.stream().map(Card::getID).collect(Collectors.joining(",")));
 	}
 
 	public static Action call(PlayerSeat player, Card card)
@@ -79,7 +80,7 @@ public class Action
 				handler.bid(player, bid);
 				break;
 			case "skart":
-				handler.change(player, Utils.map(Arrays.asList(actionParams.split(",")), Card::fromId));
+				handler.change(player, Arrays.stream(actionParams.split(",")).filter(s -> !s.isEmpty()).map(Card::fromId).collect(Collectors.toList()));
 				break;
 			case "call":
 				handler.call(player, Card.fromId(actionParams));

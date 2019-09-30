@@ -10,7 +10,7 @@ import java.text.*;
 import java.util.*;
 import java.util.stream.*;
 
-public class GameSession implements GameFinishedListener, Game
+public class GameSession implements Game
 {
 	private final File saveDir;
 	private final GameType gameType;
@@ -87,7 +87,7 @@ public class GameSession implements GameFinishedListener, Game
 
 	private void startNewGame()
 	{
-		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, this, doubleRoundTracker.getCurrentMultiplier());
+		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, points, doubleRoundTracker.getCurrentMultiplier());
 		List<EventInstance> events = currentGame.start();
 		dispatchEvents(events);
 	}
@@ -97,6 +97,21 @@ public class GameSession implements GameFinishedListener, Game
 	{
 		List<EventInstance> eventInstances = currentGame.processAction(action);
 		dispatchEvents(eventInstances);
+
+		if (currentGame.isFinished())
+		{
+			if (currentGame.isNormalFinish())
+			{
+				currentBeginnerPlayer = currentBeginnerPlayer.nextPlayer();
+				doubleRoundTracker.gameFinished();
+				saveGame();
+			}
+			else
+			{
+				doubleRoundTracker.gameInterrupted();
+			}
+			startNewGame();
+		}
 	}
 
 	private void dispatchEvents(List<EventInstance> events)
@@ -117,21 +132,6 @@ public class GameSession implements GameFinishedListener, Game
 		for (EventInstance event : currentGame.getEvents())
 			if (event.getPlayerSeat() == null || event.getPlayerSeat() == seat)
 				event.getEvent().handle(eventHandler);
-	}
-
-	@Override
-	public int[] getPlayerPoints()
-	{
-		return points;
-	}
-
-	@Override
-	public void pointsEarned(int[] points)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			this.points[i] += points[i];
-		}
 	}
 
 	private void saveGame()
@@ -161,21 +161,5 @@ public class GameSession implements GameFinishedListener, Game
 		{
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public void gameFinished()
-	{
-		currentBeginnerPlayer = currentBeginnerPlayer.nextPlayer();
-		doubleRoundTracker.gameFinished();
-		saveGame();
-		startNewGame();
-	}
-
-	@Override
-	public void gameInterrupted()
-	{
-		doubleRoundTracker.gameInterrupted();
-		startNewGame();
 	}
 }

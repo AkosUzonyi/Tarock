@@ -15,8 +15,6 @@ public class GameState
 	private final List<String> playerNames;
 	private final PlayerSeat beginnerPlayer;
 
-	private final GameFinishedListener gameFinishedListener;
-
 	private TeamInfoTracker teamInfoTracker;
 
 	private GameHistory history;
@@ -48,10 +46,14 @@ public class GameState
 
 	private boolean inGameStatisticsCalculated = false;
 	private boolean statisticsCalculated = false;
+	private int [] points;
 	private final int pointMultiplier;
 	private int pointsForCallerTeam;
 	private List<AnnouncementResult> announcementResults = new ArrayList<>();
 	private int callerGamePoints, opponentGamePoints;
+
+	private boolean finished = false;
+	private boolean normalFinish;
 
 	{
 		for (PlayerSeat player : PlayerSeat.getAll())
@@ -66,12 +68,12 @@ public class GameState
 		}
 	}
 
-	public GameState(GameType gameType, List<String> playerNames, PlayerSeat beginnerPlayer, GameFinishedListener gameFinishedListener, int pointMultiplier)
+	public GameState(GameType gameType, List<String> playerNames, PlayerSeat beginnerPlayer, int[] points, int pointMultiplier)
 	{
 		this.gameType = gameType;
 		this.playerNames = playerNames;
 		this.beginnerPlayer = beginnerPlayer;
-		this.gameFinishedListener = gameFinishedListener;
+		this.points = points;
 		this.pointMultiplier = pointMultiplier;
 
 		teamInfoTracker = new TeamInfoTracker(this);
@@ -115,19 +117,30 @@ public class GameState
 		return events;
 	}
 
-	public void finish()
+	void finish()
 	{
 		switch (currentPhase.asEnum())
 		{
 			case INTERRUPTED:
-				gameFinishedListener.gameInterrupted();
+				normalFinish = false;
 				break;
 			case END:
-				gameFinishedListener.gameFinished();
+				normalFinish = true;
 				break;
 			default:
 				throw new IllegalStateException();
 		}
+		finished = true;
+	}
+
+	public boolean isFinished()
+	{
+		return finished;
+	}
+
+	public boolean isNormalFinish()
+	{
+		return normalFinish;
 	}
 
 	public GameType getGameType()
@@ -384,8 +397,6 @@ public class GameState
 
 		statisticsCalculated = true;
 
-		int[] points = new int[4];
-
 		announcementResults.clear();
 		pointsForCallerTeam = 0;
 
@@ -432,8 +443,6 @@ public class GameState
 		}
 		points[playerPairs.getCaller().asInt()] += pointsForCallerTeam * 2;
 		points[playerPairs.getCalled().asInt()] += pointsForCallerTeam * 2;
-
-		gameFinishedListener.pointsEarned(points);
 	}
 
 	void sendStatistics()
@@ -446,6 +455,6 @@ public class GameState
 
 	void sendPlayerPoints()
 	{
-		broadcastEvent(Event.playerPoints(gameFinishedListener.getPlayerPoints()));
+		broadcastEvent(Event.playerPoints(points));
 	}
 }

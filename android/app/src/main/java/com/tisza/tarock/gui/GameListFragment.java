@@ -9,6 +9,8 @@ import com.tisza.tarock.R;
 
 public class GameListFragment extends MainActivityFragment
 {
+	public static final String TAG = "game_list";
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{

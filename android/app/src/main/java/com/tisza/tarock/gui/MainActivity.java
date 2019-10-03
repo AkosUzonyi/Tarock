@@ -43,10 +43,10 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 
 		LoginFragment loginFragment = new LoginFragment();
 		getSupportFragmentManager().beginTransaction()
-				.add(R.id.fragment_container, loginFragment, "login")
+				.add(R.id.fragment_container, loginFragment, LoginFragment.TAG)
 				.commit();
 
-		if (getIntent().hasExtra("game_id"))
+		if (getIntent().hasExtra(GameFragment.KEY_GAME_ID))
 			connectionViewModel.login();
 	}
 
@@ -119,15 +119,15 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		GameListFragment gameListFragment = new GameListFragment();
 
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.fragment_container, gameListFragment, "gamelist")
+				.replace(R.id.fragment_container, gameListFragment, GameListFragment.TAG)
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
 
-		String gameID = getIntent().getStringExtra("game_id");
+		String gameID = getIntent().getStringExtra(GameFragment.KEY_GAME_ID);
 		if (gameID != null)
 		{
-			getIntent().removeExtra("game_id");
+			getIntent().removeExtra(GameFragment.KEY_GAME_ID);
 			joinGame(Integer.parseInt(gameID));
 		}
 	}
@@ -137,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		CreateGameFragment createGameFragment = new CreateGameFragment();
 
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.fragment_container, createGameFragment, "create_game")
+				.replace(R.id.fragment_container, createGameFragment, CreateGameFragment.TAG)
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
@@ -149,11 +149,11 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		GameFragment gameFragment = new GameFragment();
 
 		Bundle args = new Bundle();
-		args.putInt("gameID", gameID);
+		args.putInt(GameFragment.KEY_GAME_ID, gameID);
 		gameFragment.setArguments(args);
 
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.fragment_container, gameFragment, "game")
+				.replace(R.id.fragment_container, gameFragment, GameFragment.TAG)
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			progressDialog.dismiss();
 
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.fragment_container, new LoginFragment(), "login")
+				.replace(R.id.fragment_container, new LoginFragment(), LoginFragment.TAG)
 				.commit();
 	}
 

@@ -13,6 +13,8 @@ import java.io.*;
 
 public class LoginFragment extends MainActivityFragment
 {
+	public static final String TAG = "login";
+
 	private Button playButton;
 	private ConnectionViewModel connectionViewModel;
 

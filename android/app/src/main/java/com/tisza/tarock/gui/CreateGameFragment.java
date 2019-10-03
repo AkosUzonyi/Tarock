@@ -13,6 +13,8 @@ import java.util.*;
 
 public class CreateGameFragment extends MainActivityFragment implements AvailableUsersAdapter.UsersSelectedListener
 {
+	public static final String TAG = "create_game";
+
 	private static final String SHARED_PREF = "create_game_spinners";
 	private static final String GAME_TYPE_KEY = "game_type";
 	private static final String DOUBLE_ROUND_TYPE_KEY = "double_round_type";

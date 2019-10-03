@@ -25,6 +25,8 @@ import java.util.*;
 
 public class GameFragment extends MainActivityFragment implements EventHandler, TextView.OnEditorActionListener
 {
+	public static final String TAG = "game";
+	public static final String KEY_GAME_ID = "game_id";
 	public static final String LOG_TAG = "Tarokk";
 
 	public static final float PLAYED_CARD_DISTANCE = 1F;
@@ -218,7 +220,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 		connectionViewModel.addEventHandler(this);
 		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
-				.setGameId(getArguments().getInt("gameID"))
+				.setGameId(getArguments().getInt(KEY_GAME_ID))
 				.build())
 				.build());
 

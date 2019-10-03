@@ -93,10 +93,7 @@ public class Server implements Runnable
 			while (!Thread.interrupted())
 			{
 				SSLSocket socket = (SSLSocket)serverSocket.accept();
-				System.out.println("accepted connection from: " + socket.getRemoteSocketAddress());
-				ProtoConnection connection = new ProtoConnection(socket, gameExecutorService);
-				clients.add(new Client(this, connection));
-				connection.start();
+				handleNewSocket(socket);
 			}
 		}
 		catch (Exception e)
@@ -117,6 +114,21 @@ public class Server implements Runnable
 			gameExecutorService.shutdownNow();
 
 			System.out.println("server stopped");
+		}
+	}
+
+	private void handleNewSocket(SSLSocket socket)
+	{
+		try
+		{
+			System.out.println("accepted connection from: " + socket.getRemoteSocketAddress());
+			ProtoConnection connection = new ProtoConnection(socket, gameExecutorService);
+			clients.add(new Client(this, connection));
+			connection.start();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 

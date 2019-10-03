@@ -1,5 +1,5 @@
 group 'com.tisza'
-version new File('../version').readLines().get(0)
+version new File('../VERSION').readLines().get(0)
 
 apply plugin: 'java'
 apply plugin: 'application'

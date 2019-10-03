@@ -3,7 +3,7 @@
 PROJECT_DIR="$(pwd)"
 
 PKG_NAME=tarock-server
-VERSION=$(cat "$PROJECT_DIR/version")
+VERSION=$(cat "$PROJECT_DIR/VERSION")
 
 cd "$PROJECT_DIR/server"
 ./gradlew assembleDist

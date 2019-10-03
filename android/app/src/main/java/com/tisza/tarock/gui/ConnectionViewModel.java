@@ -119,7 +119,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 			case LOGGING_IN:
 			case LOGGED_IN:
 			case CONNECTED:
-				new DisconnectAsyncTask().execute();
+				new DisconnectAsyncTask().execute(connection);
 				break;
 		}
 	}
@@ -207,20 +207,23 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		disconnect();
 	}
 
-	private class DisconnectAsyncTask extends AsyncTask<Void, Void, Void>
+	private static class DisconnectAsyncTask extends AsyncTask<ProtoConnection, Void, Void>
 	{
 		@Override
-		protected Void doInBackground(Void... voids)
+		protected Void doInBackground(ProtoConnection... protoConnections)
 		{
-			if (connection != null)
+			for (ProtoConnection connection : protoConnections)
 			{
-				try
+				if (connection != null)
 				{
-					connection.close();
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
+					try
+					{
+						connection.close();
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
 				}
 			}
 
@@ -272,10 +275,10 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		}
 
 		@Override
-		protected void onCancelled()
+		protected void onCancelled(ProtoConnection resultProtoConnection)
 		{
+			new DisconnectAsyncTask().execute(resultProtoConnection);
 			connectAsyncTask = null;
-			connectionState.setValue(ConnectionState.DISCONNECTED);
 		}
 	}
 

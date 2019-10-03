@@ -18,6 +18,8 @@ public class LoginFragment extends MainActivityFragment
 		{
 			if (playButton != null)
 				playButton.setEnabled(currentAccessToken != null);
+			if (currentAccessToken != null)
+				getMainActivity().onPlayButtonClicked();
 		}
 	};
 

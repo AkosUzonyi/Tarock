@@ -406,5 +406,18 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 			actionSender = new ProtoActionSender(connection);
 			login();
 		}
+
+		@Override
+		protected void onCancelled(ProtoConnection protoConnection)
+		{
+			try
+			{
+				protoConnection.close();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 }

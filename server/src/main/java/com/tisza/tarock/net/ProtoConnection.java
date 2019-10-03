@@ -126,6 +126,8 @@ public class ProtoConnection implements Closeable
 	
 	public ProtoConnection(Socket socket, Executor messageHandlerExecutor) throws IOException
 	{
+		System.out.println("connection from: " + socket.getRemoteSocketAddress());
+
 		this.socket = socket;
 		this.messageHandlerExecutor = messageHandlerExecutor;
 
@@ -211,6 +213,7 @@ public class ProtoConnection implements Closeable
 
 		if (socket != null)
 		{
+			System.out.println("connection closed: " + socket.getRemoteSocketAddress());
 			socket.close();
 			socket = null;
 		}

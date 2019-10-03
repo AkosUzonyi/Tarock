@@ -1,15 +1,8 @@
 /.gradle
 /local.properties
-/.idea/workspace.xml
-/.idea/libraries
+/.idea
 .DS_Store
 /build
 /captures
 .externalNativeBuild
-/.idea/caches
-/.idea/gradle.xml
-/.idea/assetWizardSettings.xml
-/.idea/modules.xml
-
 /out
-/.idea/caches/build_file_checksums.ser

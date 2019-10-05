@@ -304,12 +304,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		myTeam = null;
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
-
-		for (int i = 0; i < 4; i++)
-		{
-			int pos = getPositionFromPlayerID(i);
-			playerNameViews[pos].setText(playerNames.get(i));
-		}
 		messages = "";
 	}
 
@@ -319,6 +313,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		this.seat = seat;
 		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
 		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
+
+		for (int i = 0; i < 4; i++)
+		{
+			int pos = getPositionFromPlayerID(i);
+			playerNameViews[pos].setText(playerNames.get(i));
+		}
 	}
 
 	private void doAction(Action action)

@@ -279,6 +279,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		{
 			new DisconnectAsyncTask().execute(resultProtoConnection);
 			connectAsyncTask = null;
+			connectionState.setValue(ConnectionState.DISCONNECTED);
 		}
 	}
 

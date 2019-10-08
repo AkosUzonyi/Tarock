@@ -67,13 +67,7 @@ public class Client implements MessageHandler
 			}
 
 			case ACTION:
-			{
-				if (currentPlayer == null)
-					break;
-
-				currentPlayer.queueAction(message.getAction());
 				break;
-			}
 
 			case CREATE_GAME:
 			{

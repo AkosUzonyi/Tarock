@@ -14,6 +14,7 @@ public class GameState
 	private final GameType gameType;
 	private final List<String> playerNames;
 	private final PlayerSeat beginnerPlayer;
+	private final List<Card> deck;
 
 	private TeamInfoTracker teamInfoTracker;
 
@@ -68,11 +69,12 @@ public class GameState
 		}
 	}
 
-	public GameState(GameType gameType, List<String> playerNames, PlayerSeat beginnerPlayer, int[] points, int pointMultiplier)
+	public GameState(GameType gameType, List<String> playerNames, PlayerSeat beginnerPlayer, List<Card> deck, int[] points, int pointMultiplier)
 	{
 		this.gameType = gameType;
 		this.playerNames = playerNames;
 		this.beginnerPlayer = beginnerPlayer;
+		this.deck = deck;
 		this.points = points;
 		this.pointMultiplier = pointMultiplier;
 
@@ -82,8 +84,7 @@ public class GameState
 
 	public List<EventInstance> start()
 	{
-		List<Card> cardsToDeal = new ArrayList<>(Card.getAll());
-		Collections.shuffle(cardsToDeal);
+		List<Card> cardsToDeal = new ArrayList<>(deck);
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
 			for (int i = 0; i < ROUND_COUNT; i++)

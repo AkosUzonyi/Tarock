@@ -1,5 +1,6 @@
 package com.tisza.tarock.game;
 
+import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
@@ -87,7 +88,9 @@ public class GameSession implements Game
 
 	private void startNewGame()
 	{
-		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, points, doubleRoundTracker.getCurrentMultiplier());
+		List<Card> deck = new ArrayList<>(Card.getAll());
+		Collections.shuffle(deck);
+		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
 		List<EventInstance> events = currentGame.start();
 		dispatchEvents(events);
 	}

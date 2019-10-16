@@ -1,4 +1,4 @@
-*.pkg.tar.xz
+/package
 /src
 /pkg
 /tarock-server.tar

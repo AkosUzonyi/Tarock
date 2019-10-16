@@ -10,4 +10,4 @@ cd "$PROJECT_DIR/server"
 
 cd "$PROJECT_DIR/arch_package"
 ln -sf "$PROJECT_DIR/server/build/distributions/$PKG_NAME-$VERSION.tar" tarock-server.tar
-makepkg -fc
+PKGDEST=package makepkg -fc

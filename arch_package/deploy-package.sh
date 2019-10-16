@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PROJECT_DIR=$(pwd)
+PROJECT_DIR="$(realpath ..)"
 
 USER=root
 HOST=akos0.ddns.net
@@ -9,7 +9,7 @@ PORT=3125
 PKG_NAME=tarock-server
 VERSION=$(cat "$PROJECT_DIR/VERSION")
 
-PKG_FILE="arch_package/$PKG_NAME-$VERSION-1-any.pkg.tar.xz"
+PKG_FILE="$PROJECT_DIR/arch_package/$PKG_NAME-$VERSION-1-any.pkg.tar.xz"
 TMP_FILE="/tmp/$PKG_NAME.tar.xz"
 
 scp -P "$PORT" "$PKG_FILE" "$USER@$HOST:$TMP_FILE"

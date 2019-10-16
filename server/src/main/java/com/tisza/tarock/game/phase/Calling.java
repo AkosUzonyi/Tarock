@@ -42,13 +42,13 @@ class Calling extends Phase
 	}
 
 	@Override
-	public void call(PlayerSeat player, Card card)
+	public boolean call(PlayerSeat player, Card card)
 	{
 		if (player != callerPlayer)
-			return;
+			return false;
 		
 		if (!getCallableCards().contains(card))
-			return;
+			return false;
 
 		PlayerSeat calledPlayer = null;
 		for (PlayerSeat p : PlayerSeat.getAll())
@@ -90,6 +90,8 @@ class Calling extends Phase
 		history.setCalledCard(player, card);
 		game.broadcastEvent(Event.call(player, card));
 		game.changePhase(new Announcing(game));
+
+		return true;
 	}
 
 	private void sendAvailableCalls()

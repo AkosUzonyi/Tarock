@@ -2,7 +2,6 @@ package com.tisza.tarock.message;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.net.*;
 
 import java.util.*;
 import java.util.stream.*;
@@ -68,7 +67,7 @@ public class Action
 		return new Action(player,  "chat:" + msg);
 	}
 
-	public void handle(ActionHandler handler)
+	public boolean handle(ActionHandler handler)
 	{
 		int colonIndex = id.indexOf(":");
 		String actionType = id.substring(0, colonIndex);
@@ -77,32 +76,24 @@ public class Action
 		{
 			case "bid":
 				int bid = actionParams.equals("p") ? -1 : Integer.parseInt(actionParams);
-				handler.bid(player, bid);
-				break;
+				return handler.bid(player, bid);
 			case "skart":
-				handler.change(player, Arrays.stream(actionParams.split(",")).filter(s -> !s.isEmpty()).map(Card::fromId).collect(Collectors.toList()));
-				break;
+				return handler.change(player, Arrays.stream(actionParams.split(",")).filter(s -> !s.isEmpty()).map(Card::fromId).collect(Collectors.toList()));
 			case "call":
-				handler.call(player, Card.fromId(actionParams));
-				break;
+				return handler.call(player, Card.fromId(actionParams));
 			case "announce":
 				if (actionParams.equals("passz"))
-					handler.announcePassz(player);
+					return handler.announcePassz(player);
 				else
-					handler.announce(player, AnnouncementContra.fromID(actionParams));
-				break;
+					return handler.announce(player, AnnouncementContra.fromID(actionParams));
 			case "play":
-				handler.playCard(player, Card.fromId(actionParams));
-				break;
+				return handler.playCard(player, Card.fromId(actionParams));
 			case "newgame":
-				handler.readyForNewGame(player);
-				break;
+				return handler.readyForNewGame(player);
 			case "throw":
-				handler.throwCards(player);
-				break;
+				return handler.throwCards(player);
 			case "chat":
-				handler.chat(player, actionParams);
-				break;
+				return handler.chat(player, actionParams);
 			default:
 				throw new IllegalArgumentException("invalid action: " + actionType);
 		}

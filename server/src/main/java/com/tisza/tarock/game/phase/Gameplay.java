@@ -32,15 +32,15 @@ class Gameplay extends Phase
 	}
 
 	@Override
-	public void playCard(PlayerSeat player, Card card)
+	public boolean playCard(PlayerSeat player, Card card)
 	{
 		if (player != currentRound.getCurrentPlayer())
-			return;
+			return false;
 		
 		if (!getPlaceableCards().contains(card))
 		{
 			//game.sendEvent(player, new EventActionFailed(Reason.INVALID_CARD));
-			return;
+			return false;
 		}
 
 		game.getPlayerCards(player).removeCard(card);
@@ -67,6 +67,8 @@ class Gameplay extends Phase
 		{
 			game.changePhase(new PendingNewGame(game, false));
 		}
+
+		return true;
 	}
 	
 	private Collection<Card> getPlaceableCards()

@@ -34,13 +34,18 @@ class PendingNewGame extends Phase
 	}
 
 	@Override
-	public void readyForNewGame(PlayerSeat player)
+	public boolean readyForNewGame(PlayerSeat player)
 	{
-		ready.put(player, true);
+		boolean wasReady = ready.put(player, true);
+		if (wasReady)
+			return false;
+
 		game.broadcastEvent(Event.readyForNewGame(player));
 
 		if (allReady())
 			game.finish();
+
+		return true;
 	}
 
 	private boolean allReady()

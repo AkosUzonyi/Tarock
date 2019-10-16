@@ -32,22 +32,17 @@ class Announcing extends Phase implements IAnnouncing
 	{
 		currentPlayer = game.getPlayerPairs().getCaller();
 
-		announce(currentPlayer, Announcements.jatek);
-	}
-
-	public void announce(PlayerSeat player, Announcement a)
-	{
-		announce(player, new AnnouncementContra(a, 0));
+		announce(currentPlayer, new AnnouncementContra(Announcements.jatek, 0));
 	}
 
 	@Override
-	public void announce(PlayerSeat player, AnnouncementContra ac)
+	public boolean announce(PlayerSeat player, AnnouncementContra ac)
 	{
 		if (player != currentPlayer)
-			return;
+			return false;
 		
 		if (!canAnnounce(ac))
-			return;
+			return false;
 		
 		currentPlayerAnnounced = true;
 
@@ -60,18 +55,20 @@ class Announcing extends Phase implements IAnnouncing
 		ac.getAnnouncement().onAnnounced(this);
 		game.broadcastEvent(Event.announce(player, ac));
 		sendAvailableAnnouncements();
+
+		return true;
 	}
 	
 	@Override
-	public void announcePassz(PlayerSeat player)
+	public boolean announcePassz(PlayerSeat player)
 	{
 		if (player != currentPlayer)
-			return;
+			return false;
 		
 		if (Announcements.hkp.canBeAnnounced(this))
 		{
 			//game.sendEvent(player, new EventActionFailed(Reason.CONTRAJATEK_REQUIRED));
-			return;
+			return false;
 		}
 		
 		if (currentPlayerAnnounced)
@@ -91,6 +88,8 @@ class Announcing extends Phase implements IAnnouncing
 		{
 			game.changePhase(new Gameplay(game));
 		}
+
+		return true;
 	}
 	
 	private boolean isFinished()

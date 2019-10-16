@@ -105,9 +105,9 @@ public class GameState
 		changePhase(new Bidding(this));
 	}
 
-	public void processAction(Action action)
+	public boolean processAction(Action action)
 	{
-		action.handle(currentPhase);
+		return action.handle(currentPhase);
 	}
 
 	public List<EventInstance> getAllEvents()

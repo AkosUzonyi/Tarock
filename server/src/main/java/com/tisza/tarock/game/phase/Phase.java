@@ -21,61 +21,63 @@ abstract class Phase implements ActionHandler
 	public abstract void onStart();
 
 	@Override
-	public void announce(PlayerSeat player, AnnouncementContra announcementContra)
+	public boolean announce(PlayerSeat player, AnnouncementContra announcementContra)
 	{
-		wrongPhase("announce");
+		return wrongPhase("announce");
 	}
 
 	@Override
-	public void announcePassz(PlayerSeat player)
+	public boolean announcePassz(PlayerSeat player)
 	{
-		wrongPhase("announcePassz");
+		return wrongPhase("announcePassz");
 	}
 
 	@Override
-	public void bid(PlayerSeat player, int bid)
+	public boolean bid(PlayerSeat player, int bid)
 	{
-		wrongPhase("bid");
+		return wrongPhase("bid");
 	}
 
 	@Override
-	public void call(PlayerSeat player, Card card)
+	public boolean call(PlayerSeat player, Card card)
 	{
-		wrongPhase("call");
+		return wrongPhase("call");
 	}
 
 	@Override
-	public void change(PlayerSeat player, List<Card> cards)
+	public boolean change(PlayerSeat player, List<Card> cards)
 	{
-		wrongPhase("change");
+		return wrongPhase("change");
 	}
 
 	@Override
-	public void playCard(PlayerSeat player, Card card)
+	public boolean playCard(PlayerSeat player, Card card)
 	{
-		wrongPhase("playCard");
+		return wrongPhase("playCard");
 	}
 
 	@Override
-	public void readyForNewGame(PlayerSeat player)
+	public boolean readyForNewGame(PlayerSeat player)
 	{
-		wrongPhase("readyForNewGame");
+		return wrongPhase("readyForNewGame");
 	}
 
 	@Override
-	public void throwCards(PlayerSeat player)
+	public boolean throwCards(PlayerSeat player)
 	{
-		wrongPhase("throwCards");
+		return wrongPhase("throwCards");
 	}
 
 	@Override
-	public void chat(PlayerSeat player, String message)
+	public boolean chat(PlayerSeat player, String message)
 	{
 		game.broadcastEvent(Event.chat(player, message));
+		return true;
 	}
 
-	private void wrongPhase(String action)
+	private boolean wrongPhase(String action)
 	{
 		System.err.println("phase: " + asEnum() + " does not support action: " + action);
+		return false;
 	}
 }

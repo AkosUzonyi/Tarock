@@ -64,17 +64,17 @@ class Changing extends Phase
 	}
 	
 	@Override
-	public void change(PlayerSeat player, List<Card> cardsToSkart)
+	public boolean change(PlayerSeat player, List<Card> cardsToSkart)
 	{
 		if (donePlayer.get(player))
-			return;
+			return false;
 		
 		PlayerCards skartingPlayerCards = game.getPlayerCards(player);
 
 		if (skartingPlayerCards.size() - cardsToSkart.size() != GameState.ROUND_COUNT)
 		{
 			//game.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
-			return;
+			return false;
 		}
 		
 		Set<Card> checkedSkartCards = new HashSet<>();
@@ -83,14 +83,14 @@ class Changing extends Phase
 			if (!cardFilter.match(c))
 			{
 				//game.sendEvent(player, new EventActionFailed(Reason.INVALID_SKART));
-				return;
+				return false;
 			}
 			
 			if (!checkedSkartCards.add(c))
-				return;
+				return false;
 
 			if (!skartingPlayerCards.hasCard(c))
-				return;
+				return false;
 		}
 		
 		int tarockCount = 0;
@@ -120,19 +120,23 @@ class Changing extends Phase
 			game.broadcastEvent(Event.skartTarock(tarockCounts));
 			game.changePhase(new Calling(game));
 		}
+
+		return true;
 	}
 	
 	@Override
-	public void throwCards(PlayerSeat player)
+	public boolean throwCards(PlayerSeat player)
 	{
 		if (donePlayer.get(player))
-			return;
+			return false;
 
 		if (!game.getPlayerCards(player).canBeThrown())
-			return;
+			return false;
 
 		game.broadcastEvent(Event.throwCards(player));
 		game.changePhase(new PendingNewGame(game, true));
+
+		return true;
 	}
 	
 	private boolean isFinished()

@@ -44,13 +44,13 @@ class Bidding extends Phase
 	}
 	
 	@Override
-	public void bid(PlayerSeat player, int bid)
+	public boolean bid(PlayerSeat player, int bid)
 	{
 		if (player != currentPlayer)
-			return;
+			return false;
 		
 		if (!getAvailableBids().contains(bid))
-			return;
+			return false;
 		
 		if (bid == -1)
 		{
@@ -102,16 +102,20 @@ class Bidding extends Phase
 				game.changePhase(new Changing(game));
 			}
 		}
+
+		return true;
 	}
 	
 	@Override
-	public void throwCards(PlayerSeat player)
+	public boolean throwCards(PlayerSeat player)
 	{
 		if (!game.getPlayerCards(player).canBeThrown())
-			return;
+			return false;
 
 		game.broadcastEvent(Event.throwCards(player));
 		game.changePhase(new PendingNewGame(game, true));
+
+		return true;
 	}
 
 	public PlayerSeat getCurrentPlayer()

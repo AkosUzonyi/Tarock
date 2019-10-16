@@ -7,13 +7,13 @@ import java.util.*;
 
 public interface ActionHandler
 {
-	default void announce(PlayerSeat player, AnnouncementContra announcementContra) {}
-	default void announcePassz(PlayerSeat player) {}
-	default void bid(PlayerSeat player, int bid) {}
-	default void call(PlayerSeat player, Card card) {}
-	default void change(PlayerSeat player, List<Card> cards) {}
-	default void playCard(PlayerSeat player, Card card) {}
-	default void readyForNewGame(PlayerSeat player) {}
-	default void throwCards(PlayerSeat player) {}
-	void chat(PlayerSeat player, String message);
+	boolean announce(PlayerSeat player, AnnouncementContra announcementContra);
+	boolean announcePassz(PlayerSeat player);
+	boolean bid(PlayerSeat player, int bid);
+	boolean call(PlayerSeat player, Card card);
+	boolean change(PlayerSeat player, List<Card> cards);
+	boolean playCard(PlayerSeat player, Card card);
+	boolean readyForNewGame(PlayerSeat player);
+	boolean throwCards(PlayerSeat player);
+	boolean chat(PlayerSeat player, String message);
 }

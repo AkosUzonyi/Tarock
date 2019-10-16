@@ -54,7 +54,7 @@ public class GameSession implements Game
 	public void stopSession()
 	{
 		currentGame = null;
-		dispatchEvents(Arrays.asList(new EventInstance(null, Event.deleteGame())));
+		dispatchEvent(new EventInstance(null, Event.deleteGame()));
 		for (Player player : allPlayers)
 			player.setGame(null, null);
 	}
@@ -91,15 +91,15 @@ public class GameSession implements Game
 		List<Card> deck = new ArrayList<>(Card.getAll());
 		Collections.shuffle(deck);
 		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
-		List<EventInstance> events = currentGame.start();
-		dispatchEvents(events);
+		currentGame.start();
+		dispatchNewEvents();
 	}
 
 	@Override
 	public void action(Action action)
 	{
-		List<EventInstance> eventInstances = currentGame.processAction(action);
-		dispatchEvents(eventInstances);
+		currentGame.processAction(action);
+		dispatchNewEvents();
 
 		if (currentGame.isFinished())
 		{
@@ -117,22 +117,26 @@ public class GameSession implements Game
 		}
 	}
 
-	private void dispatchEvents(List<EventInstance> events)
+	private void dispatchNewEvents()
 	{
-		for (EventInstance event : events)
-		{
-			if (event.getPlayerSeat() == null)
-				for (Player player : allPlayers)
-					event.getEvent().handle(player.getEventHandler());
-			else
-				event.getEvent().handle(players.get(event.getPlayerSeat()).getEventHandler());
-		}
+		EventInstance event;
+		while ((event = currentGame.popNextEvent()) != null)
+			dispatchEvent(event);
+	}
+
+	private void dispatchEvent(EventInstance event)
+	{
+		if (event.getPlayerSeat() == null)
+			for (Player player : allPlayers)
+				event.getEvent().handle(player.getEventHandler());
+		else
+			event.getEvent().handle(players.get(event.getPlayerSeat()).getEventHandler());
 	}
 
 	@Override
 	public void requestHistory(PlayerSeat seat, EventHandler eventHandler)
 	{
-		for (EventInstance event : currentGame.getEvents())
+		for (EventInstance event : currentGame.getAllEvents())
 			if (event.getPlayerSeat() == null || event.getPlayerSeat() == seat)
 				event.getEvent().handle(eventHandler);
 	}

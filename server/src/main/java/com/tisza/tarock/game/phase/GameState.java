@@ -82,7 +82,7 @@ public class GameState
 		history = new GameHistory();
 	}
 
-	public List<EventInstance> start()
+	public void start()
 	{
 		List<Card> cardsToDeal = new ArrayList<>(deck);
 		for (PlayerSeat player : PlayerSeat.getAll())
@@ -103,19 +103,21 @@ public class GameState
 		}
 
 		changePhase(new Bidding(this));
-		return newEvents;
 	}
 
-	public List<EventInstance> processAction(Action action)
+	public void processAction(Action action)
 	{
-		newEvents.clear();
 		action.handle(currentPhase);
-		return newEvents;
 	}
 
-	public List<EventInstance> getEvents()
+	public List<EventInstance> getAllEvents()
 	{
 		return events;
+	}
+
+	public EventInstance popNextEvent()
+	{
+		return newEvents.isEmpty() ? null : newEvents.remove(0);
 	}
 
 	void finish()

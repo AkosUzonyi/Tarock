@@ -77,7 +77,7 @@ public class TeamInfoTracker implements EventHandler
 	@Override
 	public void skartTarock(PlayerSeatMap<Integer> counts)
 	{
-		if (game.getInvitSent() != Invitation.NONE && counts.get(game.getInvitingPlayer()) > 0)
+		if (game.getInvitSent() != null && counts.get(game.getInvitingPlayer()) > 0)
 			inviterSkartedTarock = true;
 	}
 
@@ -92,7 +92,7 @@ public class TeamInfoTracker implements EventHandler
 		if (!game.getPlayerPairs().isSolo() || game.isSoloIntentional())
 			revealAllTeamInfoFor(game.getPlayerPairs().getCalled());
 
-		if (game.getInvitAccepted() != Invitation.NONE && !inviterSkartedTarock)
+		if (game.getInvitAccepted() != null && !inviterSkartedTarock)
 			revealAllTeamInfo();
 	}
 

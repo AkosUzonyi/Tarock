@@ -148,7 +148,7 @@ public class BiddingTest
 
 			assertEquals(expectedBidWinnerPlayer, getPlayerName(bidWinnerPlayer));
 			assertEquals(Integer.parseInt(expectedWinnerBid), winnerBid);
-			assertEquals(expectedInvit, invitation == Invitation.NONE ? "-" : invitation.toString());
+			assertEquals(expectedInvit, invitation == null ? "-" : invitation.toString());
 			assertEquals(expectedInviter, getPlayerName(invitingPlayer));
 		}
 	}

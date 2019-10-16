@@ -4,7 +4,7 @@ import com.tisza.tarock.game.card.*;
 
 public enum Invitation
 {
-	NONE, XVIII, XIX, XX;
+	XVIII, XIX, XX;
 
 	public Card getCard()
 	{
@@ -14,6 +14,6 @@ public enum Invitation
 			case XIX: return Card.getTarockCard(19);
 			case XX: return Card.getTarockCard(20);
 		}
-		return null;
+		throw new RuntimeException();
 	}
 }

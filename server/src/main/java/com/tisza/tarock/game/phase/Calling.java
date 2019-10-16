@@ -82,7 +82,7 @@ class Calling extends Phase
 		game.setPlayerPairs(new PlayerPairs(callerPlayer, calledPlayer));
 
 		Invitation invit = game.getInvitSent();
-		if (invit != Invitation.NONE && card.equals(invit.getCard()))
+		if (invit != null && card.equals(invit.getCard()))
 		{
 			game.invitAccepted();
 		}
@@ -103,7 +103,7 @@ class Calling extends Phase
 		Set<Card> callOptions = new LinkedHashSet<>();
 
 		Invitation invit = game.getInvitSent();
-		if (invit != Invitation.NONE)
+		if (invit != null)
 			callOptions.add(invit.getCard());
 
 		PlayerCards pc = game.getPlayerCards(callerPlayer);

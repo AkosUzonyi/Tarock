@@ -27,7 +27,7 @@ public class GameState
 	private PlayerSeatMap<PlayerCards> playersCards = new PlayerSeatMap<>();
 	private List<Card> talon;
 
-	private Invitation invitSent = Invitation.NONE;
+	private Invitation invitSent = null;
 	private PlayerSeat invitingPlayer = null;
 	private PlayerSeat bidWinnerPlayer = null;
 	private int winnerBid;
@@ -37,7 +37,7 @@ public class GameState
 
 	private PlayerPairs playerPairs = null;
 	private boolean isSoloIntentional = false;
-	private Invitation invitAccepted = Invitation.NONE;
+	private Invitation invitAccepted = null;
 	private PlayerSeat playerToAnnounceSolo = null;
 
 	private AnnouncementsState announcementsState = new AnnouncementsState();

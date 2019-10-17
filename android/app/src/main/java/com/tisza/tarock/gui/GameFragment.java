@@ -279,7 +279,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private List<String> playerNames;
 	protected List<Card> myCards;
-	private int seat = -1;
+	private int seat;
 	private Team myTeam;
 	private GameType gameType;
 	private int beginnerPlayer;
@@ -305,6 +305,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
 		messages = "";
+		seat(-1);
 	}
 
 	@Override

@@ -14,6 +14,9 @@ public class Action
 	public Action(String id)
 	{
 		this.id = id;
+
+		if (id.length() >= 256)
+			throw new IllegalArgumentException("action id length >= 1024: " + id.length());
 	}
 
 	public String getId()

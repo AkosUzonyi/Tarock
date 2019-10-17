@@ -15,6 +15,9 @@ public class Action
 	{
 		this.id = id;
 		this.player = player;
+
+		if (id.length() >= 256)
+			throw new IllegalArgumentException("action id length >= 1024: " + id.length());
 	}
 
 	public String getId()

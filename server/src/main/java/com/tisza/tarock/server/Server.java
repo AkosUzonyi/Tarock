@@ -32,7 +32,7 @@ public class Server implements Runnable
 		this.keystoreFile = new File(staticDir, "keystore");
 
 		gameExecutorService = new GameExecutorService();
-		gameSessionManager = new GameSessionManager(dataDir, new RandomPlayerFactory());
+		gameSessionManager = new GameSessionManager(dataDir, gameExecutorService);
 		facebookUserManager = new FacebookUserManager(dataDir);
 		firebaseNotificationSender = new FirebaseNotificationSender(new File(staticDir, "fcm-service-account.json"));
 	}
@@ -190,15 +190,6 @@ public class Server implements Runnable
 			{
 				serverSocket = null;
 			}
-		}
-	}
-
-	private class RandomPlayerFactory implements BotFactory
-	{
-		@Override
-		public Player createBot(int n)
-		{
-			return new RandomPlayer("bot" + n, gameExecutorService, 500, 2000);
 		}
 	}
 }

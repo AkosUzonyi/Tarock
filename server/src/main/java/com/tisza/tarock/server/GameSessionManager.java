@@ -6,19 +6,20 @@ import com.tisza.tarock.message.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class GameSessionManager
 {
 	private final File saveDir;
-	private final BotFactory botFactory;
+	private final ScheduledExecutorService gameExecutorService;
 
 	private int nextID = 0;
 	private Map<Integer, GameSession> games = new HashMap<>();
 	private Map<Integer, Map<User, ProtoPlayer>> gameIDAndUserToPlayers = new HashMap<>();
 
-	public GameSessionManager(File dataDir, BotFactory botFactory)
+	public GameSessionManager(File dataDir, ScheduledExecutorService gameExecutorService)
 	{
-		this.botFactory = botFactory;
+		this.gameExecutorService = gameExecutorService;
 
 		saveDir = new File(dataDir, "games");
 		saveDir.mkdir();
@@ -62,7 +63,7 @@ public class GameSessionManager
 		{
 			if (user == null)
 			{
-				players.add(botFactory.createBot(bot++));
+				players.add(new RandomPlayer("bot" + bot++, gameExecutorService, 500, 2000));
 			}
 			else
 			{

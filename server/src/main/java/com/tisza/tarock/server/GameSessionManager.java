@@ -14,8 +14,7 @@ public class GameSessionManager
 
 	private int nextID = 0;
 	private Map<Integer, GameSession> games = new HashMap<>();
-	private Map<Integer, List<User>> gameIDToUsers = new HashMap<>();
-	private Map<Integer, Collection<User>> gameIDTokibices = new HashMap<>();
+	private Map<Integer, Map<User, ProtoPlayer>> gameIDAndUserToPlayers = new HashMap<>();
 
 	public GameSessionManager(File dataDir, BotFactory botFactory)
 	{
@@ -50,83 +49,70 @@ public class GameSessionManager
 
 		int id = nextID++;
 
-		List<Player> players = new ArrayList<>();
-
-		for (User user : users)
-		{
-			players.add(user.createPlayerForGame(id));
-		}
-
-		int randomPlayerCount = 4 - players.size();
+		List<User> shuffledUsers = new ArrayList<>(users);
+		int randomPlayerCount = 4 - users.size();
 		for (int i = 0; i < randomPlayerCount; i++)
-		{
-			players.add(botFactory.createBot(i));
-		}
+			shuffledUsers.add(null);
+		Collections.shuffle(shuffledUsers);
 
-		Collections.shuffle(players);
+		Map<User, ProtoPlayer> userToPlayers = new HashMap<>();
+		List<Player> players = new ArrayList<>();
+		int bot = 0;
+		for (User user : shuffledUsers)
+		{
+			if (user == null)
+			{
+				players.add(botFactory.createBot(bot++));
+			}
+			else
+			{
+				ProtoPlayer player = new ProtoPlayer(user.getName());
+				players.add(player);
+				userToPlayers.put(user, player);
+			}
+		}
+		gameIDAndUserToPlayers.put(id, userToPlayers);
 
 		GameSession game = new GameSession(type, players, doubleRoundType, saveDir);
 		games.put(id, game);
 		game.startSession();
-
-		gameIDToUsers.put(id, users);
-		gameIDTokibices.put(id, new HashSet<>());
 
 		System.out.println("game session created: users: " + users + " id: " + id);
 
 		return id;
 	}
 
+	public ProtoPlayer getPlayer(int gameID, User user)
+	{
+		return gameIDAndUserToPlayers.get(gameID).get(user);
+	}
+
 	public boolean isGameOwnedBy(int id, User user)
 	{
-		return gameIDToUsers.get(id).contains(user);
+		return gameIDAndUserToPlayers.get(id).containsKey(user);
 	}
 
 	public void deleteGame(int id)
 	{
 		GameSession game = games.remove(id);
-		List<User> users = gameIDToUsers.remove(id);
-		Collection<User> kibices = gameIDTokibices.remove(id);
-
-		for (User user : users)
-		{
-			user.removePlayerForGame(id);
-		}
-
-		for (User kibic : kibices)
-		{
-			kibic.removePlayerForGame(id);
-		}
-
+		gameIDAndUserToPlayers.remove(id);
 		game.stopSession();
-
-		System.out.println("game session deleted: users: "  + users + " id: " + id);
+		System.out.println("game session deleted: id = " + id);
 	}
 
-	public ProtoPlayer addKibic(User user, int gameID)
+	public ProtoPlayer addKibic(int gameID, User user)
 	{
 		if (!games.containsKey(gameID))
 			return null;
 
-		if (gameIDTokibices.get(gameID).add(user))
-		{
-			ProtoPlayer player = user.createPlayerForGame(gameID);
-			games.get(gameID).addKibic(player);
-			return player;
-		}
-		else
-		{
-			return user.getPlayerForGame(gameID);
-		}
+		ProtoPlayer player = new ProtoPlayer(user.getName());
+		games.get(gameID).addKibic(player);
+		return player;
 	}
 
-	public void removeKibic(User user, int gameID)
+	public void removeKibic(int gameID, Player player)
 	{
-		if (gameIDTokibices.get(gameID).remove(user))
-		{
-			games.get(gameID).removeKibic(user.getPlayerForGame(gameID));
-			user.removePlayerForGame(gameID);
-		}
+		games.get(gameID).removeKibic(player);
 	}
 
 	public void shutdown()

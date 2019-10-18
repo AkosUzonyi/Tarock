@@ -67,7 +67,7 @@ public class GameSession implements Game
 
 	public void removeKibic(Player player)
 	{
-		if (allPlayers.remove(player))
+		if (!players.containsValue(player) && allPlayers.remove(player))
 			player.setGame(null, null);
 	}
 

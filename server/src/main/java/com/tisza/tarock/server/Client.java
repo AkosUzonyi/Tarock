@@ -128,18 +128,19 @@ public class Client implements MessageHandler
 				if (currentPlayer != null)
 				{
 					currentPlayer.useConnection(null);
-					server.getGameSessionManager().removeKibic(loggedInUser, currentGameID);
+					server.getGameSessionManager().removeKibic(currentGameID, currentPlayer);
 				}
 
 				if (message.getJoinGame().hasGameId())
 				{
 					currentGameID = message.getJoinGame().getGameId();
-					currentPlayer = loggedInUser.getPlayerForGame(currentGameID);
+					currentPlayer = server.getGameSessionManager().getPlayer(currentGameID, loggedInUser);
 					if (currentPlayer == null)
-						currentPlayer = server.getGameSessionManager().addKibic(loggedInUser, currentGameID);
+						currentPlayer = server.getGameSessionManager().addKibic(currentGameID, loggedInUser);
 				}
 				else
 				{
+					currentGameID = -1;
 					currentPlayer = null;
 				}
 

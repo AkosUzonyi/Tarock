@@ -32,7 +32,8 @@ public class ProtoPlayer implements Player, MessageHandler
 		if (connection != null)
 		{
 			connection.addMessageHandler(this);
-			game.requestHistory(seat, eventHandler);
+			if (game != null)
+				game.requestHistory(seat, eventHandler);
 		}
 	}
 

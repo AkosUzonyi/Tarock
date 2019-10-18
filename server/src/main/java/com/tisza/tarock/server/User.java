@@ -13,7 +13,6 @@ public class User
 	private Set<String> fcmTokens = new HashSet<>();
 
 	private boolean loggedIn = false;
-	private Map<Integer, ProtoPlayer> gameIDToPlayer = new HashMap<>();
 
 	public User(String id)
 	{
@@ -90,24 +89,5 @@ public class User
 		this.loggedIn = loggedIn;
 
 		System.out.println("user logged " + (loggedIn ? "in" : "out") + ": " + name + " (id: " + id + ")");
-	}
-
-	public ProtoPlayer createPlayerForGame(int gameID)
-	{
-		ProtoPlayer player = new ProtoPlayer(name);
-		Player prev = gameIDToPlayer.put(gameID, player);
-		if (prev != null)
-			System.err.println("WARNING: player is overridden for a game");
-		return player;
-	}
-
-	public ProtoPlayer getPlayerForGame(int gameID)
-	{
-		return gameIDToPlayer.get(gameID);
-	}
-
-	public void removePlayerForGame(int gameID)
-	{
-		gameIDToPlayer.remove(gameID);
 	}
 }

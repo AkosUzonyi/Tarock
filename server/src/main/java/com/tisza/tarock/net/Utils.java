@@ -5,9 +5,6 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.*;
 
-import java.util.*;
-import java.util.function.*;
-
 public class Utils
 {
 	public static EventProto.Event.Statistics.AnnouncementResult announcementResultToProto(AnnouncementResult entry)
@@ -22,7 +19,7 @@ public class Utils
 	public static MainProto.User userToProto(User user, boolean isFriend, boolean loggedIn)
 	{
 		MainProto.User.Builder builder = MainProto.User.newBuilder()
-				.setId(user.getId())
+				.setId(user.getID())
 				.setName(user.getName())
 				.setIsFriend(isFriend)
 				.setOnline(loggedIn);

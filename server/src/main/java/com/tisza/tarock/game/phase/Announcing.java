@@ -51,7 +51,6 @@ class Announcing extends Phase implements IAnnouncing
 			setContraLevel(ac.getNextTeamToContra(getCurrentTeam()), ac.getAnnouncement(), ac.getContraLevel());
 		}
 
-		history.registerAnnouncement(player, ac);
 		ac.getAnnouncement().onAnnounced(this);
 		game.broadcastEvent(Event.announce(player, ac));
 		sendAvailableAnnouncements();

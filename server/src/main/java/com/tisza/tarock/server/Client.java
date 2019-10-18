@@ -44,7 +44,8 @@ public class Client implements MessageHandler
 				if (message.getLogin().hasFacebookToken())
 				{
 					fbAccessToken = message.getLogin().getFacebookToken();
-					newUser = server.getFacebookUserManager().getUserByAccessToken(fbAccessToken);
+					int userID = server.getFacebookUserManager().newAccessToken(fbAccessToken);
+					newUser = server.getDatabase().getUser(userID);
 				}
 
 				if (newUser != null && server.isUserLoggedIn(newUser))
@@ -56,7 +57,7 @@ public class Client implements MessageHandler
 				if (loggedInUser != null)
 				{
 					server.loginUser(loggedInUser);
-					loginMessageBuilder.setUserId(loggedInUser.getId());
+					loginMessageBuilder.setUserId(loggedInUser.getID());
 				}
 
 				sendMessage(MainProto.Message.newBuilder().setLoginResult(loginMessageBuilder.build()).build());
@@ -81,9 +82,9 @@ public class Client implements MessageHandler
 
 				List<User> users = new ArrayList<>();
 				users.add(loggedInUser);
-				for (String userID : createGame.getUserIDList())
+				for (int userID : createGame.getUserIDList())
 				{
-					users.add(server.getFacebookUserManager().getUserByID(userID));
+					users.add(server.getDatabase().getUser(userID));
 				}
 
 				int gameID = server.getGameSessionManager().createNewGame(gameType, users, doubleRoundType);
@@ -97,7 +98,7 @@ public class Client implements MessageHandler
 						{
 							boolean valid = server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameID, loggedInUser.getName(), playerNames);
 							if (!valid)
-								server.getFacebookUserManager().registerFCMToken(fcmToken, null);
+								server.getDatabase().removeFCMToken(fcmToken);
 						}
 						catch (IOException e)
 						{
@@ -154,7 +155,10 @@ public class Client implements MessageHandler
 			{
 				String token = message.getFcmToken().getFcmToken();
 				boolean active = message.getFcmToken().getActive();
-				server.getFacebookUserManager().registerFCMToken(token, active ? loggedInUser : null);
+				if (active)
+					server.getDatabase().addFCMToken(token, loggedInUser.getID());
+				else
+					server.getDatabase().removeFCMToken(token);
 				break;
 			}
 

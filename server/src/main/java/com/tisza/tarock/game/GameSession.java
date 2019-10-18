@@ -4,16 +4,15 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
-import org.json.*;
+import com.tisza.tarock.server.*;
 
-import java.io.*;
-import java.text.*;
 import java.util.*;
 import java.util.stream.*;
 
 public class GameSession implements Game
 {
-	private final File saveDir;
+	private final int id;
+	private final Database database;
 	private final GameType gameType;
 	private final PlayerSeatMap<Player> players = new PlayerSeatMap<>();
 	private final Set<Player> allPlayers = new HashSet<>();
@@ -22,16 +21,19 @@ public class GameSession implements Game
 
 	private PlayerSeat currentBeginnerPlayer = PlayerSeat.SEAT0;
 	private GameState currentGame;
+	private int currentGameID = -1;
 
 	private int[] points = new int[4];
 
-	public GameSession(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, File saveDir)
+	public GameSession(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, Database database)
 	{
 		if (playerList.size() != 4)
 			throw new IllegalArgumentException("GameSession: playerList.size() != 4");
 
-		this.saveDir = saveDir;
+		this.database = database;
 		this.gameType = gameType;
+
+		id = database.createGameSession(gameType, doubleRoundType);
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -46,6 +48,15 @@ public class GameSession implements Game
 		doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 	}
 
+	/*public static GameSession loadFromDatabase(Database database, int gameID)
+	{
+	}*/
+
+	public int getID()
+	{
+		return id;
+	}
+
 	public void startSession()
 	{
 		startNewGame();
@@ -57,6 +68,8 @@ public class GameSession implements Game
 		dispatchEvent(new EventInstance(null, Event.deleteGame()));
 		for (Player player : allPlayers)
 			player.setGame(null, null);
+
+		database.stopGameSession(id);
 	}
 
 	public void addKibic(Player player)
@@ -83,8 +96,12 @@ public class GameSession implements Game
 
 	private void startNewGame()
 	{
+		currentGameID = database.createGame(id, currentBeginnerPlayer);
+
 		List<Card> deck = new ArrayList<>(Card.getAll());
 		Collections.shuffle(deck);
+		database.setDeck(currentGameID, deck);
+
 		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
 		dispatchNewEvents();
@@ -93,7 +110,10 @@ public class GameSession implements Game
 	@Override
 	public void action(Action action)
 	{
-		currentGame.processAction(action);
+		boolean success = currentGame.processAction(action);
+		if (success)
+			database.addAction(currentGameID, action);
+
 		dispatchNewEvents();
 
 		if (currentGame.isFinished())
@@ -102,12 +122,15 @@ public class GameSession implements Game
 			{
 				currentBeginnerPlayer = currentBeginnerPlayer.nextPlayer();
 				doubleRoundTracker.gameFinished();
-				saveGame();
 			}
 			else
 			{
 				doubleRoundTracker.gameInterrupted();
 			}
+
+			for (int i = 0; i < 4; i++)
+				database.setPlayerPoints(id, i, points[i]);
+
 			startNewGame();
 		}
 	}
@@ -134,34 +157,5 @@ public class GameSession implements Game
 		for (EventInstance event : currentGame.getAllEvents())
 			if (event.getPlayerSeat() == null || event.getPlayerSeat() == seat)
 				event.getEvent().handle(eventHandler);
-	}
-
-	private void saveGame()
-	{
-		if (saveDir == null)
-			return;
-
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-		String date = dateFormat.format(Calendar.getInstance().getTime());
-		File saveFile;
-		for (int i = 0;; i++)
-		{
-			saveFile = new File(saveDir, date + (i == 0 ? "" : "_" + i));
-			if (!saveFile.exists())
-				break;
-		}
-
-		JSONObject json = new JSONObject();
-		json.put("players", getPlayerNames());
-		json.put("game", currentGame.getHistory().toJSON());
-
-		try (FileWriter writer = new FileWriter(saveFile))
-		{
-			json.write(writer);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
 	}
 }

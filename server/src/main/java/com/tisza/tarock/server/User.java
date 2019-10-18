@@ -1,79 +1,55 @@
 package com.tisza.tarock.server;
 
-import com.tisza.tarock.message.*;
-
 import java.util.*;
 
 public class User
 {
-	private final String id;
-	private String name;
-	private String imgURL;
-	private List<String> friendIDs = new ArrayList<>();
-	private Set<String> fcmTokens = new HashSet<>();
+	private final int id;
+	private final Database database;
 
-	public User(String id)
+	public User(int id, Database database)
 	{
 		this.id = id;
+		this.database = database;
 	}
 
-	public String getId()
+	public int getID()
 	{
 		return id;
 	}
 
 	public String getName()
 	{
-		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
+		return database.getUserName(id);
 	}
 
 	public String getImageURL()
 	{
-		return imgURL;
-	}
-
-	public void setImgURL(String imgURL)
-	{
-		this.imgURL = imgURL;
+		return database.getUserImgURL(id);
 	}
 
 	public boolean isFriendWith(User user)
 	{
-		return friendIDs.contains(user.getId());
-	}
-
-	public void addFriend(User user)
-	{
-		friendIDs.add(user.getId());
-	}
-
-	public void removeFriend(User user)
-	{
-		friendIDs.remove(user.getId());
-	}
-
-	public void clearFriends()
-	{
-		friendIDs.clear();
-	}
-
-	public void addFCMToken(String token)
-	{
-		fcmTokens.add(token);
-	}
-
-	public void removeFCMToken(String token)
-	{
-		fcmTokens.remove(token);
+		return database.areUserFriends(id, user.id);
 	}
 
 	public Collection<String> getFCMTokens()
 	{
-		return fcmTokens;
+		return database.getFCMTokensForUser(id);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return id;
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (!(obj instanceof User))
+			return false;
+
+		return id == ((User)obj).id;
 	}
 }

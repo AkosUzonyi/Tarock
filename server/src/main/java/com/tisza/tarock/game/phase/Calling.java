@@ -87,7 +87,6 @@ class Calling extends Phase
 			game.invitAccepted();
 		}
 
-		history.setCalledCard(player, card);
 		game.broadcastEvent(Event.call(player, card));
 		game.changePhase(new Announcing(game));
 

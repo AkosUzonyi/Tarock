@@ -50,7 +50,6 @@ class Gameplay extends Phase
 		
 		if (currentRound.isFinished())
 		{
-			history.registerRound(currentRound);
 			game.addRound(currentRound);
 			PlayerSeat winner = currentRound.getWinner();
 			game.addWonCards(winner, currentRound.getCards());

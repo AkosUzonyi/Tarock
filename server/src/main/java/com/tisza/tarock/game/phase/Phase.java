@@ -9,12 +9,10 @@ import java.util.*;
 abstract class Phase implements ActionHandler
 {
 	protected final GameState game;
-	protected final GameHistory history;
 
 	public Phase(GameState game)
 	{
 		this.game = game;
-		history = game.getHistory();
 	}
 
 	public abstract PhaseEnum asEnum();

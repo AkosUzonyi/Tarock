@@ -2,16 +2,16 @@ package com.tisza.tarock.game;
 
 public class User implements Comparable<User>
 {
-	private final String id;
+	private final int id;
 	private final String name;
 	private final String imgURL;
 	private final boolean isFriend;
 	private final boolean online;
 
-	public User(String id, String name, String imgURL, boolean isFriend, boolean online)
+	public User(int id, String name, String imgURL, boolean isFriend, boolean online)
 	{
-		if (id == null || name == null)
-			throw new IllegalArgumentException("id == null || name == null");
+		if (name == null)
+			throw new IllegalArgumentException("name == null");
 
 		this.id = id;
 		this.name = name;
@@ -20,7 +20,7 @@ public class User implements Comparable<User>
 		this.online = online;
 	}
 
-	public String getId()
+	public int getId()
 	{
 		return id;
 	}
@@ -56,13 +56,13 @@ public class User implements Comparable<User>
 
 		User otherUser = (User)other;
 
-		return id.equals(otherUser.id);
+		return id == otherUser.id;
 	}
 
 	@Override
 	public int hashCode()
 	{
-		return id.hashCode();
+		return id;
 	}
 
 	@Override
@@ -71,6 +71,6 @@ public class User implements Comparable<User>
 		if (isFriend != other.isFriend)
 			return isFriend ? -1 : 1;
 
-		return id.compareTo(other.id);
+		return id - other.id;
 	}
 }

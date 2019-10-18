@@ -3,7 +3,6 @@ package com.tisza.tarock;
 import com.tisza.tarock.server.*;
 
 import java.io.*;
-import java.sql.*;
 
 public class Main
 {

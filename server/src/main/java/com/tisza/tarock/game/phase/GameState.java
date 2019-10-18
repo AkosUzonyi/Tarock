@@ -18,7 +18,6 @@ public class GameState
 
 	private TeamInfoTracker teamInfoTracker;
 
-	private GameHistory history;
 	private List<EventInstance> events = new ArrayList<>();
 	private List<EventInstance> newEvents = new ArrayList<>();
 
@@ -79,7 +78,6 @@ public class GameState
 		this.pointMultiplier = pointMultiplier;
 
 		teamInfoTracker = new TeamInfoTracker(this);
-		history = new GameHistory();
 	}
 
 	public void start()
@@ -99,7 +97,6 @@ public class GameState
 		{
 			sendEvent(player, Event.seat(player));
 			sendEvent(player, Event.playerCards(playersCards.get(player)));
-			history.setOriginalPlayersCards(player, new ArrayList<>(playersCards.get(player).getCards()));
 		}
 
 		changePhase(new Bidding(this));
@@ -174,11 +171,6 @@ public class GameState
 	public TeamInfoTracker getTeamInfoTracker()
 	{
 		return teamInfoTracker;
-	}
-
-	public GameHistory getHistory()
-	{
-		return history;
 	}
 
 	public void broadcastEvent(Event event)

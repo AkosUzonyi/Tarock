@@ -4,25 +4,24 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.message.*;
 
-import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
 public class GameSessionManager
 {
-	private final File saveDir;
+	private final Database database;
 	private final ScheduledExecutorService gameExecutorService;
 
-	private int nextID = 0;
 	private Map<Integer, GameSession> games = new HashMap<>();
 	private Map<Integer, Map<User, ProtoPlayer>> gameIDAndUserToPlayers = new HashMap<>();
 
-	public GameSessionManager(File dataDir, ScheduledExecutorService gameExecutorService)
+	public GameSessionManager(Database database, ScheduledExecutorService gameExecutorService)
 	{
 		this.gameExecutorService = gameExecutorService;
+		this.database = database;
 
-		saveDir = new File(dataDir, "games");
-		saveDir.mkdir();
+		/*for (int gameID : database.getActiveGameSessionIDs())
+			games.put(gameID, GameSession.loadFromDatabase(database, gameID));*/
 	}
 
 	public List<String> getPlayerNames(int gameID)
@@ -48,8 +47,6 @@ public class GameSessionManager
 		if (users.size() > 4)
 			throw new IllegalArgumentException("users.size() > 4: " + users.size());
 
-		int id = nextID++;
-
 		List<User> shuffledUsers = new ArrayList<>(users);
 		int randomPlayerCount = 4 - users.size();
 		for (int i = 0; i < randomPlayerCount; i++)
@@ -72,15 +69,21 @@ public class GameSessionManager
 				userToPlayers.put(user, player);
 			}
 		}
-		gameIDAndUserToPlayers.put(id, userToPlayers);
 
-		GameSession game = new GameSession(type, players, doubleRoundType, saveDir);
-		games.put(id, game);
+		GameSession game = new GameSession(type, players, doubleRoundType, database);
+		games.put(game.getID(), game);
+		gameIDAndUserToPlayers.put(game.getID(), userToPlayers);
+		for (int i = 0; i < 4; i++)
+			if (shuffledUsers.get(i) == null)
+				database.addBotPlayer(game.getID(), i);
+			else
+				database.addUserPlayer(game.getID(), i, shuffledUsers.get(i) == null ? null : shuffledUsers.get(i).getID());
+
 		game.startSession();
 
-		System.out.println("game session created: users: " + users + " id: " + id);
+		System.out.println("game session created: users: " + users + " id: " + game.getID());
 
-		return id;
+		return game.getID();
 	}
 
 	public ProtoPlayer getPlayer(int gameID, User user)

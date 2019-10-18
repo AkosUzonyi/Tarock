@@ -1,6 +1,5 @@
 package com.tisza.tarock.server;
 
-import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
 
@@ -23,6 +22,7 @@ public class Server implements Runnable
 	private Collection<Client> clients = new ArrayList<>();
 	private Collection<User> loggedInUsers = new HashSet<>();
 
+	private final Database database;
 	private final GameSessionManager gameSessionManager;
 	private final FacebookUserManager facebookUserManager;
 	private final FirebaseNotificationSender firebaseNotificationSender;
@@ -32,10 +32,16 @@ public class Server implements Runnable
 		this.port = port;
 		this.keystoreFile = new File(staticDir, "keystore");
 
+		database = new Database(dataDir);
 		gameExecutorService = new GameExecutorService();
-		gameSessionManager = new GameSessionManager(dataDir, gameExecutorService);
-		facebookUserManager = new FacebookUserManager(dataDir);
+		gameSessionManager = new GameSessionManager(database, gameExecutorService);
+		facebookUserManager = new FacebookUserManager(database);
 		firebaseNotificationSender = new FirebaseNotificationSender(new File(staticDir, "fcm-service-account.json"));
+	}
+
+	public Database getDatabase()
+	{
+		return database;
 	}
 
 	public GameSessionManager getGameSessionManager()
@@ -56,13 +62,13 @@ public class Server implements Runnable
 	public void loginUser(User user)
 	{
 		loggedInUsers.add(user);
-		System.out.println("user logged in: " + user.getName() + " (id: " + user.getId() + ")");
+		System.out.println("user logged in: " + user.getName() + " (id: " + user.getID() + ")");
 	}
 
 	public void logoutUser(User user)
 	{
 		loggedInUsers.remove(user);
-		System.out.println("user logged out: " + user.getName() + " (id: " + user.getId() + ")");
+		System.out.println("user logged out: " + user.getName() + " (id: " + user.getID() + ")");
 	}
 
 	public boolean isUserLoggedIn(User user)
@@ -104,7 +110,7 @@ public class Server implements Runnable
 	{
 		try
 		{
-			facebookUserManager.initialize();
+			database.initialize();
 
 			createServerSocket();
 
@@ -127,8 +133,8 @@ public class Server implements Runnable
 				removeClient(client);
 			}
 
+			database.shutdown();
 			gameSessionManager.shutdown();
-			facebookUserManager.shutdown();
 			gameExecutorService.shutdownNow();
 
 			System.out.println("server stopped");
@@ -164,7 +170,7 @@ public class Server implements Runnable
 				builder.addAvailableGame(Utils.gameInfoToProto(gameInfo, gameSessionManager.isGameOwnedBy(gameInfo.getId(), client.getLoggedInUser())));
 			}
 
-			for (User user : facebookUserManager.listUsers())
+			for (User user : database.listUsers())
 			{
 				if (!user.equals(client.getLoggedInUser()))
 					builder.addAvailableUser(Utils.userToProto(user, client.getLoggedInUser().isFriendWith(user), isUserLoggedIn(user)));

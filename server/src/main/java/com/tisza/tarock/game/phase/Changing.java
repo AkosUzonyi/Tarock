@@ -54,7 +54,6 @@ class Changing extends Phase
 			playerCards.addCards(cardsFromTalon);
 			game.sendEvent(player, Event.playerCards(playerCards));
 			game.sendEvent(player, Event.turn(player));
-			history.setCardsFromTalon(player, new ArrayList<>(cardsFromTalon));
 			if (cardsFromTalon.isEmpty())
 				change(player, Collections.EMPTY_LIST);
 			cardsFromTalon.clear();
@@ -111,7 +110,6 @@ class Changing extends Phase
 		
 		skartingPlayerCards.removeCards(cardsToSkart);
 		donePlayer.put(player, true);
-		history.setCardsSkarted(player, cardsToSkart);
 		game.sendEvent(player, Event.playerCards(skartingPlayerCards));
 		game.broadcastEvent(Event.changeDone(player));
 

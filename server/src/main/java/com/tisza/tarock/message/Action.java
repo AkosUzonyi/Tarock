@@ -25,6 +25,11 @@ public class Action
 		return id;
 	}
 
+	public PlayerSeat getPlayer()
+	{
+		return player;
+	}
+
 	public static Action bid(PlayerSeat player, int bid)
 	{
 		return new Action(player, "bid:" + (bid < 0 ? "p" : bid));

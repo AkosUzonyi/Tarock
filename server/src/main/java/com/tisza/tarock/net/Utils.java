@@ -19,13 +19,13 @@ public class Utils
 				.build();
 	}
 
-	public static MainProto.User userToProto(User user, boolean isFriend)
+	public static MainProto.User userToProto(User user, boolean isFriend, boolean loggedIn)
 	{
 		MainProto.User.Builder builder = MainProto.User.newBuilder()
 				.setId(user.getId())
 				.setName(user.getName())
 				.setIsFriend(isFriend)
-				.setOnline(user.isLoggedIn());
+				.setOnline(loggedIn);
 
 		String imgURL = user.getImageURL();
 		if (imgURL != null)

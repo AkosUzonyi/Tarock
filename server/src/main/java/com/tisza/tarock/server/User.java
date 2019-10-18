@@ -12,8 +12,6 @@ public class User
 	private List<String> friendIDs = new ArrayList<>();
 	private Set<String> fcmTokens = new HashSet<>();
 
-	private boolean loggedIn = false;
-
 	public User(String id)
 	{
 		this.id = id;
@@ -77,17 +75,5 @@ public class User
 	public Collection<String> getFCMTokens()
 	{
 		return fcmTokens;
-	}
-
-	public boolean isLoggedIn()
-	{
-		return loggedIn;
-	}
-
-	public void setLoggedIn(boolean loggedIn)
-	{
-		this.loggedIn = loggedIn;
-
-		System.out.println("user logged " + (loggedIn ? "in" : "out") + ": " + name + " (id: " + id + ")");
 	}
 }

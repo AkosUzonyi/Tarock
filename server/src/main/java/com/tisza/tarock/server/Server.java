@@ -20,7 +20,8 @@ public class Server implements Runnable
 
 	private final ScheduledExecutorService gameExecutorService;
 
-	private List<Client> clients = new ArrayList<>();
+	private Collection<Client> clients = new ArrayList<>();
+	private Collection<User> loggedInUsers = new HashSet<>();
 
 	private final GameSessionManager gameSessionManager;
 	private final FacebookUserManager facebookUserManager;
@@ -50,6 +51,23 @@ public class Server implements Runnable
 	public FirebaseNotificationSender getFirebaseNotificationSender()
 	{
 		return firebaseNotificationSender;
+	}
+
+	public void loginUser(User user)
+	{
+		loggedInUsers.add(user);
+		System.out.println("user logged in: " + user.getName() + " (id: " + user.getId() + ")");
+	}
+
+	public void logoutUser(User user)
+	{
+		loggedInUsers.remove(user);
+		System.out.println("user logged out: " + user.getName() + " (id: " + user.getId() + ")");
+	}
+
+	public boolean isUserLoggedIn(User user)
+	{
+		return loggedInUsers.contains(user);
 	}
 
 	public void removeClient(Client client)
@@ -149,7 +167,7 @@ public class Server implements Runnable
 			for (User user : facebookUserManager.listUsers())
 			{
 				if (!user.equals(client.getLoggedInUser()))
-					builder.addAvailableUser(Utils.userToProto(user, client.getLoggedInUser().isFriendWith(user)));
+					builder.addAvailableUser(Utils.userToProto(user, client.getLoggedInUser().isFriendWith(user), isUserLoggedIn(user)));
 			}
 
 			client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());

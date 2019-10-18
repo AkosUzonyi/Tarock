@@ -47,7 +47,7 @@ public class Client implements MessageHandler
 					newUser = server.getFacebookUserManager().getUserByAccessToken(fbAccessToken);
 				}
 
-				if (newUser != null && newUser.isLoggedIn())
+				if (newUser != null && server.isUserLoggedIn(newUser))
 					newUser = null;
 
 				MainProto.Login.Builder loginMessageBuilder = MainProto.Login.newBuilder();
@@ -55,7 +55,7 @@ public class Client implements MessageHandler
 				loggedInUser = newUser;
 				if (loggedInUser != null)
 				{
-					loggedInUser.setLoggedIn(true);
+					server.loginUser(loggedInUser);
 					loginMessageBuilder.setFacebookToken(fbAccessToken);
 				}
 
@@ -189,7 +189,7 @@ public class Client implements MessageHandler
 		currentPlayer = null;
 		if (loggedInUser != null)
 		{
-			loggedInUser.setLoggedIn(false);
+			server.logoutUser(loggedInUser);
 			loggedInUser = null;
 		}
 	}

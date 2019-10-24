@@ -76,11 +76,6 @@ public class GameSession implements Game
 		return gameType;
 	}
 
-	public GameState getCurrentGame()
-	{
-		return currentGame;
-	}
-
 	public List<String> getPlayerNames()
 	{
 		return players.values().stream().map(Player::getName).collect(Collectors.toList());

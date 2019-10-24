@@ -1,9 +1,8 @@
 package com.tisza.tarock.game.phase;
 
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.game.*;
-import com.tisza.tarock.message.*;
 import org.junit.*;
 import org.junit.runner.*;
 import org.junit.runners.*;
@@ -11,8 +10,8 @@ import org.junit.runners.*;
 import java.util.*;
 import java.util.function.*;
 
+import static junit.framework.TestCase.*;
 import static org.junit.runners.Parameterized.*;
-import static junit.framework.TestCase.assertEquals;
 
 @RunWith(Parameterized.class)
 public class JatekDuplaVolatPoints
@@ -85,13 +84,7 @@ public class JatekDuplaVolatPoints
 	@Before
 	public void createGameState()
 	{
-		PlayerSeatMap<Player> players = new PlayerSeatMap<>();
-		for (PlayerSeat seat : PlayerSeat.getAll())
-		{
-			players.put(seat, new TestPlayer(""));
-		}
-
-		game = new GameState(GameType.PASKIEVICS, Arrays.asList("", "", "", ""), PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), null, 1)
+		game = new GameState(GameType.PASKIEVICS, Arrays.asList("", "", "", ""), PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1)
 		{
 			@Override
 			public int calculateGamePoints(Team team)

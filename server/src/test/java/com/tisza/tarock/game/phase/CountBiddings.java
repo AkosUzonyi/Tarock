@@ -1,8 +1,7 @@
 package com.tisza.tarock.game.phase;
 
-import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.game.doubleround.*;
+import com.tisza.tarock.game.card.*;
 import org.junit.*;
 
 import java.util.*;
@@ -82,21 +81,15 @@ public class CountBiddings
 
 	private GameState createNewGame()
 	{
-		List<TestPlayer> players = new ArrayList<>();
-		for (PlayerSeat seat : PlayerSeat.getAll())
-		{
-			players.add(new TestPlayer(""));
-		}
-
-		GameSession gameSession = new GameSession(GameType.PASKIEVICS, players, DoubleRoundType.NONE, null);
-		gameSession.startSession();
+		GameState game = new GameState(GameType.PASKIEVICS, Arrays.asList("", "", "", ""), PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1);
+		game.start();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{
 			for (int i = 0; i < 5; i++)
-				gameSession.getCurrentGame().getPlayerCards(seat).addCard(Card.getTarockCard(18 + i));
+				game.getPlayerCards(seat).addCard(Card.getTarockCard(18 + i));
 		}
 
-		return gameSession.getCurrentGame();
+		return game;
 	}
 }

@@ -1,18 +1,17 @@
 package com.tisza.tarock.game.phase;
 
-import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.game.doubleround.*;
+import com.tisza.tarock.game.card.*;
+import com.tisza.tarock.message.*;
 import org.junit.*;
 import org.junit.runner.*;
 import org.junit.runners.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 import static org.junit.Assert.*;
 import static org.junit.runners.Parameterized.*;
-
-import com.tisza.tarock.game.Invitation;
 
 @RunWith(Parameterized.class)
 public class BiddingTest
@@ -98,16 +97,8 @@ public class BiddingTest
 	@Test
 	public void test()
 	{
-		List<TestPlayer> players = new ArrayList<>();
-		for (PlayerSeat seat : PlayerSeat.getAll())
-		{
-			players.add(new TestPlayer(getPlayerName(seat)));
-		}
-
-		GameSession gameSession = new GameSession(GameType.PASKIEVICS, players, DoubleRoundType.NONE, null);
-		gameSession.startSession();
-
-		GameState game = gameSession.getCurrentGame();
+		GameState game = new GameState(GameType.PASKIEVICS, Arrays.stream(PlayerSeat.getAll()).map(this::getPlayerName).collect(Collectors.toList()), PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1);
+		game.start();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{
@@ -127,7 +118,7 @@ public class BiddingTest
 
 			int bid = bidString.equals("-") ? -1 : Integer.parseInt(bidString);
 
-			players.get(i % 4).bid(bid);
+			game.processAction(Action.bid(PlayerSeat.fromInt(i % 4), bid));
 		}
 
 		assertNotEquals(PhaseEnum.BIDDING, game.getCurrentPhase().asEnum());
@@ -141,10 +132,10 @@ public class BiddingTest
 		}
 		else
 		{
-			PlayerSeat bidWinnerPlayer = gameSession.getCurrentGame().getBidWinnerPlayer();
-			int winnerBid = gameSession.getCurrentGame().getWinnerBid();
-			Invitation invitation = gameSession.getCurrentGame().getInvitSent();
-			PlayerSeat invitingPlayer = gameSession.getCurrentGame().getInvitingPlayer();
+			PlayerSeat bidWinnerPlayer = game.getBidWinnerPlayer();
+			int winnerBid = game.getWinnerBid();
+			Invitation invitation = game.getInvitSent();
+			PlayerSeat invitingPlayer = game.getInvitingPlayer();
 
 			assertEquals(expectedBidWinnerPlayer, getPlayerName(bidWinnerPlayer));
 			assertEquals(Integer.parseInt(expectedWinnerBid), winnerBid);

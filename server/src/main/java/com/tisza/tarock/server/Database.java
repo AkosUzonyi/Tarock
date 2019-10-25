@@ -36,6 +36,8 @@ public class Database
 
 		rxdatabase = org.davidmoten.rx.jdbc.Database.from(dbURL, 1);
 		rxdatabase.update("PRAGMA foreign_keys = ON").complete().subscribe();
+		rxdatabase.select("PRAGMA journal_mode = WAL;").count().subscribe();
+		rxdatabase.update("PRAGMA synchronous = NORMAL;").complete().subscribe();
 	}
 
 	private <T> SingleTransformer<T, T> resultTransformerUpdateSingle()

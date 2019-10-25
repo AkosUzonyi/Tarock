@@ -64,7 +64,7 @@ CREATE TABLE action (
 
 CREATE TABLE fcm_token (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    token varchar(255) NOT NULL UNIQUE,
+    token VARCHAR(255) NOT NULL UNIQUE,
     user_id INTEGER NOT NULL,
     FOREIGN KEY(user_id) REFERENCES user(id)
 );

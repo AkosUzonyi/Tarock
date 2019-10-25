@@ -4,518 +4,239 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.message.*;
+import io.reactivex.*;
+import io.reactivex.schedulers.*;
 import org.flywaydb.core.*;
 
 import java.io.*;
-import java.sql.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class Database
 {
 	private static final String DATABASE_FILENAME = "tarock.db";
 
 	private final String dbURL;
-	private Connection databaseConnection;
+	private final Scheduler observerScheduler;
+	private org.davidmoten.rx.jdbc.Database rxdatabase;
 
-	public Database(File dbDir)
+	public Database(File dbDir, Executor observerExecutor)
 	{
 		dbURL = "jdbc:sqlite:" + new File(dbDir, DATABASE_FILENAME).getAbsolutePath();
+		observerScheduler = Schedulers.from(observerExecutor);
 	}
 
-	public void initialize() throws SQLException
+	public void initialize()
 	{
-		if (databaseConnection != null)
+		if (rxdatabase != null)
 			throw new IllegalStateException();
 
 		Flyway flyway = Flyway.configure().dataSource(dbURL, null, null).load();
 		flyway.migrate();
 
-		databaseConnection = DriverManager.getConnection(dbURL);
-
-		Statement statement = databaseConnection.createStatement();
-		statement.execute("PRAGMA foreign_keys = ON;");
-		statement.close();
+		rxdatabase = org.davidmoten.rx.jdbc.Database.from(dbURL, 1);
+		rxdatabase.update("PRAGMA foreign_keys = ON").complete().subscribe();
 	}
 
-	public int setFacebookUserData(String facebookId, String name, String imgURL, Collection<String> friendFacebookIDs)
+	private <T> SingleTransformer<T, T> resultTransformerUpdateSingle()
 	{
-		int userID = -1;
-
-		try
+		return upstream ->
 		{
-			PreparedStatement preparedStatement;
+			upstream = upstream.cache();
+			upstream.subscribe();
+			return upstream.observeOn(observerScheduler);
+		};
+	}
 
-			preparedStatement = databaseConnection.prepareStatement("UPDATE user SET name = ?, img_url = ? where facebook_id = ?");
-			preparedStatement.setString(1, name);
-			preparedStatement.setString(2, imgURL);
-			preparedStatement.setString(3, facebookId);
-			int count = preparedStatement.executeUpdate();
-			preparedStatement.close();
+	private <T> SingleTransformer<T, T> resultTransformerQuerySingle()
+	{
+		return upstream -> upstream.observeOn(observerScheduler);
+	}
 
-			if (count > 0)
-			{
-				preparedStatement = databaseConnection.prepareStatement("SELECT id FROM user WHERE facebook_id = ?");
-				preparedStatement.setString(1, facebookId);
-				ResultSet resultSet = preparedStatement.executeQuery();
-				resultSet.next();
-				userID = resultSet.getInt("id");
-				preparedStatement.close();
-			}
-			else
-			{
-				preparedStatement = databaseConnection.prepareStatement("INSERT INTO user(facebook_id, name, img_url, registration_time) VALUES (?, ?, ?, ?);");
-				preparedStatement.setString(1, facebookId);
-				preparedStatement.setString(2, name);
-				preparedStatement.setString(3, imgURL);
-				preparedStatement.setLong(4, System.currentTimeMillis());
-				preparedStatement.executeUpdate();
+	private <T> FlowableTransformer<T, T> resultTransformerQueryFlowable()
+	{
+		return upstream -> upstream.observeOn(observerScheduler);
+	}
 
-				ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-				if (!generatedKeys.next())
-					return userID;
+	public Single<Integer> setFacebookUserData(String facebookId, String name, String imgURL, List<String> friendFacebookIDs)
+	{
+		Single<Integer> selectID = rxdatabase.select("SELECT id FROM user WHERE facebook_id = ?")
+				.parameter(facebookId).getAs(Integer.class).singleOrError();
 
-				userID = generatedKeys.getInt(1);
-				System.out.println("userid: " + userID);
-				preparedStatement.close();
-			}
+		Single<Integer> insert = rxdatabase.update("INSERT INTO user(facebook_id, name, img_url, registration_time) VALUES (?, ?, ?, ?);")
+				.parameters(facebookId, name, imgURL, System.currentTimeMillis())
+				.returnGeneratedKeys().getAs(Integer.class).singleOrError();
 
-			if (friendFacebookIDs != null)
-			{
-				preparedStatement = databaseConnection.prepareStatement("DELETE FROM friendship WHERE id0 = ? OR id1 = ?;");
-				preparedStatement.setInt(1, userID);
-				preparedStatement.setInt(2, userID);
-				preparedStatement.executeUpdate();
-				preparedStatement.close();
+		Single<Integer> userID = rxdatabase.update("UPDATE user SET name = ?, img_url = ? where facebook_id = ?")
+				.parameters(name, imgURL, facebookId)
+				.counts().flatMapSingle(count -> count == 0 ? insert : selectID)
+				.singleOrError().cache();
 
-				preparedStatement = databaseConnection.prepareStatement("INSERT INTO friendship(id0, id1) VALUES(?, (SELECT id FROM user WHERE facebook_id = ?));");
-				for (String friendFacebookID : friendFacebookIDs)
-				{
-					preparedStatement.setInt(1, userID);
-					preparedStatement.setString(2, friendFacebookID);
-					preparedStatement.addBatch();
-				}
-				preparedStatement.executeBatch();
-				preparedStatement.close();
-			}
-		}
-		catch (SQLException e)
+		if (friendFacebookIDs != null)
 		{
-			e.printStackTrace();
+			userID.subscribe(uid ->
+			{
+				Flowable<Object> parameters = Flowable.fromIterable(friendFacebookIDs)
+						.flatMap(friendFacebookID -> Flowable.just(friendFacebookID, uid, uid));
+
+				rxdatabase.update("DELETE FROM friendship WHERE id0 = ? OR id1 = ?;")
+						.parameters(uid, uid)
+						.complete()
+						.andThen(
+							rxdatabase.update("WITH friend AS (SELECT id FROM user WHERE facebook_id = ?) " +
+									"INSERT INTO friendship(id0, id1) SELECT ?, id FROM friend UNION SELECT id, ? FROM friend;")
+									.batchSize(friendFacebookIDs.size())
+									.parameterStream(parameters).complete()
+						).subscribe();
+			});
 		}
 
-		return userID;
+		return userID.compose(resultTransformerUpdateSingle());
 	}
 
 	public User getUser(int userID)
 	{
-		User user = null;
-
-		try
-		{
-			PreparedStatement preparedStatement;
-			ResultSet resultSet;
-
-			preparedStatement = databaseConnection.prepareStatement("SELECT id FROM user WHERE id = ?;");
-			preparedStatement.setInt(1, userID);
-			resultSet = preparedStatement.executeQuery();
-
-			if (resultSet.next())
-				user = new User(userID, this);
-
-			preparedStatement.close();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-
-		return user;
+		return new User(userID, this);
 	}
 
-	public String getUserName(int userID)
+	public Single<String> getUserName(int userID)
 	{
-		String name = null;
-
-		try
-		{
-			PreparedStatement preparedStatement;
-			ResultSet resultSet;
-
-			preparedStatement = databaseConnection.prepareStatement("SELECT name FROM user WHERE id = ?;");
-			preparedStatement.setInt(1, userID);
-			resultSet = preparedStatement.executeQuery();
-
-			if (resultSet.next())
-				name = resultSet.getString("name");
-
-			preparedStatement.close();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-
-		return name;
+		return rxdatabase.select("SELECT name FROM user WHERE id = ?;")
+				.parameter(userID).getAs(String.class).singleOrError()
+				.compose(resultTransformerQuerySingle());
 	}
 
-	public String getUserImgURL(int userID)
+	public Single<String> getUserImgURL(int userID)
 	{
-		String imgURL = null;
-
-		try
-		{
-			PreparedStatement preparedStatement;
-			ResultSet resultSet;
-
-			preparedStatement = databaseConnection.prepareStatement("SELECT img_url FROM user WHERE id = ?;");
-			preparedStatement.setInt(1, userID);
-			resultSet = preparedStatement.executeQuery();
-
-			if (resultSet.next())
-				imgURL = resultSet.getString("img_url");
-
-			preparedStatement.close();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-
-		return imgURL;
+		return rxdatabase.select("SELECT img_url FROM user WHERE id = ?;")
+				.parameter(userID).getAs(String.class).singleOrError()
+				.compose(resultTransformerQuerySingle());
 	}
 
-	public boolean areUserFriends(int userID0, int userID1)
+	public Single<Boolean> areUserFriends(int userID0, int userID1)
 	{
-		try
-		{
-			PreparedStatement preparedStatement;
-			ResultSet resultSet;
-
-			preparedStatement = databaseConnection.prepareStatement("SELECT id0 as id FROM friendship WHERE id0 = ? AND id1 = ? UNION SELECT id0 as id FROM friendship WHERE id0 = ? AND id1 = ?;");
-			preparedStatement.setInt(1, userID0);
-			preparedStatement.setInt(2, userID1);
-			preparedStatement.setInt(3, userID1);
-			preparedStatement.setInt(4, userID0);
-			resultSet = preparedStatement.executeQuery();
-			boolean friends = resultSet.next();
-			preparedStatement.close();
-			return friends;
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-
-		return false;
+		return rxdatabase.select("SELECT COUNT(id0) FROM friendship WHERE id0 = ? AND id1 = ?;")
+				.parameters(userID0, userID1).getAs(Integer.class).singleOrError().map(count -> count > 0)
+				.compose(resultTransformerQuerySingle());
 	}
 
-	//TODO remove
-	public List<User> listUsers()
+	public Flowable<User> getUsers()
 	{
-		try
-		{
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("SELECT id FROM user ORDER BY id;");
-			ResultSet resultSet = preparedStatement.executeQuery();
-			List<User> result = new ArrayList<>();
-			while (resultSet.next())
-				result.add(getUser(resultSet.getInt("id")));
-			preparedStatement.close();
-			return result;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return rxdatabase.select("SELECT id FROM user ORDER BY id;")
+				.getAs(Integer.class).map(id -> new User(id, this))
+				.compose(resultTransformerQueryFlowable());
 	}
 
-	public int createGameSession(GameType gameType, DoubleRoundType doubleRoundType)
+	public Single<Integer> createGameSession(GameType gameType, DoubleRoundType doubleRoundType)
 	{
-		try
-		{
-			PreparedStatement preparedStatement;
-
-			preparedStatement = databaseConnection.prepareStatement("INSERT INTO game_session(type, double_round_type, create_time) VALUES(?, ?, ?);");
-			preparedStatement.setString(1, gameType.getID());
-			preparedStatement.setString(2, doubleRoundType.getID());
-			preparedStatement.setLong(3, System.currentTimeMillis());
-			preparedStatement.executeUpdate();
-
-			ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-			if (!generatedKeys.next())
-				return -1;
-
-			int gameID = generatedKeys.getInt(1);
-			preparedStatement.close();
-
-			return gameID;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return rxdatabase.update("INSERT INTO game_session(type, double_round_type, create_time) VALUES(?, ?, ?);")
+				.parameters(gameType.getID(), doubleRoundType.getID(), System.currentTimeMillis())
+				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
+				.compose(resultTransformerUpdateSingle());
 	}
 
-	public List<Integer> getActiveGameSessionIDs()
+	public Flowable<Integer> getActiveGameSessionIDs()
 	{
-		try
-		{
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("SELECT id FROM game_session WHERE current_game_id IS NOT NULL;");
-			ResultSet resultSet = preparedStatement.executeQuery();
-			List<Integer> result = new ArrayList<>();
-			while (resultSet.next())
-				result.add(resultSet.getInt("id"));
-			preparedStatement.close();
-			return result;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return rxdatabase.select("SELECT id FROM game_session WHERE current_game_id IS NOT NULL;")
+				.getAs(Integer.class)
+				.compose(resultTransformerQueryFlowable());
 	}
 
 	public void stopGameSession(int gameSessionID)
 	{
-		try
-		{
-			PreparedStatement preparedStatement;
-			preparedStatement = databaseConnection.prepareStatement("UPDATE game_session SET current_game_id = NULL where id = ?;");
-			preparedStatement.setInt(1, gameSessionID);
-			preparedStatement.executeUpdate();
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		rxdatabase.update("UPDATE game_session SET current_game_id = NULL where id = ?;")
+				.parameter(gameSessionID).complete().subscribe();
 	}
 
 	public void addBotPlayer(int gameSessionID, int seat)
 	{
-		addUserPlayer(gameSessionID, seat, -1);
+		addUserPlayer(gameSessionID, seat, null);
 	}
 
 	public void addUserPlayer(int gameSessionID, int seat, Integer userID)
 	{
-		try
-		{
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("INSERT INTO player(game_session_id, seat, user_id) VALUES(?, ?, ?);");
-			preparedStatement.setInt(1, gameSessionID);
-			preparedStatement.setInt(2, seat);
-			if (userID < 0)
-				preparedStatement.setNull(3, Types.INTEGER);
-			else
-				preparedStatement.setInt(3, userID);
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		rxdatabase.update("INSERT INTO player(game_session_id, seat, user_id) VALUES(?, ?, ?);")
+				.parameters(gameSessionID, seat, userID).complete().subscribe();
 	}
 
 	public void setPlayerPoints(int gameSessionID, int seat, int value)
 	{
-		try
-		{
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("UPDATE player SET points = ? WHERE game_session_id = ? AND seat = ?;");
-			preparedStatement.setInt(1, value);
-			preparedStatement.setInt(2, gameSessionID);
-			preparedStatement.setInt(3, seat);
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		rxdatabase.update("UPDATE player SET points = ? WHERE game_session_id = ? AND seat = ?;")
+				.parameters(value, gameSessionID, seat).complete().subscribe();
 	}
 
-	public int createGame(int gameSessionID, PlayerSeat beginnerPlayer)
+	public Single<Integer> createGame(int gameSessionID, PlayerSeat beginnerPlayer)
 	{
-		try
-		{
-			PreparedStatement preparedStatement;
-
-			preparedStatement = databaseConnection.prepareStatement("INSERT INTO game(game_session_id, beginner_player, create_time) VALUES(?, ?, ?);");
-			preparedStatement.setInt(1, gameSessionID);
-			preparedStatement.setInt(2, beginnerPlayer.asInt());
-			preparedStatement.setLong(3, System.currentTimeMillis());
-			preparedStatement.executeUpdate();
-
-			ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-			if (!generatedKeys.next())
-				return -1;
-
-			int gameID = generatedKeys.getInt(1);
-			preparedStatement.close();
-
-			preparedStatement = databaseConnection.prepareStatement("UPDATE game_session SET current_game_id = ? where id = ?;");
-			preparedStatement.setInt(1, gameID);
-			preparedStatement.setInt(2, gameSessionID);
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-
-			return gameID;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return rxdatabase.update("INSERT INTO game(game_session_id, beginner_player, create_time) VALUES(?, ?, ?);")
+				.parameters(gameSessionID, beginnerPlayer.asInt(), System.currentTimeMillis())
+				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
+				.doOnSuccess(gameID ->
+				{
+					rxdatabase.update("UPDATE game_session SET current_game_id = ? where id = ?;")
+							.parameters(gameID, gameSessionID).complete().subscribe();
+				})
+				.compose(resultTransformerUpdateSingle());
 	}
 
 	public void setDeck(int gameID, List<Card> deck)
 	{
-		try
-		{
-			databaseConnection.setAutoCommit(false);
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("INSERT INTO deck_card(game_id, ordinal, card) VALUES(?, ?, ?);");
-			int ordinal = 0;
-			for (Card card : deck)
-			{
-				preparedStatement.setInt(1, gameID);
-				preparedStatement.setInt(2, ordinal++);
-				preparedStatement.setString(3, card.getID());
-				preparedStatement.addBatch();
-			}
-			preparedStatement.executeBatch();
-			preparedStatement.close();
-			databaseConnection.setAutoCommit(true);
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		Flowable<Object> parameters = Flowable.range(0, deck.size())
+				.flatMap(i -> Flowable.just(gameID, i, deck.get(i).getID()));
+
+		rxdatabase.update("INSERT INTO deck_card(game_id, ordinal, card) VALUES(?, ?, ?);")
+				.batchSize(deck.size()).parameterStream(parameters)
+				.complete().subscribe();
 	}
 
-	public List<Card> getDeck(int gameID)
+	public Flowable<Card> getDeck(int gameID)
 	{
-		try
-		{
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("SELECT card FROM deck_card WHERE game_id = ? ORDER BY ordinal;");
-			preparedStatement.setInt(1, gameID);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			List<Card> result = new ArrayList<>();
-			while (resultSet.next())
-				result.add(Card.fromId(resultSet.getString("card")));
-			preparedStatement.close();
-			return result;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return rxdatabase.select("SELECT card FROM deck_card WHERE game_id = ? ORDER BY ordinal;")
+				.parameter(gameID).getAs(String.class).map(Card::fromId)
+				.compose(resultTransformerQueryFlowable());
 	}
 
-	public void addAction(int gameID, Action action)
+	public void addAction(int gameID, Action action, int ordinal)
 	{
-		try
-		{
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("INSERT INTO action(game_id, ordinal, seat, action, time) VALUES(?, (SELECT MAX(ordinal) from action) + 1, ?, ?, ?);");
-			preparedStatement.setInt(1, gameID);
-			preparedStatement.setInt(2, action.getPlayer().asInt());
-			preparedStatement.setString(3, action.getId());
-			preparedStatement.setLong(4, System.currentTimeMillis());
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		rxdatabase.update("INSERT INTO action(game_id, ordinal, seat, action, time) VALUES(?, ?, ?, ?, ?);")
+				.parameters(gameID, ordinal, action.getPlayer().asInt(), action.getId(), System.currentTimeMillis()).complete().subscribe();
 	}
 
-	public List<Action> getActions(int gameID)
+	public Flowable<Action> getActions(int gameID)
 	{
-		try
-		{
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("SELECT seat, action FROM action WHERE game_id = ? ORDER BY ordinal;");
-			preparedStatement.setInt(1, gameID);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			List<Action> result = new ArrayList<>();
-			while (resultSet.next())
-				result.add(new Action(PlayerSeat.fromInt(resultSet.getInt("seat")), resultSet.getString("action")));
-			preparedStatement.close();
-			return result;
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		return rxdatabase.select("SELECT seat, action FROM action WHERE game_id = ? ORDER BY ordinal;")
+				.parameter(gameID).getAs(Integer.class, String.class)
+				.map(tuple -> new Action(PlayerSeat.fromInt(tuple._1()), tuple._2()))
+				.compose(resultTransformerQueryFlowable());
 	}
 
 	public void addFCMToken(String token, int userID)
 	{
-		try
-		{
-			PreparedStatement preparedStatement;
+		Flowable<Integer> insert = rxdatabase.update("INSERT INTO fcm_token(token, user_id) VALUES (?, ?);")
+				.parameters(token, userID).counts();
 
-			preparedStatement = databaseConnection.prepareStatement("UPDATE fcm_token SET user_id = ? WHERE token = ?;");
-			preparedStatement.setInt(1, userID);
-			preparedStatement.setString(2, token);
-			int count = preparedStatement.executeUpdate();
-			preparedStatement.close();
-
-			if (count > 0)
-				return;
-
-			preparedStatement = databaseConnection.prepareStatement("INSERT INTO fcm_token(token, user_id) VALUES (?, ?);");
-			preparedStatement.setString(1, token);
-			preparedStatement.setInt(2, userID);
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		rxdatabase.update("UPDATE fcm_token SET user_id = ? WHERE token = ?;")
+				.parameters(userID, token).counts()
+				.flatMap(count -> count == 0 ? insert : Flowable.empty())
+				.subscribe();
 	}
 
 	public void removeFCMToken(String token)
 	{
-		try
-		{
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("DELETE FROM fcm_token WHERE token = ?;");
-			preparedStatement.setString(1, token);
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
+		rxdatabase.update("DELETE FROM fcm_token WHERE token = ?;")
+				.parameter(token).complete().subscribe();
 	}
 
-	public Collection<String> getFCMTokensForUser(int userID)
+	public Flowable<String> getFCMTokensForUser(int userID)
 	{
-		Collection<String> result = new ArrayList<>();
-		try
-		{
-			PreparedStatement preparedStatement = databaseConnection.prepareStatement("SELECT token FROM fcm_token WHERE user_id = ?;");
-			preparedStatement.setInt(1, userID);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next())
-				result.add(resultSet.getString("token"));
-			preparedStatement.close();
-		}
-		catch (SQLException e)
-		{
-			throw new RuntimeException(e);
-		}
-		return result;
+		return rxdatabase.select("SELECT token FROM fcm_token WHERE user_id = ?;")
+				.parameter(userID).getAs(String.class)
+				.compose(resultTransformerQueryFlowable());
 	}
 
 	public void shutdown()
 	{
-		try
-		{
-			if (databaseConnection != null)
-				databaseConnection.close();
-		}
-		catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
-
-		databaseConnection = null;
+		if (rxdatabase != null)
+			rxdatabase.close();
+		rxdatabase = null;
 	}
 }

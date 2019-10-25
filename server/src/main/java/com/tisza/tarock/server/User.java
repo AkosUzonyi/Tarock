@@ -1,6 +1,6 @@
 package com.tisza.tarock.server;
 
-import java.util.*;
+import io.reactivex.*;
 
 public class User
 {
@@ -18,22 +18,22 @@ public class User
 		return id;
 	}
 
-	public String getName()
+	public Single<String> getName()
 	{
 		return database.getUserName(id);
 	}
 
-	public String getImageURL()
+	public Single<String> getImageURL()
 	{
 		return database.getUserImgURL(id);
 	}
 
-	public boolean isFriendWith(User user)
+	public Single<Boolean> isFriendWith(User user)
 	{
 		return database.areUserFriends(id, user.id);
 	}
 
-	public Collection<String> getFCMTokens()
+	public Flowable<String> getFCMTokens()
 	{
 		return database.getFCMTokensForUser(id);
 	}

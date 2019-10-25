@@ -5,6 +5,8 @@ import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.server.*;
+import io.reactivex.*;
+import io.reactivex.Observable;
 
 import java.util.*;
 import java.util.stream.*;
@@ -21,19 +23,20 @@ public class GameSession implements Game
 
 	private PlayerSeat currentBeginnerPlayer = PlayerSeat.SEAT0;
 	private GameState currentGame;
-	private int currentGameID = -1;
+
+	private Single<Integer> currentGameID;
+	private int actionOrdinal = 0;
 
 	private int[] points = new int[4];
 
-	public GameSession(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, Database database)
+	private GameSession(int id, GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, Database database)
 	{
 		if (playerList.size() != 4)
 			throw new IllegalArgumentException("GameSession: playerList.size() != 4");
 
+		this.id = id;
 		this.database = database;
 		this.gameType = gameType;
-
-		id = database.createGameSession(gameType, doubleRoundType);
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -48,9 +51,10 @@ public class GameSession implements Game
 		doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 	}
 
-	/*public static GameSession loadFromDatabase(Database database, int gameID)
+	public static Single<GameSession> create(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, Database database)
 	{
-	}*/
+		return database.createGameSession(gameType, doubleRoundType).map(id -> new GameSession(id, gameType, playerList, doubleRoundType, database));
+	}
 
 	public int getID()
 	{
@@ -96,11 +100,14 @@ public class GameSession implements Game
 
 	private void startNewGame()
 	{
-		currentGameID = database.createGame(id, currentBeginnerPlayer);
-
 		List<Card> deck = new ArrayList<>(Card.getAll());
 		Collections.shuffle(deck);
-		database.setDeck(currentGameID, deck);
+
+		if (database != null)
+		{
+			currentGameID = database.createGame(id, currentBeginnerPlayer).cache();
+			currentGameID.subscribe(gid -> database.setDeck(gid, deck));
+		}
 
 		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
@@ -111,8 +118,11 @@ public class GameSession implements Game
 	public void action(Action action)
 	{
 		boolean success = currentGame.processAction(action);
-		if (success)
-			database.addAction(currentGameID, action);
+		if (success && database != null)
+		{
+			int ordinal = actionOrdinal++;
+			currentGameID.subscribe(gameID -> database.addAction(gameID, action, ordinal));
+		}
 
 		dispatchNewEvents();
 
@@ -128,8 +138,9 @@ public class GameSession implements Game
 				doubleRoundTracker.gameInterrupted();
 			}
 
-			for (int i = 0; i < 4; i++)
-				database.setPlayerPoints(id, i, points[i]);
+			if (database != null)
+				for (int i = 0; i < 4; i++)
+					database.setPlayerPoints(id, i, points[i]);
 
 			startNewGame();
 		}

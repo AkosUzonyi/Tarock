@@ -3,6 +3,8 @@ package com.tisza.tarock.server;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.message.*;
+import io.reactivex.Observable;
+import io.reactivex.*;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -19,9 +21,6 @@ public class GameSessionManager
 	{
 		this.gameExecutorService = gameExecutorService;
 		this.database = database;
-
-		/*for (int gameID : database.getActiveGameSessionIDs())
-			games.put(gameID, GameSession.loadFromDatabase(database, gameID));*/
 	}
 
 	public List<String> getPlayerNames(int gameID)
@@ -42,48 +41,43 @@ public class GameSessionManager
 		return result;
 	}
 
-	public int createNewGame(GameType type, List<User> users, DoubleRoundType doubleRoundType)
+	public Single<Integer> createNewGame(GameType type, List<User> users, DoubleRoundType doubleRoundType)
 	{
 		if (users.size() > 4)
 			throw new IllegalArgumentException("users.size() > 4: " + users.size());
 
-		List<User> shuffledUsers = new ArrayList<>(users);
-		int randomPlayerCount = 4 - users.size();
-		for (int i = 0; i < randomPlayerCount; i++)
-			shuffledUsers.add(null);
-		Collections.shuffle(shuffledUsers);
-
-		Map<User, ProtoPlayer> userToPlayers = new HashMap<>();
-		List<Player> players = new ArrayList<>();
-		int bot = 0;
-		for (User user : shuffledUsers)
+		return Observable.fromIterable(users).flatMapSingle(ProtoPlayer::createFromUser).toList().flatMap(protoPlayers ->
 		{
-			if (user == null)
-			{
+			List<Player> players = new ArrayList<>();
+			players.addAll(protoPlayers);
+			int bot = 0;
+			for (int i = protoPlayers.size(); i < 4; i++)
 				players.add(new RandomPlayer("bot" + bot++, gameExecutorService, 500, 2000));
-			}
-			else
+
+			Collections.shuffle(players);
+
+			return GameSession.create(type, players, doubleRoundType, database).map(game ->
 			{
-				ProtoPlayer player = new ProtoPlayer(user.getName());
-				players.add(player);
-				userToPlayers.put(user, player);
-			}
-		}
+				Map<User, ProtoPlayer> userToPlayers = new HashMap<>();
+				for (ProtoPlayer protoPlayer : protoPlayers)
+					userToPlayers.put(protoPlayer.getUser(), protoPlayer);
 
-		GameSession game = new GameSession(type, players, doubleRoundType, database);
-		games.put(game.getID(), game);
-		gameIDAndUserToPlayers.put(game.getID(), userToPlayers);
-		for (int i = 0; i < 4; i++)
-			if (shuffledUsers.get(i) == null)
-				database.addBotPlayer(game.getID(), i);
-			else
-				database.addUserPlayer(game.getID(), i, shuffledUsers.get(i) == null ? null : shuffledUsers.get(i).getID());
+				games.put(game.getID(), game);
+				gameIDAndUserToPlayers.put(game.getID(), userToPlayers);
+				for (int i = 0; i < 4; i++)
+					if (players.get(i) instanceof ProtoPlayer)
+						database.addUserPlayer(game.getID(), i, ((ProtoPlayer)players.get(i)).getUser().getID());
+					else
+						database.addBotPlayer(game.getID(), i);
 
-		game.startSession();
+				game.startSession();
 
-		System.out.println("game session created: users: " + users + " id: " + game.getID());
+				System.out.println("game session created: users: " + users + " id: " + game.getID());
 
-		return game.getID();
+				return game.getID();
+			});
+		});
+
 	}
 
 	public ProtoPlayer getPlayer(int gameID, User user)
@@ -104,14 +98,12 @@ public class GameSessionManager
 		System.out.println("game session deleted: id = " + id);
 	}
 
-	public ProtoPlayer addKibic(int gameID, User user)
+	public Single<ProtoPlayer> addKibic(int gameID, User user)
 	{
 		if (!games.containsKey(gameID))
 			return null;
 
-		ProtoPlayer player = new ProtoPlayer(user.getName());
-		games.get(gameID).addKibic(player);
-		return player;
+		return ProtoPlayer.createFromUser(user).doOnSuccess(player -> games.get(gameID).addKibic(player));
 	}
 
 	public void removeKibic(int gameID, Player player)

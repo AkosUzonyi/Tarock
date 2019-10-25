@@ -2,6 +2,7 @@ package com.tisza.tarock.server;
 
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
+import io.reactivex.*;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -32,8 +33,8 @@ public class Server implements Runnable
 		this.port = port;
 		this.keystoreFile = new File(staticDir, "keystore");
 
-		database = new Database(dataDir);
 		gameExecutorService = new GameExecutorService();
+		database = new Database(dataDir, gameExecutorService);
 		gameSessionManager = new GameSessionManager(database, gameExecutorService);
 		facebookUserManager = new FacebookUserManager(database);
 		firebaseNotificationSender = new FirebaseNotificationSender(new File(staticDir, "fcm-service-account.json"));
@@ -62,13 +63,13 @@ public class Server implements Runnable
 	public void loginUser(User user)
 	{
 		loggedInUsers.add(user);
-		System.out.println("user logged in: " + user.getName() + " (id: " + user.getID() + ")");
+		user.getName().subscribe(name -> System.out.println("user logged in: " + name + " (id: " + user.getID() + ")"));
 	}
 
 	public void logoutUser(User user)
 	{
 		loggedInUsers.remove(user);
-		System.out.println("user logged out: " + user.getName() + " (id: " + user.getID() + ")");
+		user.getName().subscribe(name -> System.out.println("user logged out: " + name + " (id: " + user.getID() + ")"));
 	}
 
 	public boolean isUserLoggedIn(User user)
@@ -164,19 +165,20 @@ public class Server implements Runnable
 				continue;
 
 			MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
-
 			for (GameInfo gameInfo : gameSessionManager.listGames())
 			{
 				builder.addAvailableGame(Utils.gameInfoToProto(gameInfo, gameSessionManager.isGameOwnedBy(gameInfo.getId(), client.getLoggedInUser())));
 			}
 
-			for (User user : database.listUsers())
+			database.getUsers().flatMapCompletable(user ->
+			client.getLoggedInUser().isFriendWith(user).flatMapCompletable(isFriend ->
+			Utils.userToProto(user, isFriend, isUserLoggedIn(user)).flatMapCompletable(userProto ->
 			{
 				if (!user.equals(client.getLoggedInUser()))
-					builder.addAvailableUser(Utils.userToProto(user, client.getLoggedInUser().isFriendWith(user), isUserLoggedIn(user)));
-			}
-
-			client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());
+					builder.addAvailableUser(userProto);
+				return Completable.complete();
+			})))
+			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build()));
 		}
 	}
 

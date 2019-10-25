@@ -6,20 +6,33 @@ import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
+import io.reactivex.*;
 
 import java.util.*;
 import java.util.stream.*;
 
 public class ProtoPlayer implements Player, MessageHandler
 {
+	private User user;
 	private String name;
 	private ProtoConnection connection;
 	private Game game;
 	private PlayerSeat seat;
 
-	public ProtoPlayer(String name)
+	private ProtoPlayer(User user, String name)
 	{
+		this.user = user;
 		this.name = name;
+	}
+
+	public static Single<ProtoPlayer> createFromUser(User user)
+	{
+		return user.getName().map(name -> new ProtoPlayer(user, name));
+	}
+
+	public User getUser()
+	{
+		return user;
 	}
 
 	public void useConnection(ProtoConnection connection)

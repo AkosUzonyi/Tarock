@@ -4,6 +4,7 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.*;
+import io.reactivex.*;
 
 public class Utils
 {
@@ -16,19 +17,21 @@ public class Utils
 				.build();
 	}
 
-	public static MainProto.User userToProto(User user, boolean isFriend, boolean loggedIn)
+	public static Single<MainProto.User> userToProto(User user, boolean isFriend, boolean loggedIn)
 	{
-		MainProto.User.Builder builder = MainProto.User.newBuilder()
-				.setId(user.getID())
-				.setName(user.getName())
-				.setIsFriend(isFriend)
-				.setOnline(loggedIn);
+		return Single.zip(user.getName(), user.getImageURL(), (name, imgURL) ->
+		{
+			MainProto.User.Builder builder = MainProto.User.newBuilder()
+					.setId(user.getID())
+					.setName(name)
+					.setIsFriend(isFriend)
+					.setOnline(loggedIn);
 
-		String imgURL = user.getImageURL();
-		if (imgURL != null)
-			builder.setImageUrl(imgURL);
+			if (imgURL != null)
+				builder.setImageUrl(imgURL);
 
-		return builder.build();
+			return builder.build();
+		});
 	}
 
 	public static MainProto.Game gameInfoToProto(GameInfo gameInfo, boolean my)

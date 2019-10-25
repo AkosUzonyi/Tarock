@@ -22,7 +22,6 @@ view last round
 public chat
 
 refactorizations:
-use separate executorservice for network
  
 other:
 final classes?

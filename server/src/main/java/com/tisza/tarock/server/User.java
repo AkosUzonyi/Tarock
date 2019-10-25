@@ -2,6 +2,8 @@ package com.tisza.tarock.server;
 
 import io.reactivex.*;
 
+import java.util.*;
+
 public class User
 {
 	private final int id;
@@ -23,7 +25,7 @@ public class User
 		return database.getUserName(id);
 	}
 
-	public Single<String> getImageURL()
+	public Single<Optional<String>> getImageURL()
 	{
 		return database.getUserImgURL(id);
 	}

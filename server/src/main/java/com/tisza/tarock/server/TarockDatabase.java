@@ -109,10 +109,10 @@ public class TarockDatabase
 				.compose(resultTransformerQuerySingle());
 	}
 
-	public Single<String> getUserImgURL(int userID)
+	public Single<Optional<String>> getUserImgURL(int userID)
 	{
 		return rxdatabase.select("SELECT img_url FROM user WHERE id = ?;")
-				.parameter(userID).getAs(String.class).singleOrError()
+				.parameter(userID).getAsOptional(String.class).singleOrError()
 				.compose(resultTransformerQuerySingle());
 	}
 

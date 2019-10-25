@@ -27,8 +27,7 @@ public class Utils
 					.setIsFriend(isFriend)
 					.setOnline(loggedIn);
 
-			if (imgURL != null)
-				builder.setImageUrl(imgURL);
+			imgURL.ifPresent(builder::setImageUrl);
 
 			return builder.build();
 		});

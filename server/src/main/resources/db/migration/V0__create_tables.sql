@@ -7,8 +7,8 @@ CREATE TABLE user (
 );
 
 CREATE TABLE friendship (
-    id0 INTEGER,
-    id1 INTEGER,
+    id0 INTEGER NOT NULL,
+    id1 INTEGER NOT NULL,
     PRIMARY KEY (id0, id1),
     FOREIGN KEY(id0) REFERENCES user(id),
     FOREIGN KEY(id1) REFERENCES user(id)
@@ -24,8 +24,8 @@ CREATE TABLE game_session (
 );
 
 CREATE TABLE player (
-    game_session_id INTEGER,
-    seat TINYINT,
+    game_session_id INTEGER NOT NULL,
+    seat TINYINT NOT NULL,
     user_id INTEGER,
     points INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (game_session_id, seat),
@@ -45,16 +45,16 @@ CREATE INDEX game_create_time
 ON game(create_time);
 
 CREATE TABLE deck_card (
-    game_id INTEGER,
-    ordinal SMALLINT,
+    game_id INTEGER NOT NULL,
+    ordinal SMALLINT NOT NULL,
     card VARCHAR(255) NOT NULL,
     PRIMARY KEY (game_id, ordinal),
     FOREIGN KEY(game_id) REFERENCES game(id)
 );
 
 CREATE TABLE action (
-    game_id INTEGER,
-    ordinal SMALLINT,
+    game_id INTEGER NOT NULL,
+    ordinal SMALLINT NOT NULL,
     seat TINYINT NOT NULL,
     action VARCHAR(1024) NOT NULL,
     time BIGINT NOT NULL,

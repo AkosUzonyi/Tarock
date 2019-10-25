@@ -178,7 +178,7 @@ public class Server implements Runnable
 	{
 		if (listenerThread == null)
 		{
-			listenerThread = new Thread(this);
+			listenerThread = new Thread(this, "ListenerThread");
 			listenerThread.start();
 		}
 	}

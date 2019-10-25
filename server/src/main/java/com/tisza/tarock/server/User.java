@@ -5,9 +5,9 @@ import io.reactivex.*;
 public class User
 {
 	private final int id;
-	private final Database database;
+	private final TarockDatabase database;
 
-	public User(int id, Database database)
+	public User(int id, TarockDatabase database)
 	{
 		this.id = id;
 		this.database = database;

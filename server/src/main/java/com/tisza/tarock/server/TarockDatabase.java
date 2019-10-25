@@ -6,21 +6,22 @@ import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.message.*;
 import io.reactivex.*;
 import io.reactivex.schedulers.*;
+import org.davidmoten.rx.jdbc.*;
 import org.flywaydb.core.*;
 
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class Database
+public class TarockDatabase
 {
 	private static final String DATABASE_FILENAME = "tarock.db";
 
 	private final String dbURL;
 	private final Scheduler observerScheduler;
-	private org.davidmoten.rx.jdbc.Database rxdatabase;
+	private Database rxdatabase;
 
-	public Database(File dbDir, Executor observerExecutor)
+	public TarockDatabase(File dbDir, Executor observerExecutor)
 	{
 		dbURL = "jdbc:sqlite:" + new File(dbDir, DATABASE_FILENAME).getAbsolutePath();
 		observerScheduler = Schedulers.from(observerExecutor);
@@ -34,7 +35,7 @@ public class Database
 		Flyway flyway = Flyway.configure().dataSource(dbURL, null, null).load();
 		flyway.migrate();
 
-		rxdatabase = org.davidmoten.rx.jdbc.Database.from(dbURL, 1);
+		rxdatabase = Database.from(dbURL, 1);
 		rxdatabase.update("PRAGMA foreign_keys = ON").complete().subscribe();
 		rxdatabase.select("PRAGMA journal_mode = WAL;").count().subscribe();
 		rxdatabase.update("PRAGMA synchronous = NORMAL;").complete().subscribe();

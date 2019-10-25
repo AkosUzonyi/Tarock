@@ -11,13 +11,13 @@ import java.util.concurrent.*;
 
 public class GameSessionManager
 {
-	private final Database database;
+	private final TarockDatabase database;
 	private final ScheduledExecutorService gameExecutorService;
 
 	private Map<Integer, GameSession> games = new HashMap<>();
 	private Map<Integer, Map<User, ProtoPlayer>> gameIDAndUserToPlayers = new HashMap<>();
 
-	public GameSessionManager(Database database, ScheduledExecutorService gameExecutorService)
+	public GameSessionManager(TarockDatabase database, ScheduledExecutorService gameExecutorService)
 	{
 		this.gameExecutorService = gameExecutorService;
 		this.database = database;

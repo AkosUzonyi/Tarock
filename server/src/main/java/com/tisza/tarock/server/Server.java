@@ -23,7 +23,7 @@ public class Server implements Runnable
 	private Collection<Client> clients = new ArrayList<>();
 	private Collection<User> loggedInUsers = new HashSet<>();
 
-	private final Database database;
+	private final TarockDatabase database;
 	private final GameSessionManager gameSessionManager;
 	private final FacebookUserManager facebookUserManager;
 	private final FirebaseNotificationSender firebaseNotificationSender;
@@ -34,13 +34,13 @@ public class Server implements Runnable
 		this.keystoreFile = new File(staticDir, "keystore");
 
 		gameExecutorService = new GameExecutorService();
-		database = new Database(dataDir, gameExecutorService);
+		database = new TarockDatabase(dataDir, gameExecutorService);
 		gameSessionManager = new GameSessionManager(database, gameExecutorService);
 		facebookUserManager = new FacebookUserManager(database);
 		firebaseNotificationSender = new FirebaseNotificationSender(new File(staticDir, "fcm-service-account.json"));
 	}
 
-	public Database getDatabase()
+	public TarockDatabase getDatabase()
 	{
 		return database;
 	}

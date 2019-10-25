@@ -11,9 +11,9 @@ import java.util.*;
 public class FacebookUserManager
 {
 	private static final String APP_ID = "1735167250066232";
-	private final Database database;
+	private final TarockDatabase database;
 
-	public FacebookUserManager(Database database)
+	public FacebookUserManager(TarockDatabase database)
 	{
 		this.database = database;
 	}

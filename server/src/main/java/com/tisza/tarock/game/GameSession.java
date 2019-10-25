@@ -6,7 +6,6 @@ import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.server.*;
 import io.reactivex.*;
-import io.reactivex.Observable;
 
 import java.util.*;
 import java.util.stream.*;
@@ -14,7 +13,7 @@ import java.util.stream.*;
 public class GameSession implements Game
 {
 	private final int id;
-	private final Database database;
+	private final TarockDatabase database;
 	private final GameType gameType;
 	private final PlayerSeatMap<Player> players = new PlayerSeatMap<>();
 	private final Set<Player> allPlayers = new HashSet<>();
@@ -29,7 +28,7 @@ public class GameSession implements Game
 
 	private int[] points = new int[4];
 
-	private GameSession(int id, GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, Database database)
+	private GameSession(int id, GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, TarockDatabase database)
 	{
 		if (playerList.size() != 4)
 			throw new IllegalArgumentException("GameSession: playerList.size() != 4");
@@ -51,7 +50,7 @@ public class GameSession implements Game
 		doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 	}
 
-	public static Single<GameSession> create(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, Database database)
+	public static Single<GameSession> create(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, TarockDatabase database)
 	{
 		return database.createGameSession(gameType, doubleRoundType).map(id -> new GameSession(id, gameType, playerList, doubleRoundType, database));
 	}

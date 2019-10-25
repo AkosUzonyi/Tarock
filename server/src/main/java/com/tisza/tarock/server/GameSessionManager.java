@@ -12,13 +12,11 @@ import java.util.concurrent.*;
 public class GameSessionManager
 {
 	private final TarockDatabase database;
-	private final ScheduledExecutorService gameExecutorService;
 
 	private Map<Integer, GameSession> games = new HashMap<>();
 
-	public GameSessionManager(TarockDatabase database, ScheduledExecutorService gameExecutorService)
+	public GameSessionManager(TarockDatabase database)
 	{
-		this.gameExecutorService = gameExecutorService;
 		this.database = database;
 	}
 
@@ -45,7 +43,7 @@ public class GameSessionManager
 		if (users.size() != 4)
 			throw new IllegalArgumentException("users.size() != 4: " + users.size());
 
-		return Observable.fromIterable(users).flatMapSingle(user -> user.createPlayer(gameExecutorService)).toList().flatMap(players ->
+		return Observable.fromIterable(users).flatMapSingle(User::createPlayer).toList().flatMap(players ->
 		{
 			Collections.shuffle(players);
 
@@ -95,7 +93,7 @@ public class GameSessionManager
 		if (!games.containsKey(gameID))
 			return null;
 
-		return user.createPlayer(gameExecutorService).doOnSuccess(player -> games.get(gameID).addKibic(player));
+		return user.createPlayer().doOnSuccess(player -> games.get(gameID).addKibic(player));
 	}
 
 	public void removeKibic(int gameID, Player player)

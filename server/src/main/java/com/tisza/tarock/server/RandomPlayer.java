@@ -1,5 +1,6 @@
 package com.tisza.tarock.server;
 
+import com.tisza.tarock.*;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
@@ -12,20 +13,18 @@ import java.util.concurrent.*;
 
 public class RandomPlayer extends Player
 {
-	private final ScheduledExecutorService executorService;
 	private final int delay, extraDelay;
 	private EventHandler eventHandler = new MyEventHandler();
 	private Random rnd = new Random();
 
-	public RandomPlayer(User user, String name, ScheduledExecutorService executorService)
+	public RandomPlayer(User user, String name)
 	{
-		this(user, name, executorService, 0, 0);
+		this(user, name, 0, 0);
 	}
 
-	public RandomPlayer(User user, String name, ScheduledExecutorService executorService, int delay, int extraDelay)
+	public RandomPlayer(User user, String name, int delay, int extraDelay)
 	{
 		super(user, name);
-		this.executorService = executorService;
 		this.delay = delay;
 		this.extraDelay = extraDelay;
 	}
@@ -38,17 +37,17 @@ public class RandomPlayer extends Player
 
 	private void enqueueAction(Action action)
 	{
-		executorService.execute(() -> doAction(action));
+		Main.GAME_EXECUTOR_SERVICE.execute(() -> doAction(action));
 	}
 
 	private void enqueueActionDelayed(Action action)
 	{
-		executorService.schedule(() -> doAction(action), delay, TimeUnit.MILLISECONDS);
+		Main.GAME_EXECUTOR_SERVICE.schedule(() -> doAction(action), delay, TimeUnit.MILLISECONDS);
 	}
 
 	private void enqueueActionExtraDelayed(Action action)
 	{
-		executorService.schedule(() -> doAction(action), extraDelay, TimeUnit.MILLISECONDS);
+		Main.GAME_EXECUTOR_SERVICE.schedule(() -> doAction(action), extraDelay, TimeUnit.MILLISECONDS);
 	}
 
 	private class MyEventHandler implements EventHandler

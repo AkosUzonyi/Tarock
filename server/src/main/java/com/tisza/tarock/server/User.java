@@ -42,9 +42,9 @@ public class User
 		return database.getFCMTokensForUser(id);
 	}
 
-	public Single<Player> createPlayer(ScheduledExecutorService gameExecutorService)
+	public Single<Player> createPlayer()
 	{
-		return getName().map(name -> id < 0 ? new RandomPlayer(this, name, gameExecutorService, 500, 2000) : new ProtoPlayer(this, name));
+		return getName().map(name -> id < 0 ? new RandomPlayer(this, name, 500, 2000) : new ProtoPlayer(this, name));
 	}
 
 	@Override

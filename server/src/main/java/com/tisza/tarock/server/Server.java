@@ -1,5 +1,6 @@
 package com.tisza.tarock.server;
 
+import com.tisza.tarock.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
 import io.reactivex.*;
@@ -8,17 +9,13 @@ import javax.net.ssl.*;
 import java.io.*;
 import java.security.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class Server implements Runnable
 {
+
 	private final int port;
 	private Thread listenerThread;
 	private SSLServerSocket serverSocket;
-
-	private final File keystoreFile;
-
-	private final ScheduledExecutorService gameExecutorService;
 
 	private Collection<Client> clients = new ArrayList<>();
 	private Collection<User> loggedInUsers = new HashSet<>();
@@ -28,16 +25,14 @@ public class Server implements Runnable
 	private final FacebookUserManager facebookUserManager;
 	private final FirebaseNotificationSender firebaseNotificationSender;
 
-	public Server(int port, File staticDir, File dataDir)
+	public Server(int port)
 	{
 		this.port = port;
-		this.keystoreFile = new File(staticDir, "keystore");
 
-		gameExecutorService = new GameExecutorService();
-		database = new TarockDatabase(dataDir, gameExecutorService);
-		gameSessionManager = new GameSessionManager(database, gameExecutorService);
+		database = new TarockDatabase();
+		gameSessionManager = new GameSessionManager(database);
 		facebookUserManager = new FacebookUserManager(database);
-		firebaseNotificationSender = new FirebaseNotificationSender(new File(staticDir, "fcm-service-account.json"));
+		firebaseNotificationSender = new FirebaseNotificationSender(new File(Main.STATIC_DIR, "fcm-service-account.json"));
 	}
 
 	public TarockDatabase getDatabase()
@@ -89,7 +84,7 @@ public class Server implements Runnable
 	private void createServerSocket() throws IOException, GeneralSecurityException
 	{
 		KeyStore ks = KeyStore.getInstance("JKS");
-		ks.load(new FileInputStream(keystoreFile), "000000".toCharArray());
+		ks.load(new FileInputStream(new File(Main.STATIC_DIR, "keystore")), "000000".toCharArray());
 
 		KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
 		kmf.init(ks, "000000".toCharArray());
@@ -136,7 +131,6 @@ public class Server implements Runnable
 
 			database.shutdown();
 			gameSessionManager.shutdown();
-			gameExecutorService.shutdownNow();
 
 			System.out.println("server stopped");
 		}
@@ -147,7 +141,7 @@ public class Server implements Runnable
 		try
 		{
 			System.out.println("accepted connection from: " + socket.getRemoteSocketAddress());
-			ProtoConnection connection = new ProtoConnection(socket, gameExecutorService);
+			ProtoConnection connection = new ProtoConnection(socket, Main.GAME_EXECUTOR_SERVICE);
 			clients.add(new Client(this, connection));
 			connection.start();
 		}

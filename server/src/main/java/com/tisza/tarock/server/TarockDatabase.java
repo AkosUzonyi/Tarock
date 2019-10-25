@@ -1,5 +1,6 @@
 package com.tisza.tarock.server;
 
+import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
@@ -12,7 +13,6 @@ import org.flywaydb.core.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class TarockDatabase
 {
@@ -22,10 +22,10 @@ public class TarockDatabase
 	private final Scheduler observerScheduler;
 	private Database rxdatabase;
 
-	public TarockDatabase(File dbDir, Executor observerExecutor)
+	public TarockDatabase()
 	{
-		dbURL = "jdbc:sqlite:" + new File(dbDir, DATABASE_FILENAME).getAbsolutePath();
-		observerScheduler = Schedulers.from(observerExecutor);
+		dbURL = "jdbc:sqlite:" + new File(Main.DATA_DIR, DATABASE_FILENAME).getAbsolutePath();
+		observerScheduler = Schedulers.from(Main.GAME_EXECUTOR_SERVICE);
 	}
 
 	public void initialize()

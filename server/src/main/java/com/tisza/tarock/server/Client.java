@@ -50,16 +50,16 @@ public class Client implements MessageHandler
 				if (newUser != null && server.isUserLoggedIn(newUser))
 					newUser = null;
 
-				MainProto.Login.Builder loginMessageBuilder = MainProto.Login.newBuilder();
+				MainProto.LoginResult.Builder loginMessageBuilder = MainProto.LoginResult.newBuilder();
 
 				loggedInUser = newUser;
 				if (loggedInUser != null)
 				{
 					server.loginUser(loggedInUser);
-					loginMessageBuilder.setFacebookToken(fbAccessToken);
+					loginMessageBuilder.setUserId(loggedInUser.getId());
 				}
 
-				sendMessage(MainProto.Message.newBuilder().setLogin(loginMessageBuilder.build()).build());
+				sendMessage(MainProto.Message.newBuilder().setLoginResult(loginMessageBuilder.build()).build());
 
 				server.broadcastStatus();
 

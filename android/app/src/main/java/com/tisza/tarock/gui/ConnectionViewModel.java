@@ -135,8 +135,8 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 	{
 		switch (message.getMessageTypeCase())
 		{
-			case LOGIN:
-				connectionState.setValue(message.getLogin().hasFacebookToken() ? ConnectionState.LOGGED_IN : ConnectionState.CONNECTED);
+			case LOGIN_RESULT:
+				connectionState.setValue(message.getLoginResult().hasUserId() ? ConnectionState.LOGGED_IN : ConnectionState.CONNECTED);
 
 				if (connectionState.getValue() == ConnectionState.LOGGED_IN)
 					FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult ->

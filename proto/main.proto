@@ -12,6 +12,7 @@ message Message
     {
         KeepAlive keepAlive = 1;
         Login login = 2;
+        LoginResult login_result = 10;
         FCMToken fcm_token = 9;
         string action = 3;
         Event event = 4;
@@ -36,6 +37,11 @@ message User
 message Login
 {
     optional string facebook_token = 1;
+}
+
+message LoginResult
+{
+    optional string user_id = 1;
 }
 
 message FCMToken

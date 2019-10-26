@@ -139,6 +139,14 @@ public class TarockDatabase
 				.compose(resultTransformerUpdateSingle());
 	}
 
+	public Single<Tuple2<GameType, DoubleRoundType>> getGameSessionType(int gameSessionID)
+	{
+		return rxdatabase.select("SELECT type, double_round_type FROM game_session WHERE id = ?;")
+				.parameter(gameSessionID).getAs(String.class, String.class).singleOrError()
+				.map(tuple -> Tuple2.create(GameType.fromID(tuple._1()), DoubleRoundType.fromID(tuple._2())))
+				.compose(resultTransformerQuerySingle());
+	}
+
 	public Flowable<Integer> getActiveGameSessionIDs()
 	{
 		return rxdatabase.select("SELECT id FROM game_session WHERE current_game_id IS NOT NULL;")
@@ -158,6 +166,13 @@ public class TarockDatabase
 				.parameters(gameSessionID, seat.asInt(), user.getID()).complete().subscribe();
 	}
 
+	public Flowable<User> getUsersForGameSession(int gameSessionID)
+	{
+		return rxdatabase.select("SELECT user_id FROM player WHERE game_session_id = ? ORDER BY seat;")
+				.parameter(gameSessionID).getAs(Integer.class).map(this::getUser)
+				.compose(resultTransformerQueryFlowable());
+	}
+
 	public void setPlayerPoints(int gameSessionID, PlayerSeat seat, int value)
 	{
 		rxdatabase.update("UPDATE player SET points = ? WHERE game_session_id = ? AND seat = ?;")
@@ -175,6 +190,13 @@ public class TarockDatabase
 							.parameters(gameID, gameSessionID).complete().subscribe();
 				})
 				.compose(resultTransformerUpdateSingle());
+	}
+
+	public Single<PlayerSeat> getGameBeginner(int gameID)
+	{
+		return rxdatabase.select("SELECT beginner_player FROM game WHERE id = ?;")
+				.parameter(gameID).getAs(Integer.class).map(PlayerSeat::fromInt).singleOrError()
+				.compose(resultTransformerQuerySingle());
 	}
 
 	public void setDeck(int gameID, List<Card> deck)
@@ -200,11 +222,11 @@ public class TarockDatabase
 				.parameters(gameID, ordinal, player, action.getId(), System.currentTimeMillis()).complete().subscribe();
 	}
 
-	public Flowable<Tuple2<Integer, Action>> getActions(int gameID)
+	public Flowable<Tuple3<Integer, Action, Integer>> getActions(int gameID)
 	{
-		return rxdatabase.select("SELECT seat, action FROM action WHERE game_id = ? ORDER BY ordinal;")
-				.parameter(gameID).getAs(Integer.class, String.class)
-				.map(tuple -> Tuple2.create(tuple._1(), new Action(tuple._2())))
+		return rxdatabase.select("SELECT seat, action, time FROM action WHERE game_id = ? ORDER BY ordinal;")
+				.parameter(gameID).getAs(Integer.class, String.class, Integer.class)
+				.map(tuple -> Tuple3.create(tuple._1(), new Action(tuple._2()), tuple._3()))
 				.compose(resultTransformerQueryFlowable());
 	}
 

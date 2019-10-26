@@ -62,7 +62,7 @@ public class TarockDatabase
 		return upstream -> upstream.observeOn(observerScheduler);
 	}
 
-	public Single<Integer> setFacebookUserData(String facebookId, String name, String imgURL, List<String> friendFacebookIDs)
+	public Single<User> setFacebookUserData(String facebookId, String name, String imgURL, List<String> friendFacebookIDs)
 	{
 		Single<Integer> selectID = rxdatabase.select("SELECT id FROM user WHERE facebook_id = ?")
 				.parameter(facebookId).getAs(Integer.class).singleOrError();
@@ -95,7 +95,7 @@ public class TarockDatabase
 			});
 		}
 
-		return userID.compose(resultTransformerUpdateSingle());
+		return userID.map(this::getUser).compose(resultTransformerUpdateSingle());
 	}
 
 	public User getUser(int userID)
@@ -152,16 +152,16 @@ public class TarockDatabase
 				.parameter(gameSessionID).complete().subscribe();
 	}
 
-	public void addPlayer(int gameSessionID, int seat, Integer userID)
+	public void addPlayer(int gameSessionID, PlayerSeat seat, User user)
 	{
 		rxdatabase.update("INSERT INTO player(game_session_id, seat, user_id) VALUES(?, ?, ?);")
-				.parameters(gameSessionID, seat, userID).complete().subscribe();
+				.parameters(gameSessionID, seat.asInt(), user.getID()).complete().subscribe();
 	}
 
-	public void setPlayerPoints(int gameSessionID, int seat, int value)
+	public void setPlayerPoints(int gameSessionID, PlayerSeat seat, int value)
 	{
 		rxdatabase.update("UPDATE player SET points = ? WHERE game_session_id = ? AND seat = ?;")
-				.parameters(value, gameSessionID, seat).complete().subscribe();
+				.parameters(value, gameSessionID, seat.asInt()).complete().subscribe();
 	}
 
 	public Single<Integer> createGame(int gameSessionID, PlayerSeat beginnerPlayer)
@@ -200,20 +200,21 @@ public class TarockDatabase
 				.parameters(gameID, ordinal, player, action.getId(), System.currentTimeMillis()).complete().subscribe();
 	}
 
-	public Flowable<Tuple2<Integer, String>> getActions(int gameID)
+	public Flowable<Tuple2<Integer, Action>> getActions(int gameID)
 	{
 		return rxdatabase.select("SELECT seat, action FROM action WHERE game_id = ? ORDER BY ordinal;")
 				.parameter(gameID).getAs(Integer.class, String.class)
+				.map(tuple -> Tuple2.create(tuple._1(), new Action(tuple._2())))
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public void addFCMToken(String token, int userID)
+	public void addFCMToken(String token, User user)
 	{
 		Flowable<Integer> insert = rxdatabase.update("INSERT INTO fcm_token(token, user_id) VALUES (?, ?);")
-				.parameters(token, userID).counts();
+				.parameters(token, user.getID()).counts();
 
 		rxdatabase.update("UPDATE fcm_token SET user_id = ? WHERE token = ?;")
-				.parameters(userID, token).counts()
+				.parameters(user.getID(), token).counts()
 				.flatMap(count -> count == 0 ? insert : Flowable.empty())
 				.subscribe();
 	}

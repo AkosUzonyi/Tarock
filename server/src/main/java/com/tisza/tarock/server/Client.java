@@ -122,7 +122,7 @@ public class Client implements MessageHandler
 				String token = message.getFcmToken().getFcmToken();
 				boolean active = message.getFcmToken().getActive();
 				if (active)
-					server.getDatabase().addFCMToken(token, loggedInUser.getID());
+					server.getDatabase().addFCMToken(token, loggedInUser);
 				else
 					server.getDatabase().removeFCMToken(token);
 				break;

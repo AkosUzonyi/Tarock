@@ -53,10 +53,10 @@ public class GameSessionManager
 			{
 				games.put(game.getID(), game);
 
-				for (int i = 0; i < 4; i++)
+				for (PlayerSeat seat : PlayerSeat.getAll())
 				{
-					Player player = players.get(i);
-					database.addPlayer(game.getID(), i, player.getUser().getID());
+					Player player = players.get(seat.asInt());
+					database.addPlayer(game.getID(), seat, player.getUser());
 				}
 
 				game.startSession();

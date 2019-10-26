@@ -41,7 +41,7 @@ public class FacebookUserManager
 					friendFacebookIDs.add(((JSONObject)friendJSON).getString("id"));
 			}
 
-			return database.setFacebookUserData(id, name, imgURL, friendFacebookIDs).map(database::getUser);
+			return database.setFacebookUserData(id, name, imgURL, friendFacebookIDs);
 		}));
 	}
 

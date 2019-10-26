@@ -143,8 +143,8 @@ public class GameSession implements Game
 			}
 
 			if (database != null)
-				for (int i = 0; i < 4; i++)
-					database.setPlayerPoints(id, i, points[i]);
+				for (PlayerSeat seat : PlayerSeat.getAll())
+					database.setPlayerPoints(id, seat, points[seat.asInt()]);
 
 			startNewGame();
 		}

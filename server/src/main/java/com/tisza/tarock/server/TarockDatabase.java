@@ -152,12 +152,7 @@ public class TarockDatabase
 				.parameter(gameSessionID).complete().subscribe();
 	}
 
-	public void addBotPlayer(int gameSessionID, int seat)
-	{
-		addUserPlayer(gameSessionID, seat, null);
-	}
-
-	public void addUserPlayer(int gameSessionID, int seat, Integer userID)
+	public void addPlayer(int gameSessionID, int seat, Integer userID)
 	{
 		rxdatabase.update("INSERT INTO player(game_session_id, seat, user_id) VALUES(?, ?, ?);")
 				.parameters(gameSessionID, seat, userID).complete().subscribe();

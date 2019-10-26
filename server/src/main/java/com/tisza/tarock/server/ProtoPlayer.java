@@ -11,28 +11,13 @@ import io.reactivex.*;
 import java.util.*;
 import java.util.stream.*;
 
-public class ProtoPlayer implements Player, MessageHandler
+public class ProtoPlayer extends Player implements MessageHandler
 {
-	private User user;
-	private String name;
 	private ProtoConnection connection;
-	private Game game;
-	private PlayerSeat seat;
 
-	private ProtoPlayer(User user, String name)
+	public ProtoPlayer(User user, String name)
 	{
-		this.user = user;
-		this.name = name;
-	}
-
-	public static Single<ProtoPlayer> createFromUser(User user)
-	{
-		return user.getName().map(name -> new ProtoPlayer(user, name));
-	}
-
-	public User getUser()
-	{
-		return user;
+		super(user, name);
 	}
 
 	public void useConnection(ProtoConnection connection)
@@ -45,17 +30,9 @@ public class ProtoPlayer implements Player, MessageHandler
 		if (connection != null)
 		{
 			connection.addMessageHandler(this);
-			if (game != null)
-				game.requestHistory(seat, eventHandler);
+			requestHistory();
 		}
 	}
-
-	@Override
-	public String getName()
-	{
-		return name;
-	}
-
 	@Override
 	public void handleEvent(Event event)
 	{
@@ -63,17 +40,10 @@ public class ProtoPlayer implements Player, MessageHandler
 	}
 
 	@Override
-	public void setGame(Game game, PlayerSeat seat)
-	{
-		this.game = game;
-		this.seat = seat;
-	}
-
-	@Override
 	public void handleMessage(MainProto.Message message)
 	{
-		if (seat != null && message.getMessageTypeCase() == MainProto.Message.MessageTypeCase.ACTION)
-			game.action(seat, new Action(message.getAction()));
+		if (message.getMessageTypeCase() == MainProto.Message.MessageTypeCase.ACTION)
+			doAction(new Action(message.getAction()));
 	}
 
 	@Override

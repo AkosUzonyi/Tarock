@@ -60,6 +60,11 @@ public class GameSession implements Game
 		return id;
 	}
 
+	public PlayerSeatMap<Player> getPlayers()
+	{
+		return players;
+	}
+
 	public void startSession()
 	{
 		startNewGame();
@@ -162,10 +167,10 @@ public class GameSession implements Game
 	}
 
 	@Override
-	public void requestHistory(PlayerSeat seat, EventHandler eventHandler)
+	public void requestHistory(Player player)
 	{
 		for (EventInstance event : currentGame.getAllEvents())
-			if (event.getPlayerSeat() == null || event.getPlayerSeat() == seat)
-				event.getEvent().handle(eventHandler);
+			if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
+				player.handleEvent(event.getEvent());
 	}
 }

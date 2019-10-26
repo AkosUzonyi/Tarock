@@ -15,7 +15,6 @@ public class GameSessionManager
 	private final ScheduledExecutorService gameExecutorService;
 
 	private Map<Integer, GameSession> games = new HashMap<>();
-	private Map<Integer, Map<User, ProtoPlayer>> gameIDAndUserToPlayers = new HashMap<>();
 
 	public GameSessionManager(TarockDatabase database, ScheduledExecutorService gameExecutorService)
 	{
@@ -43,32 +42,22 @@ public class GameSessionManager
 
 	public Single<Integer> createNewGame(GameType type, List<User> users, DoubleRoundType doubleRoundType)
 	{
-		if (users.size() > 4)
-			throw new IllegalArgumentException("users.size() > 4: " + users.size());
+		if (users.size() != 4)
+			throw new IllegalArgumentException("users.size() != 4: " + users.size());
 
-		return Observable.fromIterable(users).flatMapSingle(ProtoPlayer::createFromUser).toList().flatMap(protoPlayers ->
+		return Observable.fromIterable(users).flatMapSingle(user -> user.createPlayer(gameExecutorService)).toList().flatMap(players ->
 		{
-			List<Player> players = new ArrayList<>();
-			players.addAll(protoPlayers);
-			int bot = 0;
-			for (int i = protoPlayers.size(); i < 4; i++)
-				players.add(new RandomPlayer("bot" + bot++, gameExecutorService, 500, 2000));
-
 			Collections.shuffle(players);
 
 			return GameSession.create(type, players, doubleRoundType, database).map(game ->
 			{
-				Map<User, ProtoPlayer> userToPlayers = new HashMap<>();
-				for (ProtoPlayer protoPlayer : protoPlayers)
-					userToPlayers.put(protoPlayer.getUser(), protoPlayer);
-
 				games.put(game.getID(), game);
-				gameIDAndUserToPlayers.put(game.getID(), userToPlayers);
+
 				for (int i = 0; i < 4; i++)
-					if (players.get(i) instanceof ProtoPlayer)
-						database.addUserPlayer(game.getID(), i, ((ProtoPlayer)players.get(i)).getUser().getID());
-					else
-						database.addBotPlayer(game.getID(), i);
+				{
+					Player player = players.get(i);
+					database.addPlayer(game.getID(), i, player.getUser().getID());
+				}
 
 				game.startSession();
 
@@ -80,30 +69,33 @@ public class GameSessionManager
 
 	}
 
-	public ProtoPlayer getPlayer(int gameID, User user)
+	public Player getPlayer(int gameID, User user)
 	{
-		return gameIDAndUserToPlayers.get(gameID).get(user);
+		for (Player player : games.get(gameID).getPlayers().values())
+			if (player.getUser().equals(user))
+				return player;
+
+		return null;
 	}
 
-	public boolean isGameOwnedBy(int id, User user)
+	public boolean isGameOwnedBy(int gameID, User user)
 	{
-		return gameIDAndUserToPlayers.get(id).containsKey(user);
+		return getPlayer(gameID, user) != null;
 	}
 
 	public void deleteGame(int id)
 	{
 		GameSession game = games.remove(id);
-		gameIDAndUserToPlayers.remove(id);
 		game.stopSession();
 		System.out.println("game session deleted: id = " + id);
 	}
 
-	public Single<ProtoPlayer> addKibic(int gameID, User user)
+	public Single<Player> addKibic(int gameID, User user)
 	{
 		if (!games.containsKey(gameID))
 			return null;
 
-		return ProtoPlayer.createFromUser(user).doOnSuccess(player -> games.get(gameID).addKibic(player));
+		return user.createPlayer(gameExecutorService).doOnSuccess(player -> games.get(gameID).addKibic(player));
 	}
 
 	public void removeKibic(int gameID, Player player)

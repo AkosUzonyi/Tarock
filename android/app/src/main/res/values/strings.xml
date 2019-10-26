@@ -28,10 +28,7 @@
 
     <string name="players">Játékosok</string>
     <string name="create_game">Játék létrehozása</string>
-    <string name="too_much_user_selected">"Maximum 3 játékost jelölj meg!"</string>
-    <plurals name="create_game_with_bots">
-        <item quantity="other">Játék létrehozása %1$d robottal</item>
-    </plurals>
+    <string name="create_game_select_3">Válassz 3 játékost!</string>
     <string name="bot_warning">"A robotok véletlenszerűen döntenek, a játék nem élvezhető velük (csak arra jók, hogy kipróbálhasd, hogyan működik a játék).\nHívd meg barátaidat is, és játssz velük! ;)"</string>
 
     <string name="pager_announcing">Bemondások</string>

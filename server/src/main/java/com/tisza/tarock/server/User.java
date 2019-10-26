@@ -1,8 +1,10 @@
 package com.tisza.tarock.server;
 
+import com.tisza.tarock.message.*;
 import io.reactivex.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 public class User
 {
@@ -38,6 +40,11 @@ public class User
 	public Flowable<String> getFCMTokens()
 	{
 		return database.getFCMTokensForUser(id);
+	}
+
+	public Single<Player> createPlayer(ScheduledExecutorService gameExecutorService)
+	{
+		return getName().map(name -> id < 0 ? new RandomPlayer(this, name, gameExecutorService, 500, 2000) : new ProtoPlayer(this, name));
 	}
 
 	@Override

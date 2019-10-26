@@ -62,7 +62,7 @@ public class Client implements MessageHandler
 			{
 				MainProto.CreateGame createGame = message.getCreateGame();
 
-				if (createGame.getUserIDCount() > 3)
+				if (createGame.getUserIDCount() != 3)
 					break;
 
 				GameType gameType = GameType.fromID(createGame.getType());
@@ -103,11 +103,11 @@ public class Client implements MessageHandler
 				if (message.getJoinGame().hasGameId())
 				{
 					int gameID = message.getJoinGame().getGameId();
-					ProtoPlayer player = server.getGameSessionManager().getPlayer(gameID, loggedInUser);
+					ProtoPlayer player = (ProtoPlayer)server.getGameSessionManager().getPlayer(gameID, loggedInUser);
 					if (player != null)
 						switchPlayer(gameID, player);
 					else
-						server.getGameSessionManager().addKibic(currentGameID, loggedInUser).subscribe(p -> switchPlayer(gameID, p));
+						server.getGameSessionManager().addKibic(currentGameID, loggedInUser).subscribe(p -> switchPlayer(gameID, (ProtoPlayer)p));
 				}
 				else
 				{

@@ -10,53 +10,30 @@ import com.tisza.tarock.message.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class RandomPlayer implements Player
+public class RandomPlayer extends Player
 {
-	private final String name;
 	private final ScheduledExecutorService executorService;
 	private final int delay, extraDelay;
 	private EventHandler eventHandler = new MyEventHandler();
 	private Random rnd = new Random();
 
-	private PlayerSeat seat;
-	private Game game;
-
-	public RandomPlayer(String name, ScheduledExecutorService executorService)
+	public RandomPlayer(User user, String name, ScheduledExecutorService executorService)
 	{
-		this(name, executorService, 0, 0);
+		this(user, name, executorService, 0, 0);
 	}
 
-	public RandomPlayer(String name, ScheduledExecutorService executorService, int delay, int extraDelay)
+	public RandomPlayer(User user, String name, ScheduledExecutorService executorService, int delay, int extraDelay)
 	{
-		this.name = name;
+		super(user, name);
 		this.executorService = executorService;
 		this.delay = delay;
 		this.extraDelay = extraDelay;
 	}
 
 	@Override
-	public String getName()
-	{
-		return name;
-	}
-
-	@Override
 	public void handleEvent(Event event)
 	{
 		event.handle(eventHandler);
-	}
-
-	@Override
-	public void setGame(Game game, PlayerSeat seat)
-	{
-		this.game = game;
-		this.seat = seat;
-	}
-
-	private void doAction(Action action)
-	{
-		if (game != null)
-			game.action(seat, action);
 	}
 
 	private void enqueueAction(Action action)
@@ -119,7 +96,7 @@ public class RandomPlayer implements Player
 		@Override
 		public void turn(PlayerSeat player)
 		{
-			if (player != seat)
+			if (player != getSeat())
 				return;
 
 			if (phase == PhaseEnum.CHANGING)
@@ -145,12 +122,6 @@ public class RandomPlayer implements Player
 		@Override public void startGame(List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
 		{
 			this.gameType = gameType;
-		}
-
-		@Override
-		public void seat(PlayerSeat s)
-		{
-			seat = s;
 		}
 
 		@Override

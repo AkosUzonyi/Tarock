@@ -6,6 +6,8 @@ CREATE TABLE user (
     registration_time BIGINT NOT NULL
 );
 
+INSERT INTO user VALUES (-3, NULL, "bot0", NULL, 1572114201000), (-2, NULL, "bot1", NULL, 1572114201000), (-1, NULL, "bot2", NULL, 1572114201000);
+
 CREATE TABLE friendship (
     id0 INTEGER NOT NULL,
     id1 INTEGER NOT NULL,
@@ -26,7 +28,7 @@ CREATE TABLE game_session (
 CREATE TABLE player (
     game_session_id INTEGER NOT NULL,
     seat TINYINT NOT NULL,
-    user_id INTEGER,
+    user_id INTEGER NOT NULL,
     points INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (game_session_id, seat),
     FOREIGN KEY(game_session_id) REFERENCES game_session(id),

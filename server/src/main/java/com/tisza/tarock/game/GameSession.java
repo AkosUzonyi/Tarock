@@ -156,9 +156,9 @@ public class GameSession implements Game
 	{
 		if (event.getPlayerSeat() == null)
 			for (Player player : allPlayers)
-				event.getEvent().handle(player.getEventHandler());
+				player.handleEvent(event.getEvent());
 		else
-			event.getEvent().handle(players.get(event.getPlayerSeat()).getEventHandler());
+			players.get(event.getPlayerSeat()).handleEvent(event.getEvent());
 	}
 
 	@Override

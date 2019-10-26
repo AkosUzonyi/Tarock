@@ -5,6 +5,6 @@ import com.tisza.tarock.game.*;
 public interface Player
 {
 	public String getName();
-	public EventHandler getEventHandler();
+	public void handleEvent(Event event);
 	public void setGame(Game game, PlayerSeat seat);
 }

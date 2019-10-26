@@ -41,9 +41,9 @@ public class RandomPlayer implements Player
 	}
 
 	@Override
-	public EventHandler getEventHandler()
+	public void handleEvent(Event event)
 	{
-		return eventHandler;
+		event.handle(eventHandler);
 	}
 
 	@Override

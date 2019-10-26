@@ -57,9 +57,9 @@ public class ProtoPlayer implements Player, MessageHandler
 	}
 
 	@Override
-	public EventHandler getEventHandler()
+	public void handleEvent(Event event)
 	{
-		return eventHandler;
+		event.handle(eventHandler);
 	}
 
 	@Override

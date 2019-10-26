@@ -7,6 +7,7 @@ import com.tisza.tarock.message.*;
 import io.reactivex.*;
 import io.reactivex.schedulers.*;
 import org.davidmoten.rx.jdbc.*;
+import org.davidmoten.rx.jdbc.tuple.*;
 import org.flywaydb.core.*;
 
 import java.io.*;
@@ -198,17 +199,16 @@ public class TarockDatabase
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public void addAction(int gameID, Action action, int ordinal)
+	public void addAction(int gameID, int player, Action action, int ordinal)
 	{
 		rxdatabase.update("INSERT INTO action(game_id, ordinal, seat, action, time) VALUES(?, ?, ?, ?, ?);")
-				.parameters(gameID, ordinal, action.getPlayer().asInt(), action.getId(), System.currentTimeMillis()).complete().subscribe();
+				.parameters(gameID, ordinal, player, action.getId(), System.currentTimeMillis()).complete().subscribe();
 	}
 
-	public Flowable<Action> getActions(int gameID)
+	public Flowable<Tuple2<Integer, String>> getActions(int gameID)
 	{
 		return rxdatabase.select("SELECT seat, action FROM action WHERE game_id = ? ORDER BY ordinal;")
 				.parameter(gameID).getAs(Integer.class, String.class)
-				.map(tuple -> new Action(PlayerSeat.fromInt(tuple._1()), tuple._2()))
 				.compose(resultTransformerQueryFlowable());
 	}
 

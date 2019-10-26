@@ -102,9 +102,9 @@ public class GameState
 		changePhase(new Bidding(this));
 	}
 
-	public boolean processAction(Action action)
+	public boolean processAction(PlayerSeat player, Action action)
 	{
-		return action.handle(currentPhase);
+		return action.handle(player, currentPhase);
 	}
 
 	public List<EventInstance> getAllEvents()

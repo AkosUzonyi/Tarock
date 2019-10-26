@@ -73,7 +73,7 @@ public class ProtoPlayer implements Player, MessageHandler
 	public void handleMessage(MainProto.Message message)
 	{
 		if (seat != null && message.getMessageTypeCase() == MainProto.Message.MessageTypeCase.ACTION)
-			game.action(new Action(seat, message.getAction()));
+			game.action(seat, new Action(message.getAction()));
 	}
 
 	@Override
@@ -104,49 +104,49 @@ public class ProtoPlayer implements Player, MessageHandler
 		@Override
 		public void announce(PlayerSeat player, AnnouncementContra announcement)
 		{
-			sendPlayerActionEvent(player, Action.announce(player, announcement));
+			sendPlayerActionEvent(player, Action.announce(announcement));
 		}
 
 		@Override
 		public void announcePassz(PlayerSeat player)
 		{
-			sendPlayerActionEvent(player, Action.announcePassz(player));
+			sendPlayerActionEvent(player, Action.announcePassz());
 		}
 
 		@Override
 		public void bid(PlayerSeat player, int bid)
 		{
-			sendPlayerActionEvent(player, Action.bid(player, bid));
+			sendPlayerActionEvent(player, Action.bid(bid));
 		}
 
 		@Override
 		public void call(PlayerSeat player, Card card)
 		{
-			sendPlayerActionEvent(player, Action.call(player, card));
+			sendPlayerActionEvent(player, Action.call(card));
 		}
 
 		@Override
 		public void playCard(PlayerSeat player, Card card)
 		{
-			sendPlayerActionEvent(player, Action.play(player, card));
+			sendPlayerActionEvent(player, Action.play(card));
 		}
 
 		@Override
 		public void readyForNewGame(PlayerSeat player)
 		{
-			sendPlayerActionEvent(player, Action.readyForNewGame(player));
+			sendPlayerActionEvent(player, Action.readyForNewGame());
 		}
 
 		@Override
 		public void throwCards(PlayerSeat player)
 		{
-			sendPlayerActionEvent(player, Action.throwCards(player));
+			sendPlayerActionEvent(player, Action.throwCards());
 		}
 
 		@Override
 		public void chat(PlayerSeat player, String message)
 		{
-			sendPlayerActionEvent(player, Action.chat(player, message));
+			sendPlayerActionEvent(player, Action.chat(message));
 		}
 
 		@Override public void turn(PlayerSeat player)

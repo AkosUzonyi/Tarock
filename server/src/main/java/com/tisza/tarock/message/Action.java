@@ -9,12 +9,10 @@ import java.util.stream.*;
 public class Action
 {
 	private final String id;
-	private final PlayerSeat player;
 
-	public Action(PlayerSeat player, String id)
+	public Action(String id)
 	{
 		this.id = id;
-		this.player = player;
 
 		if (id.length() >= 256)
 			throw new IllegalArgumentException("action id length >= 1024: " + id.length());
@@ -25,57 +23,52 @@ public class Action
 		return id;
 	}
 
-	public PlayerSeat getPlayer()
+	public static Action bid(int bid)
 	{
-		return player;
+		return new Action("bid:" + (bid < 0 ? "p" : bid));
 	}
 
-	public static Action bid(PlayerSeat player, int bid)
+	public static Action skart(List<Card> cards)
 	{
-		return new Action(player, "bid:" + (bid < 0 ? "p" : bid));
+		return new Action("skart:" + cards.stream().map(Card::getID).collect(Collectors.joining(",")));
 	}
 
-	public static Action skart(PlayerSeat player, List<Card> cards)
+	public static Action call(Card card)
 	{
-		return new Action(player,  "skart:" + cards.stream().map(Card::getID).collect(Collectors.joining(",")));
+		return new Action("call:" + card.getID());
 	}
 
-	public static Action call(PlayerSeat player, Card card)
+	public static Action announce(AnnouncementContra announcement)
 	{
-		return new Action(player,  "call:" + card.getID());
+		return new Action("announce:" + announcement.getID());
 	}
 
-	public static Action announce(PlayerSeat player, AnnouncementContra announcement)
+	public static Action announcePassz()
 	{
-		return new Action(player,  "announce:" + announcement.getID());
+		return new Action("announce:passz");
 	}
 
-	public static Action announcePassz(PlayerSeat player)
+	public static Action play(Card card)
 	{
-		return new Action(player,  "announce:passz");
+		return new Action("play:" + card.getID());
 	}
 
-	public static Action play(PlayerSeat player, Card card)
+	public static Action readyForNewGame()
 	{
-		return new Action(player,  "play:" + card.getID());
+		return new Action("newgame:");
 	}
 
-	public static Action readyForNewGame(PlayerSeat player)
+	public static Action throwCards()
 	{
-		return new Action(player,  "newgame:");
+		return new Action("throw:");
 	}
 
-	public static Action throwCards(PlayerSeat player)
+	public static Action chat(String msg)
 	{
-		return new Action(player,  "throw:");
+		return new Action("chat:" + msg);
 	}
 
-	public static Action chat(PlayerSeat player, String msg)
-	{
-		return new Action(player,  "chat:" + msg);
-	}
-
-	public boolean handle(ActionHandler handler)
+	public boolean handle(PlayerSeat player, ActionHandler handler)
 	{
 		int colonIndex = id.indexOf(":");
 		String actionType = id.substring(0, colonIndex);

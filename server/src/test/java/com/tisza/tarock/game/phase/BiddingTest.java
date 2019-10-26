@@ -118,7 +118,7 @@ public class BiddingTest
 
 			int bid = bidString.equals("-") ? -1 : Integer.parseInt(bidString);
 
-			game.processAction(Action.bid(PlayerSeat.fromInt(i % 4), bid));
+			game.processAction(PlayerSeat.fromInt(i % 4), Action.bid(bid));
 		}
 
 		assertNotEquals(PhaseEnum.BIDDING, game.getCurrentPhase().asEnum());

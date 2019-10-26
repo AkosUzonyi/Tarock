@@ -56,7 +56,7 @@ public class RandomPlayer implements Player
 	private void doAction(Action action)
 	{
 		if (game != null)
-			game.action(action);
+			game.action(seat, action);
 	}
 
 	private void enqueueAction(Action action)
@@ -125,7 +125,7 @@ public class RandomPlayer implements Player
 			if (phase == PhaseEnum.CHANGING)
 			{
 				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter(gameType)).subList(0, myCards.size() - 9);
-				enqueueAction(Action.skart(seat, cardsToSkart));
+				enqueueAction(Action.skart(cardsToSkart));
 			}
 			else if (phase == PhaseEnum.GAMEPLAY)
 			{
@@ -133,11 +133,11 @@ public class RandomPlayer implements Player
 				myCards.removeCard(cardToPlay);
 				if (currentFirstCard == null)
 				{
-					enqueueActionExtraDelayed(Action.play(seat, cardToPlay));
+					enqueueActionExtraDelayed(Action.play(cardToPlay));
 				}
 				else
 				{
-					enqueueActionDelayed(Action.play(seat, cardToPlay));
+					enqueueActionDelayed(Action.play(cardToPlay));
 				}
 			}
 		}
@@ -168,13 +168,13 @@ public class RandomPlayer implements Player
 		@Override
 		public void availabeBids(Collection<Integer> bids)
 		{
-			enqueueActionDelayed(Action.bid(seat, chooseRandom(bids)));
+			enqueueActionDelayed(Action.bid(chooseRandom(bids)));
 		}
 
 		@Override
 		public void availabeCalls(Collection<Card> cards)
 		{
-			enqueueActionDelayed(Action.call(seat, chooseRandom(cards)));
+			enqueueActionDelayed(Action.call(chooseRandom(cards)));
 		}
 
 		@Override public void changeDone(PlayerSeat player) {}
@@ -183,15 +183,15 @@ public class RandomPlayer implements Player
 		@Override public void availableAnnouncements(List<AnnouncementContra> announcements)
 		{
 			if (announcements.contains(new AnnouncementContra(Announcements.hkp, 0)))
-				enqueueActionDelayed(Action.announce(seat, new AnnouncementContra(Announcements.hkp, 0)));
+				enqueueActionDelayed(Action.announce(new AnnouncementContra(Announcements.hkp, 0)));
 
 			if (!announcements.isEmpty() && rnd.nextFloat() < 0.3)
 			{
-				enqueueActionDelayed(Action.announce(seat, chooseRandom(announcements)));
+				enqueueActionDelayed(Action.announce(chooseRandom(announcements)));
 			}
 			else
 			{
-				enqueueActionDelayed(Action.announcePassz(seat));
+				enqueueActionDelayed(Action.announcePassz());
 			}
 		}
 
@@ -201,7 +201,7 @@ public class RandomPlayer implements Player
 		@Override
 		public void pendingNewGame()
 		{
-			enqueueAction(Action.readyForNewGame(seat));
+			enqueueAction(Action.readyForNewGame());
 		}
 	}
 }

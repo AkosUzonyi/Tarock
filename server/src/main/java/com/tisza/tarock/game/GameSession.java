@@ -114,13 +114,13 @@ public class GameSession implements Game
 	}
 
 	@Override
-	public void action(Action action)
+	public void action(PlayerSeat player, Action action)
 	{
-		boolean success = currentGame.processAction(action);
+		boolean success = currentGame.processAction(player, action);
 		if (success && database != null)
 		{
 			int ordinal = actionOrdinal++;
-			currentGameID.subscribe(gameID -> database.addAction(gameID, action, ordinal));
+			currentGameID.subscribe(gameID -> database.addAction(gameID, player.asInt(), action, ordinal));
 		}
 
 		dispatchNewEvents();

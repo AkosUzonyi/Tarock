@@ -131,6 +131,7 @@ public class Server implements Runnable
 
 			database.shutdown();
 			gameSessionManager.shutdown();
+			listenerThread = null;
 
 			System.out.println("server stopped");
 		}
@@ -191,6 +192,14 @@ public class Server implements Runnable
 		if (listenerThread != null)
 		{
 			listenerThread.interrupt();
+		}
+	}
+
+	public void awaitTermination(long millis) throws InterruptedException
+	{
+		if (listenerThread != null)
+		{
+			listenerThread.join(1000);
 		}
 	}
 

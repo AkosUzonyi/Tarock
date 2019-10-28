@@ -16,5 +16,20 @@ public class Main
 	{
 		Server server = new Server(8128);
 		server.start();
+
+		Runtime.getRuntime().addShutdownHook(new Thread(() ->
+		{
+			GAME_EXECUTOR_SERVICE.shutdownNow();
+			server.stop();
+			try
+			{
+				GAME_EXECUTOR_SERVICE.awaitTermination(1, TimeUnit.SECONDS);
+				server.awaitTermination(1000);
+			}
+			catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}));
 	}
 }

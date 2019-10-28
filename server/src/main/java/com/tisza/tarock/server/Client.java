@@ -17,7 +17,7 @@ public class Client implements MessageHandler
 	private ProtoConnection connection;
 	private User loggedInUser = null;
 	private ProtoPlayer currentPlayer = null;
-	private int currentGameID = -1;
+	private GameSession currentGameSession;
 
 	public Client(Server server, ProtoConnection connection)
 	{
@@ -70,14 +70,14 @@ public class Client implements MessageHandler
 
 				loggedInUser.getName().subscribe(loggedInUserName ->
 				Observable.concat(Observable.just(loggedInUser.getID()), Observable.fromIterable(createGame.getUserIDList())).map(server.getDatabase()::getUser).toList().subscribe(users ->
-				server.getGameSessionManager().createNewGame(gameType, users, doubleRoundType).subscribe(gameID ->
+				server.getGameSessionManager().createGameSession(gameType, users, doubleRoundType).subscribe(gameSession ->
 				{
 					server.broadcastStatus();
 
-					List<String> playerNames = server.getGameSessionManager().getPlayerNames(gameID);
+					List<String> playerNames = gameSession.getPlayerNames();
 					Flowable.fromIterable(users).flatMap(User::getFCMTokens).subscribe(fcmToken ->
 					{
-						Single.<Boolean>create(subscriber -> subscriber.onSuccess(server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameID, loggedInUserName, playerNames)))
+						Single.<Boolean>create(subscriber -> subscriber.onSuccess(server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameSession.getID(), loggedInUserName, playerNames)))
 								.subscribeOn(Schedulers.io())
 								.subscribe(valid -> {if (!valid) server.getDatabase().removeFCMToken(fcmToken);});
 					});
@@ -88,30 +88,35 @@ public class Client implements MessageHandler
 
 			case DELETE_GAME:
 			{
-				int gameID = message.getDeleteGame().getGameId();
+				int gameSessionID = message.getDeleteGame().getGameId();
 
-				if (server.getGameSessionManager().isGameOwnedBy(gameID, loggedInUser))
-				{
-					server.getGameSessionManager().deleteGame(gameID);
-				}
+				if (server.getGameSessionManager().getGameSession(gameSessionID).isUserPlaying(loggedInUser))
+					server.getGameSessionManager().stopGameSession(gameSessionID);
 
 				server.broadcastStatus();
 			}
 
 			case JOIN_GAME:
 			{
-				if (message.getJoinGame().hasGameId())
+				if (!message.getJoinGame().hasGameId())
 				{
-					int gameID = message.getJoinGame().getGameId();
-					ProtoPlayer player = (ProtoPlayer)server.getGameSessionManager().getPlayer(gameID, loggedInUser);
-					if (player != null)
-						switchPlayer(gameID, player);
-					else
-						server.getGameSessionManager().addKibic(currentGameID, loggedInUser).subscribe(p -> switchPlayer(gameID, (ProtoPlayer)p));
+					switchGameSession(null, null);
+					break;
+				}
+
+				GameSession gameSession = server.getGameSessionManager().getGameSession(message.getJoinGame().getGameId());
+				if (gameSession.isUserPlaying(loggedInUser))
+				{
+					ProtoPlayer player = (ProtoPlayer)gameSession.getPlayerByUser(loggedInUser);
+					switchGameSession(gameSession, player);
 				}
 				else
 				{
-					switchPlayer(-1, null);
+					loggedInUser.createPlayer().subscribe(player ->
+					{
+						gameSession.addKibic(player);
+						switchGameSession(gameSession, (ProtoPlayer)player);
+					});
 				}
 
 				break;
@@ -134,15 +139,15 @@ public class Client implements MessageHandler
 		}
 	}
 
-	private void switchPlayer(int gameID, ProtoPlayer player)
+	private void switchGameSession(GameSession gameSession, ProtoPlayer player)
 	{
 		if (currentPlayer != null)
 		{
 			currentPlayer.useConnection(null);
-			server.getGameSessionManager().removeKibic(currentGameID, currentPlayer);
+			currentGameSession.removeKibic(currentPlayer);
 		}
 
-		currentGameID = gameID;
+		currentGameSession = gameSession;
 		currentPlayer = player;
 
 		if (currentPlayer != null)

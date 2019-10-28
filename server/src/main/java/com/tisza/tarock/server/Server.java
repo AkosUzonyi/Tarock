@@ -1,6 +1,7 @@
 package com.tisza.tarock.server;
 
 import com.tisza.tarock.*;
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
 import io.reactivex.*;
@@ -160,9 +161,15 @@ public class Server implements Runnable
 				continue;
 
 			MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
-			for (GameInfo gameInfo : gameSessionManager.listGames())
+
+			for (GameSession gameSession : gameSessionManager.getGameSessions())
 			{
-				builder.addAvailableGame(Utils.gameInfoToProto(gameInfo, gameSessionManager.isGameOwnedBy(gameInfo.getId(), client.getLoggedInUser())));
+				MainProto.Game.Builder gameBuilder = MainProto.Game.newBuilder()
+						.setId(gameSession.getID())
+						.setType(gameSession.getGameType().getID())
+						.addAllPlayerName(gameSession.getPlayerNames())
+						.setMy(gameSession.isUserPlaying(client.getLoggedInUser()));
+				builder.addAvailableGame(gameBuilder);
 			}
 
 			database.getUsers().flatMapCompletable(user ->

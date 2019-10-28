@@ -32,14 +32,4 @@ public class Utils
 			return builder.build();
 		});
 	}
-
-	public static MainProto.Game gameInfoToProto(GameInfo gameInfo, boolean my)
-	{
-		return MainProto.Game.newBuilder()
-				.setId(gameInfo.getId())
-				.setType(gameInfo.getType().getID())
-				.addAllPlayerName(gameInfo.getPlayerNames())
-				.setMy(my)
-				.build();
-	}
 }

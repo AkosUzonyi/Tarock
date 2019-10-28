@@ -2,110 +2,46 @@ package com.tisza.tarock.server;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.doubleround.*;
-import com.tisza.tarock.message.*;
-import io.reactivex.Observable;
 import io.reactivex.*;
 
 import java.util.*;
-import java.util.concurrent.*;
 
 public class GameSessionManager
 {
 	private final TarockDatabase database;
-
-	private Map<Integer, GameSession> games = new HashMap<>();
+	private Map<Integer, GameSession> gameSessions = new HashMap<>();
 
 	public GameSessionManager(TarockDatabase database)
 	{
 		this.database = database;
 	}
 
-	public List<String> getPlayerNames(int gameID)
+	public Single<GameSession> createGameSession(GameType gameType, List<User> users, DoubleRoundType doubleRoundType)
 	{
-		return games.get(gameID).getPlayerNames();
-	}
-
-	public Collection<GameInfo> listGames()
-	{
-		Collection<GameInfo> result = new ArrayList<>();
-
-		for (int id : games.keySet())
+		return GameSession.createNew(gameType, users, doubleRoundType, database).doOnSuccess(gameSession ->
 		{
-			GameSession game = games.get(id);
-			result.add(new GameInfo(id, game.getGameType(), game.getPlayerNames()));
-		}
-
-		return result;
-	}
-
-	public Single<Integer> createNewGame(GameType type, List<User> users, DoubleRoundType doubleRoundType)
-	{
-		if (users.size() != 4)
-			throw new IllegalArgumentException("users.size() != 4: " + users.size());
-
-		return Observable.fromIterable(users).flatMapSingle(User::createPlayer).toList().flatMap(players ->
-		{
-			Collections.shuffle(players);
-
-			return GameSession.create(type, players, doubleRoundType, database).map(game ->
-			{
-				games.put(game.getID(), game);
-
-				for (PlayerSeat seat : PlayerSeat.getAll())
-				{
-					Player player = players.get(seat.asInt());
-					database.addPlayer(game.getID(), seat, player.getUser());
-				}
-
-				game.startSession();
-
-				System.out.println("game session created: users: " + users + " id: " + game.getID());
-
-				return game.getID();
-			});
+			gameSessions.put(gameSession.getID(), gameSession);
+			gameSession.startSession();
 		});
-
 	}
 
-	public Player getPlayer(int gameID, User user)
+	public GameSession getGameSession(int id)
 	{
-		for (Player player : games.get(gameID).getPlayers().values())
-			if (player.getUser().equals(user))
-				return player;
-
-		return null;
+		return gameSessions.get(id);
 	}
 
-	public boolean isGameOwnedBy(int gameID, User user)
+	public void stopGameSession(int id)
 	{
-		return getPlayer(gameID, user) != null;
+		GameSession gameSession = gameSessions.remove(id);
+		gameSession.stopSession();
 	}
 
-	public void deleteGame(int id)
+	public Collection<GameSession> getGameSessions()
 	{
-		GameSession game = games.remove(id);
-		game.stopSession();
-		System.out.println("game session deleted: id = " + id);
-	}
-
-	public Single<Player> addKibic(int gameID, User user)
-	{
-		if (!games.containsKey(gameID))
-			return null;
-
-		return user.createPlayer().doOnSuccess(player -> games.get(gameID).addKibic(player));
-	}
-
-	public void removeKibic(int gameID, Player player)
-	{
-		games.get(gameID).removeKibic(player);
+		return gameSessions.values();
 	}
 
 	public void shutdown()
 	{
-		for (int gameID : games.keySet())
-		{
-			deleteGame(gameID);
-		}
 	}
 }

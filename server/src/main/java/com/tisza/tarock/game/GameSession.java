@@ -5,6 +5,7 @@ import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.server.*;
+import io.reactivex.Observable;
 import io.reactivex.*;
 
 import java.util.*;
@@ -28,7 +29,7 @@ public class GameSession implements Game
 
 	private int[] points = new int[4];
 
-	private GameSession(int id, GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, TarockDatabase database)
+	private GameSession(int id, GameType gameType, List<Player> playerList, DoubleRoundType doubleRoundType, TarockDatabase database)
 	{
 		if (playerList.size() != 4)
 			throw new IllegalArgumentException("GameSession: playerList.size() != 4");
@@ -50,9 +51,25 @@ public class GameSession implements Game
 		doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 	}
 
-	public static Single<GameSession> create(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, TarockDatabase database)
+	public static Single<GameSession> createNew(GameType gameType, List<User> users, DoubleRoundType doubleRoundType, TarockDatabase database)
 	{
-		return database.createGameSession(gameType, doubleRoundType).map(id -> new GameSession(id, gameType, playerList, doubleRoundType, database));
+		if (users.size() != 4)
+			throw new IllegalArgumentException("users.size() != 4: " + users.size());
+
+		return
+		Observable.fromIterable(users).flatMapSingle(User::createPlayer).toList().flatMap(players ->
+		database.createGameSession(gameType, doubleRoundType).map(id ->
+		{
+			Collections.shuffle(players);
+
+			for (PlayerSeat seat : PlayerSeat.getAll())
+			{
+				Player player = players.get(seat.asInt());
+				database.addPlayer(id, seat, player.getUser());
+			}
+
+			return new GameSession(id, gameType, players, doubleRoundType, database);
+		}));
 	}
 
 	public int getID()
@@ -78,6 +95,20 @@ public class GameSession implements Game
 			player.setGame(null, null);
 
 		database.stopGameSession(id);
+	}
+
+	public Player getPlayerByUser(User user)
+	{
+		for (Player player : players.values())
+			if (player.getUser().equals(user))
+				return player;
+
+		return null;
+	}
+
+	public boolean isUserPlaying(User user)
+	{
+		return getPlayerByUser(user) != null;
 	}
 
 	public void addKibic(Player player)

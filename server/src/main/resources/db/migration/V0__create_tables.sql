@@ -20,6 +20,7 @@ CREATE TABLE game_session (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type VARCHAR(255) NOT NULL,
     double_round_type VARCHAR(255) NOT NULL,
+    double_round_data INTEGER NOT NULL,
     current_game_id INTEGER,
     create_time BIGINT NOT NULL,
     FOREIGN KEY(current_game_id) REFERENCES game(id)

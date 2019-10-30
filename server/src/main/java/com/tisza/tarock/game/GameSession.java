@@ -29,7 +29,7 @@ public class GameSession implements Game
 
 	private int[] points = new int[4];
 
-	private GameSession(int id, GameType gameType, List<Player> playerList, DoubleRoundType doubleRoundType, TarockDatabase database)
+	private GameSession(int id, GameType gameType, List<Player> playerList, DoubleRoundTracker doubleRoundTracker, TarockDatabase database)
 	{
 		if (playerList.size() != 4)
 			throw new IllegalArgumentException("GameSession: playerList.size() != 4");
@@ -37,6 +37,7 @@ public class GameSession implements Game
 		this.id = id;
 		this.database = database;
 		this.gameType = gameType;
+		this.doubleRoundTracker = doubleRoundTracker;
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -47,8 +48,6 @@ public class GameSession implements Game
 			allPlayers.add(player);
 			player.setGame(this, playerSeat);
 		}
-
-		doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 	}
 
 	public static Single<GameSession> createNew(GameType gameType, List<User> users, DoubleRoundType doubleRoundType, TarockDatabase database)
@@ -56,9 +55,11 @@ public class GameSession implements Game
 		if (users.size() != 4)
 			throw new IllegalArgumentException("users.size() != 4: " + users.size());
 
+		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
+
 		return
 		Observable.fromIterable(users).flatMapSingle(User::createPlayer).toList().flatMap(players ->
-		database.createGameSession(gameType, doubleRoundType).map(id ->
+		database.createGameSession(gameType, doubleRoundTracker).map(id ->
 		{
 			Collections.shuffle(players);
 
@@ -68,7 +69,7 @@ public class GameSession implements Game
 				database.addPlayer(id, seat, player.getUser());
 			}
 
-			return new GameSession(id, gameType, players, doubleRoundType, database);
+			return new GameSession(id, gameType, players, doubleRoundTracker, database);
 		}));
 	}
 
@@ -174,8 +175,12 @@ public class GameSession implements Game
 			}
 
 			if (database != null)
+			{
+				database.setDoubleRoundData(id, doubleRoundTracker.getData());
+
 				for (PlayerSeat seat : PlayerSeat.getAll())
 					database.setPlayerPoints(id, seat, points[seat.asInt()]);
+			}
 
 			startNewGame();
 		}

@@ -131,19 +131,25 @@ public class TarockDatabase
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public Single<Integer> createGameSession(GameType gameType, DoubleRoundType doubleRoundType)
+	public Single<Integer> createGameSession(GameType gameType, DoubleRoundTracker doubleRoundTracker)
 	{
-		return rxdatabase.update("INSERT INTO game_session(type, double_round_type, create_time) VALUES(?, ?, ?);")
-				.parameters(gameType.getID(), doubleRoundType.getID(), System.currentTimeMillis())
+		return rxdatabase.update("INSERT INTO game_session(type, double_round_type, double_round_data, create_time) VALUES(?, ?, ?, ?);")
+				.parameters(gameType.getID(), doubleRoundTracker.getType().getID(), doubleRoundTracker.getData(), System.currentTimeMillis())
 				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
 				.compose(resultTransformerUpdateSingle());
 	}
 
-	public Single<Tuple2<GameType, DoubleRoundType>> getGameSessionType(int gameSessionID)
+	public void setDoubleRoundData(int gameSessionID, int data)
 	{
-		return rxdatabase.select("SELECT type, double_round_type FROM game_session WHERE id = ?;")
-				.parameter(gameSessionID).getAs(String.class, String.class).singleOrError()
-				.map(tuple -> Tuple2.create(GameType.fromID(tuple._1()), DoubleRoundType.fromID(tuple._2())))
+		rxdatabase.update("UPDATE game_session SET double_round_data = ? where id = ?;")
+				.parameters(data, gameSessionID).complete().subscribe();
+	}
+
+	public Single<Tuple4<GameType, DoubleRoundType, Integer, Integer>> getGameSession(int gameSessionID)
+	{
+		return rxdatabase.select("SELECT type, double_round_type, double_round_data, current_game_id FROM game_session WHERE id = ?;")
+				.parameter(gameSessionID).getAs(String.class, String.class, Integer.class, Integer.class).singleOrError()
+				.map(tuple -> Tuple4.create(GameType.fromID(tuple._1()), DoubleRoundType.fromID(tuple._2()), tuple._3(), tuple._4()))
 				.compose(resultTransformerQuerySingle());
 	}
 

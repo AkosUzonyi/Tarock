@@ -108,6 +108,7 @@ public class Server implements Runnable
 		try
 		{
 			database.initialize();
+			gameSessionManager.initialize();
 
 			createServerSocket();
 

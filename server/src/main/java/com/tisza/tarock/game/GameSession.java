@@ -7,6 +7,7 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.server.*;
 import io.reactivex.Observable;
 import io.reactivex.*;
+import org.davidmoten.rx.jdbc.tuple.*;
 
 import java.util.*;
 import java.util.stream.*;
@@ -14,7 +15,6 @@ import java.util.stream.*;
 public class GameSession implements Game
 {
 	private final int id;
-	private final TarockDatabase database;
 	private final GameType gameType;
 	private final PlayerSeatMap<Player> players = new PlayerSeatMap<>();
 	private final Set<Player> allPlayers = new HashSet<>();
@@ -24,6 +24,7 @@ public class GameSession implements Game
 	private PlayerSeat currentBeginnerPlayer = PlayerSeat.SEAT0;
 	private GameState currentGame;
 
+	private TarockDatabase database;
 	private Single<Integer> currentGameID;
 	private int actionOrdinal = 0;
 
@@ -71,6 +72,47 @@ public class GameSession implements Game
 
 			return new GameSession(id, gameType, players, doubleRoundTracker, database);
 		}));
+	}
+
+	public static Single<GameSession> load(int id, TarockDatabase database)
+	{
+		return
+		database.getGameSession(id).flatMap(gameSessionTuple ->
+		database.getUsersForGameSession(id).flatMapSingle(User::createPlayer).toList().flatMap(players ->
+		database.getPlayerPoints(id).toList().flatMap(points ->
+		database.getActions(gameSessionTuple._4()).toList().flatMap(actions ->
+		database.getDeck(gameSessionTuple._4()).toList().flatMap(deck ->
+		database.getGameBeginner(gameSessionTuple._4()).map(beginnerPlayer ->
+		{
+			GameType gameType = gameSessionTuple._1();
+			DoubleRoundType doubleRoundType = gameSessionTuple._2();
+			int doubleRoundData = gameSessionTuple._3();
+			int currentGameID = gameSessionTuple._4();
+
+			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
+			doubleRoundTracker.setData(doubleRoundData);
+
+			GameSession gameSession = new GameSession(id, gameType, players, doubleRoundTracker, database);
+
+			gameSession.currentBeginnerPlayer = beginnerPlayer;
+			gameSession.currentGameID = Single.just(currentGameID);
+			gameSession.actionOrdinal = actions.size();
+
+			for (int i = 0; i < 4; i++)
+				gameSession.points[i] = points.get(i);
+
+			gameSession.currentGame = new GameState(gameType, gameSession.getPlayerNames(), beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			gameSession.currentGame.start();
+
+			for (Tuple3<PlayerSeat, Action, Integer> action : actions)
+				gameSession.currentGame.processAction(action._1(), action._2());
+
+			gameSession.dispatchEvent(new EventInstance(null, Event.historyMode(true)));
+			gameSession.dispatchNewEvents();
+			gameSession.dispatchEvent(new EventInstance(null, Event.historyMode(false)));
+
+			return gameSession;
+		}))))));
 	}
 
 	public int getID()
@@ -154,6 +196,9 @@ public class GameSession implements Game
 	@Override
 	public void action(PlayerSeat player, Action action)
 	{
+		if (currentGame == null)
+			return;
+
 		boolean success = currentGame.processAction(player, action);
 		if (success && database != null)
 		{
@@ -206,8 +251,13 @@ public class GameSession implements Game
 	@Override
 	public void requestHistory(Player player)
 	{
+		if (currentGame == null)
+			return;
+
+		player.handleEvent(Event.historyMode(true));
 		for (EventInstance event : currentGame.getAllEvents())
 			if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
 				player.handleEvent(event.getEvent());
+		player.handleEvent(Event.historyMode(false));
 	}
 }

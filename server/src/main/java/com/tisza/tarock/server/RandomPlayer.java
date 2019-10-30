@@ -17,6 +17,10 @@ public class RandomPlayer extends Player
 	private EventHandler eventHandler = new MyEventHandler();
 	private Random rnd = new Random();
 
+	private boolean historyMode;
+	private Action lastActionInHistoryMode;
+	private boolean isMyTurn;
+
 	public RandomPlayer(User user, String name)
 	{
 		this(user, name, 0, 0);
@@ -37,6 +41,12 @@ public class RandomPlayer extends Player
 
 	private void enqueueActionDelayed(Action action, int delayMillis)
 	{
+		if (historyMode)
+		{
+			lastActionInHistoryMode = action;
+			return;
+		}
+
 		Main.GAME_EXECUTOR_SERVICE.schedule(() -> doAction(action), delayMillis, TimeUnit.MILLISECONDS);
 	}
 
@@ -57,6 +67,17 @@ public class RandomPlayer extends Player
 			return it.next();
 		}
 
+		@Override
+		public void historyMode(boolean isHistory)
+		{
+			historyMode = isHistory;
+
+			if (!historyMode && lastActionInHistoryMode != null && isMyTurn)
+				enqueueActionDelayed(lastActionInHistoryMode, 0);
+
+			lastActionInHistoryMode = null;
+		}
+
 		@Override public void announce(PlayerSeat player, AnnouncementContra announcement) {}
 		@Override public void announcePassz(PlayerSeat player) {}
 		@Override public void bid(PlayerSeat player, int bid) {}
@@ -68,6 +89,9 @@ public class RandomPlayer extends Player
 		@Override
 		public void playCard(PlayerSeat player, Card card)
 		{
+			if (player == getSeat())
+				myCards.removeCard(card);
+
 			if (cardsInRound == 0)
 				currentFirstCard = card;
 
@@ -85,7 +109,8 @@ public class RandomPlayer extends Player
 		@Override
 		public void turn(PlayerSeat player)
 		{
-			if (player != getSeat())
+			isMyTurn = player == getSeat();
+			if (!isMyTurn)
 				return;
 
 			if (phase == PhaseEnum.CHANGING)
@@ -96,7 +121,6 @@ public class RandomPlayer extends Player
 			else if (phase == PhaseEnum.GAMEPLAY)
 			{
 				Card cardToPlay = chooseRandom(myCards.getPlaceableCards(currentFirstCard));
-				myCards.removeCard(cardToPlay);
 				if (currentFirstCard == null)
 				{
 					enqueueActionDelayed(Action.play(cardToPlay), extraDelay);
@@ -123,6 +147,7 @@ public class RandomPlayer extends Player
 		public void phaseChanged(PhaseEnum phase)
 		{
 			this.phase = phase;
+			isMyTurn = false;
 		}
 
 		@Override

@@ -185,6 +185,13 @@ public class TarockDatabase
 				.parameters(value, gameSessionID, seat.asInt()).complete().subscribe();
 	}
 
+	public Flowable<Integer> getPlayerPoints(int gameSessionID)
+	{
+		return rxdatabase.select("SELECT points FROM player WHERE game_session_id = ? ORDER BY seat;")
+				.parameter(gameSessionID).getAs(Integer.class)
+				.compose(resultTransformerQueryFlowable());
+	}
+
 	public Single<Integer> createGame(int gameSessionID, PlayerSeat beginnerPlayer)
 	{
 		return rxdatabase.update("INSERT INTO game(game_session_id, beginner_player, create_time) VALUES(?, ?, ?);")
@@ -228,11 +235,11 @@ public class TarockDatabase
 				.parameters(gameID, ordinal, player, action.getId(), System.currentTimeMillis()).complete().subscribe();
 	}
 
-	public Flowable<Tuple3<Integer, Action, Integer>> getActions(int gameID)
+	public Flowable<Tuple3<PlayerSeat, Action, Integer>> getActions(int gameID)
 	{
 		return rxdatabase.select("SELECT seat, action, time FROM action WHERE game_id = ? ORDER BY ordinal;")
 				.parameter(gameID).getAs(Integer.class, String.class, Integer.class)
-				.map(tuple -> Tuple3.create(tuple._1(), new Action(tuple._2()), tuple._3()))
+				.map(tuple -> Tuple3.create(PlayerSeat.fromInt(tuple._1()), new Action(tuple._2()), tuple._3()))
 				.compose(resultTransformerQueryFlowable());
 	}
 

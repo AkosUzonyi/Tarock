@@ -125,6 +125,11 @@ public interface Event
 		return handler -> handler.pendingNewGame();
 	}
 
+	static Event historyMode(boolean isHistory)
+	{
+		return handler -> handler.historyMode(isHistory);
+	}
+
 	static Event chat(PlayerSeat player, String message)
 	{
 		return handler -> handler.chat(player, message);

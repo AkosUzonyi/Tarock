@@ -35,19 +35,9 @@ public class RandomPlayer extends Player
 		event.handle(eventHandler);
 	}
 
-	private void enqueueAction(Action action)
+	private void enqueueActionDelayed(Action action, int delayMillis)
 	{
-		Main.GAME_EXECUTOR_SERVICE.execute(() -> doAction(action));
-	}
-
-	private void enqueueActionDelayed(Action action)
-	{
-		Main.GAME_EXECUTOR_SERVICE.schedule(() -> doAction(action), delay, TimeUnit.MILLISECONDS);
-	}
-
-	private void enqueueActionExtraDelayed(Action action)
-	{
-		Main.GAME_EXECUTOR_SERVICE.schedule(() -> doAction(action), extraDelay, TimeUnit.MILLISECONDS);
+		Main.GAME_EXECUTOR_SERVICE.schedule(() -> doAction(action), delayMillis, TimeUnit.MILLISECONDS);
 	}
 
 	private class MyEventHandler implements EventHandler
@@ -101,7 +91,7 @@ public class RandomPlayer extends Player
 			if (phase == PhaseEnum.CHANGING)
 			{
 				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter(gameType)).subList(0, myCards.size() - 9);
-				enqueueAction(Action.skart(cardsToSkart));
+				enqueueActionDelayed(Action.skart(cardsToSkart), 0);
 			}
 			else if (phase == PhaseEnum.GAMEPLAY)
 			{
@@ -109,11 +99,11 @@ public class RandomPlayer extends Player
 				myCards.removeCard(cardToPlay);
 				if (currentFirstCard == null)
 				{
-					enqueueActionExtraDelayed(Action.play(cardToPlay));
+					enqueueActionDelayed(Action.play(cardToPlay), extraDelay);
 				}
 				else
 				{
-					enqueueActionDelayed(Action.play(cardToPlay));
+					enqueueActionDelayed(Action.play(cardToPlay), delay);
 				}
 			}
 		}
@@ -138,13 +128,13 @@ public class RandomPlayer extends Player
 		@Override
 		public void availabeBids(Collection<Integer> bids)
 		{
-			enqueueActionDelayed(Action.bid(chooseRandom(bids)));
+			enqueueActionDelayed(Action.bid(chooseRandom(bids)), delay);
 		}
 
 		@Override
 		public void availabeCalls(Collection<Card> cards)
 		{
-			enqueueActionDelayed(Action.call(chooseRandom(cards)));
+			enqueueActionDelayed(Action.call(chooseRandom(cards)), delay);
 		}
 
 		@Override public void changeDone(PlayerSeat player) {}
@@ -153,15 +143,15 @@ public class RandomPlayer extends Player
 		@Override public void availableAnnouncements(List<AnnouncementContra> announcements)
 		{
 			if (announcements.contains(new AnnouncementContra(Announcements.hkp, 0)))
-				enqueueActionDelayed(Action.announce(new AnnouncementContra(Announcements.hkp, 0)));
+				enqueueActionDelayed(Action.announce(new AnnouncementContra(Announcements.hkp, 0)), delay);
 
 			if (!announcements.isEmpty() && rnd.nextFloat() < 0.3)
 			{
-				enqueueActionDelayed(Action.announce(chooseRandom(announcements)));
+				enqueueActionDelayed(Action.announce(chooseRandom(announcements)), delay);
 			}
 			else
 			{
-				enqueueActionDelayed(Action.announcePassz());
+				enqueueActionDelayed(Action.announcePassz(), delay);
 			}
 		}
 
@@ -171,7 +161,7 @@ public class RandomPlayer extends Player
 		@Override
 		public void pendingNewGame()
 		{
-			enqueueAction(Action.readyForNewGame());
+			enqueueActionDelayed(Action.readyForNewGame(), 0);
 		}
 	}
 }

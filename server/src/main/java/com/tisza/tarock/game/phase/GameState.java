@@ -91,7 +91,7 @@ public class GameState
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
 			sendEvent(player, Event.seat(player));
-			sendEvent(player, Event.playerCards(playersCards.get(player)));
+			sendEvent(player, Event.playerCards(playersCards.get(player).clone()));
 		}
 
 		changePhase(new Bidding(this));
@@ -424,6 +424,6 @@ public class GameState
 
 	void sendPlayerPoints()
 	{
-		broadcastEvent(Event.playerPoints(points));
+		broadcastEvent(Event.playerPoints(points.clone()));
 	}
 }

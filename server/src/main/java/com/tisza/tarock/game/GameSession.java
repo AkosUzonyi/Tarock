@@ -143,6 +143,7 @@ public class GameSession implements Game
 		{
 			currentGameID = database.createGame(id, currentBeginnerPlayer).cache();
 			currentGameID.subscribe(gid -> database.setDeck(gid, deck));
+			actionOrdinal = 0;
 		}
 
 		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());

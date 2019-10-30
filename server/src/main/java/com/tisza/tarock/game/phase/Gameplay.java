@@ -27,7 +27,6 @@ class Gameplay extends Phase
 		currentRound = new Round(game.getBeginnerPlayer());
 		game.broadcastEvent(Event.turn(currentRound.getCurrentPlayer()));
 
-		game.calculateInGameStatistics();
 		game.sendInGameStatistics();
 	}
 

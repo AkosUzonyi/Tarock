@@ -1,12 +1,12 @@
-package com.tisza.tarock.server;
+package com.tisza.tarock.server.player;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
+import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
-import com.tisza.tarock.net.*;
+import com.tisza.tarock.server.net.*;
 import com.tisza.tarock.proto.*;
-import io.reactivex.*;
 
 import java.util.*;
 import java.util.stream.*;

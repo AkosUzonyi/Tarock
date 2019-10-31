@@ -1,4 +1,4 @@
-package com.tisza.tarock.net;
+package com.tisza.tarock.server.net;
 
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.proto.MainProto.*;

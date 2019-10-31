@@ -1,4 +1,4 @@
-package com.tisza.tarock.server;
+package com.tisza.tarock.server.database;
 
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
@@ -104,21 +104,21 @@ public class TarockDatabase
 		return new User(userID, this);
 	}
 
-	public Single<String> getUserName(int userID)
+	Single<String> getUserName(int userID)
 	{
 		return rxdatabase.select("SELECT name FROM user WHERE id = ?;")
 				.parameter(userID).getAs(String.class).singleOrError()
 				.compose(resultTransformerQuerySingle());
 	}
 
-	public Single<Optional<String>> getUserImgURL(int userID)
+	Single<Optional<String>> getUserImgURL(int userID)
 	{
 		return rxdatabase.select("SELECT img_url FROM user WHERE id = ?;")
 				.parameter(userID).getAsOptional(String.class).singleOrError()
 				.compose(resultTransformerQuerySingle());
 	}
 
-	public Single<Boolean> areUserFriends(int userID0, int userID1)
+	Single<Boolean> areUserFriends(int userID0, int userID1)
 	{
 		return rxdatabase.select("SELECT COUNT(id0) FROM friendship WHERE id0 = ? AND id1 = ?;")
 				.parameters(userID0, userID1).getAs(Integer.class).singleOrError().map(count -> count > 0)
@@ -261,7 +261,7 @@ public class TarockDatabase
 				.parameter(token).complete().subscribe();
 	}
 
-	public Flowable<String> getFCMTokensForUser(int userID)
+	Flowable<String> getFCMTokensForUser(int userID)
 	{
 		return rxdatabase.select("SELECT token FROM fcm_token WHERE user_id = ?;")
 				.parameter(userID).getAs(String.class)

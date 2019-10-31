@@ -1,10 +1,9 @@
-package com.tisza.tarock.server;
+package com.tisza.tarock.server.database;
 
-import com.tisza.tarock.message.*;
+import com.tisza.tarock.server.player.*;
 import io.reactivex.*;
 
 import java.util.*;
-import java.util.concurrent.*;
 
 public class User
 {

@@ -1,10 +1,11 @@
-package com.tisza.tarock.server;
+package com.tisza.tarock.server.player;
 
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 

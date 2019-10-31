@@ -7,6 +7,7 @@ public class PlayerSeatMap<V> implements Map<PlayerSeat, V>, Iterable<V>
 {
 	private static final Set<PlayerSeat> KEY_SET = Collections.unmodifiableSet(Arrays.stream(PlayerSeat.getAll()).collect(Collectors.toSet()));
 
+	@SuppressWarnings("unchecked")
 	private final V[] values = (V[])new Object[4];
 
 	public PlayerSeatMap()

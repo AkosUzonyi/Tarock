@@ -95,7 +95,7 @@ class Calling extends Phase
 
 	private void sendAvailableCalls()
 	{
-		game.sendEvent(callerPlayer, Event.availabeCalls(getCallableCards()));
+		game.sendEvent(callerPlayer, Event.availableCalls(getCallableCards()));
 		game.broadcastEvent(Event.turn(callerPlayer));
 	}
 

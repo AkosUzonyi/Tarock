@@ -172,7 +172,7 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setPhaseChanged(e).build());
 		}
 
-		@Override public void availabeBids(Collection<Integer> bids)
+		@Override public void availableBids(Collection<Integer> bids)
 		{
 			EventProto.Event.AvailableBids e = EventProto.Event.AvailableBids.newBuilder()
 					.addAllBid(bids)
@@ -180,7 +180,7 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setAvailableBids(e).build());
 		}
 
-		@Override public void availabeCalls(Collection<Card> cards)
+		@Override public void availableCalls(Collection<Card> cards)
 		{
 			EventProto.Event.AvailableCalls e = EventProto.Event.AvailableCalls.newBuilder()
 					.addAllCard(cards.stream().map(Card::getID).collect(Collectors.toList()))

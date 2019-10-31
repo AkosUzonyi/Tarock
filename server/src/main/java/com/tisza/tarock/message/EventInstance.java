@@ -1,7 +1,6 @@
 package com.tisza.tarock.message;
 
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.message.*;
 
 public class EventInstance
 {

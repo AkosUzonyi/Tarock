@@ -97,8 +97,8 @@ public abstract class AnnouncementBase implements Announcement
 		return true;
 	}
 
-	public static enum Result
+	public enum Result
 	{
-		SUCCESSFUL, SUCCESSFUL_SILENT, FAILED, FAILED_SILENT, DEACTIVATED;
+		SUCCESSFUL, SUCCESSFUL_SILENT, FAILED, FAILED_SILENT, DEACTIVATED
 	}
 }

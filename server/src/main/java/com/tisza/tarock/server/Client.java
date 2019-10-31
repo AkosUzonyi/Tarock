@@ -189,7 +189,7 @@ public class Client implements MessageHandler
 		server.removeClient(this);
 	}
 
-	public void disonnect()
+	public void disconnect()
 	{
 		try
 		{

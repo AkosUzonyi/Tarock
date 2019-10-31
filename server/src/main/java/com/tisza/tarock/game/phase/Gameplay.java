@@ -36,7 +36,7 @@ class Gameplay extends Phase
 		if (player != currentRound.getCurrentPlayer())
 			return false;
 		
-		if (!getPlaceableCards().contains(card))
+		if (!getPlayableCards().contains(card))
 		{
 			//game.sendEvent(player, new EventActionFailed(Reason.INVALID_CARD));
 			return false;
@@ -69,10 +69,10 @@ class Gameplay extends Phase
 		return true;
 	}
 	
-	private Collection<Card> getPlaceableCards()
+	private Collection<Card> getPlayableCards()
 	{
 		PlayerCards pc = game.getPlayerCards(currentRound.getCurrentPlayer());
 		Card firstCard = currentRound.getFirstCard();
-		return pc.getPlaceableCards(firstCard);
+		return pc.getPlayableCards(firstCard);
 	}
 }

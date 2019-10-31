@@ -4,6 +4,6 @@ import com.tisza.tarock.proto.MainProto.*;
 
 public interface MessageHandler
 {
-	public void handleMessage(Message message);
-	public void connectionClosed();
+	void handleMessage(Message message);
+	void connectionClosed();
 }

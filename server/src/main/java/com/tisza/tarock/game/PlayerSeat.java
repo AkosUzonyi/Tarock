@@ -1,8 +1,5 @@
 package com.tisza.tarock.game;
 
-import java.util.*;
-import java.util.stream.*;
-
 public enum PlayerSeat
 {
 	SEAT0, SEAT1, SEAT2, SEAT3;

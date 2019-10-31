@@ -55,7 +55,7 @@ public class AnnouncementContra implements Comparable<AnnouncementContra>
 	{
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((announcement == null) ? 0 : announcement.hashCode());
+		result = prime * result + announcement.hashCode();
 		result = prime * result + contraLevel;
 		return result;
 	}
@@ -66,13 +66,7 @@ public class AnnouncementContra implements Comparable<AnnouncementContra>
 		if (obj == null) return false;
 		if (getClass() != obj.getClass()) return false;
 		AnnouncementContra other = (AnnouncementContra)obj;
-		if (announcement == null)
-		{
-			if (other.announcement != null) return false;
-		}
-		else if (!announcement.equals(other.announcement)) return false;
-		if (contraLevel != other.contraLevel) return false;
-		return true;
+		return announcement.equals(other.announcement) && contraLevel == other.contraLevel;
 	}
 
 	@Override

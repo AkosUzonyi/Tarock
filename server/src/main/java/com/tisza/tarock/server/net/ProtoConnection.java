@@ -202,6 +202,7 @@ public class ProtoConnection implements Closeable
 		return started && !closeRequested;
 	}
 	
+	@Override
 	public synchronized void close() throws IOException
 	{
 		if (closeRequested)
@@ -221,7 +222,7 @@ public class ProtoConnection implements Closeable
 		{
 			for (MessageHandler handler : packetHandlers)
 			{
-				messageHandlerExecutor.execute(() -> handler.connectionClosed());
+				messageHandlerExecutor.execute(handler::connectionClosed);
 			}
 			packetHandlers = null;
 		}

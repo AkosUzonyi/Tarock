@@ -56,7 +56,7 @@ public class FacebookUserManager
 			urlConnection.setReadTimeout(1000);
 
 			BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-			StringBuffer response = new StringBuffer();
+			StringBuilder response = new StringBuilder();
 
 			String inputLine;
 			while ((inputLine = in.readLine()) != null)

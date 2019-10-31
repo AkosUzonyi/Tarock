@@ -387,16 +387,16 @@ public class GameState
 				if (!gameType.hasParent(announcement.getGameType()))
 					continue;
 
-				int annoucementPoints = announcement.calculatePoints(this, team);
-				annoucementPoints *= pointMultiplier;
+				int announcementPoints = announcement.calculatePoints(this, team);
+				announcementPoints *= pointMultiplier;
 
-				pointsForCallerTeam += annoucementPoints * (team == Team.CALLER ? 1 : -1);
+				pointsForCallerTeam += announcementPoints * (team == Team.CALLER ? 1 : -1);
 
-				if (annoucementPoints != 0)
+				if (announcementPoints != 0)
 				{
 					int acl = announcementsState.isAnnounced(team, announcement) ? announcementsState.getContraLevel(team, announcement) : -1;
 					AnnouncementContra ac = new AnnouncementContra(announcement, acl);
-					announcementResults.add(new AnnouncementResult(ac, annoucementPoints, team));
+					announcementResults.add(new AnnouncementResult(ac, announcementPoints, team));
 				}
 			}
 		}

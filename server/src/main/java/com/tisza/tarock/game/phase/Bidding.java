@@ -167,7 +167,7 @@ class Bidding extends Phase
 	
 	private void sendAvailableBids()
 	{
-		game.sendEvent(currentPlayer, Event.availabeBids(getAvailableBids()));
+		game.sendEvent(currentPlayer, Event.availableBids(getAvailableBids()));
 		game.broadcastEvent(Event.turn(currentPlayer));
 	}
 
@@ -209,8 +209,8 @@ class Bidding extends Phase
 		}
 	}
 
-	private static enum BidState
+	private enum BidState
 	{
-		INITIAL, IN, OUT;
+		INITIAL, IN, OUT
 	}
 }

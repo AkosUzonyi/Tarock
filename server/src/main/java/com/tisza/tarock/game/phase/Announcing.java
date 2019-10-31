@@ -225,11 +225,13 @@ class Announcing extends Phase implements IAnnouncing
 		game.getAnnouncementsState().setXXIUltimoDeactivated(team);
 	}
 
+	@Override
 	public void announceTarockCount(PlayerSeat player, TarockCount announcement)
 	{
 		game.getAnnouncementsState().announceTarockCount(player, announcement);
 	}
 
+	@Override
 	public TarockCount getTarockCountAnnounced(PlayerSeat player)
 	{
 		return game.getAnnouncementsState().getTarockCountAnnounced(player);

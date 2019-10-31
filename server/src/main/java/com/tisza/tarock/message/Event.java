@@ -75,14 +75,14 @@ public interface Event
 		return handler -> handler.phaseChanged(phase);
 	}
 
-	static Event availabeBids(Collection<Integer> bids)
+	static Event availableBids(Collection<Integer> bids)
 	{
-		return handler -> handler.availabeBids(bids);
+		return handler -> handler.availableBids(bids);
 	}
 
-	static Event availabeCalls(Collection<Card> cards)
+	static Event availableCalls(Collection<Card> cards)
 	{
-		return handler -> handler.availabeCalls(cards);
+		return handler -> handler.availableCalls(cards);
 	}
 
 	static Event changeDone(PlayerSeat player)

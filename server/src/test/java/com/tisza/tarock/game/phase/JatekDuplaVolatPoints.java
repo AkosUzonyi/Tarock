@@ -115,7 +115,7 @@ public class JatekDuplaVolatPoints
 				}
 				else
 				{
-					return Arrays.asList(Card.getTarockCard(1));
+					return Collections.singletonList(Card.getTarockCard(1));
 				}
 			}
 		};

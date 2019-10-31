@@ -68,7 +68,7 @@ public class PlayerCards
 		return cards;
 	}
 
-	public List<Card> getPlaceableCards(Card firstCard)
+	public List<Card> getPlayableCards(Card firstCard)
 	{
 		if (firstCard == null)
 		{

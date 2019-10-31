@@ -199,10 +199,8 @@ public class TarockDatabase
 				.parameters(gameSessionID, beginnerPlayer.asInt(), System.currentTimeMillis())
 				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
 				.doOnSuccess(gameID ->
-				{
-					rxdatabase.update("UPDATE game_session SET current_game_id = ? where id = ?;")
-							.parameters(gameID, gameSessionID).complete().subscribe();
-				})
+						rxdatabase.update("UPDATE game_session SET current_game_id = ? where id = ?;")
+						.parameters(gameID, gameSessionID).complete().subscribe())
 				.compose(resultTransformerUpdateSingle());
 	}
 

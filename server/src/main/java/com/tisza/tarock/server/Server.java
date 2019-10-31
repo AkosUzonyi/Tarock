@@ -77,7 +77,7 @@ public class Server implements Runnable
 	{
 		if (clients.remove(client))
 		{
-			client.disonnect();
+			client.disconnect();
 		}
 		broadcastStatus();
 	}
@@ -207,7 +207,7 @@ public class Server implements Runnable
 	{
 		if (listenerThread != null)
 		{
-			listenerThread.join(1000);
+			listenerThread.join(millis);
 		}
 	}
 

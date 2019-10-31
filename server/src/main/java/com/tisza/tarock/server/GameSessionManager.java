@@ -20,9 +20,7 @@ public class GameSessionManager
 	public void initialize()
 	{
 		database.getActiveGameSessionIDs().flatMapSingle(id -> GameSession.load(id, database)).doOnNext(gameSession ->
-		{
-			gameSessions.put(gameSession.getID(), gameSession);
-		})
+				gameSessions.put(gameSession.getID(), gameSession))
 		.ignoreElements().blockingAwait();
 	}
 

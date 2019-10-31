@@ -121,7 +121,7 @@ public class RandomPlayer extends Player
 			}
 			else if (phase == PhaseEnum.GAMEPLAY)
 			{
-				Card cardToPlay = chooseRandom(myCards.getPlaceableCards(currentFirstCard));
+				Card cardToPlay = chooseRandom(myCards.getPlayableCards(currentFirstCard));
 				if (currentFirstCard == null)
 				{
 					enqueueActionDelayed(Action.play(cardToPlay), extraDelay);
@@ -152,13 +152,13 @@ public class RandomPlayer extends Player
 		}
 
 		@Override
-		public void availabeBids(Collection<Integer> bids)
+		public void availableBids(Collection<Integer> bids)
 		{
 			enqueueActionDelayed(Action.bid(chooseRandom(bids)), delay);
 		}
 
 		@Override
-		public void availabeCalls(Collection<Card> cards)
+		public void availableCalls(Collection<Card> cards)
 		{
 			enqueueActionDelayed(Action.call(chooseRandom(cards)), delay);
 		}

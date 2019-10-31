@@ -35,6 +35,7 @@ class PendingNewGame extends Phase
 	@Override
 	public boolean readyForNewGame(PlayerSeat player)
 	{
+		@SuppressWarnings("ConstantConditions")
 		boolean wasReady = ready.put(player, true);
 		if (wasReady)
 			return false;

@@ -4,5 +4,5 @@ import com.tisza.tarock.game.card.*;
 
 public interface CardFilter
 {
-	public boolean match(Card c);
+	boolean match(Card c);
 }

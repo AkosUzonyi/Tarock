@@ -23,7 +23,7 @@ public class FirebaseNotificationSender
 		JSONObject notificationJSON = new JSONObject();
 		notificationJSON.put("sound", "default");
 		notificationJSON.put("title_loc_key", "game_created_notification_title");
-		notificationJSON.put("title_loc_args", Arrays.asList(creatorName));
+		notificationJSON.put("title_loc_args", Collections.singletonList(creatorName));
 		notificationJSON.put("body_loc_key", "game_created_notification_body");
 		notificationJSON.put("body_loc_args", playerNames);
 
@@ -99,11 +99,12 @@ public class FirebaseNotificationSender
 		return error;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void refreshAccessToken() throws IOException
 	{
 		GoogleCredential googleCredential = GoogleCredential
 				.fromStream(new FileInputStream(jsonFile))
-				.createScoped(Arrays.asList("https://www.googleapis.com/auth/firebase.messaging"));
+				.createScoped(Collections.singletonList("https://www.googleapis.com/auth/firebase.messaging"));
 		googleCredential.refreshToken();
 		accessToken = googleCredential.getAccessToken();
 	}

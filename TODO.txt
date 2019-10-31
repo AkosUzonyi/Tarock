@@ -1,7 +1,6 @@
 bugs:
 caller's skart is not shown
 round annoucement annoucablity
-identity tracker: self skart called
 
 needs fix:
 check malicious accesstoken

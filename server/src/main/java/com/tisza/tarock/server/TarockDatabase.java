@@ -64,21 +64,22 @@ public class TarockDatabase
 
 	public Single<User> setFacebookUserData(String facebookId, String name, String imgURL, List<String> friendFacebookIDs)
 	{
-		Single<Integer> selectID = rxdatabase.select("SELECT id FROM user WHERE facebook_id = ?")
+		Single<Integer> selectID = rxdatabase.select("SELECT user_id FROM facebook_user WHERE facebook_id = ?")
 				.parameter(facebookId).getAs(Integer.class).singleOrError();
 
-		Single<Integer> insert = rxdatabase.update("INSERT INTO user(facebook_id, name, img_url, registration_time) VALUES (?, ?, ?, ?);")
-				.parameters(facebookId, name, imgURL, System.currentTimeMillis())
-				.returnGeneratedKeys().getAs(Integer.class).singleOrError();
+		Single<Integer> insert = rxdatabase.update("INSERT INTO user(name, img_url, registration_time) VALUES (?, ?, ?);")
+				.parameters(name, imgURL, System.currentTimeMillis())
+				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
+				.doOnSuccess(userID -> rxdatabase.update("INSERT INTO facebook_user(facebook_id, user_id) VALUES(?, ?)")
+						.parameters(facebookId, userID).complete().subscribe());
 
-		Single<Integer> userID = rxdatabase.update("UPDATE user SET name = ?, img_url = ? where facebook_id = ?")
-				.parameters(name, imgURL, facebookId)
-				.counts().flatMapSingle(count -> count == 0 ? insert : selectID)
-				.singleOrError().cache();
+		Single<Integer> userID = rxdatabase.update("UPDATE user SET name = ?, img_url = ? WHERE id = (SELECT user_id FROM facebook_user WHERE facebook_id = ?)")
+				.parameters(name, imgURL, facebookId).counts().singleOrError()
+				.flatMap(count -> count == 0 ? insert : selectID);
 
 		if (friendFacebookIDs != null)
 		{
-			userID.subscribe(uid ->
+			userID = userID.doOnSuccess(uid ->
 			{
 				Flowable<Object> parameters = Flowable.fromIterable(friendFacebookIDs)
 						.flatMap(friendFacebookID -> Flowable.just(friendFacebookID, uid, uid));
@@ -87,8 +88,8 @@ public class TarockDatabase
 						.parameters(uid, uid)
 						.complete()
 						.andThen(
-							rxdatabase.update("WITH friend AS (SELECT id FROM user WHERE facebook_id = ?) " +
-									"INSERT INTO friendship(id0, id1) SELECT ?, id FROM friend UNION SELECT id, ? FROM friend;")
+							rxdatabase.update("WITH friend AS (SELECT user_id FROM facebook_user WHERE facebook_id = ?) " +
+									"INSERT INTO friendship(id0, id1) SELECT ?, user_id FROM friend UNION SELECT user_id, ? FROM friend;")
 									.batchSize(friendFacebookIDs.size())
 									.parameterStream(parameters).complete()
 						).subscribe();

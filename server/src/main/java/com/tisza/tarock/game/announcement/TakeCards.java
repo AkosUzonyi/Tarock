@@ -25,7 +25,8 @@ public abstract class TakeCards extends AnnouncementBase
 			}
 		}
 
-		return canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
+		boolean canBeSilent = canBeSilent() && !gameState.getAnnouncementsState().isAnnounced(team, Announcements.volat);
+		return canBeSilent ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 	}
 
 	@Override

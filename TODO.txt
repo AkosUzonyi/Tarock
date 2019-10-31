@@ -2,7 +2,6 @@ bugs:
 ? GameActivity call displaymessage
 caller's skart is not shown
 round annoucement annoucablity
-silent trull, negykiral... after volat
 identity tracker: self skart called
 proper shutdown
 games deletion on shutdown

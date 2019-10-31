@@ -3,7 +3,6 @@ caller's skart is not shown
 round annoucement annoucablity
 
 needs fix:
-check malicious accesstoken
 profile picture loading slow
 
 renames:

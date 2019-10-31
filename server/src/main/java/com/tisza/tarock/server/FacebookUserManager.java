@@ -7,6 +7,7 @@ import org.json.*;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.*;
 import java.util.*;
 
 public class FacebookUserManager
@@ -21,8 +22,9 @@ public class FacebookUserManager
 
 	public Single<User> newAccessToken(String accessToken)
 	{
-		Single<JSONObject> appJSONObservable = downloadJSONFromURL("https://graph.facebook.com/app/?access_token=" + accessToken);
-		Single<JSONObject> userJSONObservable = downloadJSONFromURL("https://graph.facebook.com/me/?fields=id,name,picture,friends&access_token=" + accessToken);
+		String accessTokenEncoded = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
+		Single<JSONObject> appJSONObservable = downloadJSONFromURL("https://graph.facebook.com/app/?access_token=" + accessTokenEncoded);
+		Single<JSONObject> userJSONObservable = downloadJSONFromURL("https://graph.facebook.com/me/?fields=id,name,picture,friends&access_token=" + accessTokenEncoded);
 
 		return Single.merge(Single.zip(appJSONObservable, userJSONObservable, (appJSON, userJSON) ->
 		{

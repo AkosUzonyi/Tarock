@@ -1,6 +1,7 @@
 package com.tisza.tarock.server.player;
 
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.server.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.message.*;
 
@@ -10,7 +11,7 @@ public abstract class Player
 	private String name;
 
 	private PlayerSeat seat;
-	private Game game;
+	private GameSession gameSession;
 
 	public Player(User user, String name)
 	{
@@ -35,21 +36,21 @@ public abstract class Player
 		return seat;
 	}
 
-	public void setGame(Game game, PlayerSeat seat)
+	public void setGame(GameSession gameSession, PlayerSeat seat)
 	{
-		this.game = game;
+		this.gameSession = gameSession;
 		this.seat = seat;
 	}
 
 	protected void doAction(Action action)
 	{
-		if (game != null && seat != null)
-			game.action(seat, action);
+		if (gameSession != null && seat != null)
+			gameSession.action(seat, action);
 	}
 
 	protected void requestHistory()
 	{
-		if (game != null)
-			game.requestHistory(this);
+		if (gameSession != null)
+			gameSession.requestHistory(this);
 	}
 }

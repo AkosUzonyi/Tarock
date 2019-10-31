@@ -2,10 +2,10 @@ package com.tisza.tarock.server;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
+import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.player.*;
 import io.reactivex.Observable;
 import io.reactivex.*;
@@ -14,7 +14,7 @@ import org.davidmoten.rx.jdbc.tuple.*;
 import java.util.*;
 import java.util.stream.*;
 
-public class GameSession implements Game
+public class GameSession
 {
 	private final int id;
 	private final GameType gameType;
@@ -195,7 +195,6 @@ public class GameSession implements Game
 		dispatchNewEvents();
 	}
 
-	@Override
 	public void action(PlayerSeat player, Action action)
 	{
 		if (currentGame == null)
@@ -250,7 +249,6 @@ public class GameSession implements Game
 			players.get(event.getPlayerSeat()).handleEvent(event.getEvent());
 	}
 
-	@Override
 	public void requestHistory(Player player)
 	{
 		if (currentGame == null)

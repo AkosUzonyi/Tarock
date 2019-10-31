@@ -1,10 +1,7 @@
 bugs:
-? GameActivity call displaymessage
 caller's skart is not shown
 round annoucement annoucablity
 identity tracker: self skart called
-proper shutdown
-games deletion on shutdown
 
 needs fix:
 check malicious accesstoken
@@ -31,4 +28,3 @@ multiple login
 refactorizations:
  
 other:
-final classes?

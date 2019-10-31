@@ -24,7 +24,7 @@ public class GameSession
 	private final DoubleRoundTracker doubleRoundTracker;
 
 	private PlayerSeat currentBeginnerPlayer = PlayerSeat.SEAT0;
-	private GameState currentGame;
+	private Game currentGame;
 
 	private TarockDatabase database;
 	private Single<Integer> currentGameID;
@@ -103,7 +103,7 @@ public class GameSession
 			for (int i = 0; i < 4; i++)
 				gameSession.points[i] = points.get(i);
 
-			gameSession.currentGame = new GameState(gameType, gameSession.getPlayerNames(), beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			gameSession.currentGame = new Game(gameType, gameSession.getPlayerNames(), beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
 			for (Tuple3<PlayerSeat, Action, Integer> action : actions)
@@ -190,7 +190,7 @@ public class GameSession
 			actionOrdinal = 0;
 		}
 
-		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
+		currentGame = new Game(gameType, getPlayerNames(), currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
 		dispatchNewEvents();
 	}

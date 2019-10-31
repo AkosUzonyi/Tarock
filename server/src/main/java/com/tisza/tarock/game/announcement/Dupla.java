@@ -18,12 +18,12 @@ public class Dupla extends AnnouncementBase
 	}
 
 	@Override
-	protected Result isSuccessful(GameState gameState, Team team)
+	protected Result isSuccessful(Game game, Team team)
 	{
-		if (gameState.calculateGamePoints(team) < 71)
+		if (game.calculateGamePoints(team) < 71)
 			return Result.FAILED;
 
-		boolean canBeSilent = Announcements.volat.calculatePoints(gameState, team) == 0;
+		boolean canBeSilent = Announcements.volat.calculatePoints(game, team) == 0;
 
 		return canBeSilent ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 	}

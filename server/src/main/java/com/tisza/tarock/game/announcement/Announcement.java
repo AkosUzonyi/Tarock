@@ -6,7 +6,7 @@ import com.tisza.tarock.game.phase.*;
 public interface Announcement
 {
 	String getID();
-	int calculatePoints(GameState gameState, Team team);
+	int calculatePoints(Game game, Team team);
 	GameType getGameType();
 	boolean canBeAnnounced(IAnnouncing announcing);
 	void onAnnounced(IAnnouncing announcing);

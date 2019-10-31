@@ -31,13 +31,13 @@ public class Facan extends RoundAnnouncement
 	}
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	public Result isSuccessful(Game game, Team team)
 	{
-		Round round = gameState.getRound(0);
+		Round round = game.getRound(0);
 		PlayerSeat theCardPlayer = round.getPlayerOfCard(card);
 		if (theCardPlayer == null) return Result.FAILED;
 		
-		PlayerPairs playerPairs = gameState.getPlayerPairs();
+		PlayerPairs playerPairs = game.getPlayerPairs();
 		
 		if (playerPairs.getTeam(theCardPlayer) != team)
 		{

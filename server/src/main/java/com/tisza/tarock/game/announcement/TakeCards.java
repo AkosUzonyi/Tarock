@@ -12,11 +12,11 @@ public abstract class TakeCards extends AnnouncementBase
 	protected abstract boolean canBeSilent();
 	
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	public Result isSuccessful(Game game, Team team)
 	{
-		for (PlayerSeat opponentPlayer : gameState.getPlayerPairs().getPlayersInTeam(team.getOther()))
+		for (PlayerSeat opponentPlayer : game.getPlayerPairs().getPlayersInTeam(team.getOther()))
 		{
-			for (Card opponentCard : gameState.getWonCards(opponentPlayer))
+			for (Card opponentCard : game.getWonCards(opponentPlayer))
 			{
 				if (hasToBeTaken(opponentCard))
 				{
@@ -25,7 +25,7 @@ public abstract class TakeCards extends AnnouncementBase
 			}
 		}
 
-		boolean canBeSilent = canBeSilent() && !gameState.getAnnouncementsState().isAnnounced(team, Announcements.volat);
+		boolean canBeSilent = canBeSilent() && !game.getAnnouncementsState().isAnnounced(team, Announcements.volat);
 		return canBeSilent ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 	}
 

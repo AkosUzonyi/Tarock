@@ -9,14 +9,14 @@ import java.util.*;
 
 public class TeamInfoTracker implements EventHandler
 {
-	private final GameState game;
+	private final Game game;
 
 	private Set<TeamInfoKnowledge> teamInfoKnowledges = new HashSet<>();
 
 	private boolean inviterSkartedTarock = false;
 	private Card calledCard;
 
-	public TeamInfoTracker(GameState game)
+	public TeamInfoTracker(Game game)
 	{
 		this.game = game;
 	}

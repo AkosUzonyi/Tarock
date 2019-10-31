@@ -38,7 +38,7 @@ public class TarockCount implements Announcement
 	}
 
 	@Override
-	public int calculatePoints(GameState gameState, Team team)
+	public int calculatePoints(Game game, Team team)
 	{
 		return 0;
 	}

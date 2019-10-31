@@ -7,7 +7,7 @@ import com.tisza.tarock.message.*;
 
 import java.util.*;
 
-public class GameState
+public class Game
 {
 	public static final int ROUND_COUNT = 9;
 
@@ -63,7 +63,7 @@ public class GameState
 		}
 	}
 
-	public GameState(GameType gameType, List<String> playerNames, PlayerSeat beginnerPlayer, List<Card> deck, int[] points, int pointMultiplier)
+	public Game(GameType gameType, List<String> playerNames, PlayerSeat beginnerPlayer, List<Card> deck, int[] points, int pointMultiplier)
 	{
 		this.gameType = gameType;
 		this.playerNames = playerNames;

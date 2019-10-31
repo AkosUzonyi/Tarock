@@ -12,7 +12,7 @@ class Calling extends Phase
 	private PlayerSeat callerPlayer;
 	private boolean canCallAnyTarock;
 	
-	public Calling(GameState game)
+	public Calling(Game game)
 	{
 		super(game);
 	}

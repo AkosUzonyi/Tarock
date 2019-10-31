@@ -97,7 +97,7 @@ public class BiddingTest
 	@Test
 	public void test()
 	{
-		GameState game = new GameState(GameType.PASKIEVICS, Arrays.stream(PlayerSeat.getAll()).map(this::getPlayerName).collect(Collectors.toList()), PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1);
+		Game game = new Game(GameType.PASKIEVICS, Arrays.stream(PlayerSeat.getAll()).map(this::getPlayerName).collect(Collectors.toList()), PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1);
 		game.start();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())

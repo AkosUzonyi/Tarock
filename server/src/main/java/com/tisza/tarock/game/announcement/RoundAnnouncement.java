@@ -32,7 +32,7 @@ public abstract class RoundAnnouncement extends AnnouncementBase
 
 	private boolean hasCommonRoundWith(RoundAnnouncement other)
 	{
-		for (int round = 0; round < GameState.ROUND_COUNT; round++)
+		for (int round = 0; round < Game.ROUND_COUNT; round++)
 		{
 			if (containsRound(round) && other.containsRound(round))
 				return true;

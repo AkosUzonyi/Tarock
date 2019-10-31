@@ -15,7 +15,7 @@ class Bidding extends Phase
 	
 	private PlayerSeatMap<BidState> playersState = new PlayerSeatMap<>(BidState.INITIAL);
 	
-	public Bidding(GameState game)
+	public Bidding(Game game)
 	{
 		super(game);
 	}

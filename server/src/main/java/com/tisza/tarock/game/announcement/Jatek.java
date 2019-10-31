@@ -18,13 +18,13 @@ public class Jatek extends AnnouncementBase
 	}
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	public Result isSuccessful(Game game, Team team)
 	{
-		Team teamEarningPoints = gameState.calculateGamePoints(team) >= 48 ? team : team.getOther();
+		Team teamEarningPoints = game.calculateGamePoints(team) >= 48 ? team : team.getOther();
 
-		int pointsForDupla = Announcements.dupla.calculatePoints(gameState, teamEarningPoints);
-		int pointsForVolat = Announcements.volat.calculatePoints(gameState, teamEarningPoints);
-		boolean isContraJatek = gameState.getAnnouncementsState().isAnnounced(team, this) && gameState.getAnnouncementsState().getContraLevel(team, this) > 0;
+		int pointsForDupla = Announcements.dupla.calculatePoints(game, teamEarningPoints);
+		int pointsForVolat = Announcements.volat.calculatePoints(game, teamEarningPoints);
+		boolean isContraJatek = game.getAnnouncementsState().isAnnounced(team, this) && game.getAnnouncementsState().getContraLevel(team, this) > 0;
 
 		if (!isContraJatek && (pointsForVolat != 0 || pointsForDupla != 0))
 			return Result.DEACTIVATED;

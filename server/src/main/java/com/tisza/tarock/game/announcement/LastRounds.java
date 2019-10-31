@@ -13,12 +13,12 @@ public abstract class LastRounds extends RoundAnnouncement
 	protected abstract boolean isSameCategory(LastRounds otherAnnouncements);
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	public Result isSuccessful(Game game, Team team)
 	{
 		for (int i = 0; i < getRoundCount(); i++)
 		{
 			int roundIndex = 8 - i;
-			if (!isRoundOK(gameState, team, roundIndex))
+			if (!isRoundOK(game, team, roundIndex))
 			{
 				return Result.FAILED;
 			}
@@ -26,13 +26,13 @@ public abstract class LastRounds extends RoundAnnouncement
 		return Result.SUCCESSFUL;
 	}
 
-	private boolean isRoundOK(GameState gameState, Team team, int roundIndex)
+	private boolean isRoundOK(Game game, Team team, int roundIndex)
 	{
-		Round round = gameState.getRound(roundIndex);
+		Round round = game.getRound(roundIndex);
 		PlayerSeat winnerPlayer = round.getWinner();
 		Card winnerCard = round.getCardByPlayer(winnerPlayer);
 
-		boolean isItUs = gameState.getPlayerPairs().getTeam(winnerPlayer) == team;
+		boolean isItUs = game.getPlayerPairs().getTeam(winnerPlayer) == team;
 		boolean isValidCard = isValidCard(winnerCard);
 
 		return isItUs && isValidCard;
@@ -51,7 +51,7 @@ public abstract class LastRounds extends RoundAnnouncement
 	@Override
 	protected boolean containsRound(int round)
 	{
-		return round >= GameState.ROUND_COUNT - getRoundCount();
+		return round >= Game.ROUND_COUNT - getRoundCount();
 	}
 }
 

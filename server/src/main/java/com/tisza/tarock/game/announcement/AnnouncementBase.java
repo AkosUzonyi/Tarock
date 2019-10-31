@@ -5,19 +5,19 @@ import com.tisza.tarock.game.phase.*;
 
 public abstract class AnnouncementBase implements Announcement
 {
-	protected abstract Result isSuccessful(GameState gameState, Team team);
+	protected abstract Result isSuccessful(Game game, Team team);
 	protected abstract int getPoints();
 	
 	@Override
-	public int calculatePoints(GameState gameState, Team team)
+	public int calculatePoints(Game game, Team team)
 	{
-		Result r = isSuccessful(gameState, team);
+		Result r = isSuccessful(game, team);
 		
-		PlayerPairs pp = gameState.getPlayerPairs();
+		PlayerPairs pp = game.getPlayerPairs();
 		
-		boolean isAnnounced = gameState.getAnnouncementsState().isAnnounced(team, this);
-		int contraLevel = isAnnounced ? gameState.getAnnouncementsState().getContraLevel(team, this) : 0;
-		int winnerBid = pp.isSolo() && !gameState.isSoloIntentional() ? 0 : gameState.getWinnerBid();
+		boolean isAnnounced = game.getAnnouncementsState().isAnnounced(team, this);
+		int contraLevel = isAnnounced ? game.getAnnouncementsState().getContraLevel(team, this) : 0;
+		int winnerBid = pp.isSolo() && !game.isSoloIntentional() ? 0 : game.getWinnerBid();
 		int winnerBidMultiplier = isMultipliedByWinnerBid() ? (4 - winnerBid) : 1;
 		
 		int points;

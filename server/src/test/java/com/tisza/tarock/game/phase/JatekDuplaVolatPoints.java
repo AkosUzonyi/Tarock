@@ -23,7 +23,7 @@ public class JatekDuplaVolatPoints
 	@Parameter(2)
 	public Consumer<AnnouncementsState> announcerFunction;
 
-	private GameState game;
+	private Game game;
 
 	// creates the test data
 	@Parameters
@@ -84,7 +84,7 @@ public class JatekDuplaVolatPoints
 	@Before
 	public void createGameState()
 	{
-		game = new GameState(GameType.PASKIEVICS, Arrays.asList("", "", "", ""), PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1)
+		game = new Game(GameType.PASKIEVICS, Arrays.asList("", "", "", ""), PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1)
 		{
 			@Override
 			public int calculateGamePoints(Team team)
@@ -175,7 +175,7 @@ public class JatekDuplaVolatPoints
 		as.setContraLevel(Team.CALLER, Announcements.dupla, 1);
 	}
 
-	private static int announcementPoints(GameState state)
+	private static int announcementPoints(Game state)
 	{
 		final Announcement[] announcements = {Announcements.jatek, Announcements.dupla, Announcements.volat};
 

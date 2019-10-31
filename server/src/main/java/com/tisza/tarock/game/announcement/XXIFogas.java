@@ -21,24 +21,24 @@ public class XXIFogas extends AnnouncementBase
 	}
 
 	@Override
-	public int calculatePoints(GameState gameState, Team team)
+	public int calculatePoints(Game game, Team team)
 	{
-		int points = super.calculatePoints(gameState, team);
+		int points = super.calculatePoints(game, team);
 
-		if (gameState.getGameType() == GameType.ZEBI)
+		if (game.getGameType() == GameType.ZEBI)
 			points = points * 30 / 21; //a bit hacky, but hey, this rule is also hacky
 
 		return points;
 	}
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	public Result isSuccessful(Game game, Team team)
 	{
-		PlayerPairs pp = gameState.getPlayerPairs();
+		PlayerPairs pp = game.getPlayerPairs();
 		
-		for (int i = 0; i < GameState.ROUND_COUNT; i++)
+		for (int i = 0; i < Game.ROUND_COUNT; i++)
 		{
-			Round round = gameState.getRound(i);
+			Round round = game.getRound(i);
 			PlayerSeat skizPlayer = round.getPlayerOfCard(Card.getTarockCard(22));
 			PlayerSeat XXIPlayer = round.getPlayerOfCard(Card.getTarockCard(21));
 			if (skizPlayer == null || XXIPlayer == null) continue;

@@ -8,7 +8,7 @@ class PendingNewGame extends Phase
 	private boolean doubleRound;
 	private PlayerSeatMap<Boolean> ready = new PlayerSeatMap<>(false);
 
-	public PendingNewGame(GameState game, boolean doubleRound)
+	public PendingNewGame(Game game, boolean doubleRound)
 	{
 		super(game);
 		this.doubleRound = doubleRound;

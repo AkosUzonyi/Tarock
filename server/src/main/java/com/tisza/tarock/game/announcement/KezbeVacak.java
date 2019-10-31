@@ -38,13 +38,13 @@ public class KezbeVacak extends RoundAnnouncement
 	}
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	public Result isSuccessful(Game game, Team team)
 	{
-		Round round = gameState.getRound(roundIndex);
+		Round round = game.getRound(roundIndex);
 		PlayerSeat theCardPlayer = round.getPlayerOfCard(cardToTakeWith);
 		if (theCardPlayer == null) return Result.FAILED;
 		
-		if (gameState.getPlayerPairs().getTeam(theCardPlayer) != team)
+		if (game.getPlayerPairs().getTeam(theCardPlayer) != team)
 			return Result.FAILED;
 		
 		if (round.getWinner() != theCardPlayer)
@@ -52,10 +52,10 @@ public class KezbeVacak extends RoundAnnouncement
 		
 		for (int i = 0; i < roundIndex; i++)
 		{
-			round = gameState.getRound(i);
+			round = game.getRound(i);
 			PlayerSeat winner = round.getWinner();
 			
-			if (gameState.getPlayerPairs().getTeam(winner) != team)
+			if (game.getPlayerPairs().getTeam(winner) != team)
 				return Result.FAILED;
 		}
 		

@@ -16,7 +16,7 @@ class Announcing extends Phase implements IAnnouncing
 	private boolean currentPlayerAnnounced = false;
 	private PlayerSeat lastAnnouncer = null;
 
-	public Announcing(GameState game)
+	public Announcing(Game game)
 	{
 		super(game);
 	}

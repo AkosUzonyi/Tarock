@@ -11,7 +11,6 @@ check malicious accesstoken
 profile picture loading slow
 
 renames:
-GameState -> Game
 
 little nice things:
 canBeAnnounced: remove AnnouncementBase's implementation

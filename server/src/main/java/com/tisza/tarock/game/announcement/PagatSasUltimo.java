@@ -27,9 +27,9 @@ public class PagatSasUltimo extends Ultimo
 	}
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	public Result isSuccessful(Game game, Team team)
 	{
-		Result zaroparosSuccessful = Announcements.zaroparos.isSuccessful(gameState, team);
+		Result zaroparosSuccessful = Announcements.zaroparos.isSuccessful(game, team);
 
 		if (zaroparosSuccessful == Result.SUCCESSFUL)
 		{
@@ -37,7 +37,7 @@ public class PagatSasUltimo extends Ultimo
 			return Result.FAILED;
 		}
 		
-		return super.isSuccessful(gameState, team);
+		return super.isSuccessful(game, team);
 	}
 	
 	@Override

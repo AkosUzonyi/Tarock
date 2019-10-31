@@ -14,7 +14,7 @@ class Changing extends Phase
 	private PlayerSeatMap<Boolean> donePlayer = new PlayerSeatMap<>(false);
 	private PlayerSeatMap<Integer> tarockCounts = new PlayerSeatMap<>();
 	
-	public Changing(GameState game)
+	public Changing(Game game)
 	{
 		super(game);
 		cardFilter = new SkartableCardFilter(game.getGameType());
@@ -70,7 +70,7 @@ class Changing extends Phase
 		
 		PlayerCards skartingPlayerCards = game.getPlayerCards(player);
 
-		if (skartingPlayerCards.size() - cardsToSkart.size() != GameState.ROUND_COUNT)
+		if (skartingPlayerCards.size() - cardsToSkart.size() != Game.ROUND_COUNT)
 		{
 			//game.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
 			return false;

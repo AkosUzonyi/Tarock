@@ -10,7 +10,7 @@ class Gameplay extends Phase
 {
 	private Round currentRound;
 	
-	public Gameplay(GameState game)
+	public Gameplay(Game game)
 	{
 		super(game);
 	}

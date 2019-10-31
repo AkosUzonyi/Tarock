@@ -55,7 +55,7 @@ public class CountBiddings
 	{
 		List<List<Integer>> result = new ArrayList<>();
 
-		GameState game = createNewGame();
+		Game game = createNewGame();
 
 		Bidding bidding = (Bidding)game.getCurrentPhase();
 		for (int bid : bids)
@@ -79,9 +79,9 @@ public class CountBiddings
 		return result;
 	}
 
-	private GameState createNewGame()
+	private Game createNewGame()
 	{
-		GameState game = new GameState(GameType.PASKIEVICS, Arrays.asList("", "", "", ""), PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1);
+		Game game = new Game(GameType.PASKIEVICS, Arrays.asList("", "", "", ""), PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1);
 		game.start();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())

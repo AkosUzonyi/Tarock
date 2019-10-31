@@ -18,12 +18,12 @@ public class XXIUltimo extends Ultimo
 	}
 
 	@Override
-	public Result isSuccessful(GameState gameState, Team team)
+	public Result isSuccessful(Game game, Team team)
 	{
-		if (gameState.getAnnouncementsState().getXXIUltimoDeactivated(team))
+		if (game.getAnnouncementsState().getXXIUltimoDeactivated(team))
 			return Result.DEACTIVATED;
 		
-		return super.isSuccessful(gameState, team);
+		return super.isSuccessful(game, team);
 	}
 
 	@Override

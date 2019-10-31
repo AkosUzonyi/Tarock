@@ -8,9 +8,9 @@ import java.util.*;
 
 abstract class Phase implements ActionHandler
 {
-	protected final GameState game;
+	protected final Game game;
 
-	public Phase(GameState game)
+	public Phase(Game game)
 	{
 		this.game = game;
 	}

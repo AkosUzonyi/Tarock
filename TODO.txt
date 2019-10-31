@@ -31,7 +31,6 @@ lobby
 multiple login
 
 refactorizations:
-use separate executorservice for network
  
 other:
 final classes?

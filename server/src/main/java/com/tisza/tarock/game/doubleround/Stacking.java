@@ -5,6 +5,12 @@ class Stacking implements DoubleRoundTracker
 	private int remainingDoubleGames = 0;
 
 	@Override
+	public DoubleRoundType getType()
+	{
+		return DoubleRoundType.STACKING;
+	}
+
+	@Override
 	public void gameFinished()
 	{
 		if (remainingDoubleGames > 0)
@@ -21,5 +27,17 @@ class Stacking implements DoubleRoundTracker
 	public int getCurrentMultiplier()
 	{
 		return remainingDoubleGames > 0 ? 2 : 1;
+	}
+
+	@Override
+	public int getData()
+	{
+		return remainingDoubleGames;
+	}
+
+	@Override
+	public void setData(int data)
+	{
+		remainingDoubleGames = data;
 	}
 }

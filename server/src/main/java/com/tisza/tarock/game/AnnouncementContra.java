@@ -5,7 +5,7 @@ import com.tisza.tarock.game.announcement.*;
 public class AnnouncementContra implements Comparable<AnnouncementContra>
 {
 	private final Announcement announcement;
-	private int contraLevel;
+	private final int contraLevel;
 
 	public AnnouncementContra(Announcement a, int contraLevel)
 	{

@@ -112,22 +112,20 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 	{
 		selectedUsers = users;
 
-		int botCount = SELECT_USER_COUNT - selectedUsers.size();
+		botWarning.setVisibility(View.GONE);
+		for (User user : users)
+			if (user.getId() < 0)
+				botWarning.setVisibility(View.VISIBLE);
 
-		createButton.setEnabled(botCount >= 0);
-		botWarning.setVisibility(botCount > 0 && !botWarningIgnored ? View.VISIBLE : View.GONE);
-
-		if (botCount < 0)
-		{
-			createButton.setText(R.string.too_much_user_selected);
-		}
-		else if (botCount == 0)
+		if (selectedUsers.size() == SELECT_USER_COUNT)
 		{
 			createButton.setText(R.string.create_game);
+			createButton.setEnabled(true);
 		}
 		else
 		{
-			createButton.setText(getResources().getQuantityString(R.plurals.create_game_with_bots, botCount, botCount));
+			createButton.setText(R.string.create_game_select_3);
+			createButton.setEnabled(false);
 		}
 	}
 }

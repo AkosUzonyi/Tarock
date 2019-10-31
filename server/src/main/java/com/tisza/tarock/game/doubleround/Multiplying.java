@@ -2,22 +2,24 @@ package com.tisza.tarock.game.doubleround;
 
 class Multiplying implements DoubleRoundTracker
 {
-	private int[] interruptionCounts = new int[4];
-	private int pos = 0;
+	private int data;
+
+	@Override
+	public DoubleRoundType getType()
+	{
+		return DoubleRoundType.MULTIPLYING;
+	}
 
 	@Override
 	public void gameFinished()
 	{
-		pos++;
-		pos %= 4;
-
-		interruptionCounts[pos] = 0;
+		data <<= 8;
 	}
 
 	@Override
 	public void gameInterrupted()
 	{
-		interruptionCounts[pos]++;
+		data++;
 	}
 
 	@Override
@@ -25,11 +27,25 @@ class Multiplying implements DoubleRoundTracker
 	{
 		int allInterruptions = 0;
 
-		for (int interruptionCount : interruptionCounts)
+		long d = data;
+		for (int i = 0; i < 4; i++)
 		{
-			allInterruptions += interruptionCount;
+			allInterruptions += d & 0xFF;
+			d >>>= 8;
 		}
 
 		return 1 << allInterruptions;
+	}
+
+	@Override
+	public int getData()
+	{
+		return data;
+	}
+
+	@Override
+	public void setData(int data)
+	{
+		this.data = data;
 	}
 }

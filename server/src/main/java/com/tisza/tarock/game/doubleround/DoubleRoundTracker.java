@@ -2,9 +2,12 @@ package com.tisza.tarock.game.doubleround;
 
 public interface DoubleRoundTracker
 {
+	public DoubleRoundType getType();
 	public void gameFinished();
 	public void gameInterrupted();
 	public int getCurrentMultiplier();
+	public int getData();
+	public void setData(int data);
 
 	public static DoubleRoundTracker createFromType(DoubleRoundType type)
 	{
@@ -16,6 +19,6 @@ public interface DoubleRoundTracker
 			case MULTIPLYING: return new Multiplying();
 		}
 
-		return null;
+		throw new Error("invalid double round type: " + type);
 	}
 }

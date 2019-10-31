@@ -81,7 +81,6 @@ class Bidding extends Phase
 			lastBidValue = bid;
 		}
 
-		history.registerBid(player, bid);
 		game.broadcastEvent(Event.bid(player, bid));
 
 		findNextPlayer();

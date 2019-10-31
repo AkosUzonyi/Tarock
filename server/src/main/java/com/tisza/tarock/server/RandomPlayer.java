@@ -1,5 +1,6 @@
 package com.tisza.tarock.server;
 
+import com.tisza.tarock.*;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
@@ -10,68 +11,43 @@ import com.tisza.tarock.message.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class RandomPlayer implements Player
+public class RandomPlayer extends Player
 {
-	private final String name;
-	private final ScheduledExecutorService executorService;
 	private final int delay, extraDelay;
 	private EventHandler eventHandler = new MyEventHandler();
 	private Random rnd = new Random();
 
-	private PlayerSeat seat;
-	private Game game;
+	private boolean historyMode;
+	private Action lastActionInHistoryMode;
+	private boolean isMyTurn;
 
-	public RandomPlayer(String name, ScheduledExecutorService executorService)
+	public RandomPlayer(User user, String name)
 	{
-		this(name, executorService, 0, 0);
+		this(user, name, 0, 0);
 	}
 
-	public RandomPlayer(String name, ScheduledExecutorService executorService, int delay, int extraDelay)
+	public RandomPlayer(User user, String name, int delay, int extraDelay)
 	{
-		this.name = name;
-		this.executorService = executorService;
+		super(user, name);
 		this.delay = delay;
 		this.extraDelay = extraDelay;
 	}
 
 	@Override
-	public String getName()
+	public void handleEvent(Event event)
 	{
-		return name;
+		event.handle(eventHandler);
 	}
 
-	@Override
-	public EventHandler getEventHandler()
+	private void enqueueActionDelayed(Action action, int delayMillis)
 	{
-		return eventHandler;
-	}
+		if (historyMode)
+		{
+			lastActionInHistoryMode = action;
+			return;
+		}
 
-	@Override
-	public void setGame(Game game, PlayerSeat seat)
-	{
-		this.game = game;
-		this.seat = seat;
-	}
-
-	private void doAction(Action action)
-	{
-		if (game != null)
-			game.action(action);
-	}
-
-	private void enqueueAction(Action action)
-	{
-		executorService.execute(() -> doAction(action));
-	}
-
-	private void enqueueActionDelayed(Action action)
-	{
-		executorService.schedule(() -> doAction(action), delay, TimeUnit.MILLISECONDS);
-	}
-
-	private void enqueueActionExtraDelayed(Action action)
-	{
-		executorService.schedule(() -> doAction(action), extraDelay, TimeUnit.MILLISECONDS);
+		Main.GAME_EXECUTOR_SERVICE.schedule(() -> doAction(action), delayMillis, TimeUnit.MILLISECONDS);
 	}
 
 	private class MyEventHandler implements EventHandler
@@ -91,6 +67,17 @@ public class RandomPlayer implements Player
 			return it.next();
 		}
 
+		@Override
+		public void historyMode(boolean isHistory)
+		{
+			historyMode = isHistory;
+
+			if (!historyMode && lastActionInHistoryMode != null && isMyTurn)
+				enqueueActionDelayed(lastActionInHistoryMode, 0);
+
+			lastActionInHistoryMode = null;
+		}
+
 		@Override public void announce(PlayerSeat player, AnnouncementContra announcement) {}
 		@Override public void announcePassz(PlayerSeat player) {}
 		@Override public void bid(PlayerSeat player, int bid) {}
@@ -102,6 +89,9 @@ public class RandomPlayer implements Player
 		@Override
 		public void playCard(PlayerSeat player, Card card)
 		{
+			if (player == getSeat())
+				myCards.removeCard(card);
+
 			if (cardsInRound == 0)
 				currentFirstCard = card;
 
@@ -119,25 +109,25 @@ public class RandomPlayer implements Player
 		@Override
 		public void turn(PlayerSeat player)
 		{
-			if (player != seat)
+			isMyTurn = player == getSeat();
+			if (!isMyTurn)
 				return;
 
 			if (phase == PhaseEnum.CHANGING)
 			{
 				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter(gameType)).subList(0, myCards.size() - 9);
-				enqueueAction(Action.skart(seat, cardsToSkart));
+				enqueueActionDelayed(Action.skart(cardsToSkart), 0);
 			}
 			else if (phase == PhaseEnum.GAMEPLAY)
 			{
 				Card cardToPlay = chooseRandom(myCards.getPlaceableCards(currentFirstCard));
-				myCards.removeCard(cardToPlay);
 				if (currentFirstCard == null)
 				{
-					enqueueActionExtraDelayed(Action.play(seat, cardToPlay));
+					enqueueActionDelayed(Action.play(cardToPlay), extraDelay);
 				}
 				else
 				{
-					enqueueActionDelayed(Action.play(seat, cardToPlay));
+					enqueueActionDelayed(Action.play(cardToPlay), delay);
 				}
 			}
 		}
@@ -145,12 +135,6 @@ public class RandomPlayer implements Player
 		@Override public void startGame(List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
 		{
 			this.gameType = gameType;
-		}
-
-		@Override
-		public void seat(PlayerSeat s)
-		{
-			seat = s;
 		}
 
 		@Override
@@ -163,18 +147,19 @@ public class RandomPlayer implements Player
 		public void phaseChanged(PhaseEnum phase)
 		{
 			this.phase = phase;
+			isMyTurn = false;
 		}
 
 		@Override
 		public void availabeBids(Collection<Integer> bids)
 		{
-			enqueueActionDelayed(Action.bid(seat, chooseRandom(bids)));
+			enqueueActionDelayed(Action.bid(chooseRandom(bids)), delay);
 		}
 
 		@Override
 		public void availabeCalls(Collection<Card> cards)
 		{
-			enqueueActionDelayed(Action.call(seat, chooseRandom(cards)));
+			enqueueActionDelayed(Action.call(chooseRandom(cards)), delay);
 		}
 
 		@Override public void changeDone(PlayerSeat player) {}
@@ -183,15 +168,15 @@ public class RandomPlayer implements Player
 		@Override public void availableAnnouncements(List<AnnouncementContra> announcements)
 		{
 			if (announcements.contains(new AnnouncementContra(Announcements.hkp, 0)))
-				enqueueActionDelayed(Action.announce(seat, new AnnouncementContra(Announcements.hkp, 0)));
+				enqueueActionDelayed(Action.announce(new AnnouncementContra(Announcements.hkp, 0)), delay);
 
 			if (!announcements.isEmpty() && rnd.nextFloat() < 0.3)
 			{
-				enqueueActionDelayed(Action.announce(seat, chooseRandom(announcements)));
+				enqueueActionDelayed(Action.announce(chooseRandom(announcements)), delay);
 			}
 			else
 			{
-				enqueueActionDelayed(Action.announcePassz(seat));
+				enqueueActionDelayed(Action.announcePassz(), delay);
 			}
 		}
 
@@ -201,7 +186,7 @@ public class RandomPlayer implements Player
 		@Override
 		public void pendingNewGame()
 		{
-			enqueueAction(Action.readyForNewGame(seat));
+			enqueueActionDelayed(Action.readyForNewGame(), 0);
 		}
 	}
 }

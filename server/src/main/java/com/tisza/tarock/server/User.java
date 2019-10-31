@@ -1,79 +1,64 @@
 package com.tisza.tarock.server;
 
 import com.tisza.tarock.message.*;
+import io.reactivex.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 
 public class User
 {
-	private final String id;
-	private String name;
-	private String imgURL;
-	private List<String> friendIDs = new ArrayList<>();
-	private Set<String> fcmTokens = new HashSet<>();
+	private final int id;
+	private final TarockDatabase database;
 
-	public User(String id)
+	public User(int id, TarockDatabase database)
 	{
 		this.id = id;
+		this.database = database;
 	}
 
-	public String getId()
+	public int getID()
 	{
 		return id;
 	}
 
-	public String getName()
+	public Single<String> getName()
 	{
-		return name;
+		return database.getUserName(id);
 	}
 
-	public void setName(String name)
+	public Single<Optional<String>> getImageURL()
 	{
-		this.name = name;
+		return database.getUserImgURL(id);
 	}
 
-	public String getImageURL()
+	public Single<Boolean> isFriendWith(User user)
 	{
-		return imgURL;
+		return database.areUserFriends(id, user.id);
 	}
 
-	public void setImgURL(String imgURL)
+	public Flowable<String> getFCMTokens()
 	{
-		this.imgURL = imgURL;
+		return database.getFCMTokensForUser(id);
 	}
 
-	public boolean isFriendWith(User user)
+	public Single<Player> createPlayer()
 	{
-		return friendIDs.contains(user.getId());
+		return getName().map(name -> id < 0 ? new RandomPlayer(this, name, 500, 2000) : new ProtoPlayer(this, name));
 	}
 
-	public void addFriend(User user)
+	@Override
+	public int hashCode()
 	{
-		friendIDs.add(user.getId());
+		return id;
 	}
 
-	public void removeFriend(User user)
+	@Override
+	public boolean equals(Object obj)
 	{
-		friendIDs.remove(user.getId());
-	}
+		if (!(obj instanceof User))
+			return false;
 
-	public void clearFriends()
-	{
-		friendIDs.clear();
-	}
-
-	public void addFCMToken(String token)
-	{
-		fcmTokens.add(token);
-	}
-
-	public void removeFCMToken(String token)
-	{
-		fcmTokens.remove(token);
-	}
-
-	public Collection<String> getFCMTokens()
-	{
-		return fcmTokens;
+		return id == ((User)obj).id;
 	}
 }

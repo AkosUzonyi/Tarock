@@ -4,6 +4,9 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
+import io.reactivex.Observable;
+import io.reactivex.*;
+import io.reactivex.schedulers.*;
 
 import java.io.*;
 import java.util.*;
@@ -14,7 +17,7 @@ public class Client implements MessageHandler
 	private ProtoConnection connection;
 	private User loggedInUser = null;
 	private ProtoPlayer currentPlayer = null;
-	private int currentGameID = -1;
+	private GameSession currentGameSession;
 
 	public Client(Server server, ProtoConnection connection)
 	{
@@ -38,30 +41,16 @@ public class Client implements MessageHandler
 		{
 			case LOGIN:
 			{
-				String fbAccessToken = null;
-				User newUser = null;
-
 				if (message.getLogin().hasFacebookToken())
 				{
-					fbAccessToken = message.getLogin().getFacebookToken();
-					newUser = server.getFacebookUserManager().getUserByAccessToken(fbAccessToken);
+					String fbAccessToken = message.getLogin().getFacebookToken();
+					server.getFacebookUserManager().newAccessToken(fbAccessToken)
+							.subscribe(this::userLogin);
 				}
-
-				if (newUser != null && server.isUserLoggedIn(newUser))
-					newUser = null;
-
-				MainProto.LoginResult.Builder loginMessageBuilder = MainProto.LoginResult.newBuilder();
-
-				loggedInUser = newUser;
-				if (loggedInUser != null)
+				else
 				{
-					server.loginUser(loggedInUser);
-					loginMessageBuilder.setUserId(loggedInUser.getId());
+					userLogin(null);
 				}
-
-				sendMessage(MainProto.Message.newBuilder().setLoginResult(loginMessageBuilder.build()).build());
-
-				server.broadcastStatus();
 
 				break;
 			}
@@ -73,79 +62,62 @@ public class Client implements MessageHandler
 			{
 				MainProto.CreateGame createGame = message.getCreateGame();
 
-				if (createGame.getUserIDCount() > 3)
+				if (createGame.getUserIDCount() != 3)
 					break;
 
 				GameType gameType = GameType.fromID(createGame.getType());
 				DoubleRoundType doubleRoundType = DoubleRoundType.fromID(createGame.getDoubleRoundType());
 
-				List<User> users = new ArrayList<>();
-				users.add(loggedInUser);
-				for (String userID : createGame.getUserIDList())
+				loggedInUser.getName().subscribe(loggedInUserName ->
+				Observable.concat(Observable.just(loggedInUser.getID()), Observable.fromIterable(createGame.getUserIDList())).map(server.getDatabase()::getUser).toList().subscribe(users ->
+				server.getGameSessionManager().createGameSession(gameType, users, doubleRoundType).subscribe(gameSession ->
 				{
-					users.add(server.getFacebookUserManager().getUserByID(userID));
-				}
+					server.broadcastStatus();
 
-				int gameID = server.getGameSessionManager().createNewGame(gameType, users, doubleRoundType);
-
-				List<String> playerNames = server.getGameSessionManager().getPlayerNames(gameID);
-				for (User user : users)
-				{
-					for (String fcmToken : new ArrayList<>(user.getFCMTokens()))
+					List<String> playerNames = gameSession.getPlayerNames();
+					Flowable.fromIterable(users).flatMap(User::getFCMTokens).subscribe(fcmToken ->
 					{
-						try
-						{
-							boolean valid = server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameID, loggedInUser.getName(), playerNames);
-							if (!valid)
-								server.getFacebookUserManager().registerFCMToken(fcmToken, null);
-						}
-						catch (IOException e)
-						{
-							e.printStackTrace();
-						}
-					}
-				}
-
-				server.broadcastStatus();
+						Single.<Boolean>create(subscriber -> subscriber.onSuccess(server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameSession.getID(), loggedInUserName, playerNames)))
+								.subscribeOn(Schedulers.io())
+								.subscribe(valid -> {if (!valid) server.getDatabase().removeFCMToken(fcmToken);});
+					});
+				})));
 
 				break;
 			}
 
 			case DELETE_GAME:
 			{
-				int gameID = message.getDeleteGame().getGameId();
+				int gameSessionID = message.getDeleteGame().getGameId();
 
-				if (server.getGameSessionManager().isGameOwnedBy(gameID, loggedInUser))
-				{
-					server.getGameSessionManager().deleteGame(gameID);
-				}
+				if (server.getGameSessionManager().getGameSession(gameSessionID).isUserPlaying(loggedInUser))
+					server.getGameSessionManager().stopGameSession(gameSessionID);
 
 				server.broadcastStatus();
 			}
 
 			case JOIN_GAME:
 			{
-				if (currentPlayer != null)
+				if (!message.getJoinGame().hasGameId())
 				{
-					currentPlayer.useConnection(null);
-					server.getGameSessionManager().removeKibic(currentGameID, currentPlayer);
+					switchGameSession(null, null);
+					break;
 				}
 
-				if (message.getJoinGame().hasGameId())
+				GameSession gameSession = server.getGameSessionManager().getGameSession(message.getJoinGame().getGameId());
+				if (gameSession.isUserPlaying(loggedInUser))
 				{
-					currentGameID = message.getJoinGame().getGameId();
-					currentPlayer = server.getGameSessionManager().getPlayer(currentGameID, loggedInUser);
-					if (currentPlayer == null)
-						currentPlayer = server.getGameSessionManager().addKibic(currentGameID, loggedInUser);
+					ProtoPlayer player = (ProtoPlayer)gameSession.getPlayerByUser(loggedInUser);
+					switchGameSession(gameSession, player);
 				}
 				else
 				{
-					currentGameID = -1;
-					currentPlayer = null;
+					loggedInUser.createPlayer().subscribe(player ->
+					{
+						gameSession.addKibic(player);
+						switchGameSession(gameSession, (ProtoPlayer)player);
+					});
 				}
-
-				if (currentPlayer != null)
-					currentPlayer.useConnection(connection);
 
 				break;
 			}
@@ -154,7 +126,10 @@ public class Client implements MessageHandler
 			{
 				String token = message.getFcmToken().getFcmToken();
 				boolean active = message.getFcmToken().getActive();
-				server.getFacebookUserManager().registerFCMToken(token, active ? loggedInUser : null);
+				if (active)
+					server.getDatabase().addFCMToken(token, loggedInUser);
+				else
+					server.getDatabase().removeFCMToken(token);
 				break;
 			}
 
@@ -162,6 +137,43 @@ public class Client implements MessageHandler
 				System.err.println("unhandled message type: " + message.getMessageTypeCase());
 				break;
 		}
+	}
+
+	private void switchGameSession(GameSession gameSession, ProtoPlayer player)
+	{
+		if (currentPlayer != null)
+		{
+			currentPlayer.useConnection(null);
+			currentGameSession.removeKibic(currentPlayer);
+		}
+
+		currentGameSession = gameSession;
+		currentPlayer = player;
+
+		if (currentPlayer != null)
+			currentPlayer.useConnection(connection);
+	}
+
+	private void userLogin(User newUser)
+	{
+		if (connection == null)
+			return;
+
+		if (newUser != null && server.isUserLoggedIn(newUser))
+			newUser = null;
+
+		MainProto.LoginResult.Builder loginMessageBuilder = MainProto.LoginResult.newBuilder();
+
+		loggedInUser = newUser;
+		if (loggedInUser != null)
+		{
+			server.loginUser(loggedInUser);
+			loginMessageBuilder.setUserId(loggedInUser.getID());
+		}
+
+		sendMessage(MainProto.Message.newBuilder().setLoginResult(loginMessageBuilder.build()).build());
+
+		server.broadcastStatus();
 	}
 
 	public void sendMessage(MainProto.Message message)

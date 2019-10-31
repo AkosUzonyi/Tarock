@@ -4,9 +4,7 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.*;
-
-import java.util.*;
-import java.util.function.*;
+import io.reactivex.*;
 
 public class Utils
 {
@@ -19,28 +17,19 @@ public class Utils
 				.build();
 	}
 
-	public static MainProto.User userToProto(User user, boolean isFriend, boolean loggedIn)
+	public static Single<MainProto.User> userToProto(User user, boolean isFriend, boolean loggedIn)
 	{
-		MainProto.User.Builder builder = MainProto.User.newBuilder()
-				.setId(user.getId())
-				.setName(user.getName())
-				.setIsFriend(isFriend)
-				.setOnline(loggedIn);
+		return Single.zip(user.getName(), user.getImageURL(), (name, imgURL) ->
+		{
+			MainProto.User.Builder builder = MainProto.User.newBuilder()
+					.setId(user.getID())
+					.setName(name)
+					.setIsFriend(isFriend)
+					.setOnline(loggedIn);
 
-		String imgURL = user.getImageURL();
-		if (imgURL != null)
-			builder.setImageUrl(imgURL);
+			imgURL.ifPresent(builder::setImageUrl);
 
-		return builder.build();
-	}
-
-	public static MainProto.Game gameInfoToProto(GameInfo gameInfo, boolean my)
-	{
-		return MainProto.Game.newBuilder()
-				.setId(gameInfo.getId())
-				.setType(gameInfo.getType().getID())
-				.addAllPlayerName(gameInfo.getPlayerNames())
-				.setMy(my)
-				.build();
+			return builder.build();
+		});
 	}
 }

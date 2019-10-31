@@ -4,16 +4,17 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
-import org.json.*;
+import com.tisza.tarock.server.*;
+import io.reactivex.Observable;
+import io.reactivex.*;
+import org.davidmoten.rx.jdbc.tuple.*;
 
-import java.io.*;
-import java.text.*;
 import java.util.*;
 import java.util.stream.*;
 
 public class GameSession implements Game
 {
-	private final File saveDir;
+	private final int id;
 	private final GameType gameType;
 	private final PlayerSeatMap<Player> players = new PlayerSeatMap<>();
 	private final Set<Player> allPlayers = new HashSet<>();
@@ -23,15 +24,21 @@ public class GameSession implements Game
 	private PlayerSeat currentBeginnerPlayer = PlayerSeat.SEAT0;
 	private GameState currentGame;
 
+	private TarockDatabase database;
+	private Single<Integer> currentGameID;
+	private int actionOrdinal = 0;
+
 	private int[] points = new int[4];
 
-	public GameSession(GameType gameType, List<? extends Player> playerList, DoubleRoundType doubleRoundType, File saveDir)
+	private GameSession(int id, GameType gameType, List<Player> playerList, DoubleRoundTracker doubleRoundTracker, TarockDatabase database)
 	{
 		if (playerList.size() != 4)
 			throw new IllegalArgumentException("GameSession: playerList.size() != 4");
 
-		this.saveDir = saveDir;
+		this.id = id;
+		this.database = database;
 		this.gameType = gameType;
+		this.doubleRoundTracker = doubleRoundTracker;
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -42,8 +49,80 @@ public class GameSession implements Game
 			allPlayers.add(player);
 			player.setGame(this, playerSeat);
 		}
+	}
 
-		doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
+	public static Single<GameSession> createNew(GameType gameType, List<User> users, DoubleRoundType doubleRoundType, TarockDatabase database)
+	{
+		if (users.size() != 4)
+			throw new IllegalArgumentException("users.size() != 4: " + users.size());
+
+		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
+
+		return
+		Observable.fromIterable(users).flatMapSingle(User::createPlayer).toList().flatMap(players ->
+		database.createGameSession(gameType, doubleRoundTracker).map(id ->
+		{
+			Collections.shuffle(players);
+
+			for (PlayerSeat seat : PlayerSeat.getAll())
+			{
+				Player player = players.get(seat.asInt());
+				database.addPlayer(id, seat, player.getUser());
+			}
+
+			return new GameSession(id, gameType, players, doubleRoundTracker, database);
+		}));
+	}
+
+	public static Single<GameSession> load(int id, TarockDatabase database)
+	{
+		return
+		database.getGameSession(id).flatMap(gameSessionTuple ->
+		database.getUsersForGameSession(id).flatMapSingle(User::createPlayer).toList().flatMap(players ->
+		database.getPlayerPoints(id).toList().flatMap(points ->
+		database.getActions(gameSessionTuple._4()).toList().flatMap(actions ->
+		database.getDeck(gameSessionTuple._4()).toList().flatMap(deck ->
+		database.getGameBeginner(gameSessionTuple._4()).map(beginnerPlayer ->
+		{
+			GameType gameType = gameSessionTuple._1();
+			DoubleRoundType doubleRoundType = gameSessionTuple._2();
+			int doubleRoundData = gameSessionTuple._3();
+			int currentGameID = gameSessionTuple._4();
+
+			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
+			doubleRoundTracker.setData(doubleRoundData);
+
+			GameSession gameSession = new GameSession(id, gameType, players, doubleRoundTracker, database);
+
+			gameSession.currentBeginnerPlayer = beginnerPlayer;
+			gameSession.currentGameID = Single.just(currentGameID);
+			gameSession.actionOrdinal = actions.size();
+
+			for (int i = 0; i < 4; i++)
+				gameSession.points[i] = points.get(i);
+
+			gameSession.currentGame = new GameState(gameType, gameSession.getPlayerNames(), beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			gameSession.currentGame.start();
+
+			for (Tuple3<PlayerSeat, Action, Integer> action : actions)
+				gameSession.currentGame.processAction(action._1(), action._2());
+
+			gameSession.dispatchEvent(new EventInstance(null, Event.historyMode(true)));
+			gameSession.dispatchNewEvents();
+			gameSession.dispatchEvent(new EventInstance(null, Event.historyMode(false)));
+
+			return gameSession;
+		}))))));
+	}
+
+	public int getID()
+	{
+		return id;
+	}
+
+	public PlayerSeatMap<Player> getPlayers()
+	{
+		return players;
 	}
 
 	public void startSession()
@@ -57,6 +136,22 @@ public class GameSession implements Game
 		dispatchEvent(new EventInstance(null, Event.deleteGame()));
 		for (Player player : allPlayers)
 			player.setGame(null, null);
+
+		database.stopGameSession(id);
+	}
+
+	public Player getPlayerByUser(User user)
+	{
+		for (Player player : players.values())
+			if (player.getUser().equals(user))
+				return player;
+
+		return null;
+	}
+
+	public boolean isUserPlaying(User user)
+	{
+		return getPlayerByUser(user) != null;
 	}
 
 	public void addKibic(Player player)
@@ -85,15 +180,32 @@ public class GameSession implements Game
 	{
 		List<Card> deck = new ArrayList<>(Card.getAll());
 		Collections.shuffle(deck);
+
+		if (database != null)
+		{
+			currentGameID = database.createGame(id, currentBeginnerPlayer).cache();
+			currentGameID.subscribe(gid -> database.setDeck(gid, deck));
+			actionOrdinal = 0;
+		}
+
 		currentGame = new GameState(gameType, getPlayerNames(), currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
 		dispatchNewEvents();
 	}
 
 	@Override
-	public void action(Action action)
+	public void action(PlayerSeat player, Action action)
 	{
-		currentGame.processAction(action);
+		if (currentGame == null)
+			return;
+
+		boolean success = currentGame.processAction(player, action);
+		if (success && database != null)
+		{
+			int ordinal = actionOrdinal++;
+			currentGameID.subscribe(gameID -> database.addAction(gameID, player.asInt(), action, ordinal));
+		}
+
 		dispatchNewEvents();
 
 		if (currentGame.isFinished())
@@ -102,12 +214,20 @@ public class GameSession implements Game
 			{
 				currentBeginnerPlayer = currentBeginnerPlayer.nextPlayer();
 				doubleRoundTracker.gameFinished();
-				saveGame();
 			}
 			else
 			{
 				doubleRoundTracker.gameInterrupted();
 			}
+
+			if (database != null)
+			{
+				database.setDoubleRoundData(id, doubleRoundTracker.getData());
+
+				for (PlayerSeat seat : PlayerSeat.getAll())
+					database.setPlayerPoints(id, seat, points[seat.asInt()]);
+			}
+
 			startNewGame();
 		}
 	}
@@ -123,45 +243,21 @@ public class GameSession implements Game
 	{
 		if (event.getPlayerSeat() == null)
 			for (Player player : allPlayers)
-				event.getEvent().handle(player.getEventHandler());
+				player.handleEvent(event.getEvent());
 		else
-			event.getEvent().handle(players.get(event.getPlayerSeat()).getEventHandler());
+			players.get(event.getPlayerSeat()).handleEvent(event.getEvent());
 	}
 
 	@Override
-	public void requestHistory(PlayerSeat seat, EventHandler eventHandler)
+	public void requestHistory(Player player)
 	{
-		for (EventInstance event : currentGame.getAllEvents())
-			if (event.getPlayerSeat() == null || event.getPlayerSeat() == seat)
-				event.getEvent().handle(eventHandler);
-	}
-
-	private void saveGame()
-	{
-		if (saveDir == null)
+		if (currentGame == null)
 			return;
 
-		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-		String date = dateFormat.format(Calendar.getInstance().getTime());
-		File saveFile;
-		for (int i = 0;; i++)
-		{
-			saveFile = new File(saveDir, date + (i == 0 ? "" : "_" + i));
-			if (!saveFile.exists())
-				break;
-		}
-
-		JSONObject json = new JSONObject();
-		json.put("players", getPlayerNames());
-		json.put("game", currentGame.getHistory().toJSON());
-
-		try (FileWriter writer = new FileWriter(saveFile))
-		{
-			json.write(writer);
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
+		player.handleEvent(Event.historyMode(true));
+		for (EventInstance event : currentGame.getAllEvents())
+			if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
+				player.handleEvent(event.getEvent());
+		player.handleEvent(Event.historyMode(false));
 	}
 }

@@ -6,20 +6,18 @@ import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
+import io.reactivex.*;
 
 import java.util.*;
 import java.util.stream.*;
 
-public class ProtoPlayer implements Player, MessageHandler
+public class ProtoPlayer extends Player implements MessageHandler
 {
-	private String name;
 	private ProtoConnection connection;
-	private Game game;
-	private PlayerSeat seat;
 
-	public ProtoPlayer(String name)
+	public ProtoPlayer(User user, String name)
 	{
-		this.name = name;
+		super(user, name);
 	}
 
 	public void useConnection(ProtoConnection connection)
@@ -32,35 +30,20 @@ public class ProtoPlayer implements Player, MessageHandler
 		if (connection != null)
 		{
 			connection.addMessageHandler(this);
-			if (game != null)
-				game.requestHistory(seat, eventHandler);
+			requestHistory();
 		}
 	}
-
 	@Override
-	public String getName()
+	public void handleEvent(Event event)
 	{
-		return name;
-	}
-
-	@Override
-	public EventHandler getEventHandler()
-	{
-		return eventHandler;
-	}
-
-	@Override
-	public void setGame(Game game, PlayerSeat seat)
-	{
-		this.game = game;
-		this.seat = seat;
+		event.handle(eventHandler);
 	}
 
 	@Override
 	public void handleMessage(MainProto.Message message)
 	{
-		if (seat != null && message.getMessageTypeCase() == MainProto.Message.MessageTypeCase.ACTION)
-			game.action(new Action(seat, message.getAction()));
+		if (message.getMessageTypeCase() == MainProto.Message.MessageTypeCase.ACTION)
+			doAction(new Action(message.getAction()));
 	}
 
 	@Override
@@ -91,49 +74,49 @@ public class ProtoPlayer implements Player, MessageHandler
 		@Override
 		public void announce(PlayerSeat player, AnnouncementContra announcement)
 		{
-			sendPlayerActionEvent(player, Action.announce(player, announcement));
+			sendPlayerActionEvent(player, Action.announce(announcement));
 		}
 
 		@Override
 		public void announcePassz(PlayerSeat player)
 		{
-			sendPlayerActionEvent(player, Action.announcePassz(player));
+			sendPlayerActionEvent(player, Action.announcePassz());
 		}
 
 		@Override
 		public void bid(PlayerSeat player, int bid)
 		{
-			sendPlayerActionEvent(player, Action.bid(player, bid));
+			sendPlayerActionEvent(player, Action.bid(bid));
 		}
 
 		@Override
 		public void call(PlayerSeat player, Card card)
 		{
-			sendPlayerActionEvent(player, Action.call(player, card));
+			sendPlayerActionEvent(player, Action.call(card));
 		}
 
 		@Override
 		public void playCard(PlayerSeat player, Card card)
 		{
-			sendPlayerActionEvent(player, Action.play(player, card));
+			sendPlayerActionEvent(player, Action.play(card));
 		}
 
 		@Override
 		public void readyForNewGame(PlayerSeat player)
 		{
-			sendPlayerActionEvent(player, Action.readyForNewGame(player));
+			sendPlayerActionEvent(player, Action.readyForNewGame());
 		}
 
 		@Override
 		public void throwCards(PlayerSeat player)
 		{
-			sendPlayerActionEvent(player, Action.throwCards(player));
+			sendPlayerActionEvent(player, Action.throwCards());
 		}
 
 		@Override
 		public void chat(PlayerSeat player, String message)
 		{
-			sendPlayerActionEvent(player, Action.chat(player, message));
+			sendPlayerActionEvent(player, Action.chat(message));
 		}
 
 		@Override public void turn(PlayerSeat player)

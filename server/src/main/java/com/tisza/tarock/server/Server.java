@@ -1,41 +1,44 @@
 package com.tisza.tarock.server;
 
-import com.tisza.tarock.message.*;
+import com.tisza.tarock.*;
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
+import io.reactivex.*;
 
 import javax.net.ssl.*;
 import java.io.*;
 import java.security.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 public class Server implements Runnable
 {
+
 	private final int port;
 	private Thread listenerThread;
 	private SSLServerSocket serverSocket;
 
-	private final File keystoreFile;
-
-	private final ScheduledExecutorService gameExecutorService;
-
 	private Collection<Client> clients = new ArrayList<>();
 	private Collection<User> loggedInUsers = new HashSet<>();
 
+	private final TarockDatabase database;
 	private final GameSessionManager gameSessionManager;
 	private final FacebookUserManager facebookUserManager;
 	private final FirebaseNotificationSender firebaseNotificationSender;
 
-	public Server(int port, File staticDir, File dataDir)
+	public Server(int port)
 	{
 		this.port = port;
-		this.keystoreFile = new File(staticDir, "keystore");
 
-		gameExecutorService = new GameExecutorService();
-		gameSessionManager = new GameSessionManager(dataDir, gameExecutorService);
-		facebookUserManager = new FacebookUserManager(dataDir);
-		firebaseNotificationSender = new FirebaseNotificationSender(new File(staticDir, "fcm-service-account.json"));
+		database = new TarockDatabase();
+		gameSessionManager = new GameSessionManager(database);
+		facebookUserManager = new FacebookUserManager(database);
+		firebaseNotificationSender = new FirebaseNotificationSender(new File(Main.STATIC_DIR, "fcm-service-account.json"));
+	}
+
+	public TarockDatabase getDatabase()
+	{
+		return database;
 	}
 
 	public GameSessionManager getGameSessionManager()
@@ -56,13 +59,13 @@ public class Server implements Runnable
 	public void loginUser(User user)
 	{
 		loggedInUsers.add(user);
-		System.out.println("user logged in: " + user.getName() + " (id: " + user.getId() + ")");
+		user.getName().subscribe(name -> System.out.println("user logged in: " + name + " (id: " + user.getID() + ")"));
 	}
 
 	public void logoutUser(User user)
 	{
 		loggedInUsers.remove(user);
-		System.out.println("user logged out: " + user.getName() + " (id: " + user.getId() + ")");
+		user.getName().subscribe(name -> System.out.println("user logged out: " + name + " (id: " + user.getID() + ")"));
 	}
 
 	public boolean isUserLoggedIn(User user)
@@ -82,7 +85,7 @@ public class Server implements Runnable
 	private void createServerSocket() throws IOException, GeneralSecurityException
 	{
 		KeyStore ks = KeyStore.getInstance("JKS");
-		ks.load(new FileInputStream(keystoreFile), "000000".toCharArray());
+		ks.load(new FileInputStream(new File(Main.STATIC_DIR, "keystore")), "000000".toCharArray());
 
 		KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
 		kmf.init(ks, "000000".toCharArray());
@@ -104,7 +107,8 @@ public class Server implements Runnable
 	{
 		try
 		{
-			facebookUserManager.initialize();
+			database.initialize();
+			gameSessionManager.initialize();
 
 			createServerSocket();
 
@@ -127,9 +131,9 @@ public class Server implements Runnable
 				removeClient(client);
 			}
 
+			database.shutdown();
 			gameSessionManager.shutdown();
-			facebookUserManager.shutdown();
-			gameExecutorService.shutdownNow();
+			listenerThread = null;
 
 			System.out.println("server stopped");
 		}
@@ -140,7 +144,7 @@ public class Server implements Runnable
 		try
 		{
 			System.out.println("accepted connection from: " + socket.getRemoteSocketAddress());
-			ProtoConnection connection = new ProtoConnection(socket, gameExecutorService);
+			ProtoConnection connection = new ProtoConnection(socket, Main.GAME_EXECUTOR_SERVICE);
 			clients.add(new Client(this, connection));
 			connection.start();
 		}
@@ -159,18 +163,25 @@ public class Server implements Runnable
 
 			MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
 
-			for (GameInfo gameInfo : gameSessionManager.listGames())
+			for (GameSession gameSession : gameSessionManager.getGameSessions())
 			{
-				builder.addAvailableGame(Utils.gameInfoToProto(gameInfo, gameSessionManager.isGameOwnedBy(gameInfo.getId(), client.getLoggedInUser())));
+				MainProto.Game.Builder gameBuilder = MainProto.Game.newBuilder()
+						.setId(gameSession.getID())
+						.setType(gameSession.getGameType().getID())
+						.addAllPlayerName(gameSession.getPlayerNames())
+						.setMy(gameSession.isUserPlaying(client.getLoggedInUser()));
+				builder.addAvailableGame(gameBuilder);
 			}
 
-			for (User user : facebookUserManager.listUsers())
+			database.getUsers().flatMapCompletable(user ->
+			client.getLoggedInUser().isFriendWith(user).flatMapCompletable(isFriend ->
+			Utils.userToProto(user, isFriend, isUserLoggedIn(user)).flatMapCompletable(userProto ->
 			{
 				if (!user.equals(client.getLoggedInUser()))
-					builder.addAvailableUser(Utils.userToProto(user, client.getLoggedInUser().isFriendWith(user), isUserLoggedIn(user)));
-			}
-
-			client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());
+					builder.addAvailableUser(userProto);
+				return Completable.complete();
+			})))
+			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build()));
 		}
 	}
 
@@ -189,6 +200,14 @@ public class Server implements Runnable
 		if (listenerThread != null)
 		{
 			listenerThread.interrupt();
+		}
+	}
+
+	public void awaitTermination(long millis) throws InterruptedException
+	{
+		if (listenerThread != null)
+		{
+			listenerThread.join(1000);
 		}
 	}
 

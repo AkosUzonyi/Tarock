@@ -18,7 +18,6 @@ public class GameState
 
 	private TeamInfoTracker teamInfoTracker;
 
-	private GameHistory history;
 	private List<EventInstance> events = new ArrayList<>();
 	private List<EventInstance> newEvents = new ArrayList<>();
 
@@ -45,13 +44,8 @@ public class GameState
 	private List<Round> roundsPassed = new ArrayList<>();
 	private PlayerSeatMap<Collection<Card>> wonCards = new PlayerSeatMap<>();
 
-	private boolean inGameStatisticsCalculated = false;
-	private boolean statisticsCalculated = false;
-	private int [] points;
+	private int[] points;
 	private final int pointMultiplier;
-	private int pointsForCallerTeam;
-	private List<AnnouncementResult> announcementResults = new ArrayList<>();
-	private int callerGamePoints, opponentGamePoints;
 
 	private boolean finished = false;
 	private boolean normalFinish;
@@ -79,7 +73,6 @@ public class GameState
 		this.pointMultiplier = pointMultiplier;
 
 		teamInfoTracker = new TeamInfoTracker(this);
-		history = new GameHistory();
 	}
 
 	public void start()
@@ -98,16 +91,15 @@ public class GameState
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
 			sendEvent(player, Event.seat(player));
-			sendEvent(player, Event.playerCards(playersCards.get(player)));
-			history.setOriginalPlayersCards(player, new ArrayList<>(playersCards.get(player).getCards()));
+			sendEvent(player, Event.playerCards(playersCards.get(player).clone()));
 		}
 
 		changePhase(new Bidding(this));
 	}
 
-	public boolean processAction(Action action)
+	public boolean processAction(PlayerSeat player, Action action)
 	{
-		return action.handle(currentPhase);
+		return action.handle(player, currentPhase);
 	}
 
 	public List<EventInstance> getAllEvents()
@@ -174,11 +166,6 @@ public class GameState
 	public TeamInfoTracker getTeamInfoTracker()
 	{
 		return teamInfoTracker;
-	}
-
-	public GameHistory getHistory()
-	{
-		return history;
 	}
 
 	public void broadcastEvent(Event event)
@@ -359,11 +346,9 @@ public class GameState
 		return points;
 	}
 
-	void calculateInGameStatistics()
+	void sendInGameStatistics()
 	{
-		inGameStatisticsCalculated = true;
-
-		announcementResults.clear();
+		List<AnnouncementResult> announcementResults = new ArrayList<>();
 
 		for (Team team : Team.values())
 		{
@@ -380,28 +365,15 @@ public class GameState
 				announcementResults.add(new AnnouncementResult(ac, 0, team));
 			}
 		}
+
+		broadcastEvent(Event.announcementStatistics(0, 0, announcementResults, 0, pointMultiplier));
 	}
 
-	void sendInGameStatistics()
+	void sendStatistics()
 	{
-		if (!inGameStatisticsCalculated)
-			throw new IllegalStateException();
-
-		int callerGamePoints = 0;
-		int opponentGamePoints = 0;
-		int sumPoints = 0;
-		broadcastEvent(Event.announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, sumPoints, pointMultiplier));
-	}
-
-	void calculateStatistics()
-	{
-		if (statisticsCalculated)
-			throw new IllegalStateException();
-
-		statisticsCalculated = true;
-
-		announcementResults.clear();
-		pointsForCallerTeam = 0;
+		int pointsForCallerTeam = 0;
+		List<AnnouncementResult> announcementResults = new ArrayList<>();
+		int callerGamePoints = 0, opponentGamePoints = 0;
 
 		for (Team team : Team.values())
 		{
@@ -446,18 +418,12 @@ public class GameState
 		}
 		points[playerPairs.getCaller().asInt()] += pointsForCallerTeam * 2;
 		points[playerPairs.getCalled().asInt()] += pointsForCallerTeam * 2;
-	}
-
-	void sendStatistics()
-	{
-		if (!statisticsCalculated)
-			throw new IllegalStateException();
 
 		broadcastEvent(Event.announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, pointsForCallerTeam, pointMultiplier));
 	}
 
 	void sendPlayerPoints()
 	{
-		broadcastEvent(Event.playerPoints(points));
+		broadcastEvent(Event.playerPoints(points.clone()));
 	}
 }

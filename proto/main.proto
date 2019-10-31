@@ -27,7 +27,7 @@ message KeepAlive {}
 
 message User
 {
-    required string id = 1;
+    required int32 id = 1;
     required string name = 2;
     optional string image_url = 3;
     required bool is_friend = 4;
@@ -41,7 +41,7 @@ message Login
 
 message LoginResult
 {
-    optional string user_id = 1;
+    optional int32 user_id = 1;
 }
 
 message FCMToken
@@ -61,7 +61,7 @@ message Game
 message CreateGame
 {
     required string type = 1;
-    repeated string userID = 2;
+    repeated int32 userID = 2;
     required string double_round_type = 3;
 }
 

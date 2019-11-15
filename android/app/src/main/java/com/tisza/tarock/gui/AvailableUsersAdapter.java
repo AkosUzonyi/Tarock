@@ -3,6 +3,7 @@ package com.tisza.tarock.gui;
 import android.content.*;
 import android.view.*;
 import android.widget.*;
+import com.squareup.picasso.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 
@@ -10,8 +11,7 @@ import java.util.*;
 
 public class AvailableUsersAdapter extends BaseAdapter
 {
-	private final ProfilePictureLoader profilePictureLoader = new ProfilePictureLoader();
-
+	private final Picasso picasso;
 	private final LayoutInflater inflater;
 	private List<User> users = new ArrayList<>();
 	private Set<User> selectedUsers = new HashSet<>();
@@ -20,6 +20,7 @@ public class AvailableUsersAdapter extends BaseAdapter
 	public AvailableUsersAdapter(Context context)
 	{
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		picasso = Picasso.with(context);
 	}
 
 	public void setUsersSelectedListener(UsersSelectedListener usersSelectedListener)
@@ -96,11 +97,7 @@ public class AvailableUsersAdapter extends BaseAdapter
 		User user = users.get(position);
 
 		holder.nameView.setText(user.getName());
-
-		profilePictureLoader.cancelDownload(holder.profilePictureView);
-		if (user.getImageURL() != null)
-			profilePictureLoader.loadPicture(user.getImageURL(), holder.profilePictureView);
-
+		picasso.load(user.getImageURL()).error(R.drawable.fb_unknown_image).into(holder.profilePictureView);
 		holder.isFriendView.setVisibility(user.isFriend() ? View.VISIBLE : View.GONE);
 		holder.isOnlineView.setImageResource(user.isOnline() ? R.drawable.online : R.drawable.offline);
 

@@ -1,13 +1,16 @@
 package com.tisza.tarock.game.phase;
 
-import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
+import org.apache.log4j.*;
 
 import java.util.*;
 
 abstract class Phase implements ActionHandler
 {
+	private static final Logger log = Logger.getLogger(Phase.class);
+
 	protected final Game game;
 
 	public Phase(Game game)
@@ -75,7 +78,7 @@ abstract class Phase implements ActionHandler
 
 	private boolean wrongPhase(String action)
 	{
-		System.err.println("phase: " + asEnum() + " does not support action: " + action);
+		log.warn("Phase: " + asEnum() + " does not support action: " + action);
 		return false;
 	}
 }

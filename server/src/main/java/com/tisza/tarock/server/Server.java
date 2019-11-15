@@ -1,10 +1,11 @@
 package com.tisza.tarock.server;
 
 import com.tisza.tarock.*;
+import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.net.*;
-import com.tisza.tarock.proto.*;
 import io.reactivex.*;
+import org.apache.log4j.*;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -13,6 +14,7 @@ import java.util.*;
 
 public class Server implements Runnable
 {
+	private static final Logger log = Logger.getLogger(Server.class);
 
 	private final int port;
 	private Thread listenerThread;
@@ -59,13 +61,13 @@ public class Server implements Runnable
 	public void loginUser(User user)
 	{
 		loggedInUsers.add(user);
-		user.getName().subscribe(name -> System.out.println("user logged in: " + name + " (id: " + user.getID() + ")"));
+		user.getName().subscribe(name -> log.info("User logged in: " + name + " (id: " + user.getID() + ")"));
 	}
 
 	public void logoutUser(User user)
 	{
 		loggedInUsers.remove(user);
-		user.getName().subscribe(name -> System.out.println("user logged out: " + name + " (id: " + user.getID() + ")"));
+		user.getName().subscribe(name -> log.info("User logged out: " + name + " (id: " + user.getID() + ")"));
 	}
 
 	public boolean isUserLoggedIn(User user)
@@ -99,7 +101,7 @@ public class Server implements Runnable
 		SSLServerSocketFactory ssf = sc.getServerSocketFactory();
 		serverSocket = (SSLServerSocket)ssf.createServerSocket(port);
 
-		System.out.println("Server listening on: " + serverSocket.getLocalSocketAddress());
+		log.info("Server listening on: " + serverSocket.getLocalSocketAddress());
 	}
 
 	@Override
@@ -120,7 +122,7 @@ public class Server implements Runnable
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			log.error("Server exception", e);
 		}
 		finally
 		{
@@ -135,7 +137,7 @@ public class Server implements Runnable
 			gameSessionManager.shutdown();
 			listenerThread = null;
 
-			System.out.println("server stopped");
+			log.info("Server stopped");
 		}
 	}
 
@@ -143,14 +145,14 @@ public class Server implements Runnable
 	{
 		try
 		{
-			System.out.println("accepted connection from: " + socket.getRemoteSocketAddress());
+			log.info("Accepted connection from: " + socket.getRemoteSocketAddress());
 			ProtoConnection connection = new ProtoConnection(socket, Main.GAME_EXECUTOR_SERVICE);
 			clients.add(new Client(this, connection));
 			connection.start();
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			log.error("Exception while adding new client", e);
 		}
 	}
 
@@ -221,7 +223,7 @@ public class Server implements Runnable
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				log.warn("Exception while closing server socket: " + e.getMessage());
 			}
 			finally
 			{

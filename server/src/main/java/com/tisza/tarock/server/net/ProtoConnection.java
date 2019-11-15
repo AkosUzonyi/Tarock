@@ -2,6 +2,7 @@ package com.tisza.tarock.server.net;
 
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.proto.MainProto.*;
+import org.apache.log4j.*;
 
 import java.io.*;
 import java.net.*;
@@ -12,6 +13,8 @@ import java.util.concurrent.*;
 
 public class ProtoConnection implements Closeable
 {
+	private static final Logger log = Logger.getLogger(ProtoConnection.class);
+
 	private static final String HELLO_STRING = "Tarokk";
 	private static final int VERSION = 2;
 	private static final int KEEP_ALIVE_DELAY = 8;
@@ -193,7 +196,7 @@ public class ProtoConnection implements Closeable
 
 		if (thread.isAlive())
 		{
-			System.err.println("could not stop thread: " + thread);
+			log.warn("Could not stop thread: " + thread);
 		}
 	}
 

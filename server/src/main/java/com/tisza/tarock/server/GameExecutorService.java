@@ -1,9 +1,13 @@
 package com.tisza.tarock.server;
 
+import org.apache.log4j.*;
+
 import java.util.concurrent.*;
 
 public class GameExecutorService extends ScheduledThreadPoolExecutor
 {
+	private static final Logger log = Logger.getLogger(GameExecutorService.class);
+
 	public GameExecutorService()
 	{
 		super(1, new GameThreadFactory());
@@ -38,7 +42,7 @@ public class GameExecutorService extends ScheduledThreadPoolExecutor
 		}
 		if (t != null)
 		{
-			t.printStackTrace();
+			log.warn("GameThread exception", t);
 		}
 	}
 

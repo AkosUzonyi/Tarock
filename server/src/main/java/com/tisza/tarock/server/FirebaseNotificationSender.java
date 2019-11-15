@@ -1,6 +1,7 @@
 package com.tisza.tarock.server;
 
 import com.google.api.client.googleapis.auth.oauth2.*;
+import org.apache.log4j.*;
 import org.json.*;
 
 import java.io.*;
@@ -9,6 +10,8 @@ import java.util.*;
 
 public class FirebaseNotificationSender
 {
+	private static final Logger log = Logger.getLogger(FirebaseNotificationSender.class);
+
 	private static final String PROJECT_ID = "tarokk-3f659";
 	private File jsonFile;
 	private String accessToken = null;
@@ -91,7 +94,7 @@ public class FirebaseNotificationSender
 			}
 			catch (JSONException e)
 			{
-				e.printStackTrace();
+				log.warn("Json exception: " + e.getMessage());
 				error = "JSON_ERROR";
 			}
 		}

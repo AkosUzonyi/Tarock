@@ -1,20 +1,23 @@
 package com.tisza.tarock.server;
 
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.game.doubleround.*;
+import com.tisza.tarock.proto.*;
+import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.net.*;
 import com.tisza.tarock.server.player.*;
-import com.tisza.tarock.proto.*;
 import io.reactivex.Observable;
 import io.reactivex.*;
 import io.reactivex.schedulers.*;
+import org.apache.log4j.*;
 
 import java.io.*;
 import java.util.*;
 
 public class Client implements MessageHandler
 {
+	private static final Logger log = Logger.getLogger(Client.class);
+
 	private final Server server;
 	private ProtoConnection connection;
 	private User loggedInUser = null;
@@ -136,7 +139,7 @@ public class Client implements MessageHandler
 			}
 
 			default:
-				System.err.println("unhandled message type: " + message.getMessageTypeCase());
+				log.warn("Unhandled message type: " + message.getMessageTypeCase());
 				break;
 		}
 	}
@@ -197,7 +200,7 @@ public class Client implements MessageHandler
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			log.warn("Exception while closing client connection: " + e.getMessage());
 		}
 		connection = null;
 		currentPlayer = null;

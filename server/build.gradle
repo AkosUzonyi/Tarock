@@ -8,7 +8,7 @@ apply plugin: 'idea'
 
 mainClassName = "com.tisza.tarock.Main"
 
-sourceCompatibility = 1.8
+sourceCompatibility = 1.11
 
 run {
     standardInput = System.in

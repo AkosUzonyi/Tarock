@@ -8,6 +8,7 @@ import com.tisza.tarock.server.net.*;
 import com.tisza.tarock.server.player.*;
 import io.reactivex.Observable;
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import io.reactivex.schedulers.*;
 import org.apache.log4j.*;
 
@@ -23,6 +24,7 @@ public class Client implements MessageHandler
 	private User loggedInUser = null;
 	private ProtoPlayer currentPlayer = null;
 	private GameSession currentGameSession;
+	private CompositeDisposable disposables = new CompositeDisposable();
 
 	public Client(Server server, ProtoConnection connection)
 	{
@@ -49,8 +51,7 @@ public class Client implements MessageHandler
 				if (message.getLogin().hasFacebookToken())
 				{
 					String fbAccessToken = message.getLogin().getFacebookToken();
-					server.getFacebookUserManager().newAccessToken(fbAccessToken)
-							.subscribe(this::userLogin);
+					disposables.add(server.getFacebookUserManager().newAccessToken(fbAccessToken).subscribe(this::userLogin));
 				}
 				else
 				{
@@ -73,20 +74,21 @@ public class Client implements MessageHandler
 				GameType gameType = GameType.fromID(createGame.getType());
 				DoubleRoundType doubleRoundType = DoubleRoundType.fromID(createGame.getDoubleRoundType());
 
-				loggedInUser.getName().subscribe(loggedInUserName ->
-				Observable.concat(Observable.just(loggedInUser.getID()), Observable.fromIterable(createGame.getUserIDList())).map(server.getDatabase()::getUser).toList().subscribe(users ->
-				server.getGameSessionManager().createGameSession(gameType, users, doubleRoundType).subscribe(gameSession ->
+				loggedInUser.getName().flatMapCompletable(loggedInUserName ->
+				Observable.concat(Observable.just(loggedInUser.getID()), Observable.fromIterable(createGame.getUserIDList())).map(server.getDatabase()::getUser).toList().flatMapCompletable(users ->
+				server.getGameSessionManager().createGameSession(gameType, users, doubleRoundType).flatMapCompletable(gameSession ->
 				{
 					server.broadcastStatus();
 
 					List<String> playerNames = gameSession.getPlayerNames();
-					Flowable.fromIterable(users).flatMap(User::getFCMTokens).subscribe(fcmToken ->
-					{
-						Single.<Boolean>create(subscriber -> subscriber.onSuccess(server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameSession.getID(), loggedInUserName, playerNames)))
-								.subscribeOn(Schedulers.io())
-								.subscribe(valid -> {if (!valid) server.getDatabase().removeFCMToken(fcmToken);});
-					});
-				})));
+					Flowable.fromIterable(users).flatMap(User::getFCMTokens).flatMapSingle(fcmToken ->
+					Single.<Boolean>create(subscriber -> subscriber.onSuccess(server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameSession.getID(), loggedInUserName, playerNames)))
+							.subscribeOn(Schedulers.io())
+							.doOnSuccess(valid -> {if (!valid) server.getDatabase().removeFCMToken(fcmToken);})
+					).subscribe();
+
+					return Completable.complete();
+				}))).subscribe();
 
 				break;
 			}
@@ -117,11 +119,12 @@ public class Client implements MessageHandler
 				}
 				else
 				{
+					disposables.add(
 					loggedInUser.createPlayer().subscribe(player ->
 					{
 						gameSession.addKibic(player);
 						switchGameSession(gameSession, (ProtoPlayer)player);
-					});
+					}));
 				}
 
 				break;
@@ -194,6 +197,7 @@ public class Client implements MessageHandler
 
 	public void disconnect()
 	{
+		disposables.dispose();
 		try
 		{
 			connection.close();

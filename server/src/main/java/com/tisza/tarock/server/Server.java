@@ -5,6 +5,7 @@ import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.net.*;
 import io.reactivex.*;
+import io.reactivex.disposables.*;
 import org.apache.log4j.*;
 
 import javax.net.ssl.*;
@@ -27,6 +28,8 @@ public class Server implements Runnable
 	private final GameSessionManager gameSessionManager;
 	private final FacebookUserManager facebookUserManager;
 	private final FirebaseNotificationSender firebaseNotificationSender;
+
+	private CompositeDisposable disposables = new CompositeDisposable();
 
 	public Server(int port)
 	{
@@ -61,13 +64,13 @@ public class Server implements Runnable
 	public void loginUser(User user)
 	{
 		loggedInUsers.add(user);
-		user.getName().subscribe(name -> log.info("User logged in: " + name + " (id: " + user.getID() + ")"));
+		disposables.add(user.getName().subscribe(name -> log.info("User logged in: " + name + " (id: " + user.getID() + ")")));
 	}
 
 	public void logoutUser(User user)
 	{
 		loggedInUsers.remove(user);
-		user.getName().subscribe(name -> log.info("User logged out: " + name + " (id: " + user.getID() + ")"));
+		disposables.add(user.getName().subscribe(name -> log.info("User logged out: " + name + " (id: " + user.getID() + ")")));
 	}
 
 	public boolean isUserLoggedIn(User user)
@@ -126,6 +129,7 @@ public class Server implements Runnable
 		}
 		finally
 		{
+			disposables.dispose();
 			closeSocket();
 
 			for (Client client : clients)
@@ -175,6 +179,7 @@ public class Server implements Runnable
 				builder.addAvailableGame(gameBuilder);
 			}
 
+			disposables.add(
 			database.getUsers().flatMapCompletable(user ->
 			client.getLoggedInUser().isFriendWith(user).flatMapCompletable(isFriend ->
 			Utils.userToProto(user, isFriend, isUserLoggedIn(user)).flatMapCompletable(userProto ->
@@ -183,7 +188,7 @@ public class Server implements Runnable
 					builder.addAvailableUser(userProto);
 				return Completable.complete();
 			})))
-			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build()));
+			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build())));
 		}
 	}
 

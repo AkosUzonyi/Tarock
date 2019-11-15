@@ -186,7 +186,7 @@ public class GameSession
 		if (database != null)
 		{
 			currentGameID = database.createGame(id, currentBeginnerPlayer).cache();
-			currentGameID.subscribe(gid -> database.setDeck(gid, deck));
+			currentGameID.doOnSuccess(gid -> database.setDeck(gid, deck)).subscribe();
 			actionOrdinal = 0;
 		}
 
@@ -204,7 +204,7 @@ public class GameSession
 		if (success && database != null)
 		{
 			int ordinal = actionOrdinal++;
-			currentGameID.subscribe(gameID -> database.addAction(gameID, player.asInt(), action, ordinal));
+			currentGameID.doOnSuccess(gameID -> database.addAction(gameID, player.asInt(), action, ordinal)).subscribe();
 		}
 
 		dispatchNewEvents();

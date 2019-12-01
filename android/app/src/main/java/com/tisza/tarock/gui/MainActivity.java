@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.*;
 import com.facebook.*;
+import com.squareup.picasso.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.proto.*;
 
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		callbackManager = CallbackManager.Factory.create();
 
 		ResourceMappings.init(this);
+		Picasso.setSingletonInstance(new Picasso.Builder(this).downloader(new OkHttpDownloader(this)).build());
 		setContentView(R.layout.main);
 		connectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
 		connectionViewModel.getConnectionState().observe(this, this::connectionStateChanged);

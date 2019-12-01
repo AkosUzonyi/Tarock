@@ -9,6 +9,7 @@
     <dimen name="large_text_size">30sp</dimen>
     <dimen name="user_name_size">45sp</dimen>
     <dimen name="user_icon_width">30dp</dimen>
+    <dimen name="user_picture_size">50dp</dimen>
 
     <dimen name="player_message_margin">20dp</dimen>
 </resources>

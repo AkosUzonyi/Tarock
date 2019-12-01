@@ -2,30 +2,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
+    android:gravity="center_vertical"
     android:padding="@dimen/small_padding"
     >
 
     <ImageView
         android:id="@+id/user_image"
-        android:layout_width="50px"
-        android:layout_height="50px"
+        android:layout_width="@dimen/user_picture_size"
+        android:layout_height="@dimen/user_picture_size"
         android:layout_marginRight="@dimen/user_margin"
     />
 
-    <FrameLayout
+    <TextView
+        android:id="@+id/user_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginRight="@dimen/user_margin"
-        >
-
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/user_name_size"
-        />
-    </FrameLayout>
+        android:textSize="@dimen/user_name_size"
+    />
 
     <ImageView
         android:id="@+id/is_user_friend"

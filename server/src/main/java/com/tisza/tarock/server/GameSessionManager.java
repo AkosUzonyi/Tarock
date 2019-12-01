@@ -19,18 +19,16 @@ public class GameSessionManager
 
 	public void initialize()
 	{
-		database.getActiveGameSessionIDs().flatMapSingle(id -> GameSession.load(id, database)).doOnNext(gameSession ->
-				gameSessions.put(gameSession.getID(), gameSession))
-		.ignoreElements().blockingAwait();
+		database.getActiveGameSessionIDs()
+				.flatMapSingle(id -> GameSession.load(id, database))
+				.doOnNext(gameSession -> gameSessions.put(gameSession.getID(), gameSession))
+				.ignoreElements().blockingAwait();
 	}
 
 	public Single<GameSession> createGameSession(GameType gameType, List<User> users, DoubleRoundType doubleRoundType)
 	{
-		return GameSession.createNew(gameType, users, doubleRoundType, database).doOnSuccess(gameSession ->
-		{
-			gameSessions.put(gameSession.getID(), gameSession);
-			gameSession.startSession();
-		});
+		return GameSession.createNew(gameType, users, doubleRoundType, database)
+				.doOnSuccess(gameSession -> gameSessions.put(gameSession.getID(), gameSession));
 	}
 
 	public GameSession getGameSession(int id)

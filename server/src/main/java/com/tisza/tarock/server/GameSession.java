@@ -72,7 +72,9 @@ public class GameSession
 				database.addPlayer(id, seat, player.getUser());
 			}
 
-			return new GameSession(id, gameType, players, doubleRoundTracker, database);
+			GameSession gameSession = new GameSession(id, gameType, players, doubleRoundTracker, database);
+			gameSession.startNewGame();
+			return gameSession;
 		}));
 	}
 
@@ -125,11 +127,6 @@ public class GameSession
 	public PlayerSeatMap<Player> getPlayers()
 	{
 		return players;
-	}
-
-	public void startSession()
-	{
-		startNewGame();
 	}
 
 	public void stopSession()

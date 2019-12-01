@@ -168,7 +168,11 @@ public class Client implements MessageHandler
 			return;
 
 		if (newUser != null && server.isUserLoggedIn(newUser))
+		{
+			int id = newUser.getID();
+			disposables.add(newUser.getName().subscribe(name -> log.info("Login rejected (already logged in): " + name + " (id: " + id + ")")));
 			newUser = null;
+		}
 
 		MainProto.LoginResult.Builder loginMessageBuilder = MainProto.LoginResult.newBuilder();
 

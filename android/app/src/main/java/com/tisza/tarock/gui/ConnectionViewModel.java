@@ -142,9 +142,14 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		switch (message.getMessageTypeCase())
 		{
 			case LOGIN_RESULT:
-				connectionState.setValue(message.getLoginResult().hasUserId() ? ConnectionState.LOGGED_IN : ConnectionState.CONNECTED);
+				boolean loggedIn = message.getLoginResult().hasUserId();
 
-				if (connectionState.getValue() == ConnectionState.LOGGED_IN)
+				if (connectionState.getValue() == ConnectionState.LOGGING_IN && !loggedIn)
+					error(ErrorState.LOGIN_UNSUCCESSFUL);
+
+				connectionState.setValue(loggedIn ? ConnectionState.LOGGED_IN : ConnectionState.CONNECTED);
+
+				if (loggedIn)
 					FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult ->
 					{
 						sendMessage(MainProto.Message.newBuilder().setFcmToken(MainProto.FCMToken.newBuilder()
@@ -296,6 +301,6 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 
 	public static enum ErrorState
 	{
-		OUTDATED, NO_NETWORK, SERVER_DOWN, SERVER_ERROR;
+		OUTDATED, NO_NETWORK, SERVER_DOWN, SERVER_ERROR, LOGIN_UNSUCCESSFUL;
 	}
 }

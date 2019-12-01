@@ -93,6 +93,9 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			case SERVER_ERROR:
 				showErrorDialog(R.string.error_server_error_title, R.string.error_server_error_message);
 				break;
+			case LOGIN_UNSUCCESSFUL:
+				showErrorDialog(R.string.error_login_unsuccessful_title, R.string.error_login_unsuccessful_message);
+				break;
 		}
 	}
 

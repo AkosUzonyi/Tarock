@@ -63,6 +63,12 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		return errorState;
 	}
 
+	private void error(ErrorState error)
+	{
+		errorState.setValue(error);
+		errorState.setValue(null);
+	}
+
 	public LiveData<List<GameInfo>> getGames()
 	{
 		return games;
@@ -90,7 +96,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 			case DISCONNECTED:
 				NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 				if (activeNetworkInfo == null || !activeNetworkInfo.isConnected())
-					errorState.setValue(ErrorState.NO_NETWORK);
+					error(ErrorState.NO_NETWORK);
 				else
 					new ConnectAsyncTask().execute();
 				break;
@@ -183,10 +189,10 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		switch (errorType)
 		{
 			case INVALID_HELLO:
-				errorState.setValue(ErrorState.SERVER_ERROR);
+				error(ErrorState.SERVER_ERROR);
 				break;
 			case VERSION_MISMATCH:
-				errorState.setValue(ErrorState.OUTDATED);
+				error(ErrorState.OUTDATED);
 				break;
 		}
 
@@ -262,7 +268,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 
 			if (resultProtoConnection == null)
 			{
-				errorState.setValue(ErrorState.SERVER_DOWN);
+				error(ErrorState.SERVER_DOWN);
 				connectionState.setValue(ConnectionState.DISCONNECTED);
 				return;
 			}

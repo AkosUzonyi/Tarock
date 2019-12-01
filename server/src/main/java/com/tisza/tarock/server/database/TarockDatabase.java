@@ -99,6 +99,12 @@ public class TarockDatabase
 		return userID.map(this::getUser).compose(resultTransformerUpdateSingle());
 	}
 
+	public Flowable<Tuple2<Integer, User>> getFacebookUsers()
+	{
+		return rxdatabase.select("SELECT facebook_id, user_id FROM facebook_user INNER JOIN user ON facebook_user.user_id = user.id")
+				.getAs(Integer.class, Integer.class).map(tuple -> Tuple2.create(tuple._1(), getUser(tuple._2()))).compose(resultTransformerQueryFlowable());
+	}
+
 	public User getUser(int userID)
 	{
 		return new User(userID, this);
@@ -116,6 +122,12 @@ public class TarockDatabase
 		return rxdatabase.select("SELECT img_url FROM user WHERE id = ?;")
 				.parameter(userID).getAsOptional(String.class).singleOrError()
 				.compose(resultTransformerQuerySingle());
+	}
+
+	void setUserImgURL(int userID, String imgURL)
+	{
+		rxdatabase.update("UPDATE user SET img_url = ? WHERE id = ?;")
+				.parameters(imgURL, userID).complete().subscribe();
 	}
 
 	Single<Boolean> areUserFriends(int userID0, int userID1)

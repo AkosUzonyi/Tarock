@@ -31,6 +31,11 @@ public class User
 		return database.getUserImgURL(id);
 	}
 
+	public void setImageURL(String imgURL)
+	{
+		database.setUserImgURL(id, imgURL);
+	}
+
 	public Single<Boolean> isFriendWith(User user)
 	{
 		return database.areUserFriends(id, user.id);

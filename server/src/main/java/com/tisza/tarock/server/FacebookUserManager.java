@@ -20,13 +20,23 @@ public class FacebookUserManager
 		this.database = database;
 	}
 
+	public void refreshImageURLs()
+	{
+		database.getFacebookUsers().subscribe(tuple ->
+		{
+			int facebookID = tuple._1();
+			User user = tuple._2();
+			getRedirectURLLocation("https://graph.facebook.com/" + facebookID + "/picture?type=normal").subscribe(user::setImageURL);
+		});
+	}
+
 	public Single<User> newAccessToken(String accessToken)
 	{
 		String accessTokenEncoded = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
-		Single<JSONObject> appJSONObservable = downloadJSONFromURL("https://graph.facebook.com/app/?access_token=" + accessTokenEncoded);
-		Single<JSONObject> userJSONObservable = downloadJSONFromURL("https://graph.facebook.com/me/?fields=id,name,picture,friends&access_token=" + accessTokenEncoded);
+		Single<JSONObject> appJSONSingle = downloadJSONFromURL("https://graph.facebook.com/app/?access_token=" + accessTokenEncoded);
+		Single<JSONObject> userJSONSingle = downloadJSONFromURL("https://graph.facebook.com/me/?fields=id,name,picture.type(normal),friends&access_token=" + accessTokenEncoded);
 
-		return Single.merge(Single.zip(appJSONObservable, userJSONObservable, (appJSON, userJSON) ->
+		return Single.merge(Single.zip(appJSONSingle, userJSONSingle, (appJSON, userJSON) ->
 		{
 			if (!appJSON.getString("id").equals(APP_ID))
 				return Single.error(new Exception("wrong app id"));
@@ -50,7 +60,7 @@ public class FacebookUserManager
 
 	private Single<JSONObject> downloadJSONFromURL(String urlString)
 	{
-		return Single.<JSONObject>create(subscriber ->
+		return Single.fromCallable(() ->
 		{
 			URL url = new URL(urlString);
 			HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
@@ -67,7 +77,21 @@ public class FacebookUserManager
 			}
 			in.close();
 
-			subscriber.onSuccess(new JSONObject(response.toString()));
+			return new JSONObject(response.toString());
+		})
+		.subscribeOn(Schedulers.io());
+	}
+
+	private Single<String> getRedirectURLLocation(String urlString)
+	{
+		return Single.fromCallable(() ->
+		{
+			URL url = new URL(urlString);
+			HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+			urlConnection.setRequestMethod("GET");
+			urlConnection.setInstanceFollowRedirects(false);
+			urlConnection.setReadTimeout(1000);
+			return urlConnection.getHeaderField("Location");
 		})
 		.subscribeOn(Schedulers.io());
 	}

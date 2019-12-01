@@ -30,11 +30,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
 		callbackManager = CallbackManager.Factory.create();
-
-		ResourceMappings.init(this);
-		Picasso.setSingletonInstance(new Picasso.Builder(this).downloader(new OkHttpDownloader(this)).build());
 		setContentView(R.layout.main);
 		connectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
 		connectionViewModel.getConnectionState().observe(this, this::connectionStateChanged);

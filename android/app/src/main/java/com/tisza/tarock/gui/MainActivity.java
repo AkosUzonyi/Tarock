@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	{
 		super.onCreate(savedInstanceState);
 
-		FacebookSdk.sdkInitialize(this.getApplicationContext());
 		callbackManager = CallbackManager.Factory.create();
 
 		ResourceMappings.init(this);

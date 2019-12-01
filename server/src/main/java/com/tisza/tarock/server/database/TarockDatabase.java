@@ -7,6 +7,7 @@ import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.message.*;
 import io.reactivex.*;
 import io.reactivex.schedulers.*;
+import org.apache.log4j.*;
 import org.davidmoten.rx.jdbc.*;
 import org.davidmoten.rx.jdbc.tuple.*;
 import org.flywaydb.core.*;
@@ -16,6 +17,8 @@ import java.util.*;
 
 public class TarockDatabase
 {
+	private static final Logger log = Logger.getLogger(TarockDatabase.class);
+
 	private static final String DATABASE_FILENAME = "tarock.db";
 
 	private final String dbURL;
@@ -42,24 +45,49 @@ public class TarockDatabase
 		rxdatabase.update("PRAGMA synchronous = NORMAL;").complete().subscribe();
 	}
 
-	private <T> SingleTransformer<T, T> resultTransformerUpdateSingle()
+	private void logException(Throwable e, StackTraceElement[] stackTrace)
 	{
+		RuntimeException runtimeException = new RuntimeException(e);
+		runtimeException.setStackTrace(stackTrace);
+		log.error(null, runtimeException);
+	}
+
+	private CompletableTransformer resultTransformerUpdateCompletable()
+	{
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		return upstream ->
 		{
-			upstream = upstream.cache();
-			upstream.subscribe();
-			return upstream.observeOn(observerScheduler);
+			upstream = upstream.cache().observeOn(observerScheduler);
+			upstream.subscribe(() -> {}, e -> logException(e, stackTrace));
+			return upstream;
+		};
+	}
+
+	private <T> SingleTransformer<T, T> resultTransformerUpdateSingle()
+	{
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		return upstream ->
+		{
+			upstream = upstream.cache().observeOn(observerScheduler);
+			upstream.subscribe(result -> {}, e -> logException(e, stackTrace));
+			return upstream;
 		};
 	}
 
 	private <T> SingleTransformer<T, T> resultTransformerQuerySingle()
 	{
-		return upstream -> upstream.observeOn(observerScheduler);
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		return upstream -> upstream
+				.doOnError(e -> logException(e, stackTrace))
+				.observeOn(observerScheduler);
 	}
 
 	private <T> FlowableTransformer<T, T> resultTransformerQueryFlowable()
 	{
-		return upstream -> upstream.observeOn(observerScheduler);
+		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		return upstream -> upstream
+				.doOnError(e -> logException(e, stackTrace))
+				.observeOn(observerScheduler);
 	}
 
 	public Single<User> setFacebookUserData(String facebookId, String name, String imgURL, List<String> friendFacebookIDs)
@@ -71,7 +99,8 @@ public class TarockDatabase
 				.parameters(name, imgURL, System.currentTimeMillis())
 				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
 				.doOnSuccess(userID -> rxdatabase.update("INSERT INTO facebook_user(facebook_id, user_id) VALUES(?, ?)")
-						.parameters(facebookId, userID).complete().subscribe());
+						.parameters(facebookId, userID).complete()
+						.compose(resultTransformerUpdateCompletable()));
 
 		Single<Integer> userID = rxdatabase.update("UPDATE user SET name = ?, img_url = ? WHERE id = (SELECT user_id FROM facebook_user WHERE facebook_id = ?)")
 				.parameters(name, imgURL, facebookId).counts().singleOrError()
@@ -92,7 +121,7 @@ public class TarockDatabase
 									"INSERT INTO friendship(id0, id1) SELECT ?, user_id FROM friend UNION SELECT user_id, ? FROM friend;")
 									.batchSize(friendFacebookIDs.size())
 									.parameterStream(parameters).complete()
-						).subscribe();
+						).compose(resultTransformerUpdateCompletable());
 			});
 		}
 
@@ -124,10 +153,11 @@ public class TarockDatabase
 				.compose(resultTransformerQuerySingle());
 	}
 
-	void setUserImgURL(int userID, String imgURL)
+	Completable setUserImgURL(int userID, String imgURL)
 	{
-		rxdatabase.update("UPDATE user SET img_url = ? WHERE id = ?;")
-				.parameters(imgURL, userID).complete().subscribe();
+		return rxdatabase.update("UPDATE user SET img_url = ? WHERE id = ?;")
+				.parameters(imgURL, userID).complete()
+				.compose(resultTransformerUpdateCompletable());
 	}
 
 	Single<Boolean> areUserFriends(int userID0, int userID1)
@@ -152,10 +182,11 @@ public class TarockDatabase
 				.compose(resultTransformerUpdateSingle());
 	}
 
-	public void setDoubleRoundData(int gameSessionID, int data)
+	public Completable setDoubleRoundData(int gameSessionID, int data)
 	{
-		rxdatabase.update("UPDATE game_session SET double_round_data = ? where id = ?;")
-				.parameters(data, gameSessionID).complete().subscribe();
+		return rxdatabase.update("UPDATE game_session SET double_round_data = ? where id = ?;")
+				.parameters(data, gameSessionID).complete()
+				.compose(resultTransformerUpdateCompletable());
 	}
 
 	public Single<Tuple4<GameType, DoubleRoundType, Integer, Integer>> getGameSession(int gameSessionID)
@@ -173,16 +204,18 @@ public class TarockDatabase
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public void stopGameSession(int gameSessionID)
+	public Completable stopGameSession(int gameSessionID)
 	{
-		rxdatabase.update("UPDATE game_session SET current_game_id = NULL where id = ?;")
-				.parameter(gameSessionID).complete().subscribe();
+		return rxdatabase.update("UPDATE game_session SET current_game_id = NULL where id = ?;")
+				.parameter(gameSessionID).complete()
+				.compose(resultTransformerUpdateCompletable());
 	}
 
-	public void addPlayer(int gameSessionID, PlayerSeat seat, User user)
+	public Completable addPlayer(int gameSessionID, PlayerSeat seat, User user)
 	{
-		rxdatabase.update("INSERT INTO player(game_session_id, seat, user_id) VALUES(?, ?, ?);")
-				.parameters(gameSessionID, seat.asInt(), user.getID()).complete().subscribe();
+		return rxdatabase.update("INSERT INTO player(game_session_id, seat, user_id) VALUES(?, ?, ?);")
+				.parameters(gameSessionID, seat.asInt(), user.getID()).complete()
+				.compose(resultTransformerUpdateCompletable());
 	}
 
 	public Flowable<User> getUsersForGameSession(int gameSessionID)
@@ -192,10 +225,11 @@ public class TarockDatabase
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public void setPlayerPoints(int gameSessionID, PlayerSeat seat, int value)
+	public Completable setPlayerPoints(int gameSessionID, PlayerSeat seat, int value)
 	{
-		rxdatabase.update("UPDATE player SET points = ? WHERE game_session_id = ? AND seat = ?;")
-				.parameters(value, gameSessionID, seat.asInt()).complete().subscribe();
+		return rxdatabase.update("UPDATE player SET points = ? WHERE game_session_id = ? AND seat = ?;")
+				.parameters(value, gameSessionID, seat.asInt()).complete()
+				.compose(resultTransformerUpdateCompletable());
 	}
 
 	public Flowable<Integer> getPlayerPoints(int gameSessionID)
@@ -212,7 +246,7 @@ public class TarockDatabase
 				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
 				.doOnSuccess(gameID ->
 						rxdatabase.update("UPDATE game_session SET current_game_id = ? where id = ?;")
-						.parameters(gameID, gameSessionID).complete().subscribe())
+						.parameters(gameID, gameSessionID).complete().compose(resultTransformerUpdateCompletable()))
 				.compose(resultTransformerUpdateSingle());
 	}
 
@@ -223,14 +257,14 @@ public class TarockDatabase
 				.compose(resultTransformerQuerySingle());
 	}
 
-	public void setDeck(int gameID, List<Card> deck)
+	public Completable setDeck(int gameID, List<Card> deck)
 	{
 		Flowable<Object> parameters = Flowable.range(0, deck.size())
 				.flatMap(i -> Flowable.just(gameID, i, deck.get(i).getID()));
 
-		rxdatabase.update("INSERT INTO deck_card(game_id, ordinal, card) VALUES(?, ?, ?);")
-				.batchSize(deck.size()).parameterStream(parameters)
-				.complete().subscribe();
+		return rxdatabase.update("INSERT INTO deck_card(game_id, ordinal, card) VALUES(?, ?, ?);")
+				.batchSize(deck.size()).parameterStream(parameters).complete()
+				.compose(resultTransformerUpdateCompletable());
 	}
 
 	public Flowable<Card> getDeck(int gameID)
@@ -240,10 +274,11 @@ public class TarockDatabase
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public void addAction(int gameID, int player, Action action, int ordinal)
+	public Completable addAction(int gameID, int player, Action action, int ordinal)
 	{
-		rxdatabase.update("INSERT INTO action(game_id, ordinal, seat, action, time) VALUES(?, ?, ?, ?, ?);")
-				.parameters(gameID, ordinal, player, action.getId(), System.currentTimeMillis()).complete().subscribe();
+		return rxdatabase.update("INSERT INTO action(game_id, ordinal, seat, action, time) VALUES(?, ?, ?, ?, ?);")
+				.parameters(gameID, ordinal, player, action.getId(), System.currentTimeMillis()).complete()
+				.compose(resultTransformerUpdateCompletable());
 	}
 
 	public Flowable<Tuple3<PlayerSeat, Action, Integer>> getActions(int gameID)
@@ -254,21 +289,22 @@ public class TarockDatabase
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public void addFCMToken(String token, User user)
+	public Completable addFCMToken(String token, User user)
 	{
-		Flowable<Integer> insert = rxdatabase.update("INSERT INTO fcm_token(token, user_id) VALUES (?, ?);")
-				.parameters(token, user.getID()).counts();
+		Completable insert = rxdatabase.update("INSERT INTO fcm_token(token, user_id) VALUES (?, ?);")
+				.parameters(token, user.getID()).counts().ignoreElements();
 
-		rxdatabase.update("UPDATE fcm_token SET user_id = ? WHERE token = ?;")
-				.parameters(user.getID(), token).counts()
-				.flatMap(count -> count == 0 ? insert : Flowable.empty())
-				.subscribe();
+		return rxdatabase.update("UPDATE fcm_token SET user_id = ? WHERE token = ?;")
+				.parameters(user.getID(), token).counts().singleOrError()
+				.flatMapCompletable(count -> count == 0 ? insert : Completable.complete())
+				.compose(resultTransformerUpdateCompletable());
 	}
 
-	public void removeFCMToken(String token)
+	public Completable removeFCMToken(String token)
 	{
-		rxdatabase.update("DELETE FROM fcm_token WHERE token = ?;")
-				.parameter(token).complete().subscribe();
+		return rxdatabase.update("DELETE FROM fcm_token WHERE token = ?;")
+				.parameter(token).complete()
+				.compose(resultTransformerUpdateCompletable());
 	}
 
 	Flowable<String> getFCMTokensForUser(int userID)

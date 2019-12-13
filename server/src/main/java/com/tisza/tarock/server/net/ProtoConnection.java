@@ -56,9 +56,10 @@ public class ProtoConnection implements Closeable
 					}
 				}
 			}
+			catch (SocketTimeoutException ignored) {}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				log.warn("Exception in reader thread", e);
 			}
 			finally
 			{
@@ -70,7 +71,7 @@ public class ProtoConnection implements Closeable
 					}
 					catch (IOException e)
 					{
-						e.printStackTrace();
+						log.warn("Exception while closing connection", e);
 					}
 				}
 			}
@@ -108,7 +109,7 @@ public class ProtoConnection implements Closeable
 			}
 			catch (IOException e)
 			{
-				e.printStackTrace();
+				log.warn("Exception in writer thread", e);
 			}
 			finally
 			{
@@ -120,7 +121,7 @@ public class ProtoConnection implements Closeable
 					}
 					catch (IOException e)
 					{
-						e.printStackTrace();
+						log.warn("Exception while closing connection", e);
 					}
 				}
 			}

@@ -22,8 +22,6 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 {
 	private static final int DISCONNECT_DELAY_SEC = 40;
 
-	private CallbackManager facebookCallbackManager;
-
 	private ConnectionViewModel connectionViewModel;
 	private ProgressDialog progressDialog;
 
@@ -36,8 +34,6 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.main);
-
-		facebookCallbackManager = CallbackManager.Factory.create();
 
 		connectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
 		connectionViewModel.getConnectionState().observe(this, this::connectionStateChanged);
@@ -114,13 +110,6 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.setNeutralButton(R.string.ok, (dialog, which) -> {})
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.show();
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		super.onActivityResult(requestCode, resultCode, data);
-		facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
 	}
 
 	private void onSuccessfulLogin()

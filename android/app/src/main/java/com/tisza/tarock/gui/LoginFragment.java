@@ -5,6 +5,7 @@ import android.os.*;
 import android.view.*;
 import android.widget.*;
 import androidx.lifecycle.*;
+import com.facebook.*;
 import com.facebook.login.widget.*;
 import com.google.android.gms.common.*;
 import com.tisza.tarock.R;
@@ -14,6 +15,7 @@ public class LoginFragment extends MainActivityFragment
 	public static final String TAG = "login";
 	public static final int REQUEST_CODE_GOOGLE_LOGIN = 0;
 
+	private CallbackManager facebookCallbackManager;
 	private LoginButton facebookButton;
 	private SignInButton googleButton;
 	private Button playButton, logoutButton;
@@ -24,7 +26,7 @@ public class LoginFragment extends MainActivityFragment
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
+		facebookCallbackManager = CallbackManager.Factory.create();
 		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
 		loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
 	}
@@ -39,6 +41,7 @@ public class LoginFragment extends MainActivityFragment
 		playButton = view.findViewById(R.id.play_button);
 		logoutButton = view.findViewById(R.id.logout_button);
 
+		facebookButton.setFragment(this);
 		facebookButton.setPermissions("public_profile");
 		googleButton.setOnClickListener(v -> startActivityForResult(loginViewModel.getGoogleLoginIntent(), REQUEST_CODE_GOOGLE_LOGIN));
 		playButton.setOnClickListener(v -> connectionViewModel.login());
@@ -63,6 +66,7 @@ public class LoginFragment extends MainActivityFragment
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
+		facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
 
 		if (requestCode == REQUEST_CODE_GOOGLE_LOGIN)
 			loginViewModel.googleLoginResult(resultCode, data);

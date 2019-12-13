@@ -185,19 +185,6 @@ public class ProtoConnection implements Closeable
 			return;
 
 		thread.interrupt();
-		try
-		{
-			thread.join(1000);
-		}
-		catch (InterruptedException e)
-		{
-			e.printStackTrace();
-		}
-
-		if (thread.isAlive())
-		{
-			log.warn("Could not stop thread: " + thread);
-		}
 	}
 
 	public synchronized boolean isAlive()

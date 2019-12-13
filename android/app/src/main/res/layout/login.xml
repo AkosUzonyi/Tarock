@@ -47,21 +47,31 @@
         app:layout_constraintLeft_toLeftOf="@id/image_left"
         app:layout_constraintRight_toRightOf="@id/image_right"
     />
-    <com.facebook.login.widget.LoginButton
+    <Button
         android:id="@+id/fb_login_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/button_margin"
+        android:text="@string/login_with_facebook"
+        android:textColor="@color/com_facebook_button_text_color"
+        android:background="@drawable/login_facebook_background"
         app:layout_constraintTop_toBottomOf="@+id/image_view"
         app:layout_constraintLeft_toLeftOf="@+id/button_left"
         app:layout_constraintRight_toLeftOf="@+id/button_right"
+        style="@style/login_button"
     />
-    <com.google.android.gms.common.SignInButton
+    <Button
         android:id="@+id/google_login_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/button_margin"
+        android:text="@string/login_with_google"
+        android:textColor="@color/common_google_signin_btn_text_light"
+        android:background="@drawable/login_google_background"
         app:layout_constraintTop_toBottomOf="@+id/fb_login_button"
         app:layout_constraintLeft_toLeftOf="@+id/button_left"
         app:layout_constraintRight_toLeftOf="@+id/button_right"
+        style="@style/login_button"
     />
     <Button
         android:text="@string/play"
@@ -103,14 +113,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.3"
+        app:layout_constraintGuide_percent="0.2"
     />
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/button_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.7"
+        app:layout_constraintGuide_percent="0.8"
     />
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/image_left"

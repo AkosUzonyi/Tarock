@@ -3,6 +3,9 @@
     <string name="fb_login_protocol_scheme" translatable="false">fb1735167250066232</string>
     <string name="google_server_client_id" translatable="false">622849615637-7dth7ktpr1mgk36ol7h7me819vbc8flg.apps.googleusercontent.com</string>
 
+    <string name="login_with_facebook">FACEBOOK</string>
+    <string name="login_with_google">GOOGLE</string>
+
     <string name="update_available">Új verzió elérhető!</string>
     <string name="update_please">Frissítsd az alkalmazást a legújabb verzióra, hogy tudjál játszani</string>
     <string name="update_accept">Frissítés</string>

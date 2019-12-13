@@ -4,6 +4,7 @@
     <dimen name="button_text_size">32sp</dimen>
     <dimen name="player_message_size">30sp</dimen>
     <dimen name="button_min_height">60dp</dimen>
+    <dimen name="login_button_height">80dp</dimen>
 
     <dimen name="normal_text_size">20sp</dimen>
     <dimen name="large_text_size">30sp</dimen>

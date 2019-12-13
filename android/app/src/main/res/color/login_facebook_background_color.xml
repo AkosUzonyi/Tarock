@@ -1,0 +1,4 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/com_facebook_button_background_color_pressed" android:state_pressed="true"/>
+    <item android:color="@color/com_facebook_button_background_color"/>
+</selector>

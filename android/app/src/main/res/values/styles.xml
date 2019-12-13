@@ -42,6 +42,10 @@
         <item name="android:padding">@dimen/button_padding</item>
     </style>
 
+    <style name="login_button" parent="button">
+        <item name="android:minHeight">@dimen/login_button_height</item>
+    </style>
+
     <style name="spinner" parent="android:Widget.Spinner">
         <item name="android:textSize">@dimen/button_text_size</item>
         <item name="android:textAlignment">center</item>

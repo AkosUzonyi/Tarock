@@ -6,9 +6,10 @@ import android.view.*;
 import android.widget.*;
 import androidx.lifecycle.*;
 import com.facebook.*;
-import com.facebook.login.widget.*;
-import com.google.android.gms.common.*;
+import com.facebook.login.*;
 import com.tisza.tarock.R;
+
+import java.util.*;
 
 public class LoginFragment extends MainActivityFragment
 {
@@ -16,9 +17,7 @@ public class LoginFragment extends MainActivityFragment
 	public static final int REQUEST_CODE_GOOGLE_LOGIN = 0;
 
 	private CallbackManager facebookCallbackManager;
-	private LoginButton facebookButton;
-	private SignInButton googleButton;
-	private Button playButton, logoutButton;
+	private Button facebookButton, googleButton, playButton, logoutButton;
 	private ConnectionViewModel connectionViewModel;
 	private LoginViewModel loginViewModel;
 
@@ -41,8 +40,7 @@ public class LoginFragment extends MainActivityFragment
 		playButton = view.findViewById(R.id.play_button);
 		logoutButton = view.findViewById(R.id.logout_button);
 
-		facebookButton.setFragment(this);
-		facebookButton.setPermissions("public_profile");
+		facebookButton.setOnClickListener(v -> LoginManager.getInstance().logIn(this, Collections.singleton("public_profile")));
 		googleButton.setOnClickListener(v -> startActivityForResult(loginViewModel.getGoogleLoginIntent(), REQUEST_CODE_GOOGLE_LOGIN));
 		playButton.setOnClickListener(v -> connectionViewModel.login());
 		logoutButton.setOnClickListener(v -> loginViewModel.logOut());

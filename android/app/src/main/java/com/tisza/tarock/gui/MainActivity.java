@@ -4,13 +4,17 @@ import android.app.*;
 import android.content.*;
 import android.net.*;
 import android.os.*;
+import android.util.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.*;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.*;
 import com.facebook.*;
-import com.squareup.picasso.*;
+import com.facebook.login.*;
+import com.google.android.gms.auth.api.signin.*;
+import com.google.android.gms.common.api.*;
+import com.google.android.gms.tasks.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.proto.*;
 
@@ -18,7 +22,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 {
 	private static final int DISCONNECT_DELAY_SEC = 40;
 
-	private CallbackManager callbackManager;
+	private CallbackManager facebookCallbackManager;
 
 	private ConnectionViewModel connectionViewModel;
 	private ProgressDialog progressDialog;
@@ -30,8 +34,11 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		callbackManager = CallbackManager.Factory.create();
+
 		setContentView(R.layout.main);
+
+		facebookCallbackManager = CallbackManager.Factory.create();
+
 		connectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
 		connectionViewModel.getConnectionState().observe(this, this::connectionStateChanged);
 		connectionViewModel.getErrorState().observe(this, this::error);
@@ -113,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);
-		callbackManager.onActivityResult(requestCode, resultCode, data);
+		facebookCallbackManager.onActivityResult(requestCode, resultCode, data);
 	}
 
 	private void onSuccessfulLogin()

@@ -92,19 +92,7 @@ public class TarockDatabase
 
 	public Single<User> setFacebookUserData(String facebookId, String name, String imgURL, List<String> friendFacebookIDs)
 	{
-		Single<Integer> selectID = rxdatabase.select("SELECT user_id FROM facebook_user WHERE facebook_id = ?")
-				.parameter(facebookId).getAs(Integer.class).singleOrError();
-
-		Single<Integer> insert = rxdatabase.update("INSERT INTO user(name, img_url, registration_time) VALUES (?, ?, ?);")
-				.parameters(name, imgURL, System.currentTimeMillis())
-				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
-				.doOnSuccess(userID -> rxdatabase.update("INSERT INTO facebook_user(facebook_id, user_id) VALUES(?, ?)")
-						.parameters(facebookId, userID).complete()
-						.compose(resultTransformerUpdateCompletable()));
-
-		Single<Integer> userID = rxdatabase.update("UPDATE user SET name = ?, img_url = ? WHERE id = (SELECT user_id FROM facebook_user WHERE facebook_id = ?)")
-				.parameters(name, imgURL, facebookId).counts().singleOrError()
-				.flatMap(count -> count == 0 ? insert : selectID);
+		Single<Integer> userID = setIdentityProviderData("facebook", facebookId, name, imgURL);
 
 		if (friendFacebookIDs != null)
 		{
@@ -117,7 +105,7 @@ public class TarockDatabase
 						.parameters(uid, uid)
 						.complete()
 						.andThen(
-							rxdatabase.update("WITH friend AS (SELECT user_id FROM facebook_user WHERE facebook_id = ?) " +
+							rxdatabase.update("WITH friend AS (SELECT user_id FROM idp_user WHERE idp_service_id = \"facebook\" AND idp_user_id = ?) " +
 									"INSERT INTO friendship(id0, id1) SELECT ?, user_id FROM friend UNION SELECT user_id, ? FROM friend;")
 									.batchSize(friendFacebookIDs.size())
 									.parameterStream(parameters).complete()
@@ -130,8 +118,34 @@ public class TarockDatabase
 
 	public Flowable<Tuple2<Integer, User>> getFacebookUsers()
 	{
-		return rxdatabase.select("SELECT facebook_id, user_id FROM facebook_user INNER JOIN user ON facebook_user.user_id = user.id")
+		return rxdatabase.select("SELECT idp_user_id, user_id FROM idp_user WHERE idp_service_id = \"facebook\"")
 				.getAs(Integer.class, Integer.class).map(tuple -> Tuple2.create(tuple._1(), getUser(tuple._2()))).compose(resultTransformerQueryFlowable());
+	}
+
+	public Single<User> setGoogleUserData(String id, String name, String imgURL)
+	{
+		Single<Integer> userID = setIdentityProviderData("google", id, name, imgURL);
+
+		return userID.map(this::getUser).compose(resultTransformerUpdateSingle());
+	}
+
+	private Single<Integer> setIdentityProviderData(String idpServiceID, String idpUserID, String name, String imgURL)
+	{
+		Single<Integer> selectID = rxdatabase.select("SELECT user_id FROM idp_user WHERE idp_service_id = ? AND idp_user_id = ?")
+				.parameters(idpServiceID, idpUserID).getAs(Integer.class).singleOrError();
+
+		Single<Integer> insert = rxdatabase.update("INSERT INTO user(name, img_url, registration_time) VALUES (?, ?, ?);")
+				.parameters(name, imgURL, System.currentTimeMillis())
+				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
+				.doOnSuccess(userID -> rxdatabase.update("INSERT INTO idp_user(idp_service_id, idp_user_id, user_id) VALUES(?, ?, ?)")
+						.parameters(idpServiceID, idpUserID, userID).complete()
+						.compose(resultTransformerUpdateCompletable()));
+
+		Single<Integer> userID = rxdatabase.update("UPDATE user SET name = ?, img_url = ? WHERE id = (SELECT user_id FROM idp_user WHERE idp_service_id = ? AND idp_user_id = ?)")
+				.parameters(name, imgURL, idpServiceID, idpUserID).counts().singleOrError()
+				.flatMap(count -> count == 0 ? insert : selectID);
+
+		return userID;
 	}
 
 	public User getUser(int userID)

@@ -5,10 +5,12 @@ CREATE TABLE user (
     registration_time BIGINT NOT NULL
 );
 
-CREATE TABLE facebook_user (
+CREATE TABLE idp_user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    facebook_id VARCHAR(255) UNIQUE NOT NULL,
+    idp_service_id VARCHAR(255) NOT NULL,
+    idp_user_id VARCHAR(255) NOT NULL,
     user_id INTEGER NOT NULL,
+    UNIQUE (idp_service_id, idp_user_id)
     FOREIGN KEY(user_id) REFERENCES user(id)
 );
 

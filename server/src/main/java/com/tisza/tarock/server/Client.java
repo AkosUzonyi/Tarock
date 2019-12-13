@@ -53,6 +53,11 @@ public class Client implements MessageHandler
 					String fbAccessToken = message.getLogin().getFacebookToken();
 					disposables.add(server.getFacebookUserManager().newAccessToken(fbAccessToken).subscribe(this::userLogin));
 				}
+				else if (message.getLogin().hasGoogleToken())
+				{
+					String googleToken = message.getLogin().getGoogleToken();
+					disposables.add(server.getGoogleUserManager().newToken(googleToken).subscribe(this::userLogin));
+				}
 				else
 				{
 					userLogin(null);

@@ -27,6 +27,7 @@ public class Server implements Runnable
 	private final TarockDatabase database;
 	private final GameSessionManager gameSessionManager;
 	private final FacebookUserManager facebookUserManager;
+	private final GoogleUserManager googleUserManager;
 	private final FirebaseNotificationSender firebaseNotificationSender;
 
 	private CompositeDisposable disposables = new CompositeDisposable();
@@ -38,6 +39,7 @@ public class Server implements Runnable
 		database = new TarockDatabase();
 		gameSessionManager = new GameSessionManager(database);
 		facebookUserManager = new FacebookUserManager(database);
+		googleUserManager = new GoogleUserManager(database);
 		firebaseNotificationSender = new FirebaseNotificationSender(new File(Main.STATIC_DIR, "fcm-service-account.json"));
 	}
 
@@ -54,6 +56,11 @@ public class Server implements Runnable
 	public FacebookUserManager getFacebookUserManager()
 	{
 		return facebookUserManager;
+	}
+
+	public GoogleUserManager getGoogleUserManager()
+	{
+		return googleUserManager;
 	}
 
 	public FirebaseNotificationSender getFirebaseNotificationSender()

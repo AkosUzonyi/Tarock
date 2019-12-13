@@ -6,6 +6,7 @@ import android.net.*;
 import android.os.*;
 import androidx.lifecycle.*;
 import com.facebook.*;
+import com.google.android.gms.auth.api.signin.*;
 import com.google.firebase.iid.*;
 import com.tisza.tarock.BuildConfig;
 import com.tisza.tarock.game.*;
@@ -108,7 +109,14 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 				break;
 			case CONNECTED:
 				connectionState.setValue(ConnectionState.LOGGING_IN);
-				connection.sendMessage(MainProto.Message.newBuilder().setLogin(MainProto.Login.newBuilder().setFacebookToken(AccessToken.getCurrentAccessToken().getToken()).build()).build());
+				AccessToken facebookToken = AccessToken.getCurrentAccessToken();
+				GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(getApplication());
+				MainProto.Login.Builder loginMessageBuilder = MainProto.Login.newBuilder();
+				if (facebookToken != null)
+					loginMessageBuilder.setFacebookToken(facebookToken.getToken());
+				if (googleAccount != null)
+					loginMessageBuilder.setGoogleToken(googleAccount.getIdToken());
+				connection.sendMessage(MainProto.Message.newBuilder().setLogin(loginMessageBuilder).build());
 				break;
 		}
 	}

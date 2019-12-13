@@ -1,6 +1,7 @@
 <resources>
     <string name="facebook_app_id" translatable="false">1735167250066232</string>
     <string name="fb_login_protocol_scheme" translatable="false">fb1735167250066232</string>
+    <string name="google_server_client_id" translatable="false">622849615637-7dth7ktpr1mgk36ol7h7me819vbc8flg.apps.googleusercontent.com</string>
 
     <string name="update_available">Új verzió elérhető!</string>
     <string name="update_please">Frissítsd az alkalmazást a legújabb verzióra, hogy tudjál játszani</string>
@@ -21,6 +22,7 @@
 
     <string name="app_name" translatable="false">Tarokk</string>
     <string name="play" translatable="false">Play</string>
+    <string name="logout">Kijelentkezés</string>
     <string name="new_game">Új játék</string>
     <string name="connecting">Csatlakozás a szerverhez&#8230;</string>
     <string name="logging_in">Bejelentkezés&#8230;</string>

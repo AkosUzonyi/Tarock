@@ -55,12 +55,30 @@
         app:layout_constraintLeft_toLeftOf="@+id/button_left"
         app:layout_constraintRight_toLeftOf="@+id/button_right"
     />
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google_login_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/fb_login_button"
+        app:layout_constraintLeft_toLeftOf="@+id/button_left"
+        app:layout_constraintRight_toLeftOf="@+id/button_right"
+    />
     <Button
         android:text="@string/play"
         android:id="@+id/play_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/fb_login_button"
+        app:layout_constraintTop_toBottomOf="@+id/google_login_button"
+        app:layout_constraintLeft_toLeftOf="@+id/button_left"
+        app:layout_constraintRight_toLeftOf="@+id/button_right"
+        android:layout_marginTop="@dimen/button_margin"
+    />
+    <Button
+        android:text="@string/logout"
+        android:id="@+id/logout_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/play_button"
         app:layout_constraintLeft_toLeftOf="@+id/button_left"
         app:layout_constraintRight_toLeftOf="@+id/button_right"
         android:layout_marginTop="@dimen/button_margin"

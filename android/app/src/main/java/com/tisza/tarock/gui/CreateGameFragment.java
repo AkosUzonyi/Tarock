@@ -3,15 +3,17 @@ package com.tisza.tarock.gui;
 import android.content.*;
 import android.os.*;
 import android.view.*;
+import android.view.inputmethod.*;
 import android.widget.*;
 import androidx.lifecycle.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.proto.*;
 
+import java.text.*;
 import java.util.*;
 
-public class CreateGameFragment extends MainActivityFragment implements AvailableUsersAdapter.UsersSelectedListener
+public class CreateGameFragment extends MainActivityFragment
 {
 	public static final String TAG = "create_game";
 
@@ -23,11 +25,13 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 	private static final int SELECT_USER_COUNT = 3;
 
 	private Spinner gameTypeSpinner, doubleRoundTypeSpinner;
-	private AvailableUsersAdapter availableUsersAdapter;
+	private UsersAdapter searchResultUsersAdapter;
+	private UsersAdapter selectedUsersAdapter;
 	private TextView botWarning;
 	private boolean botWarningIgnored;
 	private Button createButton;
-	private Collection<User> selectedUsers;
+	private List<User> selectedUsers = new ArrayList<>();
+	private SearchView userSearchView;
 
 	private ConnectionViewModel connectionViewModel;
 
@@ -35,7 +39,6 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
 		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
 	}
 
@@ -48,17 +51,37 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 		doubleRoundTypeSpinner = view.findViewById(R.id.double_round_type_spinner);
 		botWarning = view.findViewById(R.id.bot_warning);
 
+		userSearchView = view.findViewById(R.id.user_search);
+		userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+		{
+			@Override
+			public boolean onQueryTextSubmit(String s)
+			{
+				return false;
+			}
+
+			@Override
+			public boolean onQueryTextChange(String s)
+			{
+				updateSearchResultUsers();
+				return true;
+			}
+		});
+
 		createButton = view.findViewById(R.id.create_game_button);
 		createButton.setOnClickListener(v -> createButtonClicked());
 
-		usersSelected(Collections.EMPTY_LIST);
-
-		availableUsersAdapter = new AvailableUsersAdapter(getActivity());
-		availableUsersAdapter.setUsersSelectedListener(this);
-		connectionViewModel.getUsers().observe(this, availableUsersAdapter::setUsers);
+		searchResultUsersAdapter = new UsersAdapter(getActivity(), R.drawable.ic_add_circle_black_40dp);
+		searchResultUsersAdapter.setUsersSelectedListener(this::selectUser);
+		connectionViewModel.getUsers().observe(this, users -> updateSearchResultUsers());
 		ListView availableUsersView = view.findViewById(R.id.available_users);
-		availableUsersView.addHeaderView(inflater.inflate(R.layout.users_header, availableUsersView, false));
-		availableUsersView.setAdapter(availableUsersAdapter);
+		availableUsersView.setAdapter(searchResultUsersAdapter);
+
+		selectedUsersAdapter = new UsersAdapter(getActivity(), R.drawable.ic_remove_circle_black_40dp, SELECT_USER_COUNT);
+		selectedUsersAdapter.setUsersSelectedListener(this::deselectUser);
+		ListView selectedUsersView = view.findViewById(R.id.selected_users);
+		selectedUsersView.addHeaderView(inflater.inflate(R.layout.users_header, selectedUsersView, false));
+		selectedUsersView.setAdapter(selectedUsersAdapter);
 
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
 		gameTypeSpinner.setSelection(sharedPreferences.getInt(GAME_TYPE_KEY, 0));
@@ -66,24 +89,15 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 		botWarningIgnored = sharedPreferences.getBoolean(BOT_WARNING_IGNORED_KEY, false);
 		botWarning.setVisibility(botWarningIgnored ? View.GONE : View.VISIBLE);
 
-		return view;
-	}
+		updateSelectedUsers();
 
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
-		availableUsersAdapter.setUsersSelectedListener(null);
-		availableUsersAdapter.clearSelectedUsers();
+		return view;
 	}
 
 	private void createButtonClicked()
 	{
-		if (selectedUsers.size() > SELECT_USER_COUNT)
+		if (selectedUsers.size() != SELECT_USER_COUNT)
 			return;
-
-		if (selectedUsers.size() == SELECT_USER_COUNT)
-			botWarningIgnored = true;
 
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
 		sharedPreferences.edit()
@@ -107,15 +121,35 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 		getActivity().getSupportFragmentManager().popBackStack();
 	}
 
-	@Override
-	public void usersSelected(Collection<User> users)
+	private static String normalizeString(CharSequence str)
 	{
-		selectedUsers = users;
+		return Normalizer.normalize(str, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "").toLowerCase();
+	}
 
-		botWarning.setVisibility(View.GONE);
-		for (User user : users)
-			if (user.getId() < 0)
-				botWarning.setVisibility(View.VISIBLE);
+	private void updateSearchResultUsers()
+	{
+		List<User> searchResultUsers = new ArrayList<>();
+
+		List<User> availableUsers = connectionViewModel.getUsers().getValue();
+		if (availableUsers == null)
+			return;
+
+		String queryNormalized = normalizeString(userSearchView.getQuery());
+		for (User user : availableUsers)
+		{
+			boolean matchQuery = normalizeString(user.getName()).contains(queryNormalized);
+			boolean alreadySelected = selectedUsers.contains(user);
+			if (matchQuery && !alreadySelected)
+				searchResultUsers.add(user);
+		}
+
+		searchResultUsersAdapter.setUsers(searchResultUsers);
+	}
+
+	private void updateSelectedUsers()
+	{
+		selectedUsersAdapter.setUsers(selectedUsers);
+		updateSearchResultUsers();
 
 		if (selectedUsers.size() == SELECT_USER_COUNT)
 		{
@@ -127,5 +161,22 @@ public class CreateGameFragment extends MainActivityFragment implements Availabl
 			createButton.setText(R.string.create_game_select_3);
 			createButton.setEnabled(false);
 		}
+	}
+
+	private void deselectUser(User user)
+	{
+		if (selectedUsers.remove(user))
+			updateSelectedUsers();
+	}
+
+	private void selectUser(User user)
+	{
+		if (selectedUsers.size() >= SELECT_USER_COUNT)
+			return;
+
+		selectedUsers.add(user);
+		updateSelectedUsers();
+		InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
 	}
 }

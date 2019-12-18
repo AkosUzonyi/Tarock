@@ -54,11 +54,26 @@
         />
     </LinearLayout>
 
+    <SearchView
+        android:id="@+id/user_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:iconifiedByDefault="false"
+        android:queryHint="@string/players_search_hint"
+    />
+
     <ListView
         android:id="@+id/available_users"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:headerDividersEnabled="true"
+    />
+
+    <ListView
+        android:id="@+id/selected_users"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:headerDividersEnabled="true"
     />
 

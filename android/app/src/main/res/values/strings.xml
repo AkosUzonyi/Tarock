@@ -33,6 +33,7 @@
     <string name="join_game_kibic">Kibic</string>
     <string name="delete_game">Törlés</string>
 
+    <string name="players_search_hint">Játékos keresése…</string>
     <string name="players">Játékosok</string>
     <string name="create_game">Játék létrehozása</string>
     <string name="create_game_select_3">Válassz 3 játékost!</string>

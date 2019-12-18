@@ -22,7 +22,6 @@ public chat
 lobby
 multiple login
 android handle history mode
-user search
 store emails
 
 refactorizations:

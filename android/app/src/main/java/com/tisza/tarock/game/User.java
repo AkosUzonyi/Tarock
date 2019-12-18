@@ -45,6 +45,11 @@ public class User implements Comparable<User>
 		return online;
 	}
 
+	public boolean isBot()
+	{
+		return id < 0;
+	}
+
 	@Override
 	public boolean equals(Object other)
 	{

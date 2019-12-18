@@ -82,7 +82,7 @@ public class Server implements Runnable
 
 	public boolean isUserLoggedIn(User user)
 	{
-		return loggedInUsers.contains(user);
+		return user.isBot() || loggedInUsers.contains(user);
 	}
 
 	public void removeClient(Client client)

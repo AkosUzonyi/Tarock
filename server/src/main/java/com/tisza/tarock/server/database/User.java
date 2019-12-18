@@ -46,9 +46,14 @@ public class User
 		return database.getFCMTokensForUser(id);
 	}
 
+	public boolean isBot()
+	{
+		return id < 0;
+	}
+
 	public Single<Player> createPlayer()
 	{
-		return getName().map(name -> id < 0 ? new RandomPlayer(this, name, 500, 2000) : new ProtoPlayer(this, name));
+		return getName().map(name -> isBot() ? new RandomPlayer(this, name, 500, 2000) : new ProtoPlayer(this, name));
 	}
 
 	@Override

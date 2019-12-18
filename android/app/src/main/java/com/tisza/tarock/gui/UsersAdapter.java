@@ -9,45 +9,30 @@ import com.tisza.tarock.game.*;
 
 import java.util.*;
 
-public class AvailableUsersAdapter extends BaseAdapter
+public class UsersAdapter extends BaseAdapter
 {
+	private int actionButtonImageRes;
 	private final Picasso picasso;
 	private final LayoutInflater inflater;
 	private List<User> users = new ArrayList<>();
-	private Set<User> selectedUsers = new HashSet<>();
-	private UsersSelectedListener usersSelectedListener;
+	private UserClickedListener userClickedListener;
 
-	public AvailableUsersAdapter(Context context)
+	public UsersAdapter(Context context, int actionButtonImageRes)
 	{
+		this.actionButtonImageRes = actionButtonImageRes;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		picasso = Picasso.with(context);
 	}
 
-	public void setUsersSelectedListener(UsersSelectedListener usersSelectedListener)
+	public void setUsersSelectedListener(UserClickedListener userClickedListener)
 	{
-		this.usersSelectedListener = usersSelectedListener;
+		this.userClickedListener = userClickedListener;
 	}
 
 	public void setUsers(Collection<User> newUsers)
 	{
 		users = new ArrayList<>(newUsers);
 		Collections.sort(users);
-		selectedUsers.retainAll(users);
-		if (usersSelectedListener != null)
-			usersSelectedListener.usersSelected(selectedUsers);
-		notifyDataSetChanged();
-	}
-
-	public Collection<User> getSelectedUsers()
-	{
-		return selectedUsers;
-	}
-
-	public void clearSelectedUsers()
-	{
-		selectedUsers.clear();
-		if (usersSelectedListener != null)
-			usersSelectedListener.usersSelected(selectedUsers);
 		notifyDataSetChanged();
 	}
 
@@ -84,7 +69,7 @@ public class AvailableUsersAdapter extends BaseAdapter
 			holder.nameView = view.findViewById(R.id.user_name);
 			holder.isFriendView = view.findViewById(R.id.is_user_friend);
 			holder.isOnlineView = view.findViewById(R.id.is_user_online);
-			holder.checkBox = view.findViewById(R.id.user_checkbox);
+			holder.selectUser = view.findViewById(R.id.select_user);
 
 			view.setTag(holder);
 		}
@@ -101,21 +86,11 @@ public class AvailableUsersAdapter extends BaseAdapter
 		holder.isFriendView.setVisibility(user.isFriend() ? View.VISIBLE : View.GONE);
 		holder.isOnlineView.setImageResource(user.isOnline() ? R.drawable.online : R.drawable.offline);
 
-		holder.checkBox.setOnCheckedChangeListener(null);
-		holder.checkBox.setChecked(selectedUsers.contains(user));
-		holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
+		holder.selectUser.setImageResource(actionButtonImageRes);
+		holder.selectUser.setOnClickListener(v ->
 		{
-			if (isChecked)
-			{
-				selectedUsers.add(user);
-			}
-			else
-			{
-				selectedUsers.remove(user);
-			}
-
-			if (usersSelectedListener != null)
-				usersSelectedListener.usersSelected(selectedUsers);
+			if (userClickedListener != null)
+				userClickedListener.userClicked(user);
 		});
 
 		return view;
@@ -127,11 +102,11 @@ public class AvailableUsersAdapter extends BaseAdapter
 		public TextView nameView;
 		public View isFriendView;
 		public ImageView isOnlineView;
-		public CheckBox checkBox;
+		public ImageView selectUser;
 	}
 
-	public static interface UsersSelectedListener
+	public interface UserClickedListener
 	{
-		public void usersSelected(Collection<User> users);
+		void userClicked(User users);
 	}
 }

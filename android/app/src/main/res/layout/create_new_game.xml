@@ -62,7 +62,7 @@
         android:queryHint="@string/players_search_hint"
     />
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/available_users"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -70,7 +70,17 @@
         android:headerDividersEnabled="true"
     />
 
-    <ListView
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/button_margin"
+        android:text="@string/players"
+        android:gravity="center"
+        android:textSize="@dimen/user_name_size"
+        android:textStyle="italic|bold"
+    />
+
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/selected_users"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -91,6 +101,8 @@
         android:id="@+id/create_game_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="@string/create_game_select_3"
+        android:enabled="false"
     />
 
 </LinearLayout>

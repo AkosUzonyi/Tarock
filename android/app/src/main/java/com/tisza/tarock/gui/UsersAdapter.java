@@ -3,13 +3,15 @@ package com.tisza.tarock.gui;
 import android.content.*;
 import android.view.*;
 import android.widget.*;
+import androidx.annotation.*;
+import androidx.recyclerview.widget.*;
 import com.squareup.picasso.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 
 import java.util.*;
 
-public class UsersAdapter extends BaseAdapter
+public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 {
 	private static final User USER_ANYBODY = new User(0, "", null, false, false);
 
@@ -38,57 +40,48 @@ public class UsersAdapter extends BaseAdapter
 		this.userClickedListener = userClickedListener;
 	}
 
-	public void setUsers(Collection<User> newUsers)
+	public void setUsers(List<User> users)
 	{
-		users = new ArrayList<>(newUsers);
-		Collections.sort(users);
+		this.users = users;
 		notifyDataSetChanged();
 	}
 
 	@Override
-	public int getCount()
+	public int getItemCount()
 	{
 		return fixedLength >= 0 ? fixedLength : users.size();
 	}
 
-	@Override
-	public Object getItem(int position)
+	private User getUserAtPosition(int position)
 	{
-		return users.get(position);
+		return position >= users.size() ? USER_ANYBODY : users.get(position);
 	}
 
 	@Override
 	public long getItemId(int position)
 	{
-		return 0;
+		return getUserAtPosition(position).getId();
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent)
+	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
 	{
-		View view;
-		ViewHolder holder;
+		View view = inflater.inflate(R.layout.user, parent, false);
 
-		if (convertView == null)
-		{
-			view = inflater.inflate(R.layout.user, parent, false);
+		ViewHolder holder = new ViewHolder(view);
+		holder.profilePictureView = view.findViewById(R.id.user_image);
+		holder.nameView = view.findViewById(R.id.user_name);
+		holder.isFriendView = view.findViewById(R.id.is_user_friend);
+		holder.isOnlineView = view.findViewById(R.id.is_user_online);
+		holder.selectUser = view.findViewById(R.id.select_user);
 
-			holder = new ViewHolder();
-			holder.profilePictureView = view.findViewById(R.id.user_image);
-			holder.nameView = view.findViewById(R.id.user_name);
-			holder.isFriendView = view.findViewById(R.id.is_user_friend);
-			holder.isOnlineView = view.findViewById(R.id.is_user_online);
-			holder.selectUser = view.findViewById(R.id.select_user);
+		return holder;
+	}
 
-			view.setTag(holder);
-		}
-		else
-		{
-			view = convertView;
-			holder = (ViewHolder)view.getTag();
-		}
-
-		User user = position >= users.size() ? USER_ANYBODY : users.get(position);
+	@Override
+	public void onBindViewHolder(ViewHolder holder, int position)
+	{
+		User user = getUserAtPosition(position);
 
 		holder.nameView.setText(user.getName());
 		if (user == USER_ANYBODY)
@@ -107,17 +100,20 @@ public class UsersAdapter extends BaseAdapter
 			if (userClickedListener != null)
 				userClickedListener.userClicked(user);
 		});
-
-		return view;
 	}
 
-	private static class ViewHolder
+	public static class ViewHolder extends RecyclerView.ViewHolder
 	{
 		public ImageView profilePictureView;
 		public TextView nameView;
 		public View isFriendView;
 		public ImageView isOnlineView;
 		public ImageView selectUser;
+
+		public ViewHolder(View view)
+		{
+			super(view);
+		}
 	}
 
 	public interface UserClickedListener

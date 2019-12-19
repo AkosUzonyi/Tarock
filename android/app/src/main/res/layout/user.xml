@@ -43,6 +43,5 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:src="@drawable/ic_remove_circle_black_40dp"
-        android:layout_marginRight="@dimen/user_margin"
     />
 </LinearLayout>

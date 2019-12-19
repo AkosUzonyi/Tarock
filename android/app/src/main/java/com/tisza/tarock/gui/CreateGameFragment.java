@@ -6,6 +6,7 @@ import android.view.*;
 import android.view.inputmethod.*;
 import android.widget.*;
 import androidx.lifecycle.*;
+import androidx.recyclerview.widget.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.proto.*;
@@ -30,6 +31,7 @@ public class CreateGameFragment extends MainActivityFragment
 	private TextView botWarning;
 	private boolean botWarningIgnored;
 	private Button createButton;
+	private List<User> searchResultUsers = new ArrayList<>();
 	private List<User> selectedUsers = new ArrayList<>();
 	private SearchView userSearchView;
 
@@ -57,7 +59,8 @@ public class CreateGameFragment extends MainActivityFragment
 			@Override
 			public boolean onQueryTextSubmit(String s)
 			{
-				return false;
+				updateSearchResultUsers();
+				return true;
 			}
 
 			@Override
@@ -71,16 +74,19 @@ public class CreateGameFragment extends MainActivityFragment
 		createButton = view.findViewById(R.id.create_game_button);
 		createButton.setOnClickListener(v -> createButtonClicked());
 
-		searchResultUsersAdapter = new UsersAdapter(getActivity(), R.drawable.ic_add_circle_black_40dp);
+		searchResultUsersAdapter = new UsersAdapter(getContext(), R.drawable.ic_add_circle_black_40dp);
 		searchResultUsersAdapter.setUsersSelectedListener(this::selectUser);
+		searchResultUsersAdapter.setUsers(searchResultUsers);
 		connectionViewModel.getUsers().observe(this, users -> updateSearchResultUsers());
-		ListView availableUsersView = view.findViewById(R.id.available_users);
+		RecyclerView availableUsersView = view.findViewById(R.id.available_users);
+		recyclerViewSetupCommon(availableUsersView);
 		availableUsersView.setAdapter(searchResultUsersAdapter);
 
-		selectedUsersAdapter = new UsersAdapter(getActivity(), R.drawable.ic_remove_circle_black_40dp, SELECT_USER_COUNT);
+		selectedUsersAdapter = new UsersAdapter(getContext(), R.drawable.ic_remove_circle_black_40dp, SELECT_USER_COUNT);
 		selectedUsersAdapter.setUsersSelectedListener(this::deselectUser);
-		ListView selectedUsersView = view.findViewById(R.id.selected_users);
-		selectedUsersView.addHeaderView(inflater.inflate(R.layout.users_header, selectedUsersView, false));
+		selectedUsersAdapter.setUsers(selectedUsers);
+		RecyclerView selectedUsersView = view.findViewById(R.id.selected_users);
+		recyclerViewSetupCommon(selectedUsersView);
 		selectedUsersView.setAdapter(selectedUsersAdapter);
 
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
@@ -89,9 +95,21 @@ public class CreateGameFragment extends MainActivityFragment
 		botWarningIgnored = sharedPreferences.getBoolean(BOT_WARNING_IGNORED_KEY, false);
 		botWarning.setVisibility(botWarningIgnored ? View.GONE : View.VISIBLE);
 
-		updateSelectedUsers();
-
 		return view;
+	}
+
+	private void recyclerViewSetupCommon(RecyclerView recyclerView)
+	{
+		int duration = 50;
+		DefaultItemAnimator itemAnimator = new DefaultItemAnimator();
+		itemAnimator.setAddDuration(duration);
+		itemAnimator.setChangeDuration(duration);
+		itemAnimator.setMoveDuration(duration);
+		itemAnimator.setRemoveDuration(duration);
+
+		recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+		recyclerView.setItemAnimator(itemAnimator);
+		recyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 	}
 
 	private void createButtonClicked()
@@ -128,7 +146,7 @@ public class CreateGameFragment extends MainActivityFragment
 
 	private void updateSearchResultUsers()
 	{
-		List<User> searchResultUsers = new ArrayList<>();
+		searchResultUsers.clear();
 
 		List<User> availableUsers = connectionViewModel.getUsers().getValue();
 		if (availableUsers == null)
@@ -143,30 +161,19 @@ public class CreateGameFragment extends MainActivityFragment
 				searchResultUsers.add(user);
 		}
 
-		searchResultUsersAdapter.setUsers(searchResultUsers);
-	}
-
-	private void updateSelectedUsers()
-	{
-		selectedUsersAdapter.setUsers(selectedUsers);
-		updateSearchResultUsers();
-
-		if (selectedUsers.size() == SELECT_USER_COUNT)
-		{
-			createButton.setText(R.string.create_game);
-			createButton.setEnabled(true);
-		}
-		else
-		{
-			createButton.setText(R.string.create_game_select_3);
-			createButton.setEnabled(false);
-		}
+		searchResultUsersAdapter.notifyDataSetChanged();
 	}
 
 	private void deselectUser(User user)
 	{
-		if (selectedUsers.remove(user))
-			updateSelectedUsers();
+		int position = selectedUsers.indexOf(user);
+		selectedUsers.remove(position);
+		selectedUsersAdapter.notifyItemRemoved(position);
+		searchResultUsersAdapter.notifyItemInserted(searchResultUsers.size());
+		searchResultUsers.add(user);
+
+		createButton.setText(R.string.create_game_select_3);
+		createButton.setEnabled(false);
 	}
 
 	private void selectUser(User user)
@@ -174,9 +181,19 @@ public class CreateGameFragment extends MainActivityFragment
 		if (selectedUsers.size() >= SELECT_USER_COUNT)
 			return;
 
+		selectedUsersAdapter.notifyItemChanged(selectedUsers.size());
 		selectedUsers.add(user);
-		updateSelectedUsers();
-		InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+		int searchResultPosition = searchResultUsers.indexOf(user);
+		searchResultUsers.remove(searchResultPosition);
+		searchResultUsersAdapter.notifyItemRemoved(searchResultPosition);
+
+		InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+
+		if (selectedUsers.size() == SELECT_USER_COUNT)
+		{
+			createButton.setText(R.string.create_game);
+			createButton.setEnabled(true);
+		}
 	}
 }

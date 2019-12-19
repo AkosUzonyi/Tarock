@@ -121,6 +121,7 @@ public class Server implements Runnable
 		{
 			database.initialize();
 			gameSessionManager.initialize();
+			facebookUserManager.refreshImageURLs();
 
 			createServerSocket();
 

@@ -24,7 +24,7 @@ public class FacebookUserManager
 	{
 		database.getFacebookUsers().subscribe(tuple ->
 		{
-			int facebookID = tuple._1();
+			String facebookID = tuple._1();
 			User user = tuple._2();
 			getRedirectURLLocation("https://graph.facebook.com/" + facebookID + "/picture?type=normal").subscribe(user::setImageURL);
 		});

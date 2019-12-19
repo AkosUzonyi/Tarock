@@ -116,10 +116,10 @@ public class TarockDatabase
 		return userID.map(this::getUser).compose(resultTransformerUpdateSingle());
 	}
 
-	public Flowable<Tuple2<Integer, User>> getFacebookUsers()
+	public Flowable<Tuple2<String, User>> getFacebookUsers()
 	{
 		return rxdatabase.select("SELECT idp_user_id, user_id FROM idp_user WHERE idp_service_id = \"facebook\"")
-				.getAs(Integer.class, Integer.class).map(tuple -> Tuple2.create(tuple._1(), getUser(tuple._2()))).compose(resultTransformerQueryFlowable());
+				.getAs(String.class, Integer.class).map(tuple -> Tuple2.create(tuple._1(), getUser(tuple._2()))).compose(resultTransformerQueryFlowable());
 	}
 
 	public Single<User> setGoogleUserData(String id, String name, String imgURL)

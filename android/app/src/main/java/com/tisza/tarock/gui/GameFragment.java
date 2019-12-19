@@ -699,7 +699,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void deleteGame()
 	{
-		getActivity().getFragmentManager().popBackStack();
+		getActivity().getSupportFragmentManager().popBackStack();
 	}
 
 	@Override

@@ -342,6 +342,8 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 	private class ConnectAsyncTask extends AsyncTask<Void, Void, ProtoConnection> implements DialogInterface.OnDismissListener
 	{
+		private String error = null;
+
 		@Override
 		public void onDismiss(DialogInterface dialog)
 		{
@@ -361,6 +363,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 			final String host = BuildConfig.DEBUG ? "dell" : "akos0.ddns.net";
 			final int port = 8128;
 
+			Socket socket = null;
 			try
 			{
 				String trustStoreFile = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ? "truststore.bks" : "truststore.v1.bks";
@@ -377,7 +380,7 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 				SSLContext sc = SSLContext.getInstance("TLS");
 				sc.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
-				Socket socket = sc.getSocketFactory().createSocket();
+				socket = sc.getSocketFactory().createSocket();
 				socket.connect(new InetSocketAddress(host, port), 1000);
 
 				ProtoConnection protoConnection = new ProtoConnection(socket, uiThreadExecutor);
@@ -385,6 +388,16 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 			}
 			catch (Exception e)
 			{
+				error = e.getClass().getSimpleName() + ": " + e.getMessage() + "\n";
+				if (socket != null)
+				{
+					if (socket.getLocalSocketAddress() != null)
+						error += socket.getLocalSocketAddress() + "\n";
+					if (socket.getRemoteSocketAddress() != null)
+						error += socket.getRemoteSocketAddress() + "\n";
+
+				}
+
 				e.printStackTrace();
 				return null;
 			}
@@ -392,6 +405,13 @@ public class MainActivity extends Activity implements MessageHandler, GameListAd
 
 		protected void onPostExecute(ProtoConnection resultProtoConnection)
 		{
+			if (error != null)
+				new AlertDialog.Builder(MainActivity.this)
+				.setTitle("Exception while connecting to server")
+				.setMessage(error)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.show();
+
 			progressDialog.setOnDismissListener(null);
 
 			if (progressDialog.isShowing())

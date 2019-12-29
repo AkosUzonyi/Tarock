@@ -22,7 +22,6 @@ public class Server implements Runnable
 	private SSLServerSocket serverSocket;
 
 	private Collection<Client> clients = new ArrayList<>();
-	private Collection<User> loggedInUsers = new HashSet<>();
 
 	private final TarockDatabase database;
 	private final GameSessionManager gameSessionManager;
@@ -68,21 +67,9 @@ public class Server implements Runnable
 		return firebaseNotificationSender;
 	}
 
-	public void loginUser(User user)
-	{
-		loggedInUsers.add(user);
-		disposables.add(user.getName().subscribe(name -> log.info("User logged in: " + name + " (id: " + user.getID() + ")")));
-	}
-
-	public void logoutUser(User user)
-	{
-		loggedInUsers.remove(user);
-		disposables.add(user.getName().subscribe(name -> log.info("User logged out: " + name + " (id: " + user.getID() + ")")));
-	}
-
 	public boolean isUserLoggedIn(User user)
 	{
-		return user.isBot() || loggedInUsers.contains(user);
+		return user.isBot() || clients.stream().map(Client::getLoggedInUser).anyMatch(u -> u == user);
 	}
 
 	public void removeClient(Client client)

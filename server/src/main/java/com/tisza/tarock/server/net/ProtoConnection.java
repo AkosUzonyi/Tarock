@@ -139,7 +139,12 @@ public class ProtoConnection implements Closeable
 		is = socket.getInputStream();
 		os = socket.getOutputStream();
 	}
-	
+
+	public SocketAddress getRemoteAddress()
+	{
+		return socket == null ? null : socket.getRemoteSocketAddress();
+	}
+
 	public synchronized void start()
 	{
 		if (started || closeRequested)

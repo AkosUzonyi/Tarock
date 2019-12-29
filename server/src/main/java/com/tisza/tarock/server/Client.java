@@ -13,6 +13,7 @@ import io.reactivex.schedulers.*;
 import org.apache.log4j.*;
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 
 public class Client implements MessageHandler
@@ -172,23 +173,28 @@ public class Client implements MessageHandler
 		if (connection == null)
 			return;
 
+		if (loggedInUser == newUser)
+			return;
+
 		if (newUser != null && server.isUserLoggedIn(newUser))
 		{
 			int id = newUser.getID();
-			disposables.add(newUser.getName().subscribe(name -> log.info("Login rejected (already logged in): " + name + " (id: " + id + ")")));
-			newUser = null;
+			newUser.getName().subscribe(name -> log.info("Login rejected (already logged in): " + name + " (id: " + id + ")"));
 		}
-
-		MainProto.LoginResult.Builder loginMessageBuilder = MainProto.LoginResult.newBuilder();
-
-		loggedInUser = newUser;
-		if (loggedInUser != null)
+		else
 		{
-			server.loginUser(loggedInUser);
-			loginMessageBuilder.setUserId(loggedInUser.getID());
+			switchGameSession(null, null);
+
+			if (loggedInUser != null)
+				logUserLoggedInStatus(false);
+
+			loggedInUser = newUser;
+
+			if (loggedInUser != null)
+				logUserLoggedInStatus(true);
 		}
 
-		sendMessage(MainProto.Message.newBuilder().setLoginResult(loginMessageBuilder.build()).build());
+		sendMessage(MainProto.Message.newBuilder().setLoginResult(MainProto.LoginResult.newBuilder().setUserId(loggedInUser.getID())).build());
 
 		server.broadcastStatus();
 	}
@@ -207,6 +213,12 @@ public class Client implements MessageHandler
 	public void disconnect()
 	{
 		disposables.dispose();
+		currentPlayer = null;
+		if (loggedInUser != null)
+		{
+			logUserLoggedInStatus(false);
+			loggedInUser = null;
+		}
 		try
 		{
 			connection.close();
@@ -216,11 +228,16 @@ public class Client implements MessageHandler
 			log.warn("Exception while closing client connection: " + e.getMessage());
 		}
 		connection = null;
-		currentPlayer = null;
-		if (loggedInUser != null)
-		{
-			server.logoutUser(loggedInUser);
-			loggedInUser = null;
-		}
+	}
+
+	private void logUserLoggedInStatus(boolean loggedIn)
+	{
+		User user = loggedInUser;
+		SocketAddress address = connection != null ? connection.getRemoteAddress() : null;
+
+		if (loggedIn)
+			user.getName().subscribe(name -> log.info("User logged in: " + name + " (id: " + user.getID() + "; from: " + address + ")"));
+		else
+			user.getName().subscribe(name -> log.info("User logged out: " + name + " (id: " + user.getID() + ")"));
 	}
 }

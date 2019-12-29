@@ -67,7 +67,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:headerDividersEnabled="true"
     />
 
     <TextView
@@ -84,7 +83,6 @@
         android:id="@+id/selected_users"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:headerDividersEnabled="true"
     />
 
     <TextView
@@ -95,6 +93,7 @@
         android:background="@drawable/warning_background"
         android:layout_margin="@dimen/button_margin"
         android:text="@string/bot_warning"
+        android:visibility="gone"
     />
 
     <Button

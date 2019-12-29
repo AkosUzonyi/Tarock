@@ -4,7 +4,6 @@ import android.os.*;
 import android.view.*;
 import android.widget.*;
 import androidx.lifecycle.*;
-import com.tisza.tarock.*;
 import com.tisza.tarock.R;
 
 public class GameListFragment extends MainActivityFragment
@@ -22,6 +21,7 @@ public class GameListFragment extends MainActivityFragment
 
 		ConnectionViewModel connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
 		connectionViewModel.getGames().observe(this, gameListAdapter::setGames);
+		connectionViewModel.getUserID().observe(this, gameListAdapter::setUserID);
 
 		Button createNewGameButton = view.findViewById(R.id.new_game_button);
 		createNewGameButton.setOnClickListener(v -> getMainActivity().createNewGame());

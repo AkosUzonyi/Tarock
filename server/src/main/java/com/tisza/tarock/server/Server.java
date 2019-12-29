@@ -164,14 +164,14 @@ public class Server implements Runnable
 
 			MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
 
+			Map<GameSession, MainProto.Game.Builder> gameSessionToProto = new HashMap<>();
 			for (GameSession gameSession : gameSessionManager.getGameSessions())
 			{
 				MainProto.Game.Builder gameBuilder = MainProto.Game.newBuilder()
 						.setId(gameSession.getID())
-						.setType(gameSession.getGameType().getID())
-						.addAllPlayerName(gameSession.getPlayerNames())
-						.setMy(gameSession.isUserPlaying(client.getLoggedInUser()));
-				builder.addAvailableGame(gameBuilder);
+						.setType(gameSession.getGameType().getID());
+
+				gameSessionToProto.put(gameSession, gameBuilder);
 			}
 
 			disposables.add(
@@ -181,9 +181,20 @@ public class Server implements Runnable
 			{
 				if (!user.equals(client.getLoggedInUser()))
 					builder.addAvailableUser(userProto);
+
+				for (Map.Entry<GameSession, MainProto.Game.Builder> entry : gameSessionToProto.entrySet())
+					if (entry.getKey().isUserPlaying(user))
+						entry.getValue().addUser(userProto);
+
 				return Completable.complete();
 			})))
-			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build())));
+			.subscribe(() ->
+			{
+				for (MainProto.Game.Builder gameBuilder : gameSessionToProto.values())
+					builder.addAvailableGame(gameBuilder);
+
+				client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());
+			}));
 		}
 	}
 

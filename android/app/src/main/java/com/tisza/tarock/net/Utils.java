@@ -1,7 +1,6 @@
 package com.tisza.tarock.net;
 
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.EventProto.Event;
 import com.tisza.tarock.proto.*;
@@ -18,22 +17,12 @@ public class Utils
 
 	public static List<AnnouncementResult> staticticsListFromProto(List<Event.Statistics.AnnouncementResult> announcementResultProtoList)
 	{
-		List<AnnouncementResult> announcementResultList = new ArrayList<>();
-		for (Event.Statistics.AnnouncementResult announcementResult : announcementResultProtoList)
-		{
-			announcementResultList.add(Utils.announcementResultFromProto(announcementResult));
-		}
-		return announcementResultList;
+		return map(announcementResultProtoList, Utils::announcementResultFromProto);
 	}
 
 	public static List<Announcement> announcementListFromProto(List<String> announcementIDList)
 	{
-		List<Announcement> announcements = new ArrayList<>();
-		for (String announcementID : announcementIDList)
-		{
-			announcements.add(Announcement.fromID(announcementID));
-		}
-		return announcements;
+		return map(announcementIDList, Announcement::fromID);
 	}
 
 	public static User userFromProto(MainProto.User userProto)
@@ -45,7 +34,7 @@ public class Utils
 
 	public static GameInfo gameInfoFromProto(MainProto.Game gameProto)
 	{
-		return new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), gameProto.getPlayerNameList(), gameProto.getMy());
+		return new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), map(gameProto.getUserList(), Utils::userFromProto));
 	}
 
 	public static <T0, T1> List<T1> map(List<T0> list, Function<T0, T1> f)

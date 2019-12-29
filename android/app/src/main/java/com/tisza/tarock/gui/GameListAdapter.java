@@ -13,6 +13,7 @@ public class GameListAdapter extends BaseAdapter
 	private GameAdapterListener gameAdapterListener;
 	private final LayoutInflater inflater;
 	private List<GameInfo> games = new ArrayList<>();
+	private Integer userID;
 
 	public GameListAdapter(Context context, GameAdapterListener gameAdapterListener)
 	{
@@ -24,8 +25,22 @@ public class GameListAdapter extends BaseAdapter
 	{
 		this.games.clear();
 		this.games.addAll(games);
-		Collections.sort(this.games);
+		Collections.sort(this.games, this::compareGames);
 		notifyDataSetChanged();
+	}
+
+	public void setUserID(Integer userID)
+	{
+		this.userID = userID;
+		notifyDataSetChanged();
+	}
+
+	private int compareGames(GameInfo g0, GameInfo g1)
+	{
+		if (userID != null && g0.containsUser(userID) != g1.containsUser(userID))
+			return g0.containsUser(userID) ? -1 : 1;
+
+		return g0.getId() - g1.getId();
 	}
 
 	@Override
@@ -76,12 +91,12 @@ public class GameListAdapter extends BaseAdapter
 
 		for (int i = 0; i < 4; i++)
 		{
-			holder.userNameViews[i].setText(gameInfo.getPlayerNames().get(i));
+			holder.userNameViews[i].setText(gameInfo.getUsers().get(i).getName());
 		}
 
-		holder.joinGameButton.setText(gameInfo.isMy() ? R.string.join_game : R.string.join_game_kibic);
+		holder.joinGameButton.setText(gameInfo.containsUser(userID) ? R.string.join_game : R.string.join_game_kibic);
 		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGame(gameInfo.getId()));
-		holder.deleteGameButton.setVisibility(gameInfo.isMy() ? View.VISIBLE : View.GONE);
+		holder.deleteGameButton.setVisibility(gameInfo.containsUser(userID) ? View.VISIBLE : View.GONE);
 		holder.deleteGameButton.setOnClickListener(v -> gameAdapterListener.deleteGame(gameInfo.getId()));
 
 		return view;

@@ -2,19 +2,17 @@ package com.tisza.tarock.game;
 
 import java.util.*;
 
-public class GameInfo implements Comparable<GameInfo>
+public class GameInfo
 {
 	private final int id;
 	private final GameType type;
-	private final List<String> playerNames;
-	private boolean my;
+	private final List<User> users;
 
-	public GameInfo(int id, GameType type, List<String> playerNames, boolean my)
+	public GameInfo(int id, GameType type, List<User> users)
 	{
 		this.id = id;
 		this.type = type;
-		this.playerNames = playerNames;
-		this.my = my;
+		this.users = users;
 	}
 
 	public int getId()
@@ -27,14 +25,18 @@ public class GameInfo implements Comparable<GameInfo>
 		return type;
 	}
 
-	public List<String> getPlayerNames()
+	public List<User> getUsers()
 	{
-		return playerNames;
+		return users;
 	}
 
-	public boolean isMy()
+	public boolean containsUser(int userID)
 	{
-		return my;
+		for (User user : users)
+			if (user.getId() == userID)
+				return true;
+
+		return false;
 	}
 
 	@Override
@@ -50,14 +52,5 @@ public class GameInfo implements Comparable<GameInfo>
 			return false;
 
 		return id == ((GameInfo)obj).id;
-	}
-
-	@Override
-	public int compareTo(GameInfo other)
-	{
-		if (my != other.my)
-			return my ? -1 : 1;
-
-		return id - other.id;
 	}
 }

@@ -34,6 +34,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 	private MutableLiveData<ErrorState> errorState = new MutableLiveData<>(null);
 	private MutableLiveData<List<GameInfo>> games = new MutableLiveData<>(new ArrayList<>());
 	private MutableLiveData<List<User>> users = new MutableLiveData<>(new ArrayList<>());
+	private MutableLiveData<Integer> userID = new MutableLiveData<>(null);
 
 	public ConnectionViewModel(Application application) throws IOException, GeneralSecurityException
 	{
@@ -78,6 +79,11 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 	public LiveData<List<User>> getUsers()
 	{
 		return users;
+	}
+
+	public LiveData<Integer> getUserID()
+	{
+		return userID;
 	}
 
 	public void addEventHandler(EventHandler eventHandler)
@@ -156,6 +162,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 					error(ErrorState.LOGIN_UNSUCCESSFUL);
 
 				connectionState.setValue(loggedIn ? ConnectionState.LOGGED_IN : ConnectionState.CONNECTED);
+				userID.setValue(loggedIn ? message.getLoginResult().getUserId() : null);
 
 				if (loggedIn)
 					FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult ->

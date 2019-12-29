@@ -52,12 +52,12 @@ public class Client implements MessageHandler
 				if (message.getLogin().hasFacebookToken())
 				{
 					String fbAccessToken = message.getLogin().getFacebookToken();
-					disposables.add(server.getFacebookUserManager().newAccessToken(fbAccessToken).subscribe(this::userLogin));
+					disposables.add(server.getFacebookUserManager().newAccessToken(fbAccessToken).subscribe(this::userLogin, this::userLoginException));
 				}
 				else if (message.getLogin().hasGoogleToken())
 				{
 					String googleToken = message.getLogin().getGoogleToken();
-					disposables.add(server.getGoogleUserManager().newToken(googleToken).subscribe(this::userLogin));
+					disposables.add(server.getGoogleUserManager().newToken(googleToken).subscribe(this::userLogin, this::userLoginException));
 				}
 				else
 				{
@@ -197,6 +197,12 @@ public class Client implements MessageHandler
 		sendMessage(MainProto.Message.newBuilder().setLoginResult(MainProto.LoginResult.newBuilder().setUserId(loggedInUser.getID())).build());
 
 		server.broadcastStatus();
+	}
+
+	private void userLoginException(Throwable e)
+	{
+		log.error("Exception while logging in", e);
+		sendMessage(MainProto.Message.newBuilder().setLoginResult(MainProto.LoginResult.newBuilder()).build());
 	}
 
 	public void sendMessage(MainProto.Message message)

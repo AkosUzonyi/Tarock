@@ -8,9 +8,10 @@
 
     <dimen name="normal_text_size">14sp</dimen>
     <dimen name="large_text_size">20sp</dimen>
-    <dimen name="user_name_size">25sp</dimen>
-    <dimen name="user_icon_width">20dp</dimen>
-    <dimen name="user_picture_size">40dp</dimen>
+    <dimen name="user_name_size">22sp</dimen>
+    <dimen name="user_icon_width">18dp</dimen>
+    <dimen name="user_picture_size">35dp</dimen>
+    <dimen name="user_margin">8dp</dimen>
 
     <dimen name="player_message_margin">10dp</dimen>
     <dimen name="default_padding">10dp</dimen>
@@ -18,7 +19,6 @@
     <dimen name="button_padding">4dp</dimen>
     <dimen name="button_margin">4dp</dimen>
     <dimen name="skart_margin">2dp</dimen>
-    <dimen name="user_margin">10dp</dimen>
     <dimen name="statistics_margin">5dp</dimen>
     <dimen name="statistics_margin_big">15dp</dimen>
     <dimen name="statistics_indent">5dp</dimen>

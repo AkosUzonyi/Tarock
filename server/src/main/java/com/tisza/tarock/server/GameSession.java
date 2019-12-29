@@ -20,7 +20,6 @@ public class GameSession
 	private final GameType gameType;
 	private final PlayerSeatMap<Player> players = new PlayerSeatMap<>();
 	private final Set<Player> allPlayers = new HashSet<>();
-
 	private final DoubleRoundTracker doubleRoundTracker;
 
 	private PlayerSeat currentBeginnerPlayer = PlayerSeat.SEAT0;
@@ -29,6 +28,8 @@ public class GameSession
 	private TarockDatabase database;
 	private Single<Integer> currentGameID;
 	private int actionOrdinal = 0;
+
+	private long lastModified;
 
 	private int[] points = new int[4];
 
@@ -41,6 +42,7 @@ public class GameSession
 		this.database = database;
 		this.gameType = gameType;
 		this.doubleRoundTracker = doubleRoundTracker;
+		lastModified = System.currentTimeMillis();
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -86,12 +88,14 @@ public class GameSession
 		database.getPlayerPoints(id).toList().flatMap(points ->
 		database.getActions(gameSessionTuple._4()).toList().flatMap(actions ->
 		database.getDeck(gameSessionTuple._4()).toList().flatMap(deck ->
-		database.getGameBeginner(gameSessionTuple._4()).map(beginnerPlayer ->
+		database.getGame(gameSessionTuple._4()).map(gameTuple ->
 		{
 			GameType gameType = gameSessionTuple._1();
 			DoubleRoundType doubleRoundType = gameSessionTuple._2();
 			int doubleRoundData = gameSessionTuple._3();
 			int currentGameID = gameSessionTuple._4();
+			PlayerSeat beginnerPlayer = gameTuple._1();
+			long lastGameCreateTime = gameTuple._2();
 
 			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 			doubleRoundTracker.setData(doubleRoundData);
@@ -101,6 +105,7 @@ public class GameSession
 			gameSession.currentBeginnerPlayer = beginnerPlayer;
 			gameSession.currentGameID = Single.just(currentGameID);
 			gameSession.actionOrdinal = actions.size();
+			gameSession.lastModified = lastGameCreateTime;
 
 			for (int i = 0; i < 4; i++)
 				gameSession.points[i] = points.get(i);
@@ -108,8 +113,17 @@ public class GameSession
 			gameSession.currentGame = new Game(gameType, gameSession.getPlayerNames(), beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
-			for (Tuple3<PlayerSeat, Action, Integer> action : actions)
-				gameSession.currentGame.processAction(action._1(), action._2());
+			for (Tuple3<PlayerSeat, Action, Long> actionTuple : actions)
+			{
+				PlayerSeat player = actionTuple._1();
+				Action action = actionTuple._2();
+				long time = actionTuple._3();
+
+				gameSession.currentGame.processAction(player, action);
+
+				if (time > gameSession.lastModified)
+					gameSession.lastModified = time;
+			}
 
 			gameSession.dispatchEvent(new EventInstance(null, Event.historyMode(true)));
 			gameSession.dispatchNewEvents();
@@ -127,6 +141,11 @@ public class GameSession
 	public PlayerSeatMap<Player> getPlayers()
 	{
 		return players;
+	}
+
+	public long getLastModified()
+	{
+		return lastModified;
 	}
 
 	public void stopSession()
@@ -204,6 +223,7 @@ public class GameSession
 			currentGameID.doOnSuccess(gameID -> database.addAction(gameID, player.asInt(), action, ordinal)).subscribe();
 		}
 
+		lastModified = System.currentTimeMillis();
 		dispatchNewEvents();
 
 		if (currentGame.isFinished())

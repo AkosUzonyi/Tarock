@@ -12,6 +12,7 @@ import javax.net.ssl.*;
 import java.io.*;
 import java.security.*;
 import java.util.*;
+import java.util.concurrent.*;
 
 public class Server implements Runnable
 {
@@ -110,6 +111,8 @@ public class Server implements Runnable
 			gameSessionManager.initialize();
 			facebookUserManager.refreshImageURLs();
 
+			Main.GAME_EXECUTOR_SERVICE.scheduleAtFixedRate(this::hourlyTask, 0, 1, TimeUnit.HOURS);
+
 			createServerSocket();
 
 			while (!Thread.interrupted())
@@ -153,6 +156,12 @@ public class Server implements Runnable
 		{
 			log.error("Exception while adding new client", e);
 		}
+	}
+
+	private void hourlyTask()
+	{
+		gameSessionManager.deleteOldGames();
+		broadcastStatus();
 	}
 
 	public void broadcastStatus()

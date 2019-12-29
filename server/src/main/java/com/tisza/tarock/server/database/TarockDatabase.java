@@ -264,10 +264,10 @@ public class TarockDatabase
 				.compose(resultTransformerUpdateSingle());
 	}
 
-	public Single<PlayerSeat> getGameBeginner(int gameID)
+	public Single<Tuple2<PlayerSeat, Long>> getGame(int gameID)
 	{
-		return rxdatabase.select("SELECT beginner_player FROM game WHERE id = ?;")
-				.parameter(gameID).getAs(Integer.class).map(PlayerSeat::fromInt).singleOrError()
+		return rxdatabase.select("SELECT beginner_player, create_time FROM game WHERE id = ?;")
+				.parameter(gameID).getAs(Integer.class, Long.class).map(tuple -> Tuple2.create(PlayerSeat.fromInt(tuple._1()), tuple._2())).singleOrError()
 				.compose(resultTransformerQuerySingle());
 	}
 
@@ -295,10 +295,10 @@ public class TarockDatabase
 				.compose(resultTransformerUpdateCompletable());
 	}
 
-	public Flowable<Tuple3<PlayerSeat, Action, Integer>> getActions(int gameID)
+	public Flowable<Tuple3<PlayerSeat, Action, Long>> getActions(int gameID)
 	{
 		return rxdatabase.select("SELECT seat, action, time FROM action WHERE game_id = ? ORDER BY ordinal;")
-				.parameter(gameID).getAs(Integer.class, String.class, Integer.class)
+				.parameter(gameID).getAs(Integer.class, String.class, Long.class)
 				.map(tuple -> Tuple3.create(PlayerSeat.fromInt(tuple._1()), new Action(tuple._2()), tuple._3()))
 				.compose(resultTransformerQueryFlowable());
 	}

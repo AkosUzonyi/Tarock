@@ -9,6 +9,8 @@ import java.util.*;
 
 public class GameSessionManager
 {
+	private static final int MAX_GAME_IDLE_TIME = 6 * 3600 * 1000;
+
 	private final TarockDatabase database;
 	private Map<Integer, GameSession> gameSessions = new HashMap<>();
 
@@ -45,6 +47,13 @@ public class GameSessionManager
 	public Collection<GameSession> getGameSessions()
 	{
 		return gameSessions.values();
+	}
+
+	public void deleteOldGames()
+	{
+		for (Map.Entry<Integer, GameSession> gameSessionEntry : new HashSet<>(gameSessions.entrySet()))
+			if (gameSessionEntry.getValue().getLastModified() < System.currentTimeMillis() - MAX_GAME_IDLE_TIME)
+				stopGameSession(gameSessionEntry.getKey());
 	}
 
 	public void shutdown()

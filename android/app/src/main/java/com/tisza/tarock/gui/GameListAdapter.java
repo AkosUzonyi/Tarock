@@ -3,36 +3,48 @@ package com.tisza.tarock.gui;
 import android.content.*;
 import android.view.*;
 import android.widget.*;
+import androidx.annotation.*;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 
 import java.util.*;
 
-public class GameListAdapter extends BaseAdapter
+public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewHolder>
 {
 	private GameAdapterListener gameAdapterListener;
 	private final LayoutInflater inflater;
-	private List<GameInfo> games = new ArrayList<>();
 	private Integer userID;
+
+	private static final DiffUtil.ItemCallback<GameInfo> gameInfoItemCallback = new DiffUtil.ItemCallback<GameInfo>()
+	{
+		@Override
+		public boolean areItemsTheSame(GameInfo oldItem, GameInfo newItem)
+		{
+			return oldItem.getId() == newItem.getId();
+		}
+
+		@Override
+		public boolean areContentsTheSame(GameInfo oldItem, GameInfo newItem)
+		{
+			return oldItem.getId() == newItem.getId() && oldItem.getUsers().equals(newItem.getUsers()) && oldItem.getType().equals(newItem.getType());
+		}
+	};
 
 	public GameListAdapter(Context context, GameAdapterListener gameAdapterListener)
 	{
+		super(gameInfoItemCallback);
 		this.gameAdapterListener = gameAdapterListener;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	public void setGames(Collection<GameInfo> games)
-	{
-		this.games.clear();
-		this.games.addAll(games);
-		Collections.sort(this.games, this::compareGames);
-		notifyDataSetChanged();
-	}
-
-	public void setUserID(Integer userID)
+	public void setData(List<GameInfo> list, Integer userID)
 	{
 		this.userID = userID;
-		notifyDataSetChanged();
+		list = new ArrayList<>(list);
+		Collections.sort(list, this::compareGames);
+		submitList(list);
 	}
 
 	private int compareGames(GameInfo g0, GameInfo g1)
@@ -43,51 +55,27 @@ public class GameListAdapter extends BaseAdapter
 		return g0.getId() - g1.getId();
 	}
 
+	@NonNull
 	@Override
-	public int getCount()
+	public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
 	{
-		return games.size();
+		View view = inflater.inflate(R.layout.game_list_entry, parent, false);
+
+		ViewHolder holder = new ViewHolder(view);
+		holder.userNameViews[0] = view.findViewById(R.id.username0);
+		holder.userNameViews[1] = view.findViewById(R.id.username1);
+		holder.userNameViews[2] = view.findViewById(R.id.username2);
+		holder.userNameViews[3] = view.findViewById(R.id.username3);
+		holder.joinGameButton = view.findViewById(R.id.join_game_button);
+		holder.deleteGameButton = view.findViewById(R.id.delete_game_button);
+
+		return holder;
 	}
 
 	@Override
-	public Object getItem(int position)
+	public void onBindViewHolder(ViewHolder holder, int position)
 	{
-		return games.get(position);
-	}
-
-	@Override
-	public long getItemId(int position)
-	{
-		return games.get(position).getId();
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent)
-	{
-		View view;
-		ViewHolder holder;
-
-		if (convertView == null)
-		{
-			view = inflater.inflate(R.layout.game_list_entry, parent, false);
-
-			holder = new ViewHolder();
-			holder.userNameViews[0] = view.findViewById(R.id.username0);
-			holder.userNameViews[1] = view.findViewById(R.id.username1);
-			holder.userNameViews[2] = view.findViewById(R.id.username2);
-			holder.userNameViews[3] = view.findViewById(R.id.username3);
-			holder.joinGameButton = view.findViewById(R.id.join_game_button);
-			holder.deleteGameButton = view.findViewById(R.id.delete_game_button);
-
-			view.setTag(holder);
-		}
-		else
-		{
-			view = convertView;
-			holder = (ViewHolder)view.getTag();
-		}
-
-		GameInfo gameInfo = games.get(position);
+		GameInfo gameInfo = getItem(position);
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -98,20 +86,23 @@ public class GameListAdapter extends BaseAdapter
 		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGame(gameInfo.getId()));
 		holder.deleteGameButton.setVisibility(gameInfo.containsUser(userID) ? View.VISIBLE : View.GONE);
 		holder.deleteGameButton.setOnClickListener(v -> gameAdapterListener.deleteGame(gameInfo.getId()));
-
-		return view;
 	}
 
-	private static class ViewHolder
+	public static class ViewHolder extends RecyclerView.ViewHolder
 	{
 		public TextView[] userNameViews = new TextView[4];
 		public Button joinGameButton;
 		public Button deleteGameButton;
+
+		public ViewHolder(View itemView)
+		{
+			super(itemView);
+		}
 	}
 
-	public static interface GameAdapterListener
+	public interface GameAdapterListener
 	{
-		public void joinGame(int gameID);
-		public void deleteGame(int gameID);
+		void joinGame(int gameID);
+		void deleteGame(int gameID);
 	}
 }

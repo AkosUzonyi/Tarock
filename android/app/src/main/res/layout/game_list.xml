@@ -6,7 +6,7 @@
     android:padding="@dimen/default_padding"
     >
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/game_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"

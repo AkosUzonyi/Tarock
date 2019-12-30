@@ -203,11 +203,11 @@ public class TarockDatabase
 				.compose(resultTransformerUpdateCompletable());
 	}
 
-	public Single<Tuple4<GameType, DoubleRoundType, Integer, Integer>> getGameSession(int gameSessionID)
+	public Single<Tuple5<GameType, DoubleRoundType, Integer, Integer, Long>> getGameSession(int gameSessionID)
 	{
-		return rxdatabase.select("SELECT type, double_round_type, double_round_data, current_game_id FROM game_session WHERE id = ?;")
-				.parameter(gameSessionID).getAs(String.class, String.class, Integer.class, Integer.class).singleOrError()
-				.map(tuple -> Tuple4.create(GameType.fromID(tuple._1()), DoubleRoundType.fromID(tuple._2()), tuple._3(), tuple._4()))
+		return rxdatabase.select("SELECT type, double_round_type, double_round_data, current_game_id, create_time FROM game_session WHERE id = ?;")
+				.parameter(gameSessionID).getAs(String.class, String.class, Integer.class, Integer.class, Long.class).singleOrError()
+				.map(tuple -> Tuple5.create(GameType.fromID(tuple._1()), DoubleRoundType.fromID(tuple._2()), tuple._3(), tuple._4(), tuple._5()))
 				.compose(resultTransformerQuerySingle());
 	}
 
@@ -264,10 +264,10 @@ public class TarockDatabase
 				.compose(resultTransformerUpdateSingle());
 	}
 
-	public Single<Tuple2<PlayerSeat, Long>> getGame(int gameID)
+	public Single<Tuple3<Integer, PlayerSeat, Long>> getGame(int gameID)
 	{
-		return rxdatabase.select("SELECT beginner_player, create_time FROM game WHERE id = ?;")
-				.parameter(gameID).getAs(Integer.class, Long.class).map(tuple -> Tuple2.create(PlayerSeat.fromInt(tuple._1()), tuple._2())).singleOrError()
+		return rxdatabase.select("SELECT game_session_id, beginner_player, create_time FROM game WHERE id = ?;")
+				.parameter(gameID).getAs(Integer.class, Integer.class, Long.class).map(tuple -> Tuple3.create(tuple._1(), PlayerSeat.fromInt(tuple._2()), tuple._3())).singleOrError()
 				.compose(resultTransformerQuerySingle());
 	}
 

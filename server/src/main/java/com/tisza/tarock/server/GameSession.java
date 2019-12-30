@@ -94,8 +94,8 @@ public class GameSession
 			DoubleRoundType doubleRoundType = gameSessionTuple._2();
 			int doubleRoundData = gameSessionTuple._3();
 			int currentGameID = gameSessionTuple._4();
-			PlayerSeat beginnerPlayer = gameTuple._1();
-			long lastGameCreateTime = gameTuple._2();
+			PlayerSeat beginnerPlayer = gameTuple._2();
+			long lastGameCreateTime = gameTuple._3();
 
 			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 			doubleRoundTracker.setData(doubleRoundData);

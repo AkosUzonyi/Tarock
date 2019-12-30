@@ -16,10 +16,10 @@ message Message
         FCMToken fcm_token = 9;
         string action = 3;
         Event event = 4;
-        CreateGame create_game = 5;
+        CreateGameSession create_game_session = 5;
         ServerStatus server_status = 6;
-        JoinGame join_game = 7;
-        DeleteGame delete_game = 8;
+        JoinGameSession join_game_session = 7;
+        DeleteGameSession delete_game_session = 8;
     }
 }
 
@@ -51,32 +51,32 @@ message FCMToken
     required bool active = 2;
 }
 
-message Game
+message GameSession
 {
     required int32 id = 1;
     required string type = 2;
     repeated User user = 3;
 }
 
-message CreateGame
+message CreateGameSession
 {
     required string type = 1;
     repeated int32 userID = 2;
     required string double_round_type = 3;
 }
 
-message DeleteGame
+message DeleteGameSession
 {
-    required int32 game_id = 1;
+    required int32 game_session_id = 1;
 }
 
 message ServerStatus
 {
-    repeated Game available_game = 1;
+    repeated GameSession available_game_session = 1;
     repeated User available_user = 2;
 }
 
-message JoinGame
+message JoinGameSession
 {
-    optional int32 game_id = 1;
+    optional int32 game_session_id = 1;
 }

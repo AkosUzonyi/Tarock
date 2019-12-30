@@ -70,9 +70,9 @@ public class Client implements MessageHandler
 			case ACTION:
 				break;
 
-			case CREATE_GAME:
+			case CREATE_GAME_SESSION:
 			{
-				MainProto.CreateGame createGame = message.getCreateGame();
+				MainProto.CreateGameSession createGame = message.getCreateGameSession();
 
 				if (createGame.getUserIDCount() != 3)
 					break;
@@ -99,9 +99,9 @@ public class Client implements MessageHandler
 				break;
 			}
 
-			case DELETE_GAME:
+			case DELETE_GAME_SESSION:
 			{
-				int gameSessionID = message.getDeleteGame().getGameId();
+				int gameSessionID = message.getDeleteGameSession().getGameSessionId();
 
 				if (server.getGameSessionManager().getGameSession(gameSessionID).isUserPlaying(loggedInUser))
 					server.getGameSessionManager().stopGameSession(gameSessionID);
@@ -109,15 +109,15 @@ public class Client implements MessageHandler
 				server.broadcastStatus();
 			}
 
-			case JOIN_GAME:
+			case JOIN_GAME_SESSION:
 			{
-				if (!message.getJoinGame().hasGameId())
+				if (!message.getJoinGameSession().hasGameSessionId())
 				{
 					switchGameSession(null, null);
 					break;
 				}
 
-				GameSession gameSession = server.getGameSessionManager().getGameSession(message.getJoinGame().getGameId());
+				GameSession gameSession = server.getGameSessionManager().getGameSession(message.getJoinGameSession().getGameSessionId());
 				if (gameSession.isUserPlaying(loggedInUser))
 				{
 					ProtoPlayer player = (ProtoPlayer)gameSession.getPlayerByUser(loggedInUser);

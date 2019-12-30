@@ -219,8 +219,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			connectionViewModel.addEventHandler(zebiSound);
 		}
 		connectionViewModel.addEventHandler(this);
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
-				.setGameId(getArguments().getInt(KEY_GAME_ID))
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
+				.setGameSessionId(getArguments().getInt(KEY_GAME_ID))
 				.build())
 				.build());
 
@@ -237,7 +237,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			connectionViewModel.removeEventHandler(zebiSound);
 		}
 		connectionViewModel.removeEventHandler(this);
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGame(MainProto.JoinGame.newBuilder()
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
 				.build())
 				.build());
 	}

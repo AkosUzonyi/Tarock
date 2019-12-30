@@ -183,7 +183,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 
 			case SERVER_STATUS:
 				games.getValue().clear();
-				for (MainProto.Game gameProto : message.getServerStatus().getAvailableGameList())
+				for (MainProto.GameSession gameProto : message.getServerStatus().getAvailableGameSessionList())
 				{
 					games.getValue().add(Utils.gameInfoFromProto(gameProto));
 				}

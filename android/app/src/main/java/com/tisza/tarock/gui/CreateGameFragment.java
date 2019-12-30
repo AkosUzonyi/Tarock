@@ -124,7 +124,7 @@ public class CreateGameFragment extends MainActivityFragment
 				.putBoolean(BOT_WARNING_IGNORED_KEY, botWarningIgnored)
 				.apply();
 
-		MainProto.CreateGame.Builder builder = MainProto.CreateGame.newBuilder();
+		MainProto.CreateGameSession.Builder builder = MainProto.CreateGameSession.newBuilder();
 
 		builder.setType(GameType.values()[gameTypeSpinner.getSelectedItemPosition()].getID());
 		builder.setDoubleRoundType(DoubleRoundType.values()[doubleRoundTypeSpinner.getSelectedItemPosition()].getID());
@@ -134,7 +134,7 @@ public class CreateGameFragment extends MainActivityFragment
 			builder.addUserID(user.getId());
 		}
 
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setCreateGame(builder).build());
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setCreateGameSession(builder).build());
 
 		getActivity().getSupportFragmentManager().popBackStack();
 	}

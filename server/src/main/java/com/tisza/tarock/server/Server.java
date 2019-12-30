@@ -173,10 +173,10 @@ public class Server implements Runnable
 
 			MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
 
-			Map<GameSession, MainProto.Game.Builder> gameSessionToProto = new HashMap<>();
+			Map<GameSession, MainProto.GameSession.Builder> gameSessionToProto = new HashMap<>();
 			for (GameSession gameSession : gameSessionManager.getGameSessions())
 			{
-				MainProto.Game.Builder gameBuilder = MainProto.Game.newBuilder()
+				MainProto.GameSession.Builder gameBuilder = MainProto.GameSession.newBuilder()
 						.setId(gameSession.getID())
 						.setType(gameSession.getGameType().getID());
 
@@ -191,7 +191,7 @@ public class Server implements Runnable
 				if (!user.equals(client.getLoggedInUser()))
 					builder.addAvailableUser(userProto);
 
-				for (Map.Entry<GameSession, MainProto.Game.Builder> entry : gameSessionToProto.entrySet())
+				for (Map.Entry<GameSession, MainProto.GameSession.Builder> entry : gameSessionToProto.entrySet())
 					if (entry.getKey().isUserPlaying(user))
 						entry.getValue().addUser(userProto);
 
@@ -199,8 +199,8 @@ public class Server implements Runnable
 			})))
 			.subscribe(() ->
 			{
-				for (MainProto.Game.Builder gameBuilder : gameSessionToProto.values())
-					builder.addAvailableGame(gameBuilder);
+				for (MainProto.GameSession.Builder gameBuilder : gameSessionToProto.values())
+					builder.addAvailableGameSession(gameBuilder);
 
 				client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());
 			}));

@@ -20,6 +20,7 @@ message Message
         ServerStatus server_status = 6;
         JoinGameSession join_game_session = 7;
         DeleteGameSession delete_game_session = 8;
+        JoinHistoryGame join_history_game = 11;
     }
 }
 
@@ -79,4 +80,9 @@ message ServerStatus
 message JoinGameSession
 {
     optional int32 game_session_id = 1;
+}
+
+message JoinHistoryGame
+{
+    required int32 game_id = 1;
 }

@@ -136,6 +136,18 @@ public class Client implements MessageHandler
 				break;
 			}
 
+			case JOIN_HISTORY_GAME:
+			{
+				disposables.add(
+				GameSession.createHistoryView(message.getJoinHistoryGame().getGameId(), server.getDatabase()).subscribe(gameSession ->
+				{
+					ProtoPlayer player = (ProtoPlayer)gameSession.getPlayerByUser(loggedInUser);
+					switchGameSession(gameSession, player);
+				}));
+
+				break;
+			}
+
 			case FCM_TOKEN:
 			{
 				String token = message.getFcmToken().getFcmToken();

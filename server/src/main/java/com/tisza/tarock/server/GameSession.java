@@ -1,5 +1,6 @@
 package com.tisza.tarock.server;
 
+import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
@@ -12,6 +13,7 @@ import io.reactivex.*;
 import org.davidmoten.rx.jdbc.tuple.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.*;
 
 public class GameSession
@@ -30,6 +32,7 @@ public class GameSession
 	private int actionOrdinal = 0;
 
 	private long lastModified;
+	private boolean historyView = false;
 
 	private int[] points = new int[4];
 
@@ -133,6 +136,51 @@ public class GameSession
 		}))))));
 	}
 
+	public static Single<GameSession> createHistoryView(int gameID, TarockDatabase database)
+	{
+		return
+		database.getGame(gameID).flatMap(gameTuple ->
+		database.getGameSession(gameTuple._1()).flatMap(gameSessionTuple ->
+		database.getUsersForGameSession(gameTuple._1()).flatMapSingle(User::createPlayer).toList().flatMap(players ->
+		database.getActions(gameID).toList().flatMap(actions ->
+		database.getDeck(gameID).toList().map(deck ->
+		{
+			int id = gameTuple._1();
+			PlayerSeat beginnerPlayer = gameTuple._2();
+			GameType gameType = gameSessionTuple._1();
+			DoubleRoundType doubleRoundType = gameSessionTuple._2();
+			long gameCreateTime = gameTuple._3();
+
+			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
+
+			GameSession gameSession = new GameSession(id, gameType, players, doubleRoundTracker, database);
+
+			gameSession.currentBeginnerPlayer = beginnerPlayer;
+			gameSession.historyView = true;
+
+			gameSession.currentGame = new Game(gameType, gameSession.getPlayerNames(), beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			gameSession.currentGame.start();
+
+			for (Tuple3<PlayerSeat, Action, Long> actionTuple : actions)
+			{
+				PlayerSeat player = actionTuple._1();
+				Action action = actionTuple._2();
+				long time = actionTuple._3();
+
+				Main.GAME_EXECUTOR_SERVICE.schedule(() ->
+				{
+					gameSession.currentGame.processAction(player, action);
+					gameSession.dispatchNewEvents();
+				},
+				time - gameCreateTime, TimeUnit.MILLISECONDS);
+			}
+
+			gameSession.dispatchNewEvents();
+
+			return gameSession;
+		})))));
+	}
+
 	public int getID()
 	{
 		return id;
@@ -155,7 +203,8 @@ public class GameSession
 		for (Player player : allPlayers)
 			player.setGame(null, null);
 
-		database.stopGameSession(id);
+		if (!historyView)
+			database.stopGameSession(id);
 	}
 
 	public Player getPlayerByUser(User user)
@@ -213,7 +262,7 @@ public class GameSession
 
 	public void action(PlayerSeat player, Action action)
 	{
-		if (currentGame == null)
+		if (currentGame == null || historyView)
 			return;
 
 		boolean success = currentGame.processAction(player, action);

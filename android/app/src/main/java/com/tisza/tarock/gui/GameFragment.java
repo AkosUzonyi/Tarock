@@ -5,6 +5,7 @@ import android.content.*;
 import android.graphics.*;
 import android.os.*;
 import android.text.*;
+import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
@@ -27,6 +28,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 {
 	public static final String TAG = "game";
 	public static final String KEY_GAME_ID = "game_id";
+	public static final String KEY_HISTORY_GAME_ID = "history_game_id";
 	public static final String LOG_TAG = "Tarokk";
 
 	public static final float PLAYED_CARD_DISTANCE = 1F;
@@ -219,10 +221,26 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			connectionViewModel.addEventHandler(zebiSound);
 		}
 		connectionViewModel.addEventHandler(this);
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
-				.setGameSessionId(getArguments().getInt(KEY_GAME_ID))
-				.build())
-				.build());
+
+		if (getArguments().containsKey(KEY_GAME_ID))
+		{
+			connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
+					.setGameSessionId(getArguments().getInt(KEY_GAME_ID))
+					.build())
+					.build());
+		}
+		else if (getArguments().containsKey(KEY_HISTORY_GAME_ID))
+		{
+			connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinHistoryGame(MainProto.JoinHistoryGame.newBuilder()
+					.setGameId(getArguments().getInt(KEY_HISTORY_GAME_ID))
+					.build())
+					.build());
+		}
+		else
+		{
+			Log.w(LOG_TAG, "no game id given");
+			getActivity().getSupportFragmentManager().popBackStack();
+		}
 
 		return contentView;
 	}

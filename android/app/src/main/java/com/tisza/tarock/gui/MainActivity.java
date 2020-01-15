@@ -150,10 +150,15 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	@Override
 	public void joinGame(int gameID)
 	{
+		joinGame(gameID, false);
+	}
+
+	public void joinGame(int gameID, boolean history)
+	{
 		GameFragment gameFragment = new GameFragment();
 
 		Bundle args = new Bundle();
-		args.putInt(GameFragment.KEY_GAME_ID, gameID);
+		args.putInt(history ? GameFragment.KEY_HISTORY_GAME_ID : GameFragment.KEY_GAME_ID, gameID);
 		gameFragment.setArguments(args);
 
 		getSupportFragmentManager().beginTransaction()

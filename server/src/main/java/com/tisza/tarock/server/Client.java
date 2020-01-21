@@ -84,8 +84,6 @@ public class Client implements MessageHandler
 				Observable.concat(Observable.just(loggedInUser.getID()), Observable.fromIterable(createGame.getUserIDList())).map(server.getDatabase()::getUser).toList().flatMapCompletable(users ->
 				server.getGameSessionManager().createGameSession(gameType, users, doubleRoundType).flatMapCompletable(gameSession ->
 				{
-					server.broadcastStatus();
-
 					List<String> playerNames = gameSession.getPlayerNames();
 					Flowable.fromIterable(users).flatMap(User::getFCMTokens).flatMapSingle(fcmToken ->
 					Single.<Boolean>create(subscriber -> subscriber.onSuccess(server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameSession.getID(), loggedInUserName, playerNames)))
@@ -105,8 +103,6 @@ public class Client implements MessageHandler
 
 				if (server.getGameSessionManager().getGameSession(gameSessionID).isUserPlaying(loggedInUser))
 					server.getGameSessionManager().stopGameSession(gameSessionID);
-
-				server.broadcastStatus();
 			}
 
 			case JOIN_GAME_SESSION:

@@ -37,7 +37,7 @@ public class Server implements Runnable
 		this.port = port;
 
 		database = new TarockDatabase();
-		gameSessionManager = new GameSessionManager(database);
+		gameSessionManager = new GameSessionManager(this);
 		facebookUserManager = new FacebookUserManager(database);
 		googleUserManager = new GoogleUserManager(database);
 		firebaseNotificationSender = new FirebaseNotificationSender(new File(Main.STATIC_DIR, "fcm-service-account.json"));

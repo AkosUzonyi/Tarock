@@ -6,6 +6,7 @@ import android.widget.*;
 import androidx.lifecycle.*;
 import androidx.recyclerview.widget.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.proto.*;
 
 public class GameListFragment extends MainActivityFragment
 {

@@ -73,9 +73,6 @@ public class Client implements MessageHandler
 			{
 				MainProto.CreateGameSession createGame = message.getCreateGameSession();
 
-				if (createGame.getUserIDCount() != 3)
-					break;
-
 				GameType gameType = GameType.fromID(createGame.getType());
 				DoubleRoundType doubleRoundType = DoubleRoundType.fromID(createGame.getDoubleRoundType());
 
@@ -101,7 +98,9 @@ public class Client implements MessageHandler
 				int gameSessionID = message.getDeleteGameSession().getGameSessionId();
 
 				if (server.getGameSessionManager().getGameSession(gameSessionID).isUserPlaying(loggedInUser))
-					server.getGameSessionManager().stopGameSession(gameSessionID);
+					server.getGameSessionManager().endGameSession(gameSessionID);
+
+				break;
 			}
 
 			case JOIN_GAME_SESSION:
@@ -113,12 +112,28 @@ public class Client implements MessageHandler
 				}
 
 				GameSession gameSession = server.getGameSessionManager().getGameSession(message.getJoinGameSession().getGameSessionId());
+				if (gameSession.getState() == GameSession.State.ENDED)
+					break;
+
 				if (gameSession.isUserPlaying(loggedInUser))
 				{
 					ProtoPlayer player = (ProtoPlayer)gameSession.getPlayerByUser(loggedInUser);
 					switchPlayer(player);
 				}
-				else
+				else if (gameSession.getState() == GameSession.State.LOBBY)
+				{
+					disposables.add(
+					loggedInUser.createPlayer().subscribe(player ->
+					{
+						boolean added = gameSession.addPlayer(player);
+						if (added)
+						{
+							switchPlayer((ProtoPlayer)player);
+							server.broadcastStatus();
+						}
+					}));
+				}
+				else if (gameSession.getState() == GameSession.State.GAME)
 				{
 					disposables.add(
 					loggedInUser.createPlayer().subscribe(player ->
@@ -126,6 +141,16 @@ public class Client implements MessageHandler
 						gameSession.addKibic(player);
 						switchPlayer((ProtoPlayer)player);
 					}));
+				}
+
+				break;
+			}
+
+			case START_GAME_SESSION_LOBBY:
+			{
+				if (currentPlayer.getGameSession().getPlayers().indexOf(currentPlayer) == 0)
+				{
+					server.getGameSessionManager().startGameSessionLobbyWithBots(currentPlayer.getGameSession().getID());
 				}
 
 				break;
@@ -165,7 +190,11 @@ public class Client implements MessageHandler
 		if (currentPlayer != null)
 		{
 			currentPlayer.useConnection(null);
-			currentPlayer.getGameSession().removeKibic(currentPlayer);
+
+			if (currentPlayer.getGameSession().getState() == GameSession.State.LOBBY)
+				currentPlayer.getGameSession().removePlayer(currentPlayer);
+			else
+				currentPlayer.getGameSession().removeKibic(currentPlayer);
 		}
 
 		currentPlayer = player;
@@ -200,7 +229,10 @@ public class Client implements MessageHandler
 				logUserLoggedInStatus(true);
 		}
 
-		sendMessage(MainProto.Message.newBuilder().setLoginResult(MainProto.LoginResult.newBuilder().setUserId(loggedInUser.getID())).build());
+		MainProto.LoginResult.Builder loginMessageBuilder = MainProto.LoginResult.newBuilder();
+		if (loggedInUser != null)
+			loginMessageBuilder.setUserId(loggedInUser.getID());
+		sendMessage(MainProto.Message.newBuilder().setLoginResult(loginMessageBuilder).build());
 
 		server.broadcastStatus();
 	}
@@ -225,12 +257,7 @@ public class Client implements MessageHandler
 	public void disconnect()
 	{
 		disposables.dispose();
-		currentPlayer = null;
-		if (loggedInUser != null)
-		{
-			logUserLoggedInStatus(false);
-			loggedInUser = null;
-		}
+		userLogin(null);
 		try
 		{
 			connection.close();

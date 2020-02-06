@@ -157,7 +157,8 @@ public class CreateGameFragment extends MainActivityFragment
 		{
 			boolean matchQuery = normalizeString(user.getName()).contains(queryNormalized);
 			boolean alreadySelected = selectedUsers.contains(user);
-			if (matchQuery && !alreadySelected)
+			boolean isMe = connectionViewModel.getUserID().getValue() != null && user.getId() == connectionViewModel.getUserID().getValue();
+			if (matchQuery && !alreadySelected && !isMe)
 				searchResultUsers.add(user);
 		}
 

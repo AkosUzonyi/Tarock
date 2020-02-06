@@ -188,8 +188,7 @@ public class Server implements Runnable
 			client.getLoggedInUser().isFriendWith(user).flatMapCompletable(isFriend ->
 			Utils.userToProto(user, isFriend, isUserLoggedIn(user)).flatMapCompletable(userProto ->
 			{
-				if (!user.equals(client.getLoggedInUser()))
-					builder.addAvailableUser(userProto);
+				builder.addAvailableUser(userProto);
 
 				for (Map.Entry<GameSession, MainProto.GameSession.Builder> entry : gameSessionToProto.entrySet())
 					if (entry.getKey().isUserPlaying(user))

@@ -56,7 +56,7 @@ message GameSession
 {
     required int32 id = 1;
     required string type = 2;
-    repeated User user = 3;
+    repeated int32 user_id = 3;
 }
 
 message CreateGameSession

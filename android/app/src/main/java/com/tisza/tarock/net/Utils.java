@@ -32,11 +32,6 @@ public class Utils
 		return new User(userProto.getId(), userProto.getName(), imgURL, userProto.getIsFriend(), userProto.getOnline());
 	}
 
-	public static GameInfo gameInfoFromProto(MainProto.GameSession gameProto)
-	{
-		return new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), map(gameProto.getUserList(), Utils::userFromProto));
-	}
-
 	public static <T0, T1> List<T1> map(List<T0> list, Function<T0, T1> f)
 	{
 		List<T1> result = new ArrayList<>();

@@ -13,6 +13,7 @@ buffer messages
 announcement string modify
 database transactions
 okhttp cache size
+user id not negative
 
 features:
 error messages

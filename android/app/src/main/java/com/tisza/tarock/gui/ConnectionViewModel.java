@@ -182,12 +182,6 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 				break;
 
 			case SERVER_STATUS:
-				games.getValue().clear();
-				for (MainProto.GameSession gameProto : message.getServerStatus().getAvailableGameSessionList())
-				{
-					games.getValue().add(Utils.gameInfoFromProto(gameProto));
-				}
-				games.setValue(games.getValue());
 
 				users.getValue().clear();
 				for (MainProto.User userProto : message.getServerStatus().getAvailableUserList())
@@ -195,6 +189,20 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 					users.getValue().add(Utils.userFromProto(userProto));
 				}
 				users.setValue(users.getValue());
+
+				games.getValue().clear();
+				for (MainProto.GameSession gameProto : message.getServerStatus().getAvailableGameSessionList())
+				{
+					List<User> gameUserList = new ArrayList<>();
+					for (int userID : gameProto.getUserIdList())
+						for (User user : users.getValue())
+							if (user.getId() == userID)
+								gameUserList.add(user);
+
+					games.getValue().add(new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), gameUserList));
+				}
+				games.setValue(games.getValue());
+
 				break;
 
 			default:

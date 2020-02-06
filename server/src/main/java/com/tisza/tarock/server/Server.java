@@ -13,6 +13,7 @@ import java.io.*;
 import java.security.*;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.*;
 
 public class Server implements Runnable
 {
@@ -173,14 +174,14 @@ public class Server implements Runnable
 
 			MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
 
-			Map<GameSession, MainProto.GameSession.Builder> gameSessionToProto = new HashMap<>();
 			for (GameSession gameSession : gameSessionManager.getGameSessions())
 			{
 				MainProto.GameSession.Builder gameBuilder = MainProto.GameSession.newBuilder()
 						.setId(gameSession.getID())
-						.setType(gameSession.getGameType().getID());
+						.setType(gameSession.getGameType().getID())
+						.addAllUserId(gameSession.getPlayers().values().stream().map(p -> p.getUser().getID()).collect(Collectors.toList()));
 
-				gameSessionToProto.put(gameSession, gameBuilder);
+				builder.addAvailableGameSession(gameBuilder);
 			}
 
 			disposables.add(
@@ -189,20 +190,9 @@ public class Server implements Runnable
 			Utils.userToProto(user, isFriend, isUserLoggedIn(user)).flatMapCompletable(userProto ->
 			{
 				builder.addAvailableUser(userProto);
-
-				for (Map.Entry<GameSession, MainProto.GameSession.Builder> entry : gameSessionToProto.entrySet())
-					if (entry.getKey().isUserPlaying(user))
-						entry.getValue().addUser(userProto);
-
 				return Completable.complete();
 			})))
-			.subscribe(() ->
-			{
-				for (MainProto.GameSession.Builder gameBuilder : gameSessionToProto.values())
-					builder.addAvailableGameSession(gameBuilder);
-
-				client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());
-			}));
+			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build())));
 		}
 	}
 

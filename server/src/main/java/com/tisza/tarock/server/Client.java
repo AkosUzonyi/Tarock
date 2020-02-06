@@ -24,7 +24,6 @@ public class Client implements MessageHandler
 	private ProtoConnection connection;
 	private User loggedInUser = null;
 	private ProtoPlayer currentPlayer = null;
-	private GameSession currentGameSession;
 	private CompositeDisposable disposables = new CompositeDisposable();
 
 	public Client(Server server, ProtoConnection connection)
@@ -109,7 +108,7 @@ public class Client implements MessageHandler
 			{
 				if (!message.getJoinGameSession().hasGameSessionId())
 				{
-					switchGameSession(null, null);
+					switchPlayer(null);
 					break;
 				}
 
@@ -117,7 +116,7 @@ public class Client implements MessageHandler
 				if (gameSession.isUserPlaying(loggedInUser))
 				{
 					ProtoPlayer player = (ProtoPlayer)gameSession.getPlayerByUser(loggedInUser);
-					switchGameSession(gameSession, player);
+					switchPlayer(player);
 				}
 				else
 				{
@@ -125,7 +124,7 @@ public class Client implements MessageHandler
 					loggedInUser.createPlayer().subscribe(player ->
 					{
 						gameSession.addKibic(player);
-						switchGameSession(gameSession, (ProtoPlayer)player);
+						switchPlayer((ProtoPlayer)player);
 					}));
 				}
 
@@ -138,7 +137,7 @@ public class Client implements MessageHandler
 				GameSession.createHistoryView(message.getJoinHistoryGame().getGameId(), server.getDatabase()).subscribe(gameSession ->
 				{
 					ProtoPlayer player = (ProtoPlayer)gameSession.getPlayerByUser(loggedInUser);
-					switchGameSession(gameSession, player);
+					switchPlayer(player);
 				}));
 
 				break;
@@ -161,15 +160,14 @@ public class Client implements MessageHandler
 		}
 	}
 
-	private void switchGameSession(GameSession gameSession, ProtoPlayer player)
+	private void switchPlayer(ProtoPlayer player)
 	{
 		if (currentPlayer != null)
 		{
 			currentPlayer.useConnection(null);
-			currentGameSession.removeKibic(currentPlayer);
+			currentPlayer.getGameSession().removeKibic(currentPlayer);
 		}
 
-		currentGameSession = gameSession;
 		currentPlayer = player;
 
 		if (currentPlayer != null)
@@ -191,7 +189,7 @@ public class Client implements MessageHandler
 		}
 		else
 		{
-			switchGameSession(null, null);
+			switchPlayer(null);
 
 			if (loggedInUser != null)
 				logUserLoggedInStatus(false);

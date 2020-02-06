@@ -36,6 +36,11 @@ public abstract class Player
 		return seat;
 	}
 
+	public GameSession getGameSession()
+	{
+		return gameSession;
+	}
+
 	public void setGame(GameSession gameSession, PlayerSeat seat)
 	{
 		this.gameSession = gameSession;

@@ -4,8 +4,6 @@ import android.content.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 
-import java.util.*;
-
 class PasszSzolot extends ZebiSound
 {
 	private boolean solo;
@@ -16,7 +14,7 @@ class PasszSzolot extends ZebiSound
 	}
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		solo = false;
 	}

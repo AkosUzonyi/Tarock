@@ -85,7 +85,7 @@ public class GameSession
 			for (int i = 0; i < 4; i++)
 				gameSession.points[i] = points.get(i);
 
-			gameSession.currentGame = new Game(gameType, gameSession.getPlayerNames(), beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
 			for (Tuple3<PlayerSeat, Action, Long> actionTuple : actions)
@@ -132,7 +132,7 @@ public class GameSession
 			gameSession.currentBeginnerPlayer = beginnerPlayer;
 			gameSession.historyView = true;
 
-			gameSession.currentGame = new Game(gameType, gameSession.getPlayerNames(), beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
 			for (Tuple3<PlayerSeat, Action, Long> actionTuple : actions)
@@ -219,6 +219,7 @@ public class GameSession
 			database.addPlayer(id, seat, player.getUser());
 		}
 
+		sendPlayerInfo(null);
 		startNewGame();
 	}
 
@@ -259,6 +260,9 @@ public class GameSession
 		if (userAlreadyInLobby)
 			return false;
 
+		PlayerSeat seat = PlayerSeat.fromInt(players.size());
+		dispatchEvent(EventInstance.broadcast(Event.player(seat, player.getUser())));
+
 		players.add(player);
 		player.setGame(this, null);
 		return true;
@@ -267,12 +271,17 @@ public class GameSession
 	public boolean removePlayer(Player player)
 	{
 		checkIsLobby();
-		if (players.remove(player))
-		{
-			player.setGame(null, null);
-			return true;
-		}
-		return false;
+
+		int pos = players.indexOf(player);
+		if (pos < 0)
+			return false;
+
+		PlayerSeat seat = PlayerSeat.fromInt(pos);
+		dispatchEvent(EventInstance.broadcast(Event.player(seat, null)));
+
+		players.remove(player);
+		player.setGame(null, null);
+		return true;
 	}
 
 	public Player getPlayerByUser(User user)
@@ -332,7 +341,7 @@ public class GameSession
 			actionOrdinal = 0;
 		}
 
-		currentGame = new Game(gameType, getPlayerNames(), currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
+		currentGame = new Game(gameType, currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
 		dispatchNewEvents();
 	}
@@ -376,6 +385,12 @@ public class GameSession
 		}
 	}
 
+	private void sendPlayerInfo(PlayerSeat target)
+	{
+		for (PlayerSeat seat : PlayerSeat.getAll())
+			dispatchEvent(new EventInstance(target, Event.player(seat, players.get(seat.asInt()).getUser())));
+	}
+
 	private void dispatchNewEvents()
 	{
 		checkGameStarted();
@@ -387,8 +402,6 @@ public class GameSession
 
 	private void dispatchEvent(EventInstance event)
 	{
-		checkGameStarted();
-
 		if (event.getPlayerSeat() == null)
 			for (Player player : allPlayers)
 				player.handleEvent(event.getEvent());
@@ -398,14 +411,16 @@ public class GameSession
 
 	public void requestHistory(Player player)
 	{
-		if (currentGame == null)
-			return;
+		sendPlayerInfo(player.getSeat());
 
-		player.handleEvent(Event.historyMode(true));
-		for (EventInstance event : currentGame.getAllEvents())
-			if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
-				player.handleEvent(event.getEvent());
-		player.handleEvent(Event.historyMode(false));
+		if (currentGame != null)
+		{
+			player.handleEvent(Event.historyMode(true));
+			for (EventInstance event : currentGame.getAllEvents())
+				if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
+					player.handleEvent(event.getEvent());
+			player.handleEvent(Event.historyMode(false));
+		}
 	}
 
 	public enum State

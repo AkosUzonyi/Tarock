@@ -216,6 +216,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		int[] centerViewTitles = {R.string.pager_announcing, R.string.pager_gameplay, R.string.pager_statistics};
 		centerSpace.setAdapter(new CenterViewPagerAdapter(getActivity(), centerViews, centerViewTitles));
 
+		myUserID = connectionViewModel.getUserID().getValue();
+
 		for (ZebiSound zebiSound : zebiSounds.getZebiSounds())
 		{
 			connectionViewModel.addEventHandler(zebiSound);
@@ -295,9 +297,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 	}
 
-	private List<String> playerNames;
-	protected List<Card> myCards;
-	private int seat;
+	private int myUserID;
+	private List<Card> myCards;
+	private int seat = -1;
 	private Team myTeam;
 	private GameType gameType;
 	private int beginnerPlayer;
@@ -312,31 +314,45 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private boolean skarting = false;
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		resetGameViews();
 
-		this.playerNames = playerNames;
 		this.gameType = gameType;
 		this.beginnerPlayer = beginnerPlayer;
 		myTeam = null;
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
 		messages = "";
-		seat(-1);
 	}
 
 	@Override
-	public void seat(int seat)
+	public void playerAdded(int seat, int userID)
 	{
-		this.seat = seat;
-		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
-		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
-
-		for (int i = 0; i < 4; i++)
+		if (userID == myUserID)
 		{
-			int pos = getPositionFromPlayerID(i);
-			playerNameViews[pos].setText(playerNames.get(i));
+			this.seat = seat;
+			myCardsView.setVisibility(View.VISIBLE);
+			playerNameViews[0].setVisibility(View.GONE);
+		}
+
+		User user = null;
+		for (User u : connectionViewModel.getUsers().getValue())
+			if (u.getId() == userID)
+				user = u;
+
+		int pos = getPositionFromPlayerID(seat);
+		playerNameViews[pos].setText(user.getName());
+	}
+
+	@Override
+	public void playerRemoved(int seat)
+	{
+		if (seat == this.seat)
+		{
+			this.seat = -1;
+			myCardsView.setVisibility(View.GONE);
+			playerNameViews[0].setVisibility(View.VISIBLE);
 		}
 	}
 
@@ -686,7 +702,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		for (int i = 0; i < 4; i++)
 		{
 			TextView nameView = statisticsPointsNameViews[i];
-			nameView.setText(playerNames.get(i));
+			nameView.setText(playerNameViews[i].getText());
 
 			TextView pointsView = statisticsPointsValueViews[i];
 			pointsView.setText(String.valueOf(playerPoints.get(i)));
@@ -846,7 +862,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private void displayPlayerActionMessage(int actionRes, int player, String msg)
 	{
-		displayMessage(actionRes, playerNames.get(player), msg);
+		displayMessage(actionRes, playerNameViews[player].getText(), msg);
 		showPlayerMessageView(player, msg);
 	}
 	

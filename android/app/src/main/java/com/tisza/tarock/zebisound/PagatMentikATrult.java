@@ -5,8 +5,6 @@ import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 
-import java.util.*;
-
 class PagatMentikATrult extends ZebiSound
 {
 	private boolean trullAnnounced;
@@ -18,7 +16,7 @@ class PagatMentikATrult extends ZebiSound
 	}
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		trullAnnounced = false;
 		firstCardNext = true;

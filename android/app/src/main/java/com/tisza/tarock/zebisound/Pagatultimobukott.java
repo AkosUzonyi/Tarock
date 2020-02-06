@@ -5,8 +5,6 @@ import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 
-import java.util.*;
-
 class Pagatultimobukott extends ZebiSound
 {
 	private int round;
@@ -18,7 +16,7 @@ class Pagatultimobukott extends ZebiSound
 	}
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		round = 0;
 		pagatInLastRoundPlayer = -1;

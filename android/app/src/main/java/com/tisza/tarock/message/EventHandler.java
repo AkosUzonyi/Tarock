@@ -7,8 +7,9 @@ import java.util.*;
 
 public interface EventHandler
 {
-	default void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer) {}
-	default void seat(int seat) {}
+	default void startGame(GameType gameType, int beginnerPlayer) {}
+	default void playerAdded(int seat, int userID) {}
+	default void playerRemoved(int seat) {}
 	default void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier) {}
 	default void playerPoints(List<Integer> playerPoints) {}
 	default void announce(int player, Announcement announcementContra) {}

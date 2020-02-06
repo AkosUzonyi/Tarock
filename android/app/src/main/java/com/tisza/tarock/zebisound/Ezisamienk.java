@@ -4,8 +4,6 @@ import android.content.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 
-import java.util.*;
-
 class Ezisamienk extends ZebiSound
 {
 	private int myID;
@@ -17,7 +15,7 @@ class Ezisamienk extends ZebiSound
 	}
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		this.myID = myID;
 		takeCount = 0;

@@ -136,10 +136,9 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setPlayerTeamInfo(e).build());
 		}
 
-		@Override public void startGame(List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
+		@Override public void startGame(GameType gameType, PlayerSeat beginnerPlayer)
 		{
 			EventProto.Event.StartGame e = EventProto.Event.StartGame.newBuilder()
-					.addAllPlayerName(names)
 					.setGameType(gameType.getID())
 					.setBeginnerPlayer(beginnerPlayer.asInt())
 					.build();
@@ -147,12 +146,15 @@ public class ProtoPlayer extends Player implements MessageHandler
 		}
 
 		@Override
-		public void seat(PlayerSeat seat)
+		public void player(PlayerSeat seat, User user)
 		{
-			EventProto.Event.Seat e = EventProto.Event.Seat.newBuilder()
-					.setSeat(seat == null ? -1 : seat.asInt())
-					.build();
-			sendEvent(EventProto.Event.newBuilder().setSeat(e).build());
+			EventProto.Event.Player.Builder e = EventProto.Event.Player.newBuilder()
+					.setSeat(seat.asInt());
+
+			if (user != null)
+				e.setUserId(user.getID());
+
+			sendEvent(EventProto.Event.newBuilder().setPlayer(e).build());
 		}
 
 		@Override public void playerCards(PlayerCards cards)

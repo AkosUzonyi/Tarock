@@ -33,11 +33,14 @@ public class ProtoEvent implements Event
 		{
 			case START_GAME:
 				EventProto.Event.StartGame startGame = event.getStartGame();
-				handler.startGame(startGame.getPlayerNameList(), GameType.fromID(startGame.getGameType()), startGame.getBeginnerPlayer());
+				handler.startGame(GameType.fromID(startGame.getGameType()), startGame.getBeginnerPlayer());
 				break;
-			case SEAT:
-				EventProto.Event.Seat seat = event.getSeat();
-				handler.seat(seat.getSeat());
+			case PLAYER:
+				EventProto.Event.Player player = event.getPlayer();
+				if (player.hasUserId())
+					handler.playerAdded(player.getSeat(), player.getUserId());
+				else
+					handler.playerRemoved(player.getSeat());
 				break;
 			case TURN:
 				handler.turn(event.getTurn().getPlayer());

@@ -12,7 +12,6 @@ public class Game
 	public static final int ROUND_COUNT = 9;
 
 	private final GameType gameType;
-	private final List<String> playerNames;
 	private final PlayerSeat beginnerPlayer;
 	private final List<Card> deck;
 
@@ -63,10 +62,9 @@ public class Game
 		}
 	}
 
-	public Game(GameType gameType, List<String> playerNames, PlayerSeat beginnerPlayer, List<Card> deck, int[] points, int pointMultiplier)
+	public Game(GameType gameType, PlayerSeat beginnerPlayer, List<Card> deck, int[] points, int pointMultiplier)
 	{
 		this.gameType = gameType;
-		this.playerNames = playerNames;
 		this.beginnerPlayer = beginnerPlayer;
 		this.deck = deck;
 		this.points = points;
@@ -87,12 +85,9 @@ public class Game
 		}
 		setTalon(cardsToDeal);
 
-		broadcastEvent(Event.startGame(playerNames, gameType, beginnerPlayer));
+		broadcastEvent(Event.startGame(gameType, beginnerPlayer));
 		for (PlayerSeat player : PlayerSeat.getAll())
-		{
-			sendEvent(player, Event.seat(player));
 			sendEvent(player, Event.playerCards(playersCards.get(player).clone()));
-		}
 
 		changePhase(new Bidding(this));
 	}

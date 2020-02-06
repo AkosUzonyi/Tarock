@@ -3,6 +3,7 @@ package com.tisza.tarock.message;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.phase.*;
+import com.tisza.tarock.server.database.*;
 
 import java.util.*;
 
@@ -55,14 +56,14 @@ public interface Event
 		return handler -> handler.playerTeamInfo(otherPlayer, team);
 	}
 
-	static Event startGame(List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
+	static Event startGame(GameType gameType, PlayerSeat beginnerPlayer)
 	{
-		return handler -> handler.startGame(names, gameType, beginnerPlayer);
+		return handler -> handler.startGame(gameType, beginnerPlayer);
 	}
 
-	static Event seat(PlayerSeat seat)
+	static Event player(PlayerSeat seat, User user)
 	{
-		return handler -> handler.seat(seat);
+		return handler -> handler.player(seat, user);
 	}
 
 	static Event playerCards(PlayerCards cards)

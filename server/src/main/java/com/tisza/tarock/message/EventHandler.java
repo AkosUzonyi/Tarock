@@ -3,6 +3,7 @@ package com.tisza.tarock.message;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.phase.*;
+import com.tisza.tarock.server.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.player.*;
 
@@ -32,7 +33,7 @@ public interface EventHandler
 	default void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier) {}
 	default void playerPoints(int[] points) {}
 	default void pendingNewGame() {}
-	default void deleteGame() {}
+	default void gameSessionState(GameSession.State state) {}
 	default void historyMode(boolean isHistory) {}
 	default void chat(PlayerSeat player, String message) {}
 }

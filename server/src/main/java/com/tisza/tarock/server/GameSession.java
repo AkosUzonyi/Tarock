@@ -219,6 +219,7 @@ public class GameSession
 			database.addPlayer(id, seat, player.getUser());
 		}
 
+		sendStateInfo(null);
 		sendPlayerInfo(null);
 		startNewGame();
 	}
@@ -231,7 +232,6 @@ public class GameSession
 	public void endSession()
 	{
 		currentGame = null;
-		dispatchEvent(EventInstance.broadcast(Event.deleteGame()));
 		for (Player player : allPlayers)
 			player.setGame(null, null);
 
@@ -247,6 +247,7 @@ public class GameSession
 		}
 
 		state = State.ENDED;
+		sendStateInfo(null);
 	}
 
 	public boolean addPlayer(Player player)
@@ -391,6 +392,11 @@ public class GameSession
 			dispatchEvent(new EventInstance(target, Event.player(seat, players.get(seat.asInt()).getUser())));
 	}
 
+	private void sendStateInfo(PlayerSeat target)
+	{
+		dispatchEvent(new EventInstance(target, Event.gameSessionState(state)));
+	}
+
 	private void dispatchNewEvents()
 	{
 		checkGameStarted();
@@ -411,6 +417,7 @@ public class GameSession
 
 	public void requestHistory(Player player)
 	{
+		sendStateInfo(player.getSeat());
 		sendPlayerInfo(player.getSeat());
 
 		if (currentGame != null)

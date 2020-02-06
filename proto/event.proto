@@ -24,12 +24,22 @@ message Event
 		Statistics statistics = 11;
 		PlayerPoints player_points = 16;
 		PendingNewGame pending_new_game = 12;
-		DeleteGame delete_game = 15;
+		GameSessionState game_session_state = 15;
 	}
 	message Player
 	{
 		required int32 seat = 1;
 		optional int32 user_id = 2;
+	}
+	message GameSessionState
+	{
+		enum Enum
+		{
+			LOBBY = 1;
+			GAME = 2;
+			ENDED = 3;
+		}
+		required Enum game_session_state = 1;
 	}
 	message StartGame
 	{
@@ -103,9 +113,6 @@ message Event
 		repeated sint32 player_point = 1;
 	}
 	message PendingNewGame
-	{
-	}
-	message DeleteGame
 	{
 	}
 }

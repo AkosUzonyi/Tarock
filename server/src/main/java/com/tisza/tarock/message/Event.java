@@ -3,6 +3,7 @@ package com.tisza.tarock.message;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.phase.*;
+import com.tisza.tarock.server.*;
 import com.tisza.tarock.server.database.*;
 
 import java.util.*;
@@ -61,6 +62,11 @@ public interface Event
 		return handler -> handler.startGame(gameType, beginnerPlayer);
 	}
 
+	static Event gameSessionState(GameSession.State state)
+	{
+		return handler -> handler.gameSessionState(state);
+	}
+
 	static Event player(PlayerSeat seat, User user)
 	{
 		return handler -> handler.player(seat, user);
@@ -114,11 +120,6 @@ public interface Event
 	static Event playerPoints(int[] points)
 	{
 		return handler -> handler.playerPoints(points);
-	}
-
-	static Event deleteGame()
-	{
-		return handler -> handler.deleteGame();
 	}
 
 	static Event pendingNewGame()

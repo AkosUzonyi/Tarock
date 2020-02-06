@@ -327,6 +327,17 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	@Override
+	public void gameSessionState(GameSessionState state)
+	{
+		switch (state)
+		{
+			case ENDED:
+				getActivity().getSupportFragmentManager().popBackStack();
+				break;
+		}
+	}
+
+	@Override
 	public void playerAdded(int seat, int userID)
 	{
 		if (userID == myUserID)
@@ -728,12 +739,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			okButton.setVisibility(View.GONE);
 
 		setHiglighted(player, false);
-	}
-
-	@Override
-	public void deleteGame()
-	{
-		getActivity().getSupportFragmentManager().popBackStack();
 	}
 
 	@Override

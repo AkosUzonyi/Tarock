@@ -2,6 +2,7 @@ package com.tisza.tarock.server.player;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
+import com.tisza.tarock.server.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
@@ -257,10 +258,17 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setPendingNewGame(e).build());
 		}
 
-		@Override public void deleteGame()
+		@Override public void gameSessionState(GameSession.State state)
 		{
-			EventProto.Event.DeleteGame e = EventProto.Event.DeleteGame.newBuilder().build();
-			sendEvent(EventProto.Event.newBuilder().setDeleteGame(e).build());
+			EventProto.Event.GameSessionState.Builder e = EventProto.Event.GameSessionState.newBuilder();
+			switch (state)
+			{
+				case LOBBY: e.setGameSessionState(EventProto.Event.GameSessionState.Enum.LOBBY); break;
+				case GAME: e.setGameSessionState(EventProto.Event.GameSessionState.Enum.GAME); break;
+				case ENDED: e.setGameSessionState(EventProto.Event.GameSessionState.Enum.ENDED); break;
+				default: throw new IllegalArgumentException("unknown game state: " + state);
+			}
+			sendEvent(EventProto.Event.newBuilder().setGameSessionState(e).build());
 		}
 	};
 }

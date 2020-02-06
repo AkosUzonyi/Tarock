@@ -31,6 +31,6 @@ public interface EventHandler
 	default void wrongAction() {}
 	default void pendingNewGame() {}
 	default void readyForNewGame(int player) {}
-	default void deleteGame() {}
+	default void gameSessionState(GameSessionState state) {}
 	default void chat(int player, String message) {}
 }

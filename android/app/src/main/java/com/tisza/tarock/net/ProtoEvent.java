@@ -95,8 +95,14 @@ public class ProtoEvent implements Event
 			case PENDING_NEW_GAME:
 				handler.pendingNewGame();
 				break;
-			case DELETE_GAME:
-				handler.deleteGame();
+			case GAME_SESSION_STATE:
+				switch (event.getGameSessionState().getGameSessionState())
+				{
+					case LOBBY: handler.gameSessionState(GameSessionState.LOBBY); break;
+					case GAME: handler.gameSessionState(GameSessionState.GAME); break;
+					case ENDED: handler.gameSessionState(GameSessionState.ENDED); break;
+					default: throw new IllegalArgumentException("unknown game session state: " + event.getGameSessionState().getGameSessionState());
+				}
 				break;
 			case PLAYER_ACTION:
 				handlePlayerAction(handler, event.getPlayerAction().getPlayer(), event.getPlayerAction().getAction());

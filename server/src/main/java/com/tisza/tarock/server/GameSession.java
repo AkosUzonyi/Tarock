@@ -128,9 +128,9 @@ public class GameSession
 					gameSession.lastModified = time;
 			}
 
-			gameSession.dispatchEvent(new EventInstance(null, Event.historyMode(true)));
+			gameSession.dispatchEvent(EventInstance.broadcast(Event.historyMode(true)));
 			gameSession.dispatchNewEvents();
-			gameSession.dispatchEvent(new EventInstance(null, Event.historyMode(false)));
+			gameSession.dispatchEvent(EventInstance.broadcast(Event.historyMode(false)));
 
 			return gameSession;
 		}))))));
@@ -199,7 +199,7 @@ public class GameSession
 	public void stopSession()
 	{
 		currentGame = null;
-		dispatchEvent(new EventInstance(null, Event.deleteGame()));
+		dispatchEvent(EventInstance.broadcast(Event.deleteGame()));
 		for (Player player : allPlayers)
 			player.setGame(null, null);
 

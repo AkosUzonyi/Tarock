@@ -170,8 +170,8 @@ public class Game
 
 	public void broadcastEvent(Event event)
 	{
-		events.add(new EventInstance(null, event));
-		newEvents.add(new EventInstance(null, event));
+		events.add(EventInstance.broadcast(event));
+		newEvents.add(EventInstance.broadcast(event));
 		event.handle(teamInfoTracker);
 	}
 

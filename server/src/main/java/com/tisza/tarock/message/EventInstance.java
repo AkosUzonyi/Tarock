@@ -13,6 +13,11 @@ public class EventInstance
 		this.event = event;
 	}
 
+	public static EventInstance broadcast(Event event)
+	{
+		return new EventInstance(null, event);
+	}
+
 	public PlayerSeat getPlayerSeat()
 	{
 		return playerSeat;

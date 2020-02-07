@@ -196,8 +196,12 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		if (progressDialog.isShowing())
 			progressDialog.dismiss();
 
+		Fragment loginFragment = getSupportFragmentManager().findFragmentByTag(LoginFragment.TAG);
+		if (loginFragment == null)
+			loginFragment = new LoginFragment();
+
 		getSupportFragmentManager().beginTransaction()
-				.replace(R.id.fragment_container, new LoginFragment(), LoginFragment.TAG)
+				.replace(R.id.fragment_container, loginFragment, LoginFragment.TAG)
 				.commit();
 	}
 

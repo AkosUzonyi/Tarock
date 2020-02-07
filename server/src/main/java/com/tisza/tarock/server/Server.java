@@ -109,6 +109,7 @@ public class Server implements Runnable
 		try
 		{
 			database.initialize();
+			firebaseNotificationSender.initialize();
 			gameSessionManager.initialize();
 			facebookUserManager.refreshImageURLs();
 

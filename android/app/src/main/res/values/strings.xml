@@ -36,6 +36,7 @@
     <string name="cancel">Mégse</string>
 
     <string name="lobby_create">Lobby létrehozása</string>
+    <string name="lobby_enter">Belépés a lobbyba</string>
     <string name="lobby_start_with_bots">Lobby indítása robotokkal</string>
     <string name="lobby_delete">Lobby törlése</string>
     <string name="lobby_leave">Lobby elhagyása</string>

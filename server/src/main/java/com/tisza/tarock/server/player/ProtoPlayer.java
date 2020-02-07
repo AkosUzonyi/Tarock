@@ -260,14 +260,8 @@ public class ProtoPlayer extends Player implements MessageHandler
 
 		@Override public void gameSessionState(GameSession.State state)
 		{
-			EventProto.Event.GameSessionState.Builder e = EventProto.Event.GameSessionState.newBuilder();
-			switch (state)
-			{
-				case LOBBY: e.setGameSessionState(EventProto.Event.GameSessionState.Enum.LOBBY); break;
-				case GAME: e.setGameSessionState(EventProto.Event.GameSessionState.Enum.GAME); break;
-				case ENDED: e.setGameSessionState(EventProto.Event.GameSessionState.Enum.ENDED); break;
-				default: throw new IllegalArgumentException("unknown game state: " + state);
-			}
+			EventProto.Event.GameSessionState.Builder e = EventProto.Event.GameSessionState.newBuilder()
+					.setGameSessionState(Utils.gameSessionStateToProto(state));
 			sendEvent(EventProto.Event.newBuilder().setGameSessionState(e).build());
 		}
 	};

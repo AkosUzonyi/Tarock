@@ -181,7 +181,8 @@ public class Server implements Runnable
 				MainProto.GameSession.Builder gameBuilder = MainProto.GameSession.newBuilder()
 						.setId(gameSession.getID())
 						.setType(gameSession.getGameType().getID())
-						.addAllUserId(gameSession.getPlayers().stream().map(p -> p.getUser().getID()).collect(Collectors.toList()));
+						.addAllUserId(gameSession.getPlayers().stream().map(p -> p.getUser().getID()).collect(Collectors.toList()))
+						.setState(Utils.gameSessionStateToProto(gameSession.getState()));
 
 				builder.addAvailableGameSession(gameBuilder);
 			}

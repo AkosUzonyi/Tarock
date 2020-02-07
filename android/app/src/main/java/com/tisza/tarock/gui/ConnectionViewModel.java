@@ -199,7 +199,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 							if (user.getId() == userID)
 								gameUserList.add(user);
 
-					games.getValue().add(new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), gameUserList));
+					games.getValue().add(new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), gameUserList, Utils.gameSessionStateFromProto(gameProto.getState())));
 				}
 				games.setValue(games.getValue());
 

@@ -79,12 +79,26 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 
 		for (int i = 0; i < 4; i++)
 		{
-			holder.userNameViews[i].setText(gameInfo.getUsers().get(i).getName());
+			holder.userNameViews[i].setText(i < gameInfo.getUsers().size() ? gameInfo.getUsers().get(i).getName() : "");
 		}
 
-		holder.joinGameButton.setText(gameInfo.containsUser(userID) ? R.string.join_game : R.string.join_game_kibic);
+		int joinButtonText;
+		if (gameInfo.getState() == GameSessionState.LOBBY)
+			joinButtonText = R.string.lobby_enter;
+		else if (gameInfo.containsUser(userID))
+			joinButtonText = R.string.join_game;
+		else
+			joinButtonText = R.string.join_game_kibic;
+
+		boolean deleteButtonVisible;
+		if (gameInfo.getState() == GameSessionState.LOBBY)
+			deleteButtonVisible = gameInfo.getUsers().size() > 0 && gameInfo.getUsers().get(0).getId() == userID;
+		else
+			deleteButtonVisible = gameInfo.containsUser(userID);
+
+		holder.joinGameButton.setText(joinButtonText);
 		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGame(gameInfo.getId()));
-		holder.deleteGameButton.setVisibility(gameInfo.containsUser(userID) ? View.VISIBLE : View.GONE);
+		holder.deleteGameButton.setVisibility(deleteButtonVisible ? View.VISIBLE : View.GONE);
 		holder.deleteGameButton.setOnClickListener(v -> gameAdapterListener.deleteGame(gameInfo.getId()));
 	}
 

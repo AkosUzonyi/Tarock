@@ -58,6 +58,7 @@ message GameSession
     required int32 id = 1;
     required string type = 2;
     repeated int32 user_id = 3;
+    required Event.GameSessionState.Enum state = 4;
 }
 
 message CreateGameSession

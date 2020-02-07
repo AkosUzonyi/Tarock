@@ -81,6 +81,22 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		return users;
 	}
 
+	public LiveData<User> getUserByID(int userID)
+	{
+		MediatorLiveData<User> mediatorLiveData = new MediatorLiveData<>();
+		mediatorLiveData.addSource(users, userList ->
+		{
+			User user = null;
+			for (User u : userList)
+				if (u.getId() == userID)
+					user = u;
+
+			mediatorLiveData.setValue(user);
+		});
+
+		return mediatorLiveData;
+	}
+
 	public LiveData<Integer> getUserID()
 	{
 		return userID;

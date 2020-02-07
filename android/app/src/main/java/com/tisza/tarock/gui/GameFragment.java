@@ -347,13 +347,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			playerNameViews[0].setVisibility(View.GONE);
 		}
 
-		User user = null;
-		for (User u : connectionViewModel.getUsers().getValue())
-			if (u.getId() == userID)
-				user = u;
-
 		int pos = getPositionFromPlayerID(seat);
-		playerNameViews[pos].setText(user.getName());
+		connectionViewModel.getUserByID(userID).observe(this, user -> playerNameViews[pos].setText(user.getName()));
 	}
 
 	@Override
@@ -365,6 +360,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			myCardsView.setVisibility(View.GONE);
 			playerNameViews[0].setVisibility(View.VISIBLE);
 		}
+
+		int pos = getPositionFromPlayerID(seat);
+		playerNameViews[pos].setText("---");
 	}
 
 	private void doAction(Action action)

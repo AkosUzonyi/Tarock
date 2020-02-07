@@ -262,10 +262,10 @@ public class GameSession
 			return false;
 
 		PlayerSeat seat = PlayerSeat.fromInt(players.size());
+		players.add(player);
+		player.setGame(this, seat);
 		dispatchEvent(EventInstance.broadcast(Event.player(seat, player.getUser())));
 
-		players.add(player);
-		player.setGame(this, null);
 		return true;
 	}
 
@@ -279,9 +279,9 @@ public class GameSession
 
 		PlayerSeat seat = PlayerSeat.fromInt(pos);
 		dispatchEvent(EventInstance.broadcast(Event.player(seat, null)));
-
 		players.remove(player);
 		player.setGame(null, null);
+
 		return true;
 	}
 
@@ -389,7 +389,7 @@ public class GameSession
 	private void sendPlayerInfo(PlayerSeat target)
 	{
 		for (PlayerSeat seat : PlayerSeat.getAll())
-			dispatchEvent(new EventInstance(target, Event.player(seat, players.get(seat.asInt()).getUser())));
+			dispatchEvent(new EventInstance(target, Event.player(seat, seat.asInt() >= players.size() ? null : players.get(seat.asInt()).getUser())));
 	}
 
 	private void sendStateInfo(PlayerSeat target)

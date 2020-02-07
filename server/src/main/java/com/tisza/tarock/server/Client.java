@@ -127,10 +127,7 @@ public class Client implements MessageHandler
 					{
 						boolean added = gameSession.addPlayer(player);
 						if (added)
-						{
 							switchPlayer((ProtoPlayer)player);
-							server.broadcastStatus();
-						}
 					}));
 				}
 				else if (gameSession.getState() == GameSession.State.GAME)
@@ -201,6 +198,8 @@ public class Client implements MessageHandler
 
 		if (currentPlayer != null)
 			currentPlayer.useConnection(connection);
+
+		server.broadcastStatus();
 	}
 
 	private void userLogin(User newUser)

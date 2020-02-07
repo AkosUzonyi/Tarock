@@ -113,9 +113,6 @@ public class CreateGameFragment extends MainActivityFragment
 
 	private void createButtonClicked()
 	{
-		if (selectedUsers.size() != 0 && selectedUsers.size() != SELECT_USER_COUNT)
-			return;
-
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
 		sharedPreferences.edit()
 				.putInt(GAME_TYPE_KEY, gameTypeSpinner.getSelectedItemPosition())
@@ -193,21 +190,6 @@ public class CreateGameFragment extends MainActivityFragment
 
 	private void updateCreateButton()
 	{
-		//TODO create half lobby
-		if (selectedUsers.size() == 0)
-		{
-			createButton.setText(R.string.lobby_create);
-			createButton.setEnabled(true);
-		}
-		else if (selectedUsers.size() == SELECT_USER_COUNT)
-		{
-			createButton.setText(R.string.create_game);
-			createButton.setEnabled(true);
-		}
-		else
-		{
-			createButton.setText(R.string.create_game_select_3);
-			createButton.setEnabled(false);
-		}
+		createButton.setText(selectedUsers.size() == SELECT_USER_COUNT ? R.string.create_game : R.string.lobby_create);
 	}
 }

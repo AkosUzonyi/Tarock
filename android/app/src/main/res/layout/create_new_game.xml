@@ -89,8 +89,6 @@
         android:id="@+id/create_game_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/create_game_select_3"
-        android:enabled="false"
     />
 
 </LinearLayout>

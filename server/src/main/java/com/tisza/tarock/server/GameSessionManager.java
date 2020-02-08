@@ -76,13 +76,6 @@ public class GameSessionManager
 		return gameSessions.get(id);
 	}
 
-	public void endGameSession(int id)
-	{
-		GameSession gameSession = gameSessions.remove(id);
-		gameSession.endSession();
-		server.broadcastStatus();
-	}
-
 	public Collection<GameSession> getGameSessions()
 	{
 		return gameSessions.values();
@@ -90,9 +83,11 @@ public class GameSessionManager
 
 	public void deleteOldGames()
 	{
-		for (Map.Entry<Integer, GameSession> gameSessionEntry : new HashSet<>(gameSessions.entrySet()))
-			if (gameSessionEntry.getValue().getLastModified() < System.currentTimeMillis() - MAX_GAME_IDLE_TIME)
-				endGameSession(gameSessionEntry.getKey());
+		for (GameSession gameSession : gameSessions.values())
+			if (gameSession.getLastModified() < System.currentTimeMillis() - MAX_GAME_IDLE_TIME)
+				gameSession.endSession();
+
+		gameSessions.entrySet().removeIf(entry -> entry.getValue().getState() == GameSession.State.ENDED);
 
 		server.broadcastStatus();
 	}

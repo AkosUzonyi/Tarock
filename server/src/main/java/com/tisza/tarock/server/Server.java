@@ -178,6 +178,9 @@ public class Server implements Runnable
 
 			for (GameSession gameSession : gameSessionManager.getGameSessions())
 			{
+				if (gameSession.getState() == GameSession.State.ENDED)
+					continue;
+
 				MainProto.GameSession.Builder gameBuilder = MainProto.GameSession.newBuilder()
 						.setId(gameSession.getID())
 						.setType(gameSession.getGameType().getID())

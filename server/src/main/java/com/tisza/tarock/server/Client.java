@@ -96,10 +96,11 @@ public class Client implements MessageHandler
 			case DELETE_GAME_SESSION:
 			{
 				int gameSessionID = message.getDeleteGameSession().getGameSessionId();
+				GameSession gameSession = server.getGameSessionManager().getGameSession(gameSessionID);
+				if (gameSession.isUserPlaying(loggedInUser))
+					gameSession.endSession();
 
-				if (server.getGameSessionManager().getGameSession(gameSessionID).isUserPlaying(loggedInUser))
-					server.getGameSessionManager().endGameSession(gameSessionID);
-
+				server.broadcastStatus();
 				break;
 			}
 

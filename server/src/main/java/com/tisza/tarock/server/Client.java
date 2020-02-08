@@ -183,6 +183,9 @@ public class Client implements MessageHandler
 
 	private void switchPlayer(ProtoPlayer player)
 	{
+		if (player == currentPlayer)
+			return;
+
 		if (currentPlayer != null)
 		{
 			currentPlayer.useConnection(null);

@@ -275,7 +275,19 @@ public class GameSession
 		players.remove(player);
 		player.setGame(null, null);
 
+		if (!hasAnyRealPlayer())
+			endSession();
+
 		return true;
+	}
+
+	private boolean hasAnyRealPlayer()
+	{
+		for (Player player : players)
+			if (!player.getUser().isBot())
+				return true;
+
+		return false;
 	}
 
 	public Player getPlayerByUser(User user)

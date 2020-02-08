@@ -171,9 +171,13 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	@Override
 	public void deleteGame(int gameID)
 	{
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setDeleteGameSession(MainProto.DeleteGameSession.newBuilder()
-				.setGameSessionId(gameID))
-				.build());
+		MainProto.Message deleteMessage = MainProto.Message.newBuilder().setDeleteGameSession(MainProto.DeleteGameSession.newBuilder().setGameSessionId(gameID)).build();
+
+		new AlertDialog.Builder(this)
+				.setTitle(R.string.delete_game_confirm)
+				.setPositiveButton(R.string.delete_game, (dialog, which) -> connectionViewModel.sendMessage(deleteMessage))
+				.setNegativeButton(R.string.cancel, null)
+				.show();
 	}
 
 	@Override

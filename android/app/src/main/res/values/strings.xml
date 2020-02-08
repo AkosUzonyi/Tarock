@@ -32,6 +32,8 @@
     <string name="join_game">Belépés</string>
     <string name="join_game_kibic">Kibic</string>
     <string name="delete_game">Törlés</string>
+    <string name="delete_game_confirm">Biztosan törlöd a játékot?</string>
+    <string name="cancel">Mégse</string>
 
     <string name="players_search_hint">Játékos keresése…</string>
     <string name="players">Játékosok</string>

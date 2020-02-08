@@ -220,7 +220,6 @@ public class ProtoConnection implements Closeable
 			{
 				messageHandlerExecutor.execute(handler::connectionClosed);
 			}
-			packetHandlers = null;
 		}
 	}
 }

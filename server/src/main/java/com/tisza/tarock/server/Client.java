@@ -146,10 +146,8 @@ public class Client implements MessageHandler
 
 			case START_GAME_SESSION_LOBBY:
 			{
-				if (currentPlayer.getGameSession().getPlayers().indexOf(currentPlayer) == 0)
-				{
+				if (currentPlayer.getGameSession().isUserPlaying(loggedInUser))
 					server.getGameSessionManager().startGameSessionLobbyWithBots(currentPlayer.getGameSession().getID());
-				}
 
 				break;
 			}

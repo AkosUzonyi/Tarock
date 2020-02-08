@@ -21,7 +21,6 @@ public interface EventHandler
 	default void turn(PlayerSeat player) {}
 	default void playerTeamInfo(PlayerSeat player, Team team) {}
 	default void startGame(GameType gameType, PlayerSeat beginnerPlayer) {}
-	default void player(PlayerSeat seat, User user) {}
 	default void playerCards(PlayerCards cards) {}
 	default void phaseChanged(PhaseEnum phase) {}
 	default void availableBids(Collection<Integer> bids) {}
@@ -33,7 +32,6 @@ public interface EventHandler
 	default void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier) {}
 	default void playerPoints(int[] points) {}
 	default void pendingNewGame() {}
-	default void gameSessionState(GameSession.State state) {}
 	default void historyMode(boolean isHistory) {}
 	default void chat(PlayerSeat player, String message) {}
 }

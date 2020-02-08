@@ -9,7 +9,6 @@ message Event
 	oneof event_type
 	{
 		StartGame start_game = 1;
-		Player player = 17;
 		PlayerAction player_action = 2;
 		Turn turn = 13;
 		PlayerTeamInfo player_team_info = 14;
@@ -24,22 +23,6 @@ message Event
 		Statistics statistics = 11;
 		PlayerPoints player_points = 16;
 		PendingNewGame pending_new_game = 12;
-		GameSessionState game_session_state = 15;
-	}
-	message Player
-	{
-		required int32 seat = 1;
-		optional int32 user_id = 2;
-	}
-	message GameSessionState
-	{
-		enum Enum
-		{
-			LOBBY = 1;
-			GAME = 2;
-			ENDED = 3;
-		}
-		required Enum game_session_state = 1;
 	}
 	message StartGame
 	{

@@ -55,10 +55,16 @@ message FCMToken
 
 message GameSession
 {
+    enum State
+    {
+        LOBBY = 1;
+        GAME = 2;
+        ENDED = 3;
+    }
     required int32 id = 1;
     required string type = 2;
     repeated int32 user_id = 3;
-    required Event.GameSessionState.Enum state = 4;
+    required State state = 4;
 }
 
 message CreateGameSession

@@ -229,23 +229,23 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		if (getArguments().containsKey(KEY_GAME_ID))
 		{
+			gameID = getArguments().getInt(KEY_GAME_ID);
 			connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
-					.setGameSessionId(getArguments().getInt(KEY_GAME_ID))
+					.setGameSessionId(gameID)
 					.build())
 					.build());
 		}
 		else if (getArguments().containsKey(KEY_HISTORY_GAME_ID))
 		{
-			connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinHistoryGame(MainProto.JoinHistoryGame.newBuilder()
-					.setGameId(getArguments().getInt(KEY_HISTORY_GAME_ID))
-					.build())
-					.build());
+			throw new UnsupportedOperationException(); //TODO determine game session id
 		}
 		else
 		{
 			Log.w(LOG_TAG, "no game id given");
 			getActivity().getSupportFragmentManager().popBackStack();
 		}
+
+		connectionViewModel.getGameByID(gameID).observe(this, this::onGameInfoUpdate);
 
 		return contentView;
 	}
@@ -300,6 +300,45 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 	}
 
+	private void onGameInfoUpdate(GameInfo gameInfo)
+	{
+		if (gameInfo == null)
+		{
+			getActivity().getSupportFragmentManager().popBackStack();
+			return;
+		}
+
+		seat = -1;
+		for (int i = 0; i < gameInfo.getUsers().size(); i++)
+		{
+			if (gameInfo.getUsers().get(i).getId() == myUserID)
+			{
+				seat = i;
+				break;
+			}
+		}
+
+		for (int i = 0; i < 4; i++)
+			playerNameViews[getPositionFromPlayerID(i)].setText(i < gameInfo.getUsers().size() ? gameInfo.getUsers().get(i).getName() : "---");
+
+		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
+		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
+
+		switch (gameInfo.getState())
+		{
+			case LOBBY:
+				lobbyStartWithBotsButton.setVisibility(View.VISIBLE);
+				break;
+			case GAME:
+				lobbyStartWithBotsButton.setVisibility(View.GONE);
+				break;
+			case ENDED:
+				getActivity().getSupportFragmentManager().popBackStack();
+				break;
+		}
+	}
+
+	private int gameID;
 	private int myUserID;
 	private List<Card> myCards;
 	private int seat = -1;
@@ -327,51 +366,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
 		messages = "";
-	}
-
-	@Override
-	public void gameSessionState(GameSessionState state)
-	{
-		switch (state)
-		{
-			case LOBBY:
-				lobbyStartWithBotsButton.setVisibility(View.VISIBLE);
-				break;
-			case GAME:
-				lobbyStartWithBotsButton.setVisibility(View.GONE);
-				break;
-			case ENDED:
-				getActivity().getSupportFragmentManager().popBackStack();
-				break;
-		}
-	}
-
-	@Override
-	public void playerAdded(int seat, int userID)
-	{
-		if (userID == myUserID)
-		{
-			this.seat = seat;
-			myCardsView.setVisibility(View.VISIBLE);
-			playerNameViews[0].setVisibility(View.GONE);
-		}
-
-		int pos = getPositionFromPlayerID(seat);
-		connectionViewModel.getUserByID(userID).observe(this, user -> playerNameViews[pos].setText(user.getName()));
-	}
-
-	@Override
-	public void playerRemoved(int seat)
-	{
-		if (seat == this.seat)
-		{
-			this.seat = -1;
-			myCardsView.setVisibility(View.GONE);
-			playerNameViews[0].setVisibility(View.VISIBLE);
-		}
-
-		int pos = getPositionFromPlayerID(seat);
-		playerNameViews[pos].setText("---");
 	}
 
 	private void doAction(Action action)

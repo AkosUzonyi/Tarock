@@ -34,13 +34,13 @@ public class Utils
 		});
 	}
 
-	public static EventProto.Event.GameSessionState.Enum gameSessionStateToProto(GameSession.State state)
+	public static MainProto.GameSession.State gameSessionStateToProto(GameSession.State state)
 	{
 		switch (state)
 		{
-			case LOBBY: return EventProto.Event.GameSessionState.Enum.LOBBY;
-			case GAME: return EventProto.Event.GameSessionState.Enum.GAME;
-			case ENDED: return EventProto.Event.GameSessionState.Enum.ENDED;
+			case LOBBY: return MainProto.GameSession.State.LOBBY;
+			case GAME: return MainProto.GameSession.State.GAME;
+			case ENDED: return MainProto.GameSession.State.ENDED;
 			default: throw new IllegalArgumentException("unknown game state: " + state);
 		}
 	}

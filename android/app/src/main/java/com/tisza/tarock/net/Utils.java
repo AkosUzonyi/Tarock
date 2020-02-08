@@ -40,7 +40,7 @@ public class Utils
 		return result;
 	}
 
-	public static GameSessionState gameSessionStateFromProto(Event.GameSessionState.Enum state)
+	public static GameSessionState gameSessionStateFromProto(MainProto.GameSession.State state)
 	{
 		switch (state)
 		{

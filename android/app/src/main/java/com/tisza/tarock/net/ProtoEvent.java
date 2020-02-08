@@ -35,13 +35,6 @@ public class ProtoEvent implements Event
 				EventProto.Event.StartGame startGame = event.getStartGame();
 				handler.startGame(GameType.fromID(startGame.getGameType()), startGame.getBeginnerPlayer());
 				break;
-			case PLAYER:
-				EventProto.Event.Player player = event.getPlayer();
-				if (player.hasUserId())
-					handler.playerAdded(player.getSeat(), player.getUserId());
-				else
-					handler.playerRemoved(player.getSeat());
-				break;
 			case TURN:
 				handler.turn(event.getTurn().getPlayer());
 				break;
@@ -94,15 +87,6 @@ public class ProtoEvent implements Event
 				break;
 			case PENDING_NEW_GAME:
 				handler.pendingNewGame();
-				break;
-			case GAME_SESSION_STATE:
-				switch (event.getGameSessionState().getGameSessionState())
-				{
-					case LOBBY: handler.gameSessionState(GameSessionState.LOBBY); break;
-					case GAME: handler.gameSessionState(GameSessionState.GAME); break;
-					case ENDED: handler.gameSessionState(GameSessionState.ENDED); break;
-					default: throw new IllegalArgumentException("unknown game session state: " + event.getGameSessionState().getGameSessionState());
-				}
 				break;
 			case PLAYER_ACTION:
 				handlePlayerAction(handler, event.getPlayerAction().getPlayer(), event.getPlayerAction().getAction());

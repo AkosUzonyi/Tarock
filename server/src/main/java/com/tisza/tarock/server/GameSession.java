@@ -219,8 +219,6 @@ public class GameSession
 			database.addPlayer(id, seat, player.getUser());
 		}
 
-		sendStateInfo(null);
-		sendPlayerInfo(null);
 		startNewGame();
 	}
 
@@ -245,7 +243,6 @@ public class GameSession
 		}
 
 		state = State.ENDED;
-		sendStateInfo(null);
 	}
 
 	public boolean addPlayer(Player player)
@@ -262,7 +259,6 @@ public class GameSession
 		PlayerSeat seat = PlayerSeat.fromInt(players.size());
 		players.add(player);
 		player.setGame(this, seat);
-		dispatchEvent(EventInstance.broadcast(Event.player(seat, player.getUser())));
 
 		return true;
 	}
@@ -276,7 +272,6 @@ public class GameSession
 			return false;
 
 		PlayerSeat seat = PlayerSeat.fromInt(pos);
-		dispatchEvent(EventInstance.broadcast(Event.player(seat, null)));
 		players.remove(player);
 		player.setGame(null, null);
 
@@ -384,17 +379,6 @@ public class GameSession
 		}
 	}
 
-	private void sendPlayerInfo(PlayerSeat target)
-	{
-		for (PlayerSeat seat : PlayerSeat.getAll())
-			dispatchEvent(new EventInstance(target, Event.player(seat, seat.asInt() >= players.size() ? null : players.get(seat.asInt()).getUser())));
-	}
-
-	private void sendStateInfo(PlayerSeat target)
-	{
-		dispatchEvent(new EventInstance(target, Event.gameSessionState(state)));
-	}
-
 	private void dispatchNewEvents()
 	{
 		checkGameStarted();
@@ -415,17 +399,14 @@ public class GameSession
 
 	public void requestHistory(Player player)
 	{
-		sendStateInfo(player.getSeat());
-		sendPlayerInfo(player.getSeat());
+		if (currentGame == null)
+			return;
 
-		if (currentGame != null)
-		{
-			player.handleEvent(Event.historyMode(true));
-			for (EventInstance event : currentGame.getAllEvents())
-				if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
-					player.handleEvent(event.getEvent());
-			player.handleEvent(Event.historyMode(false));
-		}
+		player.handleEvent(Event.historyMode(true));
+		for (EventInstance event : currentGame.getAllEvents())
+			if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
+				player.handleEvent(event.getEvent());
+		player.handleEvent(Event.historyMode(false));
 	}
 
 	public enum State

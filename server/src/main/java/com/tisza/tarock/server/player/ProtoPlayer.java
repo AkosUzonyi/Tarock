@@ -146,18 +146,6 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setStartGame(e).build());
 		}
 
-		@Override
-		public void player(PlayerSeat seat, User user)
-		{
-			EventProto.Event.Player.Builder e = EventProto.Event.Player.newBuilder()
-					.setSeat(seat.asInt());
-
-			if (user != null)
-				e.setUserId(user.getID());
-
-			sendEvent(EventProto.Event.newBuilder().setPlayer(e).build());
-		}
-
 		@Override public void playerCards(PlayerCards cards)
 		{
 			EventProto.Event.PlayerCards e = EventProto.Event.PlayerCards.newBuilder()
@@ -256,13 +244,6 @@ public class ProtoPlayer extends Player implements MessageHandler
 		{
 			EventProto.Event.PendingNewGame e = EventProto.Event.PendingNewGame.newBuilder().build();
 			sendEvent(EventProto.Event.newBuilder().setPendingNewGame(e).build());
-		}
-
-		@Override public void gameSessionState(GameSession.State state)
-		{
-			EventProto.Event.GameSessionState.Builder e = EventProto.Event.GameSessionState.newBuilder()
-					.setGameSessionState(Utils.gameSessionStateToProto(state));
-			sendEvent(EventProto.Event.newBuilder().setGameSessionState(e).build());
 		}
 	};
 }

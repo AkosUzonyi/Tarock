@@ -188,10 +188,11 @@ public class Client implements MessageHandler
 		{
 			currentPlayer.useConnection(null);
 
-			if (currentPlayer.getGameSession().getState() == GameSession.State.LOBBY)
-				currentPlayer.getGameSession().removePlayer(currentPlayer);
-			else
-				currentPlayer.getGameSession().removeKibic(currentPlayer);
+			switch (currentPlayer.getGameSession().getState())
+			{
+				case LOBBY: currentPlayer.getGameSession().removePlayer(currentPlayer); break;
+				case GAME: currentPlayer.getGameSession().removeKibic(currentPlayer); break;
+			}
 		}
 
 		currentPlayer = player;

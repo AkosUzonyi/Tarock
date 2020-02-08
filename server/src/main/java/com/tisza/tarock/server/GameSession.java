@@ -232,8 +232,6 @@ public class GameSession
 	public void endSession()
 	{
 		currentGame = null;
-		for (Player player : allPlayers)
-			player.setGame(null, null);
 
 		switch (state)
 		{

@@ -12,10 +12,11 @@ import android.view.animation.*;
 import android.view.animation.Animation.*;
 import android.view.inputmethod.*;
 import android.widget.*;
+import androidx.appcompat.app.*;
 import androidx.lifecycle.*;
-import androidx.viewpager.widget.ViewPager;
-import com.tisza.tarock.*;
+import androidx.viewpager.widget.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
@@ -58,7 +59,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private ViewPager centerSpace;
 	private Button okButton;
 	private Button throwButton;
-	private Button lobbyStartWithBotsButton;
+	private Button lobbyStartButton;
 
 	private View messagesFrame;
 
@@ -141,8 +142,17 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v -> doAction(Action.throwCards()));
-		lobbyStartWithBotsButton = contentView.findViewById(R.id.lobby_start_with_bots_button);
-		lobbyStartWithBotsButton.setOnClickListener(v -> connectionViewModel.sendMessage(MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build()));
+		lobbyStartButton = contentView.findViewById(R.id.lobby_start_button);
+		lobbyStartButton.setOnClickListener(v ->
+		{
+			new AlertDialog.Builder(getContext())
+					.setTitle(R.string.lobby_start_with_bots_confirm_title)
+					.setMessage(R.string.lobby_start_with_bots_confirm_body)
+					.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> connectionViewModel.sendMessage(MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build()))
+					.setNegativeButton(R.string.cancel, null)
+					.show();
+
+		});
 
 		availableActionsAdapter = new ArrayAdapter<ActionButtonItem>(getActivity(), R.layout.button)
 		{
@@ -308,8 +318,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			return;
 		}
 
+		int userCount = gameInfo.getUsers().size();
+
 		seat = -1;
-		for (int i = 0; i < gameInfo.getUsers().size(); i++)
+		for (int i = 0; i < userCount; i++)
 		{
 			if (gameInfo.getUsers().get(i).getId() == myUserID)
 			{
@@ -319,18 +331,23 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 
 		for (int i = 0; i < 4; i++)
-			playerNameViews[getPositionFromPlayerID(i)].setText(i < gameInfo.getUsers().size() ? gameInfo.getUsers().get(i).getName() : "---");
+			playerNameViews[getPositionFromPlayerID(i)].setText(i < userCount ? gameInfo.getUsers().get(i).getName() : "---");
 
 		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
 		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
 
+		if (userCount == 4)
+			lobbyStartButton.setText(R.string.lobby_start);
+		else
+			lobbyStartButton.setText(getString(R.string.lobby_start_with_bots, 4 - userCount));
+
 		switch (gameInfo.getState())
 		{
 			case LOBBY:
-				lobbyStartWithBotsButton.setVisibility(View.VISIBLE);
+				lobbyStartButton.setVisibility(View.VISIBLE);
 				break;
 			case GAME:
-				lobbyStartWithBotsButton.setVisibility(View.GONE);
+				lobbyStartButton.setVisibility(View.GONE);
 				break;
 			case ENDED:
 				getActivity().getSupportFragmentManager().popBackStack();

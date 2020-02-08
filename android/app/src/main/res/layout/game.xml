@@ -141,7 +141,7 @@
         </androidx.viewpager.widget.ViewPager>
 
         <Button
-            android:id="@+id/lobby_start_with_bots_button"
+            android:id="@+id/lobby_start_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/center_space"

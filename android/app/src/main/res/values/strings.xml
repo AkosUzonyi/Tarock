@@ -37,7 +37,11 @@
 
     <string name="lobby_create">Lobby létrehozása</string>
     <string name="lobby_enter">Belépés a lobbyba</string>
-    <string name="lobby_start_with_bots">Lobby indítása robotokkal</string>
+    <string name="lobby_start">Lobby indítása</string>
+    <string name="lobby_start_with_bots">Lobby indítása %1$d robottal</string>
+    <string name="lobby_start_with_bots_confirm_title">Biztosan elindítod a játékot robotokkal?</string>
+    <string name="lobby_start_with_bots_confirm_body">A robotok véletlenszerűen döntenek, a játék nem élvezhető velük.</string>
+    <string name="lobby_start_with_bots_confirm_yes">Indítás</string>
     <string name="lobby_delete">Lobby törlése</string>
     <string name="lobby_leave">Lobby elhagyása</string>
 

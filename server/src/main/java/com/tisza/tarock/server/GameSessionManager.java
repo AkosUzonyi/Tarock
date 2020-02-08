@@ -6,6 +6,7 @@ import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.server.player.*;
 import io.reactivex.*;
 import io.reactivex.Observable;
+import io.reactivex.disposables.*;
 
 import java.util.*;
 
@@ -16,6 +17,8 @@ public class GameSessionManager
 	private final Server server;
 	private Map<Integer, GameSession> gameSessions = new HashMap<>();
 	private List<User> bots = new ArrayList<>();
+
+	private CompositeDisposable disposables = new CompositeDisposable();
 
 	public GameSessionManager(Server server)
 	{
@@ -57,13 +60,15 @@ public class GameSessionManager
 		if (gameSession.getState() != GameSession.State.LOBBY)
 			throw new IllegalStateException("GameSession already started");
 
-		int botCount = gameSession.getFreeLobbyPlaces();
-		Observable.fromIterable(bots.subList(0, botCount)).flatMapSingle(User::createPlayer).doOnNext(gameSession::addPlayer).doOnComplete(() ->
+		disposables.add(
+		Observable.fromIterable(bots).flatMapSingle(User::createPlayer).toList().subscribe(players ->
 		{
+			while (!gameSession.isLobbyFull())
+				gameSession.addPlayer(players.remove(0));
+
 			gameSession.start();
 			server.broadcastStatus();
-		})
-		.subscribe();
+		}));
 	}
 
 	public GameSession getGameSession(int id)
@@ -94,5 +99,6 @@ public class GameSessionManager
 
 	public void shutdown()
 	{
+		disposables.dispose();
 	}
 }

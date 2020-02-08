@@ -58,6 +58,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private ViewPager centerSpace;
 	private Button okButton;
 	private Button throwButton;
+	private Button lobbyStartWithBotsButton;
 
 	private View messagesFrame;
 
@@ -140,6 +141,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v -> doAction(Action.throwCards()));
+		lobbyStartWithBotsButton = contentView.findViewById(R.id.lobby_start_with_bots_button);
+		lobbyStartWithBotsButton.setOnClickListener(v -> connectionViewModel.sendMessage(MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build()));
 
 		availableActionsAdapter = new ArrayAdapter<ActionButtonItem>(getActivity(), R.layout.button)
 		{
@@ -331,6 +334,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	{
 		switch (state)
 		{
+			case LOBBY:
+				lobbyStartWithBotsButton.setVisibility(View.VISIBLE);
+				break;
+			case GAME:
+				lobbyStartWithBotsButton.setVisibility(View.GONE);
+				break;
 			case ENDED:
 				getActivity().getSupportFragmentManager().popBackStack();
 				break;

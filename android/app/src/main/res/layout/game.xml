@@ -139,7 +139,18 @@
                 android:textSize="@dimen/game_text_size"
                 />
         </androidx.viewpager.widget.ViewPager>
-            
+
+        <Button
+            android:id="@+id/lobby_start_with_bots_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/center_space"
+            android:layout_alignRight="@+id/center_space"
+            android:layout_alignTop="@id/center_space"
+            android:layout_margin="@dimen/button_margin"
+            android:text="@string/lobby_start_with_bots"
+        />
+
         <TextView
             android:id="@+id/player_message_0"
             android:layout_width="wrap_content"

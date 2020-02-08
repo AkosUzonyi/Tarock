@@ -52,6 +52,9 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		if (userID != null && g0.containsUser(userID) != g1.containsUser(userID))
 			return g0.containsUser(userID) ? -1 : 1;
 
+		if (g0.getState() != g1.getState())
+			return g0.getState().ordinal() - g1.getState().ordinal();
+
 		return g0.getId() - g1.getId();
 	}
 

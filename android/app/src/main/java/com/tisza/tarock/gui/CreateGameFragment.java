@@ -28,7 +28,6 @@ public class CreateGameFragment extends MainActivityFragment
 	private Spinner gameTypeSpinner, doubleRoundTypeSpinner;
 	private UsersAdapter searchResultUsersAdapter;
 	private UsersAdapter selectedUsersAdapter;
-	private TextView botWarning;
 	private boolean botWarningIgnored;
 	private Button createButton;
 	private List<User> searchResultUsers = new ArrayList<>();
@@ -51,7 +50,6 @@ public class CreateGameFragment extends MainActivityFragment
 
 		gameTypeSpinner = view.findViewById(R.id.game_type_spinner);
 		doubleRoundTypeSpinner = view.findViewById(R.id.double_round_type_spinner);
-		botWarning = view.findViewById(R.id.bot_warning);
 
 		userSearchView = view.findViewById(R.id.user_search);
 		userSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
@@ -93,7 +91,6 @@ public class CreateGameFragment extends MainActivityFragment
 		gameTypeSpinner.setSelection(sharedPreferences.getInt(GAME_TYPE_KEY, 0));
 		doubleRoundTypeSpinner.setSelection(sharedPreferences.getInt(DOUBLE_ROUND_TYPE_KEY, 0));
 		botWarningIgnored = sharedPreferences.getBoolean(BOT_WARNING_IGNORED_KEY, false);
-		botWarning.setVisibility(botWarningIgnored ? View.GONE : View.VISIBLE);
 
 		return view;
 	}

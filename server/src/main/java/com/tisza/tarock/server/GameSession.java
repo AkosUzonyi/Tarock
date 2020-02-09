@@ -24,7 +24,7 @@ public class GameSession
 
 	private State state = State.LOBBY;
 	private List<Player> players = new ArrayList<>();
-	private Set<Player> allPlayers = new HashSet<>();
+	private Set<Player> watchingPlayers = new HashSet<>();
 
 	private PlayerSeat currentBeginnerPlayer = PlayerSeat.SEAT0;
 	private Game currentGame;
@@ -86,7 +86,7 @@ public class GameSession
 				PlayerSeat seat = PlayerSeat.fromInt(i);
 				Player player = players.get(i);
 				gameSession.players.add(player);
-				gameSession.allPlayers.add(player);
+				gameSession.watchingPlayers.add(player);
 				player.setGame(gameSession, seat);
 
 				gameSession.points[i] = points.get(i);
@@ -143,7 +143,7 @@ public class GameSession
 				PlayerSeat seat = PlayerSeat.fromInt(i);
 				Player player = players.get(i);
 				gameSession.players.add(player);
-				gameSession.allPlayers.add(player);
+				gameSession.watchingPlayers.add(player);
 				player.setGame(gameSession, seat);
 			}
 
@@ -229,7 +229,7 @@ public class GameSession
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{
 			Player player = players.get(seat.asInt());
-			allPlayers.add(player);
+			watchingPlayers.add(player);
 			player.setGame(this, seat);
 			database.addPlayer(id, seat, player.getUser());
 		}
@@ -325,7 +325,7 @@ public class GameSession
 	{
 		checkGameStarted();
 
-		if (allPlayers.add(player))
+		if (watchingPlayers.add(player))
 			player.setGame(this, null);
 	}
 
@@ -333,7 +333,7 @@ public class GameSession
 	{
 		checkGameStarted();
 
-		if (!players.contains(player) && allPlayers.remove(player))
+		if (!players.contains(player) && watchingPlayers.remove(player))
 			player.setGame(null, null);
 	}
 
@@ -418,7 +418,7 @@ public class GameSession
 	private void dispatchEvent(EventInstance event)
 	{
 		if (event.getPlayerSeat() == null)
-			for (Player player : allPlayers)
+			for (Player player : watchingPlayers)
 				player.handleEvent(event.getEvent());
 		else
 			players.get(event.getPlayerSeat().asInt()).handleEvent(event.getEvent());

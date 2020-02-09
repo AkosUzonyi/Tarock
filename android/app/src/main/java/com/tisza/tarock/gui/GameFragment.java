@@ -145,12 +145,17 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		lobbyStartButton = contentView.findViewById(R.id.lobby_start_button);
 		lobbyStartButton.setOnClickListener(v ->
 		{
-			new AlertDialog.Builder(getContext())
-					.setTitle(R.string.lobby_start_with_bots_confirm_title)
-					.setMessage(R.string.lobby_start_with_bots_confirm_body)
-					.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> connectionViewModel.sendMessage(MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build()))
-					.setNegativeButton(R.string.cancel, null)
-					.show();
+			MainProto.Message startMessage = MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build();
+
+			if (gameInfo.getUsers().size() == 4)
+				connectionViewModel.sendMessage(startMessage);
+			else
+				new AlertDialog.Builder(getContext())
+						.setTitle(R.string.lobby_start_with_bots_confirm_title)
+						.setMessage(R.string.lobby_start_with_bots_confirm_body)
+						.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> connectionViewModel.sendMessage(startMessage))
+						.setNegativeButton(R.string.cancel, null)
+						.show();
 
 		});
 
@@ -237,6 +242,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 		connectionViewModel.addEventHandler(this);
 
+		int gameID;
 		if (getArguments().containsKey(KEY_GAME_ID))
 		{
 			gameID = getArguments().getInt(KEY_GAME_ID);
@@ -251,8 +257,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 		else
 		{
-			Log.w(LOG_TAG, "no game id given");
-			getActivity().getSupportFragmentManager().popBackStack();
+			throw new IllegalArgumentException("no game id given");
 		}
 
 		connectionViewModel.getGameByID(gameID).observe(this, this::onGameInfoUpdate);
@@ -312,6 +317,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private void onGameInfoUpdate(GameInfo gameInfo)
 	{
+		this.gameInfo = gameInfo;
+
 		if (gameInfo == null)
 		{
 			getActivity().getSupportFragmentManager().popBackStack();
@@ -355,7 +362,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 	}
 
-	private int gameID;
+	private GameInfo gameInfo;
 	private int myUserID;
 	private List<Card> myCards;
 	private int seat = -1;

@@ -76,14 +76,21 @@ public class GameSession
 			GameSession gameSession = new GameSession(id, gameType, doubleRoundTracker, database);
 
 			gameSession.state = State.GAME;
-			gameSession.players.addAll(players);
 			gameSession.currentBeginnerPlayer = beginnerPlayer;
 			gameSession.currentGameID = Single.just(currentGameID);
 			gameSession.actionOrdinal = actions.size();
 			gameSession.lastModified = lastGameCreateTime;
 
 			for (int i = 0; i < 4; i++)
+			{
+				PlayerSeat seat = PlayerSeat.fromInt(i);
+				Player player = players.get(i);
+				gameSession.players.add(player);
+				gameSession.allPlayers.add(player);
+				player.setGame(gameSession, seat);
+
 				gameSession.points[i] = points.get(i);
+			}
 
 			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
@@ -128,9 +135,17 @@ public class GameSession
 			GameSession gameSession = new GameSession(-1, gameType, doubleRoundTracker, database);
 
 			gameSession.state = State.GAME;
-			gameSession.players.addAll(players);
 			gameSession.currentBeginnerPlayer = beginnerPlayer;
 			gameSession.historyView = true;
+
+			for (int i = 0; i < 4; i++)
+			{
+				PlayerSeat seat = PlayerSeat.fromInt(i);
+				Player player = players.get(i);
+				gameSession.players.add(player);
+				gameSession.allPlayers.add(player);
+				player.setGame(gameSession, seat);
+			}
 
 			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();

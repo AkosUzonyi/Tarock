@@ -72,7 +72,7 @@ public class Server implements Runnable
 
 	public boolean isUserLoggedIn(User user)
 	{
-		return user.isBot() || clients.stream().map(Client::getLoggedInUser).anyMatch(u -> u == user);
+		return user.isBot() || clients.stream().map(Client::getLoggedInUser).anyMatch(user::equals);
 	}
 
 	public void removeClient(Client client)

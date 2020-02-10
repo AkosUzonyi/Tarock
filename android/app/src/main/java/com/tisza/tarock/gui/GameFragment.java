@@ -747,7 +747,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		for (int i = 0; i < 4; i++)
 		{
 			TextView nameView = statisticsPointsNameViews[i];
-			nameView.setText(playerNameViews[i].getText());
+			nameView.setText(getPlayerName(i));
 
 			TextView pointsView = statisticsPointsValueViews[i];
 			pointsView.setText(String.valueOf(playerPoints.get(i)));
@@ -887,6 +887,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}, DELAY);
 	}
 
+	private String getPlayerName(int player)
+	{
+		return gameInfo.getUsers().get(player).getName();
+	}
+
 	private void displayMessage(int msgRes, Object ... formatArgs)
 	{
 		displayMessage(getString(msgRes, formatArgs));
@@ -901,7 +906,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private void displayPlayerActionMessage(int actionRes, int player, String msg)
 	{
-		displayMessage(actionRes, playerNameViews[player].getText(), msg);
+		displayMessage(actionRes, getPlayerName(player), msg);
 		showPlayerMessageView(player, msg);
 	}
 	

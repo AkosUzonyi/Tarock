@@ -229,7 +229,6 @@ public class GameSession
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{
 			Player player = players.get(seat.asInt());
-			watchingPlayers.add(player);
 			player.setGame(this, seat);
 			database.addPlayer(id, seat, player.getUser());
 		}
@@ -273,6 +272,7 @@ public class GameSession
 
 		PlayerSeat seat = PlayerSeat.fromInt(players.size());
 		players.add(player);
+		watchingPlayers.add(player);
 		player.setGame(this, seat);
 
 		return true;
@@ -288,6 +288,7 @@ public class GameSession
 
 		PlayerSeat seat = PlayerSeat.fromInt(pos);
 		players.remove(player);
+		watchingPlayers.remove(player);
 		player.setGame(null, null);
 
 		if (!hasAnyRealPlayer())
@@ -369,8 +370,16 @@ public class GameSession
 
 	public void action(PlayerSeat player, Action action)
 	{
-		if (currentGame == null || historyView)
+		if (historyView)
 			return;
+
+		if (currentGame == null)
+		{
+			if (action.getChatString() != null)
+				dispatchEvent(EventInstance.broadcast(Event.chat(player, action.getChatString())));
+
+			return;
+		}
 
 		boolean success = currentGame.processAction(player, action);
 		if (success && database != null)

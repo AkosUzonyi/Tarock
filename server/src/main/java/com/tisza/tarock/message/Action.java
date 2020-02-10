@@ -99,4 +99,12 @@ public class Action
 				throw new IllegalArgumentException("invalid action: " + actionType);
 		}
 	}
+
+	public String getChatString()
+	{
+		if (!id.startsWith("chat:"))
+			return null;
+
+		return id.substring(5);
+	}
 }

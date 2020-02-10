@@ -5,7 +5,6 @@ import android.content.*;
 import android.graphics.*;
 import android.os.*;
 import android.text.*;
-import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
@@ -385,7 +384,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	
 	private PhaseEnum gamePhase;
 	
-	private String messages;
+	private String messagesHtml = "";
 	
 	private List<Card> cardsToSkart = new ArrayList<>();
 	private boolean skarting = false;
@@ -400,7 +399,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		myTeam = null;
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
-		messages = "";
+		messagesHtml = "";
 	}
 
 	private void doAction(Action action)
@@ -411,7 +410,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void chat(int player, String message)
 	{
-		displayPlayerActionMessage(R.string.message_generic, player, message);
+		displayPlayerActionMessage(R.string.message_chat, player, message);
 	}
 
 	@Override
@@ -901,8 +900,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private void displayMessage(String msg)
 	{
-		messages += msg;
-		messagesTextView.setText(messages);
+		messagesHtml += msg + "<br>";
+		messagesTextView.setText(Html.fromHtml(messagesHtml));
 		messagesScrollView.fullScroll(View.FOCUS_DOWN);
 	}
 
@@ -915,7 +914,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private void showPlayerMessageView(int player, String msg)
 	{
 		final TextView view = playerMessageViews[getPositionFromPlayerID(player)];
-		view.setText(msg);
+		view.setText(Html.fromHtml(msg));
 		view.setVisibility(View.VISIBLE);
 		Animation fadeAnimation = new AlphaAnimation(1, 0);
 		fadeAnimation.setDuration(500);

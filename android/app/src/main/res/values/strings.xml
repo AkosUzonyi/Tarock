@@ -64,12 +64,13 @@
     <string name="turn_call">Hívás</string>
     <string name="turn_announce">Bemondások</string>
 
-    <string name="message_generic">%1$s %2$s\n</string>
-    <string name="message_bid">%1$s licitált: %2$s\n</string>
-    <string name="message_call">%1$s hívott: %2$s\n</string>
-    <string name="message_announce">%1$s bemondta: %2$s\n</string>
+    <string name="message_generic">%1$s %2$s</string>
+    <string name="message_chat"><![CDATA[<font color=\'#FFC0C0\'>%1$s: %2$s</font>]]></string>
+    <string name="message_bid">%1$s licitált: %2$s</string>
+    <string name="message_call">%1$s hívott: %2$s</string>
+    <string name="message_announce">%1$s bemondta: %2$s</string>
 
-    <string name="press_ok">Nyomj OK-t a folyatatáshoz\n</string>
+    <string name="press_ok">Nyomj OK-t a folyatatáshoz</string>
     <string name="cards_thrown">bedobta a lapjait</string>
 
     <plurals name="message_skart_tarock">

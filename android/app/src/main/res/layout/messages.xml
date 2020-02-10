@@ -21,6 +21,14 @@
             android:orientation="vertical"
             >
 
+            <Button
+                android:id="@+id/lobby_start_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/button_margin"
+                android:text="@string/lobby_start_with_bots"
+            />
+
             <ScrollView
                 android:id="@+id/messages_scroll"
                 android:layout_width="match_parent"

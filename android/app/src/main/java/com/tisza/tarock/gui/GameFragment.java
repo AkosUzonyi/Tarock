@@ -142,22 +142,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v -> doAction(Action.throwCards()));
-		lobbyStartButton = contentView.findViewById(R.id.lobby_start_button);
-		lobbyStartButton.setOnClickListener(v ->
-		{
-			MainProto.Message startMessage = MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build();
-
-			if (gameInfo.getUsers().size() == 4)
-				connectionViewModel.sendMessage(startMessage);
-			else
-				new AlertDialog.Builder(getContext())
-						.setTitle(R.string.lobby_start_with_bots_confirm_title)
-						.setMessage(R.string.lobby_start_with_bots_confirm_body)
-						.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> connectionViewModel.sendMessage(startMessage))
-						.setNegativeButton(R.string.cancel, null)
-						.show();
-
-		});
 
 		availableActionsAdapter = new ArrayAdapter<ActionButtonItem>(getActivity(), R.layout.button)
 		{
@@ -186,6 +170,22 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		messagesChatEditText = messagesFrame.findViewById(R.id.messages_chat_edit_text);
 		messagesChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
 		messagesChatEditText.setOnEditorActionListener(this);
+		lobbyStartButton = messagesFrame.findViewById(R.id.lobby_start_button);
+		lobbyStartButton.setOnClickListener(v ->
+		{
+			MainProto.Message startMessage = MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build();
+
+			if (gameInfo.getUsers().size() == 4)
+				connectionViewModel.sendMessage(startMessage);
+			else
+				new AlertDialog.Builder(getContext())
+						.setTitle(R.string.lobby_start_with_bots_confirm_title)
+						.setMessage(R.string.lobby_start_with_bots_confirm_body)
+						.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> connectionViewModel.sendMessage(startMessage))
+						.setNegativeButton(R.string.cancel, null)
+						.show();
+
+		});
 
 		ultimoView = messagesFrame.findViewById(R.id.ultimo_view);
 		ultimoBackButton = (Button)messagesFrame.findViewById(R.id.ultimo_back_buton);
@@ -361,9 +361,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		{
 			case LOBBY:
 				lobbyStartButton.setVisibility(View.VISIBLE);
+				availableActionsListView.setVisibility(View.GONE);
 				break;
 			case GAME:
 				lobbyStartButton.setVisibility(View.GONE);
+				availableActionsListView.setVisibility(View.VISIBLE);
 				break;
 			case ENDED:
 				getActivity().getSupportFragmentManager().popBackStack();

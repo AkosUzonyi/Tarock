@@ -165,6 +165,9 @@ public class CreateGameFragment extends MainActivityFragment
 	private void deselectUser(User user)
 	{
 		int position = selectedUsers.indexOf(user);
+		if (position < 0)
+			return;
+
 		selectedUsers.remove(position);
 		selectedUsersAdapter.notifyItemRemoved(position);
 		searchResultUsersAdapter.notifyItemInserted(searchResultUsers.size());
@@ -179,9 +182,12 @@ public class CreateGameFragment extends MainActivityFragment
 		if (selectedUsers.size() >= SELECT_USER_COUNT)
 			return;
 
+		int searchResultPosition = searchResultUsers.indexOf(user);
+		if (searchResultPosition < 0)
+			return;
+
 		selectedUsersAdapter.notifyItemChanged(selectedUsers.size());
 		selectedUsers.add(user);
-		int searchResultPosition = searchResultUsers.indexOf(user);
 		searchResultUsers.remove(searchResultPosition);
 		searchResultUsersAdapter.notifyItemRemoved(searchResultPosition);
 

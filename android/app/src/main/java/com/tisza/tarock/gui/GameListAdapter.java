@@ -1,6 +1,7 @@
 package com.tisza.tarock.gui;
 
 import android.content.*;
+import android.graphics.*;
 import android.view.*;
 import android.widget.*;
 import androidx.annotation.*;
@@ -99,7 +100,10 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		else
 			deleteButtonVisible = gameInfo.containsUser(userID);
 
+		boolean isInteresting = gameInfo.containsUser(userID) || gameInfo.getState() == GameSessionState.LOBBY;
+
 		holder.joinGameButton.setText(joinButtonText);
+		holder.joinGameButton.setTypeface(null, isInteresting ? Typeface.BOLD : Typeface.NORMAL);
 		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGame(gameInfo.getId()));
 		holder.deleteGameButton.setVisibility(deleteButtonVisible ? View.VISIBLE : View.GONE);
 		holder.deleteGameButton.setOnClickListener(v -> gameAdapterListener.deleteGame(gameInfo.getId()));

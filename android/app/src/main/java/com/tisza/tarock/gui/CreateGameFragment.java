@@ -190,6 +190,7 @@ public class CreateGameFragment extends MainActivityFragment
 
 	private void updateCreateButton()
 	{
-		createButton.setText(selectedUsers.size() == SELECT_USER_COUNT ? R.string.create_game : R.string.lobby_create);
+		int freePlaceCount = SELECT_USER_COUNT - selectedUsers.size();
+		createButton.setText(freePlaceCount == 0 ? getString(R.string.create_game) : getString(R.string.lobby_create, freePlaceCount));
 	}
 }

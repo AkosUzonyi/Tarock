@@ -16,44 +16,30 @@ import java.io.*;
 
 public class LoginViewModel extends AndroidViewModel
 {
-	private MediatorLiveData<LoginState> loginState = new MediatorLiveData<>();
-	private MutableLiveData<AccessToken> fbAccessToken = new MutableLiveData<>();
+	private LiveData<LoginState> loginState;
+	private LiveData<AccessToken> fbAccessToken = new FbAccessTokenLiveData();
 	private MutableLiveData<GoogleSignInAccount> googleAccount = new MutableLiveData<>();
 
 	private GoogleSignInClient googleSignInClient;
-
-	private final AccessTokenTracker accessTokenTracker = new AccessTokenTracker()
-	{
-		@Override
-		protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken)
-		{
-			fbAccessToken.setValue(currentAccessToken);
-		}
-	};
 
 	public LoginViewModel(Application application)
 	{
 		super(application);
 
-		loginState.setValue(LoginState.LOGGED_OUT);
-		loginState.addSource(fbAccessToken, accessToken ->
-		{
-			if (accessToken != null && loginState.getValue() == LoginState.LOGGED_OUT)
-				loginState.setValue(LoginState.FACEBOOK);
-			if (accessToken == null && loginState.getValue() == LoginState.FACEBOOK)
-				loginState.setValue(LoginState.LOGGED_OUT);
-		});
-		loginState.addSource(googleAccount, account ->
-		{
-			if (account != null && loginState.getValue() == LoginState.LOGGED_OUT)
-				loginState.setValue(LoginState.GOOGLE);
-			if (account == null && loginState.getValue() == LoginState.GOOGLE)
-				loginState.setValue(LoginState.LOGGED_OUT);
-		});
-		loginState.observeForever(this::onLoginStateChanged);
+		loginState =
+			Transformations.switchMap(fbAccessToken, fbAccessTokenValue ->
+			Transformations.map(googleAccount, googleAccountValue ->
+			{
+				if (fbAccessTokenValue != null)
+					return LoginState.FACEBOOK;
 
-		fbAccessToken.setValue(AccessToken.getCurrentAccessToken());
-		accessTokenTracker.startTracking();
+				if (googleAccountValue != null)
+					return LoginState.GOOGLE;
+
+				return LoginState.LOGGED_OUT;
+			}));
+
+		loginState.observeForever(this::onLoginStateChanged);
 
 		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
 				.requestIdToken(application.getString(R.string.google_server_client_id))
@@ -107,13 +93,6 @@ public class LoginViewModel extends AndroidViewModel
 		LoginManager.getInstance().logOut();
 	}
 
-	@Override
-	protected void onCleared()
-	{
-		super.onCleared();
-		accessTokenTracker.stopTracking();
-	}
-
 	public enum LoginState
 	{
 		LOGGED_OUT, FACEBOOK, GOOGLE;
@@ -133,6 +112,31 @@ public class LoginViewModel extends AndroidViewModel
 				e.printStackTrace();
 			}
 			return null;
+		}
+	}
+
+	private class FbAccessTokenLiveData extends LiveData<AccessToken>
+	{
+		private final AccessTokenTracker accessTokenTracker = new AccessTokenTracker()
+		{
+			@Override
+			protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken)
+			{
+				setValue(currentAccessToken);
+			}
+		};
+
+		@Override
+		protected void onActive()
+		{
+			setValue(AccessToken.getCurrentAccessToken());
+			accessTokenTracker.startTracking();
+		}
+
+		@Override
+		protected void onInactive()
+		{
+			accessTokenTracker.stopTracking();
 		}
 	}
 }

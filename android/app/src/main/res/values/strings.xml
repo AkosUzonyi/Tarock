@@ -34,6 +34,7 @@
     <string name="delete_game">Törlés</string>
     <string name="delete_game_confirm">Biztosan törlöd a játékot?</string>
     <string name="cancel">Mégse</string>
+    <string name="anybody">Bárki</string>
 
     <string name="lobby_create">Lobby létrehozása %1$d ismeretlennel</string>
     <string name="lobby_enter">Belépés a lobbyba</string>

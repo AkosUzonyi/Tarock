@@ -1,9 +1,9 @@
 package com.tisza.tarock.gui;
 
 import android.content.*;
+import android.graphics.*;
 import android.view.*;
 import android.widget.*;
-import androidx.annotation.*;
 import androidx.recyclerview.widget.*;
 import com.squareup.picasso.*;
 import com.tisza.tarock.*;
@@ -83,13 +83,26 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 	{
 		User user = getUserAtPosition(position);
 
-		holder.nameView.setText(user.getName());
+		if (user == USER_ANYBODY)
+		{
+			holder.nameView.setText(R.string.anybody);
+			holder.nameView.setAlpha(0.5F);
+			holder.nameView.setTypeface(null, Typeface.ITALIC);
+		}
+		else
+		{
+			holder.nameView.setText(user.getName());
+			holder.nameView.setAlpha(1F);
+			holder.nameView.setTypeface(null, Typeface.NORMAL);
+		}
+
 		if (user == USER_ANYBODY)
 			holder.profilePictureView.setImageResource(R.drawable.fb_unknown_image);
 		else if (user.isBot())
 			holder.profilePictureView.setImageResource(R.drawable.bot);
 		else
 			picasso.load(user.getImageURL()).error(R.drawable.fb_unknown_image).into(holder.profilePictureView);
+
 		holder.isFriendView.setVisibility(user.isFriend() ? View.VISIBLE : View.GONE);
 		holder.isOnlineView.setImageResource(user.isOnline() ? R.drawable.online : R.drawable.offline);
 

@@ -17,6 +17,7 @@ public class LoginFragment extends MainActivityFragment
 	public static final int REQUEST_CODE_GOOGLE_LOGIN = 0;
 
 	private CallbackManager facebookCallbackManager;
+	private TextView loginNameTextView;
 	private Button facebookButton, googleButton, playButton, logoutButton;
 	private ConnectionViewModel connectionViewModel;
 	private LoginViewModel loginViewModel;
@@ -44,6 +45,9 @@ public class LoginFragment extends MainActivityFragment
 		googleButton.setOnClickListener(v -> startActivityForResult(loginViewModel.getGoogleLoginIntent(), REQUEST_CODE_GOOGLE_LOGIN));
 		playButton.setOnClickListener(v -> connectionViewModel.login());
 		logoutButton.setOnClickListener(v -> loginViewModel.logOut());
+
+		loginNameTextView = view.findViewById(R.id.login_name);
+		loginViewModel.getLoginName().observe(this, loginNameTextView::setText);
 
 		loginViewModel.getLoginState().observe(this, loginState ->
 		{

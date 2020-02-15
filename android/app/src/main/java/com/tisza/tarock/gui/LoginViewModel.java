@@ -17,6 +17,8 @@ import java.io.*;
 public class LoginViewModel extends AndroidViewModel
 {
 	private LiveData<LoginState> loginState;
+	private LiveData<String> loginName;
+	private LiveData<Profile> fbProfile = new FbProfileLiveData();
 	private LiveData<AccessToken> fbAccessToken = new FbAccessTokenLiveData();
 	private MutableLiveData<GoogleSignInAccount> googleAccount = new MutableLiveData<>();
 
@@ -41,6 +43,18 @@ public class LoginViewModel extends AndroidViewModel
 
 		loginState.observeForever(this::onLoginStateChanged);
 
+		loginName = Transformations.switchMap(loginState, loginStateValue ->
+		{
+			switch (loginStateValue)
+			{
+				case LOGGED_OUT: return new MutableLiveData<>(null);
+				case FACEBOOK: return Transformations.map(fbProfile, profile -> profile == null ? null : profile.getName());
+				case GOOGLE: return Transformations.map(googleAccount, account -> account == null ? null : account.getDisplayName());
+			}
+
+			throw new IllegalArgumentException("unknown login state: " + loginStateValue);
+		});
+
 		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
 				.requestIdToken(application.getString(R.string.google_server_client_id))
 				.build();
@@ -51,6 +65,11 @@ public class LoginViewModel extends AndroidViewModel
 	public LiveData<LoginState> getLoginState()
 	{
 		return loginState;
+	}
+
+	public LiveData<String> getLoginName()
+	{
+		return loginName;
 	}
 
 	public LiveData<AccessToken> getFbAccessToken()
@@ -137,6 +156,31 @@ public class LoginViewModel extends AndroidViewModel
 		protected void onInactive()
 		{
 			accessTokenTracker.stopTracking();
+		}
+	}
+
+	private class FbProfileLiveData extends LiveData<Profile>
+	{
+		private final ProfileTracker facebookProfileTracker = new ProfileTracker()
+		{
+			@Override
+			protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile)
+			{
+				setValue(currentProfile);
+			}
+		};
+
+		@Override
+		protected void onActive()
+		{
+			setValue(Profile.getCurrentProfile());
+			facebookProfileTracker.startTracking();
+		}
+
+		@Override
+		protected void onInactive()
+		{
+			facebookProfileTracker.stopTracking();
 		}
 	}
 }

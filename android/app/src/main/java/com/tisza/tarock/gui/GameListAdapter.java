@@ -14,8 +14,9 @@ import java.util.*;
 
 public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewHolder>
 {
-	private GameAdapterListener gameAdapterListener;
+	private final Context context;
 	private final LayoutInflater inflater;
+	private GameAdapterListener gameAdapterListener;
 	private Integer userID;
 
 	private static final DiffUtil.ItemCallback<GameInfo> gameInfoItemCallback = new DiffUtil.ItemCallback<GameInfo>()
@@ -36,6 +37,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	public GameListAdapter(Context context, GameAdapterListener gameAdapterListener)
 	{
 		super(gameInfoItemCallback);
+		this.context = context;
 		this.gameAdapterListener = gameAdapterListener;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -66,6 +68,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		View view = inflater.inflate(R.layout.game_list_entry, parent, false);
 
 		ViewHolder holder = new ViewHolder(view);
+		holder.gameTypeTextView = view.findViewById(R.id.game_type);
 		holder.userNameViews[0] = view.findViewById(R.id.username0);
 		holder.userNameViews[1] = view.findViewById(R.id.username1);
 		holder.userNameViews[2] = view.findViewById(R.id.username2);
@@ -102,6 +105,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 
 		boolean isInteresting = gameInfo.containsUser(userID) || gameInfo.getState() == GameSessionState.LOBBY;
 
+		holder.gameTypeTextView.setText(context.getResources().getStringArray(R.array.game_type_array)[gameInfo.getType().ordinal()]);
 		holder.joinGameButton.setText(joinButtonText);
 		holder.joinGameButton.setTypeface(null, isInteresting ? Typeface.BOLD : Typeface.NORMAL);
 		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGame(gameInfo.getId()));
@@ -111,6 +115,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 
 	public static class ViewHolder extends RecyclerView.ViewHolder
 	{
+		public TextView gameTypeTextView;
 		public TextView[] userNameViews = new TextView[4];
 		public Button joinGameButton;
 		public Button deleteGameButton;

@@ -14,7 +14,7 @@ public class Action
 	{
 		this.id = id;
 
-		if (id.length() >= 256)
+		if (id.length() >= 1024)
 			throw new IllegalArgumentException("action id length >= 1024: " + id.length());
 	}
 

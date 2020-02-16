@@ -6,7 +6,6 @@ import android.widget.*;
 import androidx.lifecycle.*;
 import androidx.recyclerview.widget.*;
 import com.tisza.tarock.R;
-import com.tisza.tarock.proto.*;
 
 public class GameListFragment extends MainActivityFragment
 {
@@ -27,6 +26,22 @@ public class GameListFragment extends MainActivityFragment
 		gameRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 		gameRecyclerView.setAdapter(gameListAdapter);
 
+		gameListAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver()
+		{
+			@Override
+			public void onItemRangeInserted(int positionStart, int itemCount)
+			{
+				for (int i = positionStart; i < positionStart + itemCount; i++)
+				{
+					if (gameListAdapter.getItem(i).containsUser(connectionViewModel.getUserID().getValue()))
+					{
+						gameRecyclerView.smoothScrollToPosition(i);
+						break;
+					}
+				}
+			}
+		});
+
 		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
 		connectionViewModel.getGames().observe(this, v -> updateList());
 		connectionViewModel.getUserID().observe(this, v -> updateList());
@@ -40,11 +55,5 @@ public class GameListFragment extends MainActivityFragment
 	private void updateList()
 	{
 		gameListAdapter.setData(connectionViewModel.getGames().getValue(), connectionViewModel.getUserID().getValue());
-	}
-
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
 	}
 }

@@ -50,6 +50,12 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		submitList(list);
 	}
 
+	@Override
+	public GameInfo getItem(int position)
+	{
+		return super.getItem(position);
+	}
+
 	private int compareGames(GameInfo g0, GameInfo g1)
 	{
 		if (userID != null && g0.containsUser(userID) != g1.containsUser(userID))

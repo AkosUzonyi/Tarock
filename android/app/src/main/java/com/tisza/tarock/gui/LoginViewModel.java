@@ -128,7 +128,7 @@ public class LoginViewModel extends AndroidViewModel
 		}
 	}
 
-	private class FbAccessTokenLiveData extends LiveData<AccessToken>
+	private static class FbAccessTokenLiveData extends LiveData<AccessToken>
 	{
 		private final AccessTokenTracker accessTokenTracker = new AccessTokenTracker()
 		{
@@ -153,7 +153,7 @@ public class LoginViewModel extends AndroidViewModel
 		}
 	}
 
-	private class FbProfileLiveData extends LiveData<Profile>
+	private static class FbProfileLiveData extends LiveData<Profile>
 	{
 		private final ProfileTracker facebookProfileTracker = new ProfileTracker()
 		{

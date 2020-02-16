@@ -41,8 +41,6 @@ public class LoginViewModel extends AndroidViewModel
 				return LoginState.LOGGED_OUT;
 			}));
 
-		loginState.observeForever(this::onLoginStateChanged);
-
 		loginName = Transformations.switchMap(loginState, loginStateValue ->
 		{
 			switch (loginStateValue)
@@ -101,13 +99,9 @@ public class LoginViewModel extends AndroidViewModel
 		}
 	}
 
-	private void onLoginStateChanged(LoginState loginStateValue)
-	{
-		new FCMDeleteTokenAsyncTask().execute();
-	}
-
 	public void logOut()
 	{
+		new FCMDeleteTokenAsyncTask().execute();
 		googleSignInClient.signOut().addOnCompleteListener(result -> googleAccount.setValue(null));
 		LoginManager.getInstance().logOut();
 	}

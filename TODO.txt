@@ -15,6 +15,7 @@ announcement string modify
 database transactions
 okhttp cache size
 user id not negative
+configuration file
 
 features:
 error messages

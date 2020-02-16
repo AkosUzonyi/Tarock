@@ -21,7 +21,6 @@ error messages
 nickname
 view last round
 public chat
-lobby
 multiple login
 android handle history mode
 store emails

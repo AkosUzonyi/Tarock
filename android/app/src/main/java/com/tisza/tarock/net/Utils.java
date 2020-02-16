@@ -50,4 +50,9 @@ public class Utils
 			default: throw new IllegalArgumentException("unknown game state: " + state);
 		}
 	}
+
+	public interface Function<T0, T1>
+	{
+		T1 apply(T0 param);
+	}
 }

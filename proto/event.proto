@@ -9,7 +9,6 @@ message Event
 	oneof event_type
 	{
 		StartGame start_game = 1;
-		Seat seat = 17;
 		PlayerAction player_action = 2;
 		Turn turn = 13;
 		PlayerTeamInfo player_team_info = 14;
@@ -24,17 +23,11 @@ message Event
 		Statistics statistics = 11;
 		PlayerPoints player_points = 16;
 		PendingNewGame pending_new_game = 12;
-		DeleteGame delete_game = 15;
 	}
 	message StartGame
 	{
-		repeated string player_name = 1;
-		required string game_type = 2;
-		required int32 beginner_player = 3;
-	}
-	message Seat
-	{
-		required int32 seat = 1;
+		required string game_type = 1;
+		required int32 beginner_player = 2;
 	}
 	message PlayerAction
 	{
@@ -103,9 +96,6 @@ message Event
 		repeated sint32 player_point = 1;
 	}
 	message PendingNewGame
-	{
-	}
-	message DeleteGame
 	{
 	}
 }

@@ -5,8 +5,6 @@ import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 
-import java.util.*;
-
 class ProbaljFacant extends ZebiSound
 {
 	private boolean active;
@@ -17,7 +15,7 @@ class ProbaljFacant extends ZebiSound
 	}
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		active = true;
 	}

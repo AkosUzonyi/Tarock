@@ -76,9 +76,41 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		return games;
 	}
 
+	public LiveData<GameInfo> getGameByID(int gameID)
+	{
+		MediatorLiveData<GameInfo> mediatorLiveData = new MediatorLiveData<>();
+		mediatorLiveData.addSource(games, gameInfoList ->
+		{
+			GameInfo gameInfo = null;
+			for (GameInfo g : gameInfoList)
+				if (g.getId() == gameID)
+					gameInfo = g;
+
+			mediatorLiveData.setValue(gameInfo);
+		});
+
+		return mediatorLiveData;
+	}
+
 	public LiveData<List<User>> getUsers()
 	{
 		return users;
+	}
+
+	public LiveData<User> getUserByID(int userID)
+	{
+		MediatorLiveData<User> mediatorLiveData = new MediatorLiveData<>();
+		mediatorLiveData.addSource(users, userList ->
+		{
+			User user = null;
+			for (User u : userList)
+				if (u.getId() == userID)
+					user = u;
+
+			mediatorLiveData.setValue(user);
+		});
+
+		return mediatorLiveData;
 	}
 
 	public LiveData<Integer> getUserID()
@@ -199,7 +231,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 							if (user.getId() == userID)
 								gameUserList.add(user);
 
-					games.getValue().add(new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), gameUserList));
+					games.getValue().add(new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), gameUserList, Utils.gameSessionStateFromProto(gameProto.getState())));
 				}
 				games.setValue(games.getValue());
 

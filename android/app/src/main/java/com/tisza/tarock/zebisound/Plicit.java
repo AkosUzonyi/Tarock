@@ -4,8 +4,6 @@ import android.content.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 
-import java.util.*;
-
 class Plicit extends ZebiSound
 {
 	private int state;
@@ -16,7 +14,7 @@ class Plicit extends ZebiSound
 	}
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		state = 0;
 	}

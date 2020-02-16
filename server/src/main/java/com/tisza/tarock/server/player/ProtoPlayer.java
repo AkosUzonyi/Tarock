@@ -2,6 +2,7 @@ package com.tisza.tarock.server.player;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
+import com.tisza.tarock.server.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
@@ -136,23 +137,13 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setPlayerTeamInfo(e).build());
 		}
 
-		@Override public void startGame(List<String> names, GameType gameType, PlayerSeat beginnerPlayer)
+		@Override public void startGame(GameType gameType, PlayerSeat beginnerPlayer)
 		{
 			EventProto.Event.StartGame e = EventProto.Event.StartGame.newBuilder()
-					.addAllPlayerName(names)
 					.setGameType(gameType.getID())
 					.setBeginnerPlayer(beginnerPlayer.asInt())
 					.build();
 			sendEvent(EventProto.Event.newBuilder().setStartGame(e).build());
-		}
-
-		@Override
-		public void seat(PlayerSeat seat)
-		{
-			EventProto.Event.Seat e = EventProto.Event.Seat.newBuilder()
-					.setSeat(seat == null ? -1 : seat.asInt())
-					.build();
-			sendEvent(EventProto.Event.newBuilder().setSeat(e).build());
 		}
 
 		@Override public void playerCards(PlayerCards cards)
@@ -253,12 +244,6 @@ public class ProtoPlayer extends Player implements MessageHandler
 		{
 			EventProto.Event.PendingNewGame e = EventProto.Event.PendingNewGame.newBuilder().build();
 			sendEvent(EventProto.Event.newBuilder().setPendingNewGame(e).build());
-		}
-
-		@Override public void deleteGame()
-		{
-			EventProto.Event.DeleteGame e = EventProto.Event.DeleteGame.newBuilder().build();
-			sendEvent(EventProto.Event.newBuilder().setDeleteGame(e).build());
 		}
 	};
 }

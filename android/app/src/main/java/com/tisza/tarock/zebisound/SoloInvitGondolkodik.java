@@ -16,7 +16,7 @@ class SoloInvitGondolkodik extends ZebiSound
 	}
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		twoNeedsToBeKept = false;
 	}

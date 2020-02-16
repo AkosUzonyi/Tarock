@@ -188,6 +188,13 @@ public class TarockDatabase
 				.compose(resultTransformerQueryFlowable());
 	}
 
+	public Flowable<User> getBotUsers()
+	{
+		return rxdatabase.select("SELECT id FROM user WHERE id < 0 ORDER BY id DESC;")
+				.getAs(Integer.class).map(id -> new User(id, this))
+				.compose(resultTransformerQueryFlowable());
+	}
+
 	public Single<Integer> createGameSession(GameType gameType, DoubleRoundTracker doubleRoundTracker)
 	{
 		return rxdatabase.update("INSERT INTO game_session(type, double_round_type, double_round_data, create_time) VALUES(?, ?, ?, ?);")
@@ -198,7 +205,7 @@ public class TarockDatabase
 
 	public Completable setDoubleRoundData(int gameSessionID, int data)
 	{
-		return rxdatabase.update("UPDATE game_session SET double_round_data = ? where id = ?;")
+		return rxdatabase.update("UPDATE game_session SET double_round_data = ? WHERE id = ?;")
 				.parameters(data, gameSessionID).complete()
 				.compose(resultTransformerUpdateCompletable());
 	}
@@ -218,9 +225,16 @@ public class TarockDatabase
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public Completable stopGameSession(int gameSessionID)
+	public Completable endGameSession(int gameSessionID)
 	{
-		return rxdatabase.update("UPDATE game_session SET current_game_id = NULL where id = ?;")
+		return rxdatabase.update("UPDATE game_session SET current_game_id = NULL WHERE id = ?;")
+				.parameter(gameSessionID).complete()
+				.compose(resultTransformerUpdateCompletable());
+	}
+
+	public Completable deleteGameSession(int gameSessionID)
+	{
+		return rxdatabase.update("DELETE FROM game_session WHERE id = ?;")
 				.parameter(gameSessionID).complete()
 				.compose(resultTransformerUpdateCompletable());
 	}
@@ -259,7 +273,7 @@ public class TarockDatabase
 				.parameters(gameSessionID, beginnerPlayer.asInt(), System.currentTimeMillis())
 				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
 				.doOnSuccess(gameID ->
-						rxdatabase.update("UPDATE game_session SET current_game_id = ? where id = ?;")
+						rxdatabase.update("UPDATE game_session SET current_game_id = ? WHERE id = ?;")
 						.parameters(gameID, gameSessionID).complete().compose(resultTransformerUpdateCompletable()))
 				.compose(resultTransformerUpdateSingle());
 	}

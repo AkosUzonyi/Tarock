@@ -139,7 +139,7 @@
                 android:textSize="@dimen/game_text_size"
                 />
         </androidx.viewpager.widget.ViewPager>
-            
+
         <TextView
             android:id="@+id/player_message_0"
             android:layout_width="wrap_content"
@@ -190,6 +190,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/cards"
+        android:visibility="gone"
         >
 
         <View

@@ -1,6 +1,7 @@
 bugs:
 caller's skart is not shown
 round annoucement annoucablity
+history view game id
 
 needs fix:
 
@@ -20,7 +21,6 @@ error messages
 nickname
 view last round
 public chat
-lobby
 multiple login
 android handle history mode
 store emails

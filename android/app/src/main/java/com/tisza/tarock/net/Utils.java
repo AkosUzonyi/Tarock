@@ -39,4 +39,15 @@ public class Utils
 			result.add(f.apply(t));
 		return result;
 	}
+
+	public static GameSessionState gameSessionStateFromProto(MainProto.GameSession.State state)
+	{
+		switch (state)
+		{
+			case LOBBY: return GameSessionState.LOBBY;
+			case GAME: return GameSessionState.GAME;
+			case ENDED: return GameSessionState.ENDED;
+			default: throw new IllegalArgumentException("unknown game state: " + state);
+		}
+	}
 }

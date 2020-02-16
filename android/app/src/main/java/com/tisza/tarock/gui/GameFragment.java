@@ -5,17 +5,17 @@ import android.content.*;
 import android.graphics.*;
 import android.os.*;
 import android.text.*;
-import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
 import android.view.animation.Animation.*;
 import android.view.inputmethod.*;
 import android.widget.*;
+import androidx.appcompat.app.*;
 import androidx.lifecycle.*;
-import androidx.viewpager.widget.ViewPager;
-import com.tisza.tarock.*;
+import androidx.viewpager.widget.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
@@ -58,6 +58,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private ViewPager centerSpace;
 	private Button okButton;
 	private Button throwButton;
+	private Button lobbyStartButton;
 
 	private View messagesFrame;
 
@@ -168,6 +169,22 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		messagesChatEditText = messagesFrame.findViewById(R.id.messages_chat_edit_text);
 		messagesChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
 		messagesChatEditText.setOnEditorActionListener(this);
+		lobbyStartButton = messagesFrame.findViewById(R.id.lobby_start_button);
+		lobbyStartButton.setOnClickListener(v ->
+		{
+			MainProto.Message startMessage = MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build();
+
+			if (gameInfo.getUsers().size() == 4)
+				connectionViewModel.sendMessage(startMessage);
+			else
+				new AlertDialog.Builder(getContext())
+						.setTitle(R.string.lobby_start_with_bots_confirm_title)
+						.setMessage(R.string.lobby_start_with_bots_confirm_body)
+						.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> connectionViewModel.sendMessage(startMessage))
+						.setNegativeButton(R.string.cancel, null)
+						.show();
+
+		});
 
 		ultimoView = messagesFrame.findViewById(R.id.ultimo_view);
 		ultimoBackButton = (Button)messagesFrame.findViewById(R.id.ultimo_back_buton);
@@ -216,31 +233,33 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		int[] centerViewTitles = {R.string.pager_announcing, R.string.pager_gameplay, R.string.pager_statistics};
 		centerSpace.setAdapter(new CenterViewPagerAdapter(getActivity(), centerViews, centerViewTitles));
 
+		myUserID = connectionViewModel.getUserID().getValue();
+
 		for (ZebiSound zebiSound : zebiSounds.getZebiSounds())
 		{
 			connectionViewModel.addEventHandler(zebiSound);
 		}
 		connectionViewModel.addEventHandler(this);
 
+		int gameID;
 		if (getArguments().containsKey(KEY_GAME_ID))
 		{
+			gameID = getArguments().getInt(KEY_GAME_ID);
 			connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
-					.setGameSessionId(getArguments().getInt(KEY_GAME_ID))
+					.setGameSessionId(gameID)
 					.build())
 					.build());
 		}
 		else if (getArguments().containsKey(KEY_HISTORY_GAME_ID))
 		{
-			connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinHistoryGame(MainProto.JoinHistoryGame.newBuilder()
-					.setGameId(getArguments().getInt(KEY_HISTORY_GAME_ID))
-					.build())
-					.build());
+			throw new UnsupportedOperationException(); //TODO determine game session id
 		}
 		else
 		{
-			Log.w(LOG_TAG, "no game id given");
-			getActivity().getSupportFragmentManager().popBackStack();
+			throw new IllegalArgumentException("no game id given");
 		}
+
+		connectionViewModel.getGameByID(gameID).observe(this, this::onGameInfoUpdate);
 
 		return contentView;
 	}
@@ -295,9 +314,68 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 	}
 
-	private List<String> playerNames;
-	protected List<Card> myCards;
-	private int seat;
+	private void onGameInfoUpdate(GameInfo gameInfo)
+	{
+		this.gameInfo = gameInfo;
+
+		if (gameInfo == null)
+		{
+			getActivity().getSupportFragmentManager().popBackStack();
+			return;
+		}
+
+		int userCount = gameInfo.getUsers().size();
+
+		seat = -1;
+		for (int i = 0; i < userCount; i++)
+		{
+			if (gameInfo.getUsers().get(i).getId() == myUserID)
+			{
+				seat = i;
+				break;
+			}
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			TextView playerNameView = playerNameViews[getPositionFromPlayerID(i)];
+			playerNameView.setText("---");
+			User user = i < userCount ? gameInfo.getUsers().get(i) : null;
+			if (user != null)
+			{
+				playerNameView.setText(user.getName());
+				playerNameView.setAlpha(user.isOnline() ? 1F : 0.5F);
+			}
+		}
+
+		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
+		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
+
+		if (userCount == 4)
+			lobbyStartButton.setText(R.string.lobby_start);
+		else
+			lobbyStartButton.setText(getString(R.string.lobby_start_with_bots, 4 - userCount));
+
+		switch (gameInfo.getState())
+		{
+			case LOBBY:
+				lobbyStartButton.setVisibility(View.VISIBLE);
+				availableActionsListView.setVisibility(View.GONE);
+				break;
+			case GAME:
+				lobbyStartButton.setVisibility(View.GONE);
+				availableActionsListView.setVisibility(View.VISIBLE);
+				break;
+			case ENDED:
+				getActivity().getSupportFragmentManager().popBackStack();
+				break;
+		}
+	}
+
+	private GameInfo gameInfo;
+	private int myUserID;
+	private List<Card> myCards;
+	private int seat = -1;
 	private Team myTeam;
 	private GameType gameType;
 	private int beginnerPlayer;
@@ -306,38 +384,22 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	
 	private PhaseEnum gamePhase;
 	
-	private String messages;
+	private String messagesHtml = "";
 	
 	private List<Card> cardsToSkart = new ArrayList<>();
 	private boolean skarting = false;
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		resetGameViews();
 
-		this.playerNames = playerNames;
 		this.gameType = gameType;
 		this.beginnerPlayer = beginnerPlayer;
 		myTeam = null;
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
-		messages = "";
-		seat(-1);
-	}
-
-	@Override
-	public void seat(int seat)
-	{
-		this.seat = seat;
-		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
-		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
-
-		for (int i = 0; i < 4; i++)
-		{
-			int pos = getPositionFromPlayerID(i);
-			playerNameViews[pos].setText(playerNames.get(i));
-		}
+		messagesHtml = "";
 	}
 
 	private void doAction(Action action)
@@ -348,7 +410,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void chat(int player, String message)
 	{
-		displayPlayerActionMessage(R.string.message_generic, player, message);
+		displayPlayerActionMessage(R.string.message_chat, player, message);
 	}
 
 	@Override
@@ -686,7 +748,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		for (int i = 0; i < 4; i++)
 		{
 			TextView nameView = statisticsPointsNameViews[i];
-			nameView.setText(playerNames.get(i));
+			nameView.setText(getPlayerName(i));
 
 			TextView pointsView = statisticsPointsValueViews[i];
 			pointsView.setText(String.valueOf(playerPoints.get(i)));
@@ -712,12 +774,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			okButton.setVisibility(View.GONE);
 
 		setHiglighted(player, false);
-	}
-
-	@Override
-	public void deleteGame()
-	{
-		getActivity().getSupportFragmentManager().popBackStack();
 	}
 
 	@Override
@@ -832,6 +888,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}, DELAY);
 	}
 
+	private String getPlayerName(int player)
+	{
+		return gameInfo.getUsers().get(player).getName();
+	}
+
 	private void displayMessage(int msgRes, Object ... formatArgs)
 	{
 		displayMessage(getString(msgRes, formatArgs));
@@ -839,21 +900,21 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private void displayMessage(String msg)
 	{
-		messages += msg;
-		messagesTextView.setText(messages);
+		messagesHtml += msg + "<br>";
+		messagesTextView.setText(Html.fromHtml(messagesHtml));
 		messagesScrollView.fullScroll(View.FOCUS_DOWN);
 	}
 
 	private void displayPlayerActionMessage(int actionRes, int player, String msg)
 	{
-		displayMessage(actionRes, playerNames.get(player), msg);
+		displayMessage(actionRes, getPlayerName(player), msg);
 		showPlayerMessageView(player, msg);
 	}
 	
 	private void showPlayerMessageView(int player, String msg)
 	{
 		final TextView view = playerMessageViews[getPositionFromPlayerID(player)];
-		view.setText(msg);
+		view.setText(Html.fromHtml(msg));
 		view.setVisibility(View.VISIBLE);
 		Animation fadeAnimation = new AlphaAnimation(1, 0);
 		fadeAnimation.setDuration(500);

@@ -4,8 +4,6 @@ import android.content.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 
-import java.util.*;
-
 class Huszonegyfogasveszely extends ZebiSound
 {
 	private int nextExpectedBid;
@@ -18,7 +16,7 @@ class Huszonegyfogasveszely extends ZebiSound
 	}
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		nextExpectedBid = 3;
 		passzCount = 0;

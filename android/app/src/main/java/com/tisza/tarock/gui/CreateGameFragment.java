@@ -92,6 +92,8 @@ public class CreateGameFragment extends MainActivityFragment
 		doubleRoundTypeSpinner.setSelection(sharedPreferences.getInt(DOUBLE_ROUND_TYPE_KEY, 0));
 		botWarningIgnored = sharedPreferences.getBoolean(BOT_WARNING_IGNORED_KEY, false);
 
+		updateCreateButton();
+
 		return view;
 	}
 
@@ -111,9 +113,6 @@ public class CreateGameFragment extends MainActivityFragment
 
 	private void createButtonClicked()
 	{
-		if (selectedUsers.size() != SELECT_USER_COUNT)
-			return;
-
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
 		sharedPreferences.edit()
 				.putInt(GAME_TYPE_KEY, gameTypeSpinner.getSelectedItemPosition())
@@ -172,9 +171,7 @@ public class CreateGameFragment extends MainActivityFragment
 		selectedUsersAdapter.notifyItemRemoved(position);
 		searchResultUsersAdapter.notifyItemInserted(searchResultUsers.size());
 		searchResultUsers.add(user);
-
-		createButton.setText(R.string.create_game_select_3);
-		createButton.setEnabled(false);
+		updateCreateButton();
 	}
 
 	private void selectUser(User user)
@@ -194,10 +191,12 @@ public class CreateGameFragment extends MainActivityFragment
 		InputMethodManager imm = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
 
-		if (selectedUsers.size() == SELECT_USER_COUNT)
-		{
-			createButton.setText(R.string.create_game);
-			createButton.setEnabled(true);
-		}
+		updateCreateButton();
+	}
+
+	private void updateCreateButton()
+	{
+		int freePlaceCount = SELECT_USER_COUNT - selectedUsers.size();
+		createButton.setText(freePlaceCount == 0 ? getString(R.string.create_game) : getString(R.string.lobby_create, freePlaceCount));
 	}
 }

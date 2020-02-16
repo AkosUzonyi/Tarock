@@ -7,8 +7,7 @@ import java.util.*;
 
 public interface EventHandler
 {
-	default void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer) {}
-	default void seat(int seat) {}
+	default void startGame(GameType gameType, int beginnerPlayer) {}
 	default void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier) {}
 	default void playerPoints(List<Integer> playerPoints) {}
 	default void announce(int player, Announcement announcementContra) {}
@@ -30,6 +29,5 @@ public interface EventHandler
 	default void wrongAction() {}
 	default void pendingNewGame() {}
 	default void readyForNewGame(int player) {}
-	default void deleteGame() {}
 	default void chat(int player, String message) {}
 }

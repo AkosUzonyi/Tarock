@@ -3,6 +3,7 @@ package com.tisza.tarock.server.net;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
+import com.tisza.tarock.server.*;
 import com.tisza.tarock.server.database.*;
 import io.reactivex.*;
 
@@ -31,5 +32,16 @@ public class Utils
 
 			return builder.build();
 		});
+	}
+
+	public static MainProto.GameSession.State gameSessionStateToProto(GameSession.State state)
+	{
+		switch (state)
+		{
+			case LOBBY: return MainProto.GameSession.State.LOBBY;
+			case GAME: return MainProto.GameSession.State.GAME;
+			case ENDED: return MainProto.GameSession.State.ENDED;
+			default: throw new IllegalArgumentException("unknown game state: " + state);
+		}
 	}
 }

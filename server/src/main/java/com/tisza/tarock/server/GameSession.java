@@ -8,7 +8,6 @@ import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.player.*;
-import io.reactivex.Observable;
 import io.reactivex.*;
 import org.davidmoten.rx.jdbc.tuple.*;
 
@@ -20,14 +19,16 @@ public class GameSession
 {
 	private final int id;
 	private final GameType gameType;
-	private final PlayerSeatMap<Player> players = new PlayerSeatMap<>();
-	private final Set<Player> allPlayers = new HashSet<>();
 	private final DoubleRoundTracker doubleRoundTracker;
+	private final TarockDatabase database;
+
+	private State state = State.LOBBY;
+	private List<Player> players = new ArrayList<>();
+	private Set<Player> watchingPlayers = new HashSet<>();
 
 	private PlayerSeat currentBeginnerPlayer = PlayerSeat.SEAT0;
 	private Game currentGame;
 
-	private TarockDatabase database;
 	private Single<Integer> currentGameID;
 	private int actionOrdinal = 0;
 
@@ -36,51 +37,20 @@ public class GameSession
 
 	private int[] points = new int[4];
 
-	private GameSession(int id, GameType gameType, List<Player> playerList, DoubleRoundTracker doubleRoundTracker, TarockDatabase database)
+	private GameSession(int id, GameType gameType, DoubleRoundTracker doubleRoundTracker, TarockDatabase database)
 	{
-		if (playerList.size() != 4)
-			throw new IllegalArgumentException("GameSession: playerList.size() != 4");
-
 		this.id = id;
 		this.database = database;
 		this.gameType = gameType;
 		this.doubleRoundTracker = doubleRoundTracker;
 		lastModified = System.currentTimeMillis();
-
-		for (int i = 0; i < 4; i++)
-		{
-			PlayerSeat playerSeat = PlayerSeat.fromInt(i);
-			Player player = playerList.get(i);
-
-			players.put(playerSeat, player);
-			allPlayers.add(player);
-			player.setGame(this, playerSeat);
-		}
 	}
 
-	public static Single<GameSession> createNew(GameType gameType, List<User> users, DoubleRoundType doubleRoundType, TarockDatabase database)
+	public static Single<GameSession> createNew(GameType gameType, DoubleRoundType doubleRoundType, TarockDatabase database)
 	{
-		if (users.size() != 4)
-			throw new IllegalArgumentException("users.size() != 4: " + users.size());
-
 		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 
-		return
-		Observable.fromIterable(users).flatMapSingle(User::createPlayer).toList().flatMap(players ->
-		database.createGameSession(gameType, doubleRoundTracker).map(id ->
-		{
-			Collections.shuffle(players);
-
-			for (PlayerSeat seat : PlayerSeat.getAll())
-			{
-				Player player = players.get(seat.asInt());
-				database.addPlayer(id, seat, player.getUser());
-			}
-
-			GameSession gameSession = new GameSession(id, gameType, players, doubleRoundTracker, database);
-			gameSession.startNewGame();
-			return gameSession;
-		}));
+		return database.createGameSession(gameType, doubleRoundTracker).map(id -> new GameSession(id, gameType, doubleRoundTracker, database));
 	}
 
 	public static Single<GameSession> load(int id, TarockDatabase database)
@@ -103,17 +73,26 @@ public class GameSession
 			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 			doubleRoundTracker.setData(doubleRoundData);
 
-			GameSession gameSession = new GameSession(id, gameType, players, doubleRoundTracker, database);
+			GameSession gameSession = new GameSession(id, gameType, doubleRoundTracker, database);
 
+			gameSession.state = State.GAME;
 			gameSession.currentBeginnerPlayer = beginnerPlayer;
 			gameSession.currentGameID = Single.just(currentGameID);
 			gameSession.actionOrdinal = actions.size();
 			gameSession.lastModified = lastGameCreateTime;
 
 			for (int i = 0; i < 4; i++)
-				gameSession.points[i] = points.get(i);
+			{
+				PlayerSeat seat = PlayerSeat.fromInt(i);
+				Player player = players.get(i);
+				gameSession.players.add(player);
+				gameSession.watchingPlayers.add(player);
+				player.setGame(gameSession, seat);
 
-			gameSession.currentGame = new Game(gameType, gameSession.getPlayerNames(), beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+				gameSession.points[i] = points.get(i);
+			}
+
+			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
 			for (Tuple3<PlayerSeat, Action, Long> actionTuple : actions)
@@ -153,12 +132,22 @@ public class GameSession
 
 			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 
-			GameSession gameSession = new GameSession(id, gameType, players, doubleRoundTracker, database);
+			GameSession gameSession = new GameSession(-1, gameType, doubleRoundTracker, database);
 
+			gameSession.state = State.GAME;
 			gameSession.currentBeginnerPlayer = beginnerPlayer;
 			gameSession.historyView = true;
 
-			gameSession.currentGame = new Game(gameType, gameSession.getPlayerNames(), beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			for (int i = 0; i < 4; i++)
+			{
+				PlayerSeat seat = PlayerSeat.fromInt(i);
+				Player player = players.get(i);
+				gameSession.players.add(player);
+				gameSession.watchingPlayers.add(player);
+				player.setGame(gameSession, seat);
+			}
+
+			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
 			for (Tuple3<PlayerSeat, Action, Long> actionTuple : actions)
@@ -181,14 +170,45 @@ public class GameSession
 		})))));
 	}
 
+	private void checkAlive()
+	{
+		if (state == State.ENDED)
+			throw new IllegalStateException("GameSession is ended");
+	}
+
+	private void checkIsLobby()
+	{
+		if (state != State.LOBBY)
+			throw new IllegalStateException("GameSession is not a lobby");
+	}
+
+	private void checkGameStarted()
+	{
+		if (state != State.GAME)
+			throw new IllegalStateException("GameSession is not in game state");
+	}
+
 	public int getID()
 	{
 		return id;
 	}
 
-	public PlayerSeatMap<Player> getPlayers()
+	public List<Player> getPlayers()
 	{
+		checkAlive();
 		return players;
+	}
+
+	public int getFreeLobbyPlaces()
+	{
+		checkIsLobby();
+		return 4 - players.size();
+	}
+
+	public boolean isLobbyFull()
+	{
+		checkIsLobby();
+		return getFreeLobbyPlaces() == 0;
 	}
 
 	public long getLastModified()
@@ -196,20 +216,101 @@ public class GameSession
 		return lastModified;
 	}
 
-	public void stopSession()
+	public void start()
+	{
+		checkIsLobby();
+
+		if (!isLobbyFull())
+			throw new IllegalStateException("GameSession needs more players to start");
+
+		state = State.GAME;
+
+		Collections.shuffle(players);
+		for (PlayerSeat seat : PlayerSeat.getAll())
+		{
+			Player player = players.get(seat.asInt());
+			player.setGame(this, seat);
+			database.addPlayer(id, seat, player.getUser());
+		}
+
+		startNewGame();
+	}
+
+	public State getState()
+	{
+		return state;
+	}
+
+	public void endSession()
 	{
 		currentGame = null;
-		dispatchEvent(EventInstance.broadcast(Event.deleteGame()));
-		for (Player player : allPlayers)
-			player.setGame(null, null);
 
-		if (!historyView)
-			database.stopGameSession(id);
+		switch (state)
+		{
+			case LOBBY:
+				database.deleteGameSession(id);
+				break;
+			case GAME:
+				if (!historyView)
+					database.endGameSession(id);
+				break;
+		}
+
+		state = State.ENDED;
+	}
+
+	public boolean addPlayer(Player player)
+	{
+		checkIsLobby();
+
+		if (isLobbyFull())
+			return false;
+
+		boolean userAlreadyInLobby = players.stream().anyMatch(p -> p.getUser().equals(player.getUser()));
+		if (userAlreadyInLobby)
+			return false;
+
+		PlayerSeat seat = PlayerSeat.fromInt(players.size());
+		players.add(player);
+		watchingPlayers.add(player);
+		player.setGame(this, seat);
+
+		return true;
+	}
+
+	public boolean removePlayer(Player player)
+	{
+		checkIsLobby();
+
+		int pos = players.indexOf(player);
+		if (pos < 0)
+			return false;
+
+		PlayerSeat seat = PlayerSeat.fromInt(pos);
+		players.remove(player);
+		watchingPlayers.remove(player);
+		player.setGame(null, null);
+
+		if (!hasAnyRealPlayer())
+			endSession();
+
+		return true;
+	}
+
+	private boolean hasAnyRealPlayer()
+	{
+		for (Player player : players)
+			if (!player.getUser().isBot())
+				return true;
+
+		return false;
 	}
 
 	public Player getPlayerByUser(User user)
 	{
-		for (Player player : players.values())
+		checkAlive();
+
+		for (Player player : players)
 			if (player.getUser().equals(user))
 				return player;
 
@@ -223,13 +324,17 @@ public class GameSession
 
 	public void addKibic(Player player)
 	{
-		if (allPlayers.add(player))
+		checkGameStarted();
+
+		if (watchingPlayers.add(player))
 			player.setGame(this, null);
 	}
 
 	public void removeKibic(Player player)
 	{
-		if (!players.containsValue(player) && allPlayers.remove(player))
+		checkGameStarted();
+
+		if (!players.contains(player) && watchingPlayers.remove(player))
 			player.setGame(null, null);
 	}
 
@@ -240,11 +345,14 @@ public class GameSession
 
 	public List<String> getPlayerNames()
 	{
-		return players.values().stream().map(Player::getName).collect(Collectors.toList());
+		checkAlive();
+		return players.stream().map(Player::getName).collect(Collectors.toList());
 	}
 
 	private void startNewGame()
 	{
+		checkGameStarted();
+
 		List<Card> deck = new ArrayList<>(Card.getAll());
 		Collections.shuffle(deck);
 
@@ -255,15 +363,23 @@ public class GameSession
 			actionOrdinal = 0;
 		}
 
-		currentGame = new Game(gameType, getPlayerNames(), currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
+		currentGame = new Game(gameType, currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
 		dispatchNewEvents();
 	}
 
 	public void action(PlayerSeat player, Action action)
 	{
-		if (currentGame == null || historyView)
+		if (historyView)
 			return;
+
+		if (currentGame == null)
+		{
+			if (action.getChatString() != null)
+				dispatchEvent(EventInstance.broadcast(Event.chat(player, action.getChatString())));
+
+			return;
+		}
 
 		boolean success = currentGame.processAction(player, action);
 		if (success && database != null)
@@ -301,6 +417,8 @@ public class GameSession
 
 	private void dispatchNewEvents()
 	{
+		checkGameStarted();
+
 		EventInstance event;
 		while ((event = currentGame.popNextEvent()) != null)
 			dispatchEvent(event);
@@ -309,10 +427,10 @@ public class GameSession
 	private void dispatchEvent(EventInstance event)
 	{
 		if (event.getPlayerSeat() == null)
-			for (Player player : allPlayers)
+			for (Player player : watchingPlayers)
 				player.handleEvent(event.getEvent());
 		else
-			players.get(event.getPlayerSeat()).handleEvent(event.getEvent());
+			players.get(event.getPlayerSeat().asInt()).handleEvent(event.getEvent());
 	}
 
 	public void requestHistory(Player player)
@@ -325,5 +443,10 @@ public class GameSession
 			if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
 				player.handleEvent(event.getEvent());
 		player.handleEvent(Event.historyMode(false));
+	}
+
+	public enum State
+	{
+		LOBBY, GAME, ENDED
 	}
 }

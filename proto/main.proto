@@ -21,6 +21,7 @@ message Message
         JoinGameSession join_game_session = 7;
         DeleteGameSession delete_game_session = 8;
         JoinHistoryGame join_history_game = 11;
+        StartGameSessionLobby start_game_session_lobby = 12;
     }
 }
 
@@ -54,9 +55,16 @@ message FCMToken
 
 message GameSession
 {
+    enum State
+    {
+        LOBBY = 1;
+        GAME = 2;
+        ENDED = 3;
+    }
     required int32 id = 1;
     required string type = 2;
     repeated int32 user_id = 3;
+    required State state = 4;
 }
 
 message CreateGameSession
@@ -81,6 +89,8 @@ message JoinGameSession
 {
     optional int32 game_session_id = 1;
 }
+
+message StartGameSessionLobby {}
 
 message JoinHistoryGame
 {

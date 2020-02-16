@@ -4,6 +4,7 @@ import com.tisza.tarock.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.net.*;
+import com.tisza.tarock.server.player.*;
 import io.reactivex.*;
 import io.reactivex.disposables.*;
 import org.apache.log4j.*;
@@ -71,7 +72,7 @@ public class Server implements Runnable
 
 	public boolean isUserLoggedIn(User user)
 	{
-		return user.isBot() || clients.stream().map(Client::getLoggedInUser).anyMatch(u -> u == user);
+		return user.isBot() || clients.stream().map(Client::getLoggedInUser).anyMatch(user::equals);
 	}
 
 	public void removeClient(Client client)
@@ -177,10 +178,14 @@ public class Server implements Runnable
 
 			for (GameSession gameSession : gameSessionManager.getGameSessions())
 			{
+				if (gameSession.getState() == GameSession.State.ENDED)
+					continue;
+
 				MainProto.GameSession.Builder gameBuilder = MainProto.GameSession.newBuilder()
 						.setId(gameSession.getID())
 						.setType(gameSession.getGameType().getID())
-						.addAllUserId(gameSession.getPlayers().values().stream().map(p -> p.getUser().getID()).collect(Collectors.toList()));
+						.addAllUserId(gameSession.getPlayers().stream().map(p -> p.getUser().getID()).collect(Collectors.toList()))
+						.setState(Utils.gameSessionStateToProto(gameSession.getState()));
 
 				builder.addAvailableGameSession(gameBuilder);
 			}

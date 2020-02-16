@@ -5,8 +5,6 @@ import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 
-import java.util.*;
-
 class Kemenyenbelecsap extends ZebiSound
 {
 	private Card firstCard;
@@ -17,7 +15,7 @@ class Kemenyenbelecsap extends ZebiSound
 	}
 
 	@Override
-	public void startGame(List<String> playerNames, GameType gameType, int beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		firstCard = null;
 	}

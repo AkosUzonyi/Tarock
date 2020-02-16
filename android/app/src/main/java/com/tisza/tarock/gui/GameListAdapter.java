@@ -1,6 +1,7 @@
 package com.tisza.tarock.gui;
 
 import android.content.*;
+import android.graphics.*;
 import android.view.*;
 import android.widget.*;
 import androidx.annotation.*;
@@ -13,8 +14,9 @@ import java.util.*;
 
 public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewHolder>
 {
-	private GameAdapterListener gameAdapterListener;
+	private final Context context;
 	private final LayoutInflater inflater;
+	private GameAdapterListener gameAdapterListener;
 	private Integer userID;
 
 	private static final DiffUtil.ItemCallback<GameInfo> gameInfoItemCallback = new DiffUtil.ItemCallback<GameInfo>()
@@ -35,6 +37,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	public GameListAdapter(Context context, GameAdapterListener gameAdapterListener)
 	{
 		super(gameInfoItemCallback);
+		this.context = context;
 		this.gameAdapterListener = gameAdapterListener;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
@@ -52,6 +55,9 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		if (userID != null && g0.containsUser(userID) != g1.containsUser(userID))
 			return g0.containsUser(userID) ? -1 : 1;
 
+		if (g0.getState() != g1.getState())
+			return g0.getState().ordinal() - g1.getState().ordinal();
+
 		return g0.getId() - g1.getId();
 	}
 
@@ -62,6 +68,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		View view = inflater.inflate(R.layout.game_list_entry, parent, false);
 
 		ViewHolder holder = new ViewHolder(view);
+		holder.gameTypeTextView = view.findViewById(R.id.game_type);
 		holder.userNameViews[0] = view.findViewById(R.id.username0);
 		holder.userNameViews[1] = view.findViewById(R.id.username1);
 		holder.userNameViews[2] = view.findViewById(R.id.username2);
@@ -79,17 +86,36 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 
 		for (int i = 0; i < 4; i++)
 		{
-			holder.userNameViews[i].setText(gameInfo.getUsers().get(i).getName());
+			holder.userNameViews[i].setText(i < gameInfo.getUsers().size() ? gameInfo.getUsers().get(i).getName() : "");
 		}
 
-		holder.joinGameButton.setText(gameInfo.containsUser(userID) ? R.string.join_game : R.string.join_game_kibic);
+		int joinButtonText;
+		if (gameInfo.getState() == GameSessionState.LOBBY)
+			joinButtonText = R.string.lobby_enter;
+		else if (gameInfo.containsUser(userID))
+			joinButtonText = R.string.join_game;
+		else
+			joinButtonText = R.string.join_game_kibic;
+
+		boolean deleteButtonVisible;
+		if (gameInfo.getState() == GameSessionState.LOBBY)
+			deleteButtonVisible = gameInfo.getUsers().size() > 0 && gameInfo.getUsers().get(0).getId() == userID;
+		else
+			deleteButtonVisible = gameInfo.containsUser(userID);
+
+		boolean isInteresting = gameInfo.containsUser(userID) || gameInfo.getState() == GameSessionState.LOBBY;
+
+		holder.gameTypeTextView.setText(context.getResources().getStringArray(R.array.game_type_array)[gameInfo.getType().ordinal()]);
+		holder.joinGameButton.setText(joinButtonText);
+		holder.joinGameButton.setTypeface(null, isInteresting ? Typeface.BOLD : Typeface.NORMAL);
 		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGame(gameInfo.getId()));
-		holder.deleteGameButton.setVisibility(gameInfo.containsUser(userID) ? View.VISIBLE : View.GONE);
+		holder.deleteGameButton.setVisibility(deleteButtonVisible ? View.VISIBLE : View.GONE);
 		holder.deleteGameButton.setOnClickListener(v -> gameAdapterListener.deleteGame(gameInfo.getId()));
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder
 	{
+		public TextView gameTypeTextView;
 		public TextView[] userNameViews = new TextView[4];
 		public Button joinGameButton;
 		public Button deleteGameButton;

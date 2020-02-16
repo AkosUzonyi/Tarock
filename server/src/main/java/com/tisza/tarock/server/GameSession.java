@@ -291,6 +291,9 @@ public class GameSession
 		watchingPlayers.remove(player);
 		player.setGame(null, null);
 
+		for (int i = 0; i < players.size(); i++)
+			players.get(i).setGame(this, PlayerSeat.fromInt(i));
+
 		if (!hasAnyRealPlayer())
 			endSession();
 

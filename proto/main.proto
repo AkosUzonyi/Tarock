@@ -40,6 +40,7 @@ message Login
 {
     optional string facebook_token = 1;
     optional string google_token = 2;
+    optional int32 test_id = 3;
 }
 
 message LoginResult

@@ -100,6 +100,43 @@ public class Action
 		}
 	}
 
+	public void handle(PlayerSeat player, EventHandler handler)
+	{
+		int colonIndex = id.indexOf(":");
+		String actionType = id.substring(0, colonIndex);
+		String actionParams = id.substring(colonIndex + 1);
+		switch (actionType)
+		{
+			case "bid":
+				int bid = actionParams.equals("p") ? -1 : Integer.parseInt(actionParams);
+				handler.bid(player, bid);
+				return;
+			case "call":
+				handler.call(player, Card.fromId(actionParams));
+				return;
+			case "announce":
+				if (actionParams.equals("passz"))
+					handler.announcePassz(player);
+				else
+					handler.announce(player, AnnouncementContra.fromID(actionParams));
+				return;
+			case "play":
+				handler.playCard(player, Card.fromId(actionParams));
+				return;
+			case "newgame":
+				handler.readyForNewGame(player);
+				return;
+			case "throw":
+				handler.throwCards(player);
+				return;
+			case "chat":
+				handler.chat(player, actionParams);
+				return;
+			default:
+				throw new IllegalArgumentException("invalid action: " + actionType);
+		}
+	}
+
 	public String getChatString()
 	{
 		if (!id.startsWith("chat:"))

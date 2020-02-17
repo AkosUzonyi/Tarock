@@ -58,6 +58,10 @@ public class Client implements MessageHandler
 					String googleToken = message.getLogin().getGoogleToken();
 					disposables.add(server.getGoogleUserManager().newToken(googleToken).subscribe(this::userLogin, this::userLoginException));
 				}
+				else if (message.getLogin().hasTestId())
+				{
+					userLogin(server.getDatabase().getUser(message.getLogin().getTestId()));
+				}
 				else
 				{
 					userLogin(null);

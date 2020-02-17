@@ -161,7 +161,7 @@ public class Server implements Runnable
 		try
 		{
 			log.info("Accepted connection from: " + socket.getRemoteSocketAddress());
-			ProtoConnection connection = new ProtoConnection(socket, Main.GAME_EXECUTOR_SERVICE);
+			ProtoConnection connection = new ProtoConnection(socket, Main.GAME_EXECUTOR_SERVICE, true);
 			clients.add(new Client(this, connection));
 			connection.start();
 		}

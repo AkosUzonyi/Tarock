@@ -21,6 +21,7 @@ public class ProtoConnection implements Closeable
 	private static final int SOCKET_TIMEOUT = 10;
 
 	private final Executor messageHandlerExecutor;
+	private final boolean server;
 	private Socket socket;
 	private InputStream is;
 	private OutputStream os;
@@ -37,6 +38,16 @@ public class ProtoConnection implements Closeable
 		{
 			try
 			{
+				if (!server)
+				{
+					byte[] helloArr = new byte[10];
+					is.read(helloArr);
+					ByteBuffer helloByteBuffer = ByteBuffer.wrap(helloArr);
+					String serverHelloString = new String(helloArr, 0, 6);
+					int serverVersion = helloByteBuffer.getInt(6);
+					log.info("server hello: " + serverHelloString + " version: " + serverVersion);
+				}
+
 				while (!closeRequested)
 				{
 					Message message = Message.parseDelimitedFrom(is);
@@ -85,10 +96,13 @@ public class ProtoConnection implements Closeable
 		{
 			try
 			{
-				ByteBuffer helloByteBuffer = ByteBuffer.allocate(10);
-				helloByteBuffer.put(HELLO_STRING.getBytes(StandardCharsets.UTF_8), 0, 6);
-				helloByteBuffer.putInt(6, VERSION);
-				os.write(helloByteBuffer.array());
+				if (server)
+				{
+					ByteBuffer helloByteBuffer = ByteBuffer.allocate(10);
+					helloByteBuffer.put(HELLO_STRING.getBytes(StandardCharsets.UTF_8), 0, 6);
+					helloByteBuffer.putInt(6, VERSION);
+					os.write(helloByteBuffer.array());
+				}
 
 				while (!closeRequested)
 				{
@@ -128,10 +142,11 @@ public class ProtoConnection implements Closeable
 		}
 	});
 	
-	public ProtoConnection(Socket socket, Executor messageHandlerExecutor) throws IOException
+	public ProtoConnection(Socket socket, Executor messageHandlerExecutor, boolean server) throws IOException
 	{
 		this.socket = socket;
 		this.messageHandlerExecutor = messageHandlerExecutor;
+		this.server = server;
 
 		socket.setTcpNoDelay(true);
 		socket.setSoTimeout(SOCKET_TIMEOUT * 1000);

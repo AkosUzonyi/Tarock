@@ -242,23 +242,14 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 		connectionViewModel.addEventHandler(this);
 
-		int gameID;
-		if (getArguments().containsKey(KEY_GAME_ID))
-		{
-			gameID = getArguments().getInt(KEY_GAME_ID);
-			connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
-					.setGameSessionId(gameID)
-					.build())
-					.build());
-		}
-		else if (getArguments().containsKey(KEY_HISTORY_GAME_ID))
-		{
-			throw new UnsupportedOperationException(); //TODO determine game session id
-		}
-		else
-		{
+		if (!getArguments().containsKey(KEY_GAME_ID))
 			throw new IllegalArgumentException("no game id given");
-		}
+
+		int gameID = getArguments().getInt(KEY_GAME_ID);
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
+				.setGameSessionId(gameID)
+				.build())
+				.build());
 
 		connectionViewModel.getGameByID(gameID).observe(this, this::onGameInfoUpdate);
 		connectionViewModel.getUsers().observe(this, u -> users = u);

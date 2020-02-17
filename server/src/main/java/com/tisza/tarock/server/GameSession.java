@@ -142,7 +142,7 @@ public class GameSession
 		})))))));
 	}
 
-	public static Single<GameSession> createHistoryView(int gameID, TarockDatabase database)
+	public static Single<GameSession> createHistoryView(int gameID, int gameSessionID, TarockDatabase database)
 	{
 		return
 		database.getGame(gameID).flatMap(gameTuple ->
@@ -160,7 +160,7 @@ public class GameSession
 
 			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
 
-			GameSession gameSession = new GameSession(-1, gameType, doubleRoundTracker, database);
+			GameSession gameSession = new GameSession(gameSessionID, gameType, doubleRoundTracker, database);
 
 			gameSession.state = State.GAME;
 			gameSession.currentBeginnerPlayer = beginnerPlayer;
@@ -186,8 +186,14 @@ public class GameSession
 
 				Main.GAME_EXECUTOR_SERVICE.schedule(() ->
 				{
+					if (gameSession.state != State.GAME)
+						return;
+
 					gameSession.currentGame.processAction(player, action);
 					gameSession.dispatchNewEvents();
+
+					if (gameSession.currentGame.isFinished())
+						gameSession.endSession();
 				},
 				time - gameCreateTime, TimeUnit.MILLISECONDS);
 			}
@@ -203,6 +209,9 @@ public class GameSession
 
 				Main.GAME_EXECUTOR_SERVICE.schedule(() ->
 				{
+					if (gameSession.state != State.GAME)
+						return;
+
 					gameSession.dispatchEvent(EventInstance.broadcast(Event.chat(userID, message)));
 				},
 				time - gameCreateTime, TimeUnit.MILLISECONDS);
@@ -288,7 +297,8 @@ public class GameSession
 	public void endSession()
 	{
 		currentGame = null;
-		database.endGameSession(id);
+		if (!historyView)
+			database.endGameSession(id);
 		state = State.ENDED;
 	}
 

@@ -23,6 +23,7 @@ message Message
         JoinHistoryGame join_history_game = 11;
         StartGameSessionLobby start_game_session_lobby = 12;
         Chat chat = 13;
+        JoinHistoryGameResult join_history_game_result = 14;
     }
 }
 
@@ -102,4 +103,9 @@ message StartGameSessionLobby {}
 message JoinHistoryGame
 {
     required int32 game_id = 1;
+}
+
+message JoinHistoryGameResult
+{
+    required int32 game_session_id = 1;
 }

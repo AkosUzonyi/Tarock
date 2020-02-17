@@ -71,6 +71,20 @@ public class GameSessionManager
 		}));
 	}
 
+	public Single<GameSession> createGameSessionHistoryView(int gameID)
+	{
+		int gameSessionID = -1;
+		while (gameSessions.containsKey(gameSessionID))
+			gameSessionID--;
+
+		return
+		GameSession.createHistoryView(gameID, gameSessionID, server.getDatabase()).doOnSuccess(gameSession ->
+		{
+			gameSessions.put(gameSession.getID(), gameSession);
+			server.broadcastStatus();
+		});
+	}
+
 	public GameSession getGameSession(int id)
 	{
 		return gameSessions.get(id);

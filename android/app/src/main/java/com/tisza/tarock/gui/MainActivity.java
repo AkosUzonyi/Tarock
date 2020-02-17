@@ -52,6 +52,12 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			if (getIntent().hasExtra(GameFragment.KEY_GAME_ID))
 				connectionViewModel.login();
 		}
+
+		connectionViewModel.getHistoryGameSessionID().observe(this, gameSessionID ->
+		{
+			if (gameSessionID < 0)
+				joinGame(gameSessionID);
+		});
 	}
 
 	private void connectionStateChanged(ConnectionViewModel.ConnectionState connectionState)
@@ -134,6 +140,13 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			getIntent().removeExtra(GameFragment.KEY_GAME_ID);
 			joinGame(Integer.parseInt(gameID));
 		}
+
+		String historyGameID = getIntent().getStringExtra("hgid");
+		if (historyGameID != null)
+		{
+			getIntent().removeExtra("hgid");
+			viewHistoryGame(Integer.parseInt(historyGameID));
+		}
 	}
 
 	public void createNewGame()
@@ -147,18 +160,12 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.commit();
 	}
 
-	@Override
 	public void joinGame(int gameID)
-	{
-		joinGame(gameID, false);
-	}
-
-	public void joinGame(int gameID, boolean history)
 	{
 		GameFragment gameFragment = new GameFragment();
 
 		Bundle args = new Bundle();
-		args.putInt(history ? GameFragment.KEY_HISTORY_GAME_ID : GameFragment.KEY_GAME_ID, gameID);
+		args.putInt(GameFragment.KEY_GAME_ID, gameID);
 		gameFragment.setArguments(args);
 
 		getSupportFragmentManager().beginTransaction()
@@ -166,6 +173,11 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
+	}
+
+	public void viewHistoryGame(int gameID)
+	{
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinHistoryGame(MainProto.JoinHistoryGame.newBuilder().setGameId(gameID)).build());
 	}
 
 	@Override

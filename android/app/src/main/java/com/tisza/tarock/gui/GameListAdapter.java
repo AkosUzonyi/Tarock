@@ -45,9 +45,12 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	public void setData(List<GameInfo> list, Integer userID)
 	{
 		this.userID = userID;
-		list = new ArrayList<>(list);
-		Collections.sort(list, this::compareGames);
-		submitList(list);
+		List<GameInfo> filteredSortedList = new ArrayList<>();
+		for (GameInfo gi : list)
+			if (gi.getId() >= 0)
+				filteredSortedList.add(gi);
+		Collections.sort(filteredSortedList, this::compareGames);
+		submitList(filteredSortedList);
 	}
 
 	@Override

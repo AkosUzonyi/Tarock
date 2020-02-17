@@ -163,10 +163,9 @@ public class Client implements MessageHandler
 			case JOIN_HISTORY_GAME:
 			{
 				disposables.add(
-				GameSession.createHistoryView(message.getJoinHistoryGame().getGameId(), server.getDatabase()).subscribe(gameSession ->
+				server.getGameSessionManager().createGameSessionHistoryView(message.getJoinHistoryGame().getGameId()).subscribe(gameSession ->
 				{
-					ProtoPlayer player = (ProtoPlayer)gameSession.getPlayerByUser(loggedInUser);
-					switchPlayer(player);
+					sendMessage(MainProto.Message.newBuilder().setJoinHistoryGameResult(MainProto.JoinHistoryGameResult.newBuilder().setGameSessionId(gameSession.getID())).build());
 				}));
 
 				break;

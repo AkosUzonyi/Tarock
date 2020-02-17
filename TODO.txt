@@ -1,7 +1,6 @@
 bugs:
 caller's skart is not shown
 round annoucement annoucablity
-history view game id
 game start names
 "enter lobby" text on button when lobby is full
 thrown cards not shown

@@ -114,9 +114,9 @@ public class Server implements Runnable
 			gameSessionManager.initialize();
 			facebookUserManager.refreshImageURLs();
 
-			Main.GAME_EXECUTOR_SERVICE.scheduleAtFixedRate(this::hourlyTask, 0, 1, TimeUnit.HOURS);
-
 			createServerSocket();
+
+			Main.GAME_EXECUTOR_SERVICE.scheduleAtFixedRate(this::hourlyTask, 0, 1, TimeUnit.HOURS);
 
 			while (!Thread.interrupted())
 			{

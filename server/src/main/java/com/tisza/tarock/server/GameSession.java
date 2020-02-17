@@ -371,6 +371,8 @@ public class GameSession
 		dispatchNewEvents();
 	}
 
+	private static int actions = 0;
+
 	public void action(PlayerSeat player, Action action)
 	{
 		if (historyView)
@@ -387,6 +389,7 @@ public class GameSession
 		boolean success = currentGame.processAction(player, action);
 		if (success && database != null)
 		{
+			System.out.println(++actions);
 			int ordinal = actionOrdinal++;
 			currentGameID.doOnSuccess(gameID -> database.addAction(gameID, player.asInt(), action, ordinal)).subscribe();
 		}

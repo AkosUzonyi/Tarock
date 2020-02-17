@@ -24,7 +24,7 @@ public class Server implements Runnable
 	private Thread listenerThread;
 	private SSLServerSocket serverSocket;
 
-	private Collection<Client> clients = new ArrayList<>();
+	private final Collection<Client> clients = Collections.synchronizedList(new ArrayList<>());
 
 	private final TarockDatabase database;
 	private final GameSessionManager gameSessionManager;
@@ -72,7 +72,17 @@ public class Server implements Runnable
 
 	public boolean isUserLoggedIn(User user)
 	{
-		return user.isBot() || clients.stream().map(Client::getLoggedInUser).anyMatch(user::equals);
+		if (user.isBot())
+			return true;
+
+		synchronized (clients)
+		{
+			for (Client client : clients)
+				if (user.equals(client.getLoggedInUser()))
+					return true;
+		}
+
+		return false;
 	}
 
 	public void removeClient(Client client)
@@ -169,6 +179,8 @@ public class Server implements Runnable
 
 	public void broadcastStatus()
 	{
+		synchronized (clients)
+		{
 		for (Client client : clients)
 		{
 			if (client.getLoggedInUser() == null)
@@ -199,6 +211,7 @@ public class Server implements Runnable
 				return Completable.complete();
 			})))
 			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build())));
+		}
 		}
 	}
 

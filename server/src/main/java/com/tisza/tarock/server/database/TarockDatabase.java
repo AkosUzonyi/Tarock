@@ -54,39 +54,39 @@ public class TarockDatabase
 
 	private CompletableTransformer resultTransformerUpdateCompletable()
 	{
-		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		//StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		return upstream ->
 		{
 			upstream = upstream.cache().observeOn(observerScheduler);
-			upstream.subscribe(() -> {}, e -> logException(e, stackTrace));
+			//upstream.subscribe(() -> {}, e -> logException(e, stackTrace));
 			return upstream;
 		};
 	}
 
 	private <T> SingleTransformer<T, T> resultTransformerUpdateSingle()
 	{
-		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		//StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		return upstream ->
 		{
 			upstream = upstream.cache().observeOn(observerScheduler);
-			upstream.subscribe(result -> {}, e -> logException(e, stackTrace));
+			//upstream.subscribe(result -> {}, e -> logException(e, stackTrace));
 			return upstream;
 		};
 	}
 
 	private <T> SingleTransformer<T, T> resultTransformerQuerySingle()
 	{
-		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		//StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		return upstream -> upstream
-				.doOnError(e -> logException(e, stackTrace))
+				//.doOnError(e -> logException(e, stackTrace))
 				.observeOn(observerScheduler);
 	}
 
 	private <T> FlowableTransformer<T, T> resultTransformerQueryFlowable()
 	{
-		StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+		//StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
 		return upstream -> upstream
-				.doOnError(e -> logException(e, stackTrace))
+				//.doOnError(e -> logException(e, stackTrace))
 				.observeOn(observerScheduler);
 	}
 

@@ -890,7 +890,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private String getPlayerName(int player)
 	{
-		return player < gameInfo.getUsers().size() ? gameInfo.getUsers().get(player).getName() : getString(R.string.empty_seat);
+		return gameInfo != null && player < gameInfo.getUsers().size() ? gameInfo.getUsers().get(player).getName() : getString(R.string.empty_seat);
 	}
 
 	private void displayMessage(int msgRes, Object ... formatArgs)

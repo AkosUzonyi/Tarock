@@ -176,39 +176,41 @@ public class Server implements Runnable
 
 	public void broadcastStatus()
 	{
-		synchronized (clients)
+		MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
+
+		for (GameSession gameSession : gameSessionManager.getGameSessions())
 		{
-		for (Client client : clients)
-		{
-			if (client.getLoggedInUser() == null)
+			if (gameSession.getState() == GameSession.State.ENDED)
 				continue;
 
-			MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
+			MainProto.GameSession.Builder gameBuilder = MainProto.GameSession.newBuilder()
+					.setId(gameSession.getID())
+					.setType(gameSession.getGameType().getID())
+					.addAllUserId(gameSession.getPlayers().stream().map(p -> p.getUser().getID()).collect(Collectors.toList()))
+					.setState(Utils.gameSessionStateToProto(gameSession.getState()));
 
-			for (GameSession gameSession : gameSessionManager.getGameSessions())
+			builder.addAvailableGameSession(gameBuilder);
+		}
+
+		database.getUsers().flatMapCompletable(user ->
+		Utils.userToProto(user, false, isUserLoggedIn(user)).flatMapCompletable(userProto ->
+		{
+			builder.addAvailableUser(userProto);
+			return Completable.complete();
+		}))
+		.subscribe(() ->
+		{
+			synchronized (clients)
 			{
-				if (gameSession.getState() == GameSession.State.ENDED)
-					continue;
+				for (Client client : clients)
+				{
+					if (client.getLoggedInUser() == null)
+						continue;
 
-				MainProto.GameSession.Builder gameBuilder = MainProto.GameSession.newBuilder()
-						.setId(gameSession.getID())
-						.setType(gameSession.getGameType().getID())
-						.addAllUserId(gameSession.getPlayers().stream().map(p -> p.getUser().getID()).collect(Collectors.toList()))
-						.setState(Utils.gameSessionStateToProto(gameSession.getState()));
-
-				builder.addAvailableGameSession(gameBuilder);
+					client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());
+				}
 			}
-
-			database.getUsers().flatMapCompletable(user ->
-			client.getLoggedInUser().isFriendWith(user).flatMapCompletable(isFriend ->
-			Utils.userToProto(user, isFriend, isUserLoggedIn(user)).flatMapCompletable(userProto ->
-			{
-				builder.addAvailableUser(userProto);
-				return Completable.complete();
-			})))
-			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build()));
-		}
-		}
+		});
 	}
 
 	public void start()

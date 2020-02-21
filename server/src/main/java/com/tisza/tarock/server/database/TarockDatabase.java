@@ -14,6 +14,7 @@ import org.flywaydb.core.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class TarockDatabase
 {
@@ -47,7 +48,7 @@ public class TarockDatabase
 		rxdatabase.update("PRAGMA synchronous = NORMAL;").complete().subscribe();
 
 		rxdatabase.select("SELECT id, name FROM user ORDER BY id;")
-				.getAs(Integer.class).map(id -> new User(id, this))
+				.getAs(Integer.class, String.class).map(tuple2 -> new User(tuple2._1(), this, tuple2._2()))
 				.doOnNext(user -> users.put(user.getID(), user))
 				.ignoreElements().blockingAwait();
 	}
@@ -193,11 +194,9 @@ public class TarockDatabase
 		return users.values();
 	}
 
-	public Flowable<User> getBotUsers()
+	public Collection<User> getBotUsers()
 	{
-		return rxdatabase.select("SELECT id FROM user WHERE id < 0 ORDER BY id DESC;")
-				.getAs(Integer.class).map(id -> new User(id, this))
-				.compose(resultTransformerQueryFlowable());
+		return users.values().stream().filter(user -> user.getID() < 0).collect(Collectors.toList());
 	}
 
 	public Single<Integer> createGameSession(GameType gameType, DoubleRoundTracker doubleRoundTracker)

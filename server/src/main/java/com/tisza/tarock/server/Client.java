@@ -80,9 +80,14 @@ public class Client implements MessageHandler
 				GameType gameType = GameType.fromID(createGame.getType());
 				DoubleRoundType doubleRoundType = DoubleRoundType.fromID(createGame.getDoubleRoundType());
 
-				loggedInUser.getName().flatMapCompletable(loggedInUserName ->
-				Observable.concat(Observable.just(loggedInUser.getID()), Observable.fromIterable(createGame.getUserIDList())).map(server.getDatabase()::getUser).toList().flatMapCompletable(users ->
-				server.getGameSessionManager().createGameSession(gameType, users, doubleRoundType).flatMapCompletable(gameSession ->
+				String loggedInUserName = loggedInUser.getName();
+				List<User> users = new ArrayList<>();
+				users.add(loggedInUser);
+				for (int userID : createGame.getUserIDList())
+					users.add(server.getDatabase().getUser(userID));
+
+				disposables.add(
+				server.getGameSessionManager().createGameSession(gameType, users, doubleRoundType).subscribe(gameSession ->
 				{
 					List<String> playerNames = gameSession.getPlayerNames();
 					Flowable.fromIterable(users).flatMap(User::getFCMTokens).flatMapSingle(fcmToken ->
@@ -90,9 +95,7 @@ public class Client implements MessageHandler
 							.subscribeOn(Schedulers.io())
 							.doOnSuccess(valid -> {if (!valid) server.getDatabase().removeFCMToken(fcmToken);})
 					).subscribe();
-
-					return Completable.complete();
-				}))).subscribe();
+				}));
 
 				break;
 			}
@@ -127,22 +130,16 @@ public class Client implements MessageHandler
 				}
 				else if (gameSession.getState() == GameSession.State.LOBBY)
 				{
-					disposables.add(
-					loggedInUser.createPlayer().subscribe(player ->
-					{
-						boolean added = gameSession.addPlayer(player);
-						if (added)
-							switchPlayer((ProtoPlayer)player);
-					}));
+					Player player = loggedInUser.createPlayer();
+					boolean added = gameSession.addPlayer(player);
+					if (added)
+						switchPlayer((ProtoPlayer)player);
 				}
 				else if (gameSession.getState() == GameSession.State.GAME)
 				{
-					disposables.add(
-					loggedInUser.createPlayer().subscribe(player ->
-					{
-						gameSession.addKibic(player);
-						switchPlayer((ProtoPlayer)player);
-					}));
+					Player player = loggedInUser.createPlayer();
+					gameSession.addKibic(player);
+					switchPlayer((ProtoPlayer)player);
 				}
 
 				break;
@@ -220,7 +217,7 @@ public class Client implements MessageHandler
 		if (newUser != null && server.isUserLoggedIn(newUser))
 		{
 			int id = newUser.getID();
-			newUser.getName().subscribe(name -> log.info("Login rejected (already logged in): " + name + " (id: " + id + ")"));
+			log.info("Login rejected (already logged in): " + newUser.getName() + " (id: " + id + ")");
 		}
 		else
 		{
@@ -281,8 +278,8 @@ public class Client implements MessageHandler
 		SocketAddress address = connection != null ? connection.getRemoteAddress() : null;
 
 		if (loggedIn)
-			user.getName().subscribe(name -> log.info("User logged in: " + name + " (id: " + user.getID() + "; from: " + address + ")"));
+			log.info("User logged in: " + user.getName() + " (id: " + user.getID() + "; from: " + address + ")");
 		else
-			user.getName().subscribe(name -> log.info("User logged out: " + name + " (id: " + user.getID() + ")"));
+			log.info("User logged out: " + user.getName() + " (id: " + user.getID() + ")");
 	}
 }

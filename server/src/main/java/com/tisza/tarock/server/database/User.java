@@ -10,10 +10,13 @@ public class User
 	private final int id;
 	private final TarockDatabase database;
 
-	public User(int id, TarockDatabase database)
+	private String name;
+
+	public User(int id, TarockDatabase database, String name)
 	{
 		this.id = id;
 		this.database = database;
+		this.name = name;
 	}
 
 	public int getID()
@@ -21,9 +24,9 @@ public class User
 		return id;
 	}
 
-	public Single<String> getName()
+	public String getName()
 	{
-		return database.getUserName(id);
+		return name;
 	}
 
 	public Single<Optional<String>> getImageURL()
@@ -51,9 +54,9 @@ public class User
 		return id < 0;
 	}
 
-	public Single<Player> createPlayer()
+	public Player createPlayer()
 	{
-		return getName().map(name -> isBot() ? new RandomPlayer(this, name, 500, 2000) : new ProtoPlayer(this, name));
+		return isBot() ? new RandomPlayer(this, name, 500, 2000) : new ProtoPlayer(this, name);
 	}
 
 	@Override

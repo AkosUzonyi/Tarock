@@ -23,11 +23,11 @@ public class Utils
 
 	public static Single<MainProto.User> userToProto(User user, boolean isFriend, boolean loggedIn)
 	{
-		return Single.zip(user.getName(), user.getImageURL(), (name, imgURL) ->
+		return user.getImageURL().map(imgURL ->
 		{
 			MainProto.User.Builder builder = MainProto.User.newBuilder()
 					.setId(user.getID())
-					.setName(name)
+					.setName(user.getName())
 					.setIsFriend(isFriend)
 					.setOnline(loggedIn);
 

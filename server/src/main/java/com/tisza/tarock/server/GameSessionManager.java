@@ -32,15 +32,13 @@ public class GameSessionManager
 				.doOnNext(gameSession -> gameSessions.put(gameSession.getID(), gameSession))
 				.ignoreElements().blockingAwait();
 
-		server.getDatabase().getBotUsers()
-				.doOnNext(botUser -> bots.add(botUser))
-				.ignoreElements().blockingAwait();
+		bots.addAll(server.getDatabase().getBotUsers());
 	}
 
 	public Single<GameSession> createGameSession(GameType gameType, List<User> users, DoubleRoundType doubleRoundType)
 	{
 		return
-		Observable.fromIterable(users).flatMapSingle(User::createPlayer).toList().flatMap(players ->
+		Observable.fromIterable(users).map(User::createPlayer).toList().flatMap(players ->
 		GameSession.createNew(gameType, doubleRoundType, server.getDatabase()).doOnSuccess(gameSession ->
 		{
 			for (Player player : players)
@@ -60,15 +58,14 @@ public class GameSessionManager
 		if (gameSession.getState() != GameSession.State.LOBBY)
 			throw new IllegalStateException("GameSession already started");
 
-		disposables.add(
-		Observable.fromIterable(bots).flatMapSingle(User::createPlayer).toList().subscribe(players ->
+		for (User botUser : bots)
 		{
 			while (!gameSession.isLobbyFull())
-				gameSession.addPlayer(players.remove(0));
+				gameSession.addPlayer(botUser.createPlayer());
 
 			gameSession.start();
 			server.broadcastStatus();
-		}));
+		}
 	}
 
 	public GameSession getGameSession(int id)

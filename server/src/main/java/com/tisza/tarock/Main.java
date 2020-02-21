@@ -63,9 +63,9 @@ public class Main
 		SSLContext sc = SSLContext.getInstance("SSL");
 		sc.init(null, trustAllCerts, new java.security.SecureRandom());
 		SSLSocketFactory socketFactory = sc.getSocketFactory();
-		for (int i = 0; i < 20; i++)
+		for (int i = 0; i < 100; i++)
 		{
-			Thread.sleep(200);
+			Thread.sleep(50);
 			Socket socket = socketFactory.createSocket();
 			socket.connect(new InetSocketAddress("dell", 8128), 1000);
 			int userID = i + 100;

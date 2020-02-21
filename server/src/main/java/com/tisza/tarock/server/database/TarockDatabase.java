@@ -25,6 +25,8 @@ public class TarockDatabase
 	private final Scheduler observerScheduler;
 	private Database rxdatabase;
 
+	private Map<Integer, User> users = new HashMap<>();
+
 	public TarockDatabase()
 	{
 		dbURL = "jdbc:sqlite:" + new File(Main.DATA_DIR, DATABASE_FILENAME).getAbsolutePath();
@@ -43,6 +45,11 @@ public class TarockDatabase
 		rxdatabase.update("PRAGMA foreign_keys = ON").complete().subscribe();
 		rxdatabase.select("PRAGMA journal_mode = WAL;").count().subscribe();
 		rxdatabase.update("PRAGMA synchronous = NORMAL;").complete().subscribe();
+
+		rxdatabase.select("SELECT id, name FROM user ORDER BY id;")
+				.getAs(Integer.class).map(id -> new User(id, this))
+				.doOnNext(user -> users.put(user.getID(), user))
+				.ignoreElements().blockingAwait();
 	}
 
 	private void logException(Throwable e, StackTraceElement[] stackTrace)
@@ -150,7 +157,7 @@ public class TarockDatabase
 
 	public User getUser(int userID)
 	{
-		return new User(userID, this);
+		return users.get(userID);
 	}
 
 	Single<String> getUserName(int userID)
@@ -181,11 +188,9 @@ public class TarockDatabase
 				.compose(resultTransformerQuerySingle());
 	}
 
-	public Flowable<User> getUsers()
+	public Collection<User> getUsers()
 	{
-		return rxdatabase.select("SELECT id FROM user ORDER BY id;")
-				.getAs(Integer.class).map(id -> new User(id, this))
-				.compose(resultTransformerQueryFlowable());
+		return users.values();
 	}
 
 	public Flowable<User> getBotUsers()

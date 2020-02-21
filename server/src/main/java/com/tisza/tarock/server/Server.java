@@ -6,6 +6,7 @@ import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.net.*;
 import com.tisza.tarock.server.player.*;
 import io.reactivex.*;
+import io.reactivex.Observable;
 import io.reactivex.disposables.*;
 import org.apache.log4j.*;
 
@@ -196,7 +197,7 @@ public class Server implements Runnable
 			}
 
 			disposables.add(
-			database.getUsers().flatMapCompletable(user ->
+			Observable.fromIterable(database.getUsers()).flatMapCompletable(user ->
 			Utils.userToProto(user, false, isUserLoggedIn(user)).flatMapCompletable(userProto ->
 			{
 				builder.addAvailableUser(userProto);

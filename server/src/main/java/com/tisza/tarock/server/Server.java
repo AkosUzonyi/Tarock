@@ -179,13 +179,6 @@ public class Server implements Runnable
 
 	public void broadcastStatus()
 	{
-		synchronized (clients)
-		{
-		for (Client client : clients)
-		{
-			if (client.getLoggedInUser() == null)
-				continue;
-
 			MainProto.ServerStatus.Builder builder = MainProto.ServerStatus.newBuilder();
 
 			for (GameSession gameSession : gameSessionManager.getGameSessions())
@@ -204,15 +197,24 @@ public class Server implements Runnable
 
 			disposables.add(
 			database.getUsers().flatMapCompletable(user ->
-			client.getLoggedInUser().isFriendWith(user).flatMapCompletable(isFriend ->
-			Utils.userToProto(user, isFriend, isUserLoggedIn(user)).flatMapCompletable(userProto ->
+			Utils.userToProto(user, false, isUserLoggedIn(user)).flatMapCompletable(userProto ->
 			{
 				builder.addAvailableUser(userProto);
 				return Completable.complete();
-			})))
-			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build())));
-		}
-		}
+			}))
+			.subscribe(() ->
+			{
+				synchronized (clients)
+				{
+					for (Client client : clients)
+					{
+						if (client.getLoggedInUser() == null)
+							continue;
+
+						client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build());
+					}
+				}
+			}));
 	}
 
 	public void start()

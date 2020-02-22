@@ -14,6 +14,6 @@ TMP_FILE="/tmp/$PKG_NAME.tar.xz"
 
 scp -P "$PORT" "$PKG_FILE" "$USER@$HOST:$TMP_FILE"
 ssh "$USER@$HOST" -p "$PORT" << EOF
-	yes | pacman -U "$TMP_FILE"
+	pacman -U --noconfirm "$TMP_FILE"
 	systemctl restart "$PKG_NAME.service"
 EOF

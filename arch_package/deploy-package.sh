@@ -7,7 +7,7 @@ HOST=akos0.ddns.net
 PORT=3125
 
 PKG_NAME=tarock-server
-VERSION=$(cat "$PROJECT_DIR/VERSION")
+VERSION=$(git describe --tags --dirty | tr - _)
 
 PKG_FILE="$PROJECT_DIR/arch_package/package/$PKG_NAME-$VERSION-1-any.pkg.tar.xz"
 TMP_FILE="/tmp/$PKG_NAME.tar.xz"

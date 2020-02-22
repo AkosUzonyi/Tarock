@@ -3,7 +3,7 @@
 PROJECT_DIR="$(realpath ..)"
 
 PKG_NAME=tarock-server
-VERSION=$(cat "$PROJECT_DIR/VERSION")
+VERSION=$(git describe --tags --dirty)
 
 cd "$PROJECT_DIR/server"
 ./gradlew assembleDist

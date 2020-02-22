@@ -40,6 +40,7 @@ public class FirebaseNotificationSender
 				.setBodyLocalizationKey("game_created_notification_body")
 				.addAllBodyLocalizationArgs(playerNames)
 				.setSound("default")
+				.setDefaultVibrateTimings(true)
 				.build();
 
 		AndroidConfig androidConfig = AndroidConfig.builder()

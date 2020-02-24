@@ -164,6 +164,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		messagesView = messagesFrame.findViewById(R.id.messages_view);
 		messagesScrollView = (ScrollView)messagesFrame.findViewById(R.id.messages_scroll);
 		messagesTextView = (TextView)messagesFrame.findViewById(R.id.messages_text_view);
+		messagesTextView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> messagesScrollView.smoothScrollTo(0, bottom));
 		availableActionsListView = messagesFrame.findViewById(R.id.available_actions_list);
 		availableActionsListView.setAdapter(availableActionsAdapter);
 		messagesChatEditText = messagesFrame.findViewById(R.id.messages_chat_edit_text);
@@ -900,9 +901,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private void displayMessage(String msg)
 	{
-		messagesHtml += msg + "<br>";
+		messagesHtml += msg;
 		messagesTextView.setText(Html.fromHtml(messagesHtml));
-		messagesScrollView.fullScroll(View.FOCUS_DOWN);
+		messagesHtml += "<br>";
 	}
 
 	private void displayPlayerActionMessage(int actionRes, int player, String msg)

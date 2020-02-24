@@ -350,6 +350,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 
 		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
+		messagesChatEditText.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
+		statisticsChatEditText.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
 		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
 
 		if (userCount == 4)

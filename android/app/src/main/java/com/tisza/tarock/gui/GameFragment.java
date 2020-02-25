@@ -340,7 +340,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		for (int i = 0; i < 4; i++)
 		{
 			TextView playerNameView = playerNameViews[getPositionFromPlayerID(i)];
-			playerNameView.setText("---");
+			playerNameView.setText(R.string.empty_seat);
 			User user = i < userCount ? gameInfo.getUsers().get(i) : null;
 			if (user != null)
 			{

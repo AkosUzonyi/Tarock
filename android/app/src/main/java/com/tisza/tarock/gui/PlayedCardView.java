@@ -157,7 +157,7 @@ public class PlayedCardView extends ImageView
 		else
 		{
 			Log.e(GameFragment.LOG_TAG, card + " has no image");
-			return R.drawable.a1;
+			return R.drawable.card_back;
 		}
 	}
 }

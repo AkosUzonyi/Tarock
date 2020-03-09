@@ -25,6 +25,8 @@ public chat
 multiple login
 android handle history mode
 store emails
+kibic chat
+lobby notification
 
 refactorizations:
 android package structure

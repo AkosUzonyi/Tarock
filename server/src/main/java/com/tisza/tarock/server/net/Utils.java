@@ -26,7 +26,8 @@ public class Utils
 					.setId(user.getID())
 					.setName(name)
 					.setIsFriend(isFriend)
-					.setOnline(loggedIn);
+					.setOnline(loggedIn)
+					.setBot(user.isBot());
 
 			imgURL.ifPresent(builder::setImageUrl);
 

@@ -13,7 +13,7 @@ import java.util.*;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 {
-	private static final User USER_ANYBODY = new User(0, "", null, false, false);
+	private static final User USER_ANYBODY = new User(0, "", null, false, false, false);
 
 	private int actionButtonImageRes;
 	private int fixedLength;

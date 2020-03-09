@@ -6,7 +6,6 @@ import com.tisza.tarock.proto.EventProto.Event;
 import com.tisza.tarock.proto.*;
 
 import java.util.*;
-import java.util.function.*;
 
 public class Utils
 {
@@ -29,7 +28,7 @@ public class Utils
 	{
 		String imgURL = userProto.hasImageUrl() ? userProto.getImageUrl() : null;
 
-		return new User(userProto.getId(), userProto.getName(), imgURL, userProto.getIsFriend(), userProto.getOnline());
+		return new User(userProto.getId(), userProto.getName(), imgURL, userProto.getIsFriend(), userProto.getOnline(), userProto.getBot());
 	}
 
 	public static <T0, T1> List<T1> map(List<T0> list, Function<T0, T1> f)

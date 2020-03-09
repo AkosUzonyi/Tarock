@@ -7,8 +7,9 @@ public class User implements Comparable<User>
 	private final String imgURL;
 	private final boolean isFriend;
 	private final boolean online;
+	private final boolean bot;
 
-	public User(int id, String name, String imgURL, boolean isFriend, boolean online)
+	public User(int id, String name, String imgURL, boolean isFriend, boolean online, boolean bot)
 	{
 		if (name == null)
 			throw new IllegalArgumentException("name == null");
@@ -18,6 +19,7 @@ public class User implements Comparable<User>
 		this.imgURL = imgURL;
 		this.isFriend = isFriend;
 		this.online = online;
+		this.bot = bot;
 	}
 
 	public int getId()
@@ -47,7 +49,7 @@ public class User implements Comparable<User>
 
 	public boolean isBot()
 	{
-		return id < 0;
+		return bot;
 	}
 
 	@Override

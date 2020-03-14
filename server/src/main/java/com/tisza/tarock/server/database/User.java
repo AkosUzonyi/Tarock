@@ -48,7 +48,7 @@ public class User
 
 	public boolean isBot()
 	{
-		return id < 0;
+		return id < 4;
 	}
 
 	public Single<Player> createPlayer()

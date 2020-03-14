@@ -190,7 +190,7 @@ public class TarockDatabase
 
 	public Flowable<User> getBotUsers()
 	{
-		return rxdatabase.select("SELECT id FROM user WHERE id < 0 ORDER BY id DESC;")
+		return rxdatabase.select("SELECT id FROM user WHERE id < 4 ORDER BY id;")
 				.getAs(Integer.class).map(id -> new User(id, this))
 				.compose(resultTransformerQueryFlowable());
 	}

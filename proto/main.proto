@@ -22,6 +22,7 @@ message Message
         DeleteGameSession delete_game_session = 8;
         JoinHistoryGame join_history_game = 11;
         StartGameSessionLobby start_game_session_lobby = 12;
+        Chat chat = 13;
     }
 }
 
@@ -52,6 +53,11 @@ message FCMToken
 {
     required string fcm_token = 1;
     required bool active = 2;
+}
+
+message Chat
+{
+    required string message = 1;
 }
 
 message GameSession

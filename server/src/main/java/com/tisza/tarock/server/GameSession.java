@@ -63,6 +63,7 @@ public class GameSession
 		database.getPlayerPoints(id).toList().flatMap(points ->
 		database.getActions(gameSessionTuple._4()).toList().flatMap(actions ->
 		database.getDeck(gameSessionTuple._4()).toList().flatMap(deck ->
+		database.getChats(id).toList().flatMap(chats ->
 		database.getGame(gameSessionTuple._4()).map(gameTuple ->
 		{
 			GameType gameType = gameSessionTuple._1();
@@ -97,27 +98,48 @@ public class GameSession
 			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
-			for (Tuple3<PlayerSeat, Action, Long> actionTuple : actions)
+			while (!actions.isEmpty() || !chats.isEmpty())
 			{
-				PlayerSeat player = actionTuple._1();
-				Action action = actionTuple._2();
-				long time = actionTuple._3();
+				long actionTime = actions.isEmpty() ? Long.MAX_VALUE : actions.get(0)._3();
+				long chatTime = chats.isEmpty() ? Long.MAX_VALUE : chats.get(0)._3();
 
-				gameSession.currentGame.processAction(player, action);
+				if (actionTime < chatTime)
+				{
+					Tuple3<PlayerSeat, Action, Long> actionTuple = actions.remove(0);
 
-				if (time > gameSession.lastModified)
-					gameSession.lastModified = time;
+					PlayerSeat player = actionTuple._1();
+					Action action = actionTuple._2();
+					long time = actionTuple._3();
+
+					gameSession.currentGame.processAction(player, action);
+
+					EventInstance event;
+					while ((event = gameSession.currentGame.popNextEvent()) != null)
+						gameSession.pastEvents.add(event);
+
+					if (time > gameSession.lastModified)
+						gameSession.lastModified = time;
+				}
+				else
+				{
+					Tuple3<Integer, String, Long> chatTuple = chats.remove(0);
+
+					int userID = chatTuple._1();
+					String message = chatTuple._2();
+					long time = chatTuple._3();
+
+					if (time < lastGameCreateTime)
+						continue;
+
+					gameSession.pastEvents.add(EventInstance.broadcast(Event.chat(userID, message)));
+				}
 			}
-
-			EventInstance event;
-			while ((event = gameSession.currentGame.popNextEvent()) != null)
-				gameSession.pastEvents.add(event);
 
 			for (Player player : players)
 				gameSession.requestHistory(player);
 
 			return gameSession;
-		}))))));
+		})))))));
 	}
 
 	public static Single<GameSession> createHistoryView(int gameID, TarockDatabase database)
@@ -127,7 +149,8 @@ public class GameSession
 		database.getGameSession(gameTuple._1()).flatMap(gameSessionTuple ->
 		database.getUsersForGameSession(gameTuple._1()).flatMapSingle(User::createPlayer).toList().flatMap(players ->
 		database.getActions(gameID).toList().flatMap(actions ->
-		database.getDeck(gameID).toList().map(deck ->
+		database.getDeck(gameID).toList().flatMap(deck ->
+		database.getChats(gameTuple._1()).toList().map(chats ->
 		{
 			int id = gameTuple._1();
 			PlayerSeat beginnerPlayer = gameTuple._2();
@@ -169,10 +192,26 @@ public class GameSession
 				time - gameCreateTime, TimeUnit.MILLISECONDS);
 			}
 
+			for (Tuple3<Integer, String, Long> chatTuple : chats)
+			{
+				int userID = chatTuple._1();
+				String message = chatTuple._2();
+				long time = chatTuple._3();
+
+				if (time < gameCreateTime)
+					continue;
+
+				Main.GAME_EXECUTOR_SERVICE.schedule(() ->
+				{
+					gameSession.dispatchEvent(EventInstance.broadcast(Event.chat(userID, message)));
+				},
+				time - gameCreateTime, TimeUnit.MILLISECONDS);
+			}
+
 			gameSession.dispatchNewEvents();
 
 			return gameSession;
-		})))));
+		}))))));
 	}
 
 	private void checkAlive()
@@ -367,18 +406,19 @@ public class GameSession
 		dispatchNewEvents();
 	}
 
-	public void action(PlayerSeat player, Action action)
+	public void chat(int userID, String message)
 	{
 		if (historyView)
 			return;
 
-		if (currentGame == null)
-		{
-			if (action.getChatString() != null)
-				dispatchEvent(EventInstance.broadcast(Event.chat(player, action.getChatString())));
+		dispatchEvent(EventInstance.broadcast(Event.chat(userID, message)));
+		database.chat(id, userID, message);
+	}
 
+	public void action(PlayerSeat player, Action action)
+	{
+		if (historyView || currentGame == null)
 			return;
-		}
 
 		boolean success = currentGame.processAction(player, action);
 		if (success && database != null)

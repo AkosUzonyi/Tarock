@@ -69,13 +69,6 @@ abstract class Phase implements ActionHandler
 		return wrongPhase("throwCards");
 	}
 
-	@Override
-	public boolean chat(PlayerSeat player, String message)
-	{
-		game.broadcastEvent(Event.chat(player, message));
-		return true;
-	}
-
 	private boolean wrongPhase(String action)
 	{
 		log.warn("Phase: " + asEnum() + " does not support action: " + action);

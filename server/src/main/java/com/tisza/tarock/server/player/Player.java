@@ -47,6 +47,12 @@ public abstract class Player
 		this.seat = seat;
 	}
 
+	public void chat(String message)
+	{
+		if (gameSession != null)
+			gameSession.chat(user.getID(), message);
+	}
+
 	protected void doAction(Action action)
 	{
 		if (gameSession != null && seat != null)

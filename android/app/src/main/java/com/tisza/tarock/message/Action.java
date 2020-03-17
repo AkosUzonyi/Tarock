@@ -64,11 +64,6 @@ public class Action
 		return new Action("throw:");
 	}
 
-	public static Action chat(String msg)
-	{
-		return new Action("chat:" + msg);
-	}
-
 	public void handle(EventHandler handler, int player)
 	{
 		int colonIndex = id.indexOf(":");
@@ -100,9 +95,6 @@ public class Action
 				break;
 			case "throw":
 				handler.throwCards(player);
-				break;
-			case "chat":
-				handler.chat(player, actionParams);
 				break;
 			default:
 				throw new IllegalArgumentException("invalid action: " + actionType);

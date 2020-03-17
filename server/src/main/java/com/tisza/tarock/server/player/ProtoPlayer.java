@@ -115,9 +115,13 @@ public class ProtoPlayer extends Player implements MessageHandler
 		}
 
 		@Override
-		public void chat(PlayerSeat player, String message)
+		public void chat(int userID, String message)
 		{
-			sendPlayerActionEvent(player, Action.chat(message));
+			EventProto.Event.Chat e = EventProto.Event.Chat.newBuilder()
+					.setUserId(userID)
+					.setMessage(message)
+					.build();
+			sendEvent(EventProto.Event.newBuilder().setChat(e).build());
 		}
 
 		@Override public void turn(PlayerSeat player)

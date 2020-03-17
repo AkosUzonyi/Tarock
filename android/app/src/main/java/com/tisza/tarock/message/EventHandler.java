@@ -29,5 +29,5 @@ public interface EventHandler
 	default void wrongAction() {}
 	default void pendingNewGame() {}
 	default void readyForNewGame(int player) {}
-	default void chat(int player, String message) {}
+	default void chat(int userID, String message) {}
 }

@@ -63,11 +63,6 @@ public class Action
 		return new Action("throw:");
 	}
 
-	public static Action chat(String msg)
-	{
-		return new Action("chat:" + msg);
-	}
-
 	public boolean handle(PlayerSeat player, ActionHandler handler)
 	{
 		int colonIndex = id.indexOf(":");
@@ -93,18 +88,8 @@ public class Action
 				return handler.readyForNewGame(player);
 			case "throw":
 				return handler.throwCards(player);
-			case "chat":
-				return handler.chat(player, actionParams);
 			default:
 				throw new IllegalArgumentException("invalid action: " + actionType);
 		}
-	}
-
-	public String getChatString()
-	{
-		if (!id.startsWith("chat:"))
-			return null;
-
-		return id.substring(5);
 	}
 }

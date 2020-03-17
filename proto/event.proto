@@ -10,6 +10,7 @@ message Event
 	{
 		StartGame start_game = 1;
 		PlayerAction player_action = 2;
+		Chat chat = 17;
 		Turn turn = 13;
 		PlayerTeamInfo player_team_info = 14;
 		PlayerCards player_cards = 3;
@@ -33,6 +34,11 @@ message Event
 	{
 		required int32 player = 1;
 		required string action = 2;
+	}
+	message Chat
+	{
+		required int32 user_id = 1;
+		required string message = 2;
 	}
 	message Turn
 	{

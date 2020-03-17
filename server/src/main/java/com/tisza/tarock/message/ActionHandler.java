@@ -15,5 +15,4 @@ public interface ActionHandler
 	boolean playCard(PlayerSeat player, Card card);
 	boolean readyForNewGame(PlayerSeat player);
 	boolean throwCards(PlayerSeat player);
-	boolean chat(PlayerSeat player, String message);
 }

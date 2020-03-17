@@ -122,8 +122,8 @@ public interface Event
 		return handler -> handler.historyMode(isHistory);
 	}
 
-	static Event chat(PlayerSeat player, String message)
+	static Event chat(int userID, String message)
 	{
-		return handler -> handler.chat(player, message);
+		return handler -> handler.chat(userID, message);
 	}
 }

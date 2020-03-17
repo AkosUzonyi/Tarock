@@ -261,6 +261,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 
 		connectionViewModel.getGameByID(gameID).observe(this, this::onGameInfoUpdate);
+		connectionViewModel.getUsers().observe(this, u -> users = u);
 
 		return contentView;
 	}
@@ -350,8 +351,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 
 		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
-		messagesChatEditText.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
-		statisticsChatEditText.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
 		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
 
 		if (userCount == 4)
@@ -375,6 +374,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 	}
 
+	private List<User> users;
 	private GameInfo gameInfo;
 	private int myUserID;
 	private List<Card> myCards;
@@ -411,9 +411,21 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	@Override
-	public void chat(int player, String message)
+	public void chat(int userID, String message)
 	{
-		displayPlayerActionMessage(R.string.message_chat, player, message);
+		for (int i = 0; i < gameInfo.getUsers().size(); i++)
+		{
+			User playerUser = gameInfo.getUsers().get(i);
+			if (playerUser.getId() == userID)
+			{
+				displayPlayerActionMessage(R.string.message_chat, i, message);
+				return;
+			}
+		}
+
+		for (User kibicUser : users)
+			if (kibicUser.getId() == userID)
+				displayMessage(getString(R.string.message_chat, kibicUser.getName(), message));
 	}
 
 	@Override
@@ -424,7 +436,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			Editable text = ((EditText)view).getText();
 			if (text.length() == 0)
 				return false;
-			doAction(Action.chat(text.toString()));
+			connectionViewModel.sendMessage(MainProto.Message.newBuilder().setChat(MainProto.Chat.newBuilder().setMessage(text.toString())).build());
 			text.clear();
 			InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);

@@ -32,6 +32,8 @@ public class GameSession
 	private Single<Integer> currentGameID;
 	private int actionOrdinal = 0;
 
+	private List<EventInstance> pastEvents = new ArrayList<>();
+
 	private long lastModified;
 	private boolean historyView = false;
 
@@ -107,9 +109,12 @@ public class GameSession
 					gameSession.lastModified = time;
 			}
 
-			gameSession.dispatchEvent(EventInstance.broadcast(Event.historyMode(true)));
-			gameSession.dispatchNewEvents();
-			gameSession.dispatchEvent(EventInstance.broadcast(Event.historyMode(false)));
+			EventInstance event;
+			while ((event = gameSession.currentGame.popNextEvent()) != null)
+				gameSession.pastEvents.add(event);
+
+			for (Player player : players)
+				gameSession.requestHistory(player);
 
 			return gameSession;
 		}))))));
@@ -356,6 +361,8 @@ public class GameSession
 	{
 		checkGameStarted();
 
+		pastEvents.clear();
+
 		List<Card> deck = new ArrayList<>(Card.getAll());
 		Collections.shuffle(deck);
 
@@ -429,6 +436,8 @@ public class GameSession
 
 	private void dispatchEvent(EventInstance event)
 	{
+		pastEvents.add(event);
+
 		if (event.getPlayerSeat() == null)
 			for (Player player : watchingPlayers)
 				player.handleEvent(event.getEvent());
@@ -442,7 +451,7 @@ public class GameSession
 			return;
 
 		player.handleEvent(Event.historyMode(true));
-		for (EventInstance event : currentGame.getAllEvents())
+		for (EventInstance event : pastEvents)
 			if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
 				player.handleEvent(event.getEvent());
 		player.handleEvent(Event.historyMode(false));

@@ -17,7 +17,6 @@ public class Game
 
 	private TeamInfoTracker teamInfoTracker;
 
-	private List<EventInstance> events = new ArrayList<>();
 	private List<EventInstance> newEvents = new ArrayList<>();
 
 	private Phase currentPhase;
@@ -97,11 +96,6 @@ public class Game
 		return action.handle(player, currentPhase);
 	}
 
-	public List<EventInstance> getAllEvents()
-	{
-		return events;
-	}
-
 	public EventInstance popNextEvent()
 	{
 		return newEvents.isEmpty() ? null : newEvents.remove(0);
@@ -165,14 +159,12 @@ public class Game
 
 	public void broadcastEvent(Event event)
 	{
-		events.add(EventInstance.broadcast(event));
 		newEvents.add(EventInstance.broadcast(event));
 		event.handle(teamInfoTracker);
 	}
 
 	public void sendEvent(PlayerSeat player, Event event)
 	{
-		events.add(new EventInstance(player, event));
 		newEvents.add(new EventInstance(player, event));
 	}
 

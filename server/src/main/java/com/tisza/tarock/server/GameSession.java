@@ -249,18 +249,7 @@ public class GameSession
 	public void endSession()
 	{
 		currentGame = null;
-
-		switch (state)
-		{
-			case LOBBY:
-				database.deleteGameSession(id);
-				break;
-			case GAME:
-				if (!historyView)
-					database.endGameSession(id);
-				break;
-		}
-
+		database.endGameSession(id);
 		state = State.ENDED;
 	}
 

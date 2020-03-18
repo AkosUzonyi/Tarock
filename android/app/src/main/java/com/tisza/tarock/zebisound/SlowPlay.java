@@ -15,6 +15,6 @@ class SlowPlay extends ZebiSound
 	public void playCard(int player, Card playedCard)
 	{
 		cancelActivation();
-		activateDelayed(5000);
+		activateDelayed(10);
 	}
 }

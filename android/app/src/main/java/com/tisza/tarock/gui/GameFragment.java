@@ -414,14 +414,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	public void chat(int userID, String message)
 	{
 		for (int i = 0; i < gameInfo.getUsers().size(); i++)
-		{
-			User playerUser = gameInfo.getUsers().get(i);
-			if (playerUser.getId() == userID)
-			{
-				displayPlayerActionMessage(R.string.message_chat, i, message);
-				return;
-			}
-		}
+			if (gameInfo.getUsers().get(i).getId() == userID)
+				showPlayerMessageView(i, message, R.drawable.player_message_background_chat);
 
 		for (User kibicUser : users)
 			if (kibicUser.getId() == userID)
@@ -923,13 +917,14 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private void displayPlayerActionMessage(int actionRes, int player, String msg)
 	{
 		displayMessage(actionRes, getPlayerName(player), msg);
-		showPlayerMessageView(player, msg);
+		showPlayerMessageView(player, msg, R.drawable.player_message_background);
 	}
 	
-	private void showPlayerMessageView(int player, String msg)
+	private void showPlayerMessageView(int player, String msg, int backgroundRes)
 	{
 		final TextView view = playerMessageViews[getPositionFromPlayerID(player)];
 		view.setText(Html.fromHtml(msg));
+		view.setBackgroundResource(backgroundRes);
 		view.setVisibility(View.VISIBLE);
 		Animation fadeAnimation = new AlphaAnimation(1, 0);
 		fadeAnimation.setDuration(500);

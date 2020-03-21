@@ -87,6 +87,8 @@ public interface Event
 		return handler -> handler.changeDone(player);
 	}
 
+	static Event skart(PlayerSeat player, List<Card> cards) { return handler -> handler.skart(player, cards); }
+
 	static Event skartTarock(PlayerSeatMap<Integer> counts)
 	{
 		return handler -> handler.skartTarock(counts);

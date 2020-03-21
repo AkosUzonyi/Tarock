@@ -515,7 +515,26 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			skarting = false;
 		}
 	}
-	
+
+	@Override
+	public void skart(int player, List<Card> cards)
+	{
+		StringBuilder msg = null;
+		for (Card card : cards)
+		{
+			String cardName = ResourceMappings.uppercaseCardName(card);
+			if (msg == null)
+				msg = new StringBuilder(cardName);
+			else
+				msg.append(", ").append(cardName);
+		}
+
+		if (msg == null)
+			return;
+
+		displayPlayerActionMessage(R.string.message_skart, player, msg.toString());
+	}
+
 	@Override
 	public void skartTarock(int[] counts)
 	{

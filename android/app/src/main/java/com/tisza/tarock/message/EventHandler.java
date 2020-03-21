@@ -23,6 +23,7 @@ public interface EventHandler
 	default void phaseChanged(PhaseEnum phase) {}
 	default void playCard(int player, Card card) {}
 	default void cardsChanged(List<Card> pc, boolean canBeThrown) {}
+	default void skart(int player, List<Card> cards) {}
 	default void skartTarock(int[] counts) {}
 	default void turn(int player) {}
 	default void playerTeamInfo(int player, Team team) {}

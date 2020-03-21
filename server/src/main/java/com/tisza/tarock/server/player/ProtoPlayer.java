@@ -191,6 +191,12 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setChangeDone(e).build());
 		}
 
+		@Override
+		public void skart(PlayerSeat player, List<Card> cards)
+		{
+			sendPlayerActionEvent(player, Action.skart(cards));
+		}
+
 		@Override public void skartTarock(PlayerSeatMap<Integer> counts)
 		{
 			EventProto.Event.SkartTarock.Builder e = EventProto.Event.SkartTarock.newBuilder();

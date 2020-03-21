@@ -1,5 +1,4 @@
 bugs:
-caller's skart is not shown
 round annoucement annoucablity
 game start names
 "enter lobby" text on button when lobby is full

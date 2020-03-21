@@ -6,6 +6,7 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.net.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 public class Action
 {
@@ -76,7 +77,11 @@ public class Action
 				handler.bid(player, bid);
 				break;
 			case "skart":
-				System.err.println("warning: skart action arrived");
+				List<Card> cards = new ArrayList<>();
+				for (String cardID : actionParams.split(","))
+					if (!cardID.isEmpty())
+						cards.add(Card.fromId(cardID));
+				handler.skart(player, cards);
 				break;
 			case "call":
 				handler.call(player, Card.fromId(actionParams));

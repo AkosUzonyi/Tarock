@@ -26,6 +26,7 @@ public interface EventHandler
 	default void availableBids(Collection<Integer> bids) {}
 	default void availableCalls(Collection<Card> cards) {}
 	default void changeDone(PlayerSeat player) {}
+	default void skart(PlayerSeat player, List<Card> cards) {}
 	default void skartTarock(PlayerSeatMap<Integer> counts) {}
 	default void availableAnnouncements(List<AnnouncementContra> announcements) {}
 	default void cardsTaken(PlayerSeat player) {}

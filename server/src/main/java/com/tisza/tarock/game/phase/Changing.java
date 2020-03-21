@@ -1,11 +1,12 @@
 package com.tisza.tarock.game.phase;
 
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
-import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 class Changing extends Phase
 {
@@ -116,6 +117,11 @@ class Changing extends Phase
 		if (isFinished())
 		{
 			game.broadcastEvent(Event.skartTarock(tarockCounts));
+
+			List<Card> callerSkartedTarocks = game.getSkartForTeam(Team.CALLER).stream().filter(c -> c instanceof TarockCard).collect(Collectors.toList());
+			if (!callerSkartedTarocks.isEmpty())
+				game.broadcastEvent(Event.skart(game.getBidWinnerPlayer(), callerSkartedTarocks));
+
 			game.changePhase(new Calling(game));
 		}
 

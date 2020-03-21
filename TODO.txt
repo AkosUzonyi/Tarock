@@ -2,8 +2,9 @@ bugs:
 caller's skart is not shown
 round annoucement annoucablity
 history view game id
-
-needs fix:
+game start names
+"enter lobby" text on button when lobby is full
+thrown cards not shown
 
 renames:
 
@@ -25,6 +26,7 @@ multiple login
 android handle history mode
 store emails
 lobby notification
+notification while app is in foreground
 
 refactorizations:
 android package structure

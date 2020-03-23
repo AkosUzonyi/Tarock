@@ -86,23 +86,24 @@ public class GameSession
 			gameSession.actionOrdinal = actions.size();
 			gameSession.lastModified = lastGameCreateTime;
 
-			for (int i = 0; i < 4; i++)
-			{
-				PlayerSeat seat = PlayerSeat.fromInt(i);
-				Player player = players.get(i);
-				gameSession.players.add(player);
-				gameSession.watchingPlayers.add(player);
-				player.setGame(gameSession, seat);
-
-				gameSession.points[i] = points.get(i);
-			}
-
 			if (deck.size() != 42)
 			{
 				log.warn("Invalid deck for game: " + currentGameID);
 				gameSession.endSession();
 				return gameSession;
 			}
+
+			for (int i = 0; i < players.size(); i++)
+			{
+				Player player = players.get(i);
+				gameSession.players.add(player);
+				gameSession.watchingPlayers.add(player);
+
+				gameSession.points[i] = points.get(i);
+			}
+
+			for (PlayerSeat seat : PlayerSeat.getAll())
+				gameSession.getPlayerBySeat(seat).setGame(gameSession, seat);
 
 			gameSession.pastEvents.add(EventInstance.broadcast(Event.startGame(gameType, beginnerPlayer)));
 			gameSession.currentGame = new Game(gameType, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
@@ -176,21 +177,22 @@ public class GameSession
 			gameSession.currentBeginnerPlayer = beginnerPlayer;
 			gameSession.historyView = true;
 
-			for (int i = 0; i < 4; i++)
-			{
-				PlayerSeat seat = PlayerSeat.fromInt(i);
-				Player player = players.get(i);
-				gameSession.players.add(player);
-				gameSession.watchingPlayers.add(player);
-				player.setGame(gameSession, seat);
-			}
-
 			if (deck.size() != 42)
 			{
 				log.warn("Invalid deck for game: " + gameID);
 				gameSession.endSession();
 				return gameSession;
 			}
+
+			for (int i = 0; i < players.size(); i++)
+			{
+				Player player = players.get(i);
+				gameSession.players.add(player);
+				gameSession.watchingPlayers.add(player);
+			}
+
+			for (PlayerSeat seat : PlayerSeat.getAll())
+				gameSession.getPlayerBySeat(seat).setGame(gameSession, seat);
 
 			gameSession.dispatchEvent(EventInstance.broadcast(Event.startGame(gameType, beginnerPlayer)));
 			gameSession.currentGame = new Game(gameType, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
@@ -289,8 +291,11 @@ public class GameSession
 			throw new IllegalStateException("GameSession needs more players to start");
 
 		state = State.GAME;
-
 		Collections.shuffle(players);
+
+		for (int i = 0; i < players.size(); i++)
+			database.addPlayer(id, i, players.get(i).getUser());
+
 		startNewGame();
 	}
 

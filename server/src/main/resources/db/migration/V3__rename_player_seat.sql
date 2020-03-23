@@ -1,4 +1,4 @@
-ALTER TABLE player RENAME COLUMN seat TO ordinal;
+ALTER TABLE player CHANGE seat ordinal TINYINT;
 
 UPDATE action SET seat = (seat - (SELECT beginner_player FROM game WHERE game.id = action.game_id) + 4) % 4;
 

@@ -291,13 +291,6 @@ public class GameSession
 		state = State.GAME;
 
 		Collections.shuffle(players);
-		for (PlayerSeat seat : PlayerSeat.getAll())
-		{
-			Player player = players.get(seat.asInt());
-			player.setGame(this, seat);
-			database.addPlayer(id, seat, player.getUser());
-		}
-
 		startNewGame();
 	}
 
@@ -322,10 +315,9 @@ public class GameSession
 		if (userAlreadyInLobby)
 			return false;
 
-		PlayerSeat seat = PlayerSeat.fromInt(players.size());
 		players.add(player);
 		watchingPlayers.add(player);
-		player.setGame(this, seat);
+		player.setGame(this, null);
 
 		return true;
 	}
@@ -342,9 +334,6 @@ public class GameSession
 		players.remove(player);
 		watchingPlayers.remove(player);
 		player.setGame(null, null);
-
-		for (int i = 0; i < players.size(); i++)
-			players.get(i).setGame(this, PlayerSeat.fromInt(i));
 
 		if (!hasAnyRealPlayer())
 			endSession();
@@ -404,6 +393,9 @@ public class GameSession
 
 		pastEvents.clear();
 
+		for (PlayerSeat seat : PlayerSeat.getAll())
+			getPlayerBySeat(seat).setGame(this, seat);
+
 		List<Card> deck = new ArrayList<>(Card.getAll());
 		Collections.shuffle(deck);
 
@@ -462,6 +454,12 @@ public class GameSession
 		}
 	}
 
+	private Player getPlayerBySeat(PlayerSeat seat)
+	{
+		checkGameStarted();
+		return players.get((currentBeginnerPlayer + seat.asInt()) % players.size());
+	}
+
 	private void dispatchNewEvents()
 	{
 		checkGameStarted();
@@ -473,13 +471,15 @@ public class GameSession
 
 	private void dispatchEvent(EventInstance event)
 	{
+		checkGameStarted();
+
 		pastEvents.add(event);
 
 		if (event.getPlayerSeat() == null)
 			for (Player player : watchingPlayers)
 				player.handleEvent(event.getEvent());
 		else
-			players.get(event.getPlayerSeat().asInt()).handleEvent(event.getEvent());
+			getPlayerBySeat(event.getPlayerSeat()).handleEvent(event.getEvent());
 	}
 
 	public void requestHistory(Player player)

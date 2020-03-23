@@ -187,9 +187,6 @@ public class CreateGameFragment extends MainActivityFragment
 
 	private void selectUser(User user)
 	{
-		if (selectedUsers.size() >= SELECT_USER_COUNT)
-			return;
-
 		int searchResultPosition = searchResultUsers.indexOf(user);
 		if (searchResultPosition < 0)
 			return;
@@ -208,6 +205,6 @@ public class CreateGameFragment extends MainActivityFragment
 	private void updateCreateButton()
 	{
 		int freePlaceCount = SELECT_USER_COUNT - selectedUsers.size();
-		createButton.setText(freePlaceCount == 0 ? getString(R.string.create_game) : getResources().getQuantityString(R.plurals.lobby_create, freePlaceCount, freePlaceCount));
+		createButton.setText(freePlaceCount < 0 ? getString(R.string.create_game) : getResources().getQuantityString(R.plurals.lobby_create, freePlaceCount, freePlaceCount));
 	}
 }

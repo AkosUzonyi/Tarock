@@ -16,7 +16,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 	private static final User USER_ANYBODY = new User(0, "", null, false, false, false);
 
 	private int actionButtonImageRes;
-	private int fixedLength;
+	private int minimumLength;
 	private Picasso picasso;
 	private LayoutInflater inflater;
 	private List<User> users = new ArrayList<>();
@@ -24,13 +24,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 
 	public UsersAdapter(Context context, int actionButtonImageRes)
 	{
-		this(context, actionButtonImageRes, -1);
+		this(context, actionButtonImageRes, 0);
 	}
 
-	public UsersAdapter(Context context, int actionButtonImageRes, int fixedLength)
+	public UsersAdapter(Context context, int actionButtonImageRes, int minimumLength)
 	{
 		this.actionButtonImageRes = actionButtonImageRes;
-		this.fixedLength = fixedLength;
+		this.minimumLength = minimumLength;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		picasso = Picasso.with(context);
 	}
@@ -49,7 +49,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 	@Override
 	public int getItemCount()
 	{
-		return fixedLength >= 0 ? fixedLength : users.size();
+		return Math.max(minimumLength, users.size());
 	}
 
 	private User getUserAtPosition(int position)

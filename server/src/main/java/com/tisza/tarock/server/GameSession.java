@@ -39,8 +39,6 @@ public class GameSession
 	private long lastModified;
 	private boolean historyView = false;
 
-	private int[] points = new int[4];
-
 	private GameSession(int id, GameType gameType, DoubleRoundTracker doubleRoundTracker, TarockDatabase database)
 	{
 		this.id = id;
@@ -96,17 +94,16 @@ public class GameSession
 			for (int i = 0; i < players.size(); i++)
 			{
 				Player player = players.get(i);
+				player.setPoints(points.get(i));
 				gameSession.players.add(player);
 				gameSession.watchingPlayers.add(player);
-
-				gameSession.points[i] = points.get(i);
 			}
 
 			for (PlayerSeat seat : PlayerSeat.getAll())
 				gameSession.getPlayerBySeat(seat).setGame(gameSession, seat);
 
 			gameSession.pastEvents.add(EventInstance.broadcast(Event.startGame(gameType, beginnerPlayer)));
-			gameSession.currentGame = new Game(gameType, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			gameSession.currentGame = new Game(gameType, deck, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
 			while (!actions.isEmpty() || !chats.isEmpty())
@@ -195,7 +192,7 @@ public class GameSession
 				gameSession.getPlayerBySeat(seat).setGame(gameSession, seat);
 
 			gameSession.dispatchEvent(EventInstance.broadcast(Event.startGame(gameType, beginnerPlayer)));
-			gameSession.currentGame = new Game(gameType, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			gameSession.currentGame = new Game(gameType, deck, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
 			for (Tuple3<PlayerSeat, Action, Long> actionTuple : actions)
@@ -409,7 +406,7 @@ public class GameSession
 		actionOrdinal = 0;
 
 		dispatchEvent(EventInstance.broadcast(Event.startGame(gameType, currentBeginnerPlayer)));
-		currentGame = new Game(gameType, deck, points, doubleRoundTracker.getCurrentMultiplier());
+		currentGame = new Game(gameType, deck, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
 		dispatchNewEvents();
 	}
@@ -438,6 +435,9 @@ public class GameSession
 		lastModified = System.currentTimeMillis();
 		dispatchNewEvents();
 
+		if (currentGame.getCurrentPhaseEnum() == PhaseEnum.END)
+			broadcastPlayerPoints();
+
 		if (currentGame.isFinished())
 		{
 			if (currentGame.isNormalFinish())
@@ -453,10 +453,23 @@ public class GameSession
 			database.setDoubleRoundData(id, doubleRoundTracker.getData());
 
 			for (PlayerSeat seat : PlayerSeat.getAll())
-				database.setPlayerPoints(id, seat, points[seat.asInt()]);
+			{
+				Player p = getPlayerBySeat(seat);
+				p.addPoints(currentGame.getPoints(seat));
+				database.setPlayerPoints(id, players.indexOf(p), p.getPoints());
+			}
 
 			startNewGame();
 		}
+	}
+
+	private void broadcastPlayerPoints()
+	{
+		int[] points = new int[4];
+		for (PlayerSeat seat : PlayerSeat.getAll())
+			points[seat.asInt()] = getPlayerBySeat(seat).getPoints() + currentGame.getPoints(seat);
+
+		dispatchEvent(EventInstance.broadcast(Event.playerPoints(points)));
 	}
 
 	private Player getPlayerBySeat(PlayerSeat seat)
@@ -496,6 +509,7 @@ public class GameSession
 		for (EventInstance event : pastEvents)
 			if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
 				player.handleEvent(event.getEvent());
+		broadcastPlayerPoints();
 		player.handleEvent(Event.historyMode(false));
 	}
 

@@ -41,7 +41,7 @@ public class Game
 	private List<Round> roundsPassed = new ArrayList<>();
 	private PlayerSeatMap<Collection<Card>> wonCards = new PlayerSeatMap<>();
 
-	private int[] points;
+	private int[] points = new int[4];
 	private final int pointMultiplier;
 
 	private boolean finished = false;
@@ -60,11 +60,10 @@ public class Game
 		}
 	}
 
-	public Game(GameType gameType, List<Card> deck, int[] points, int pointMultiplier)
+	public Game(GameType gameType, List<Card> deck, int pointMultiplier)
 	{
 		this.gameType = gameType;
 		this.deck = deck;
-		this.points = points;
 		this.pointMultiplier = pointMultiplier;
 
 		teamInfoTracker = new TeamInfoTracker(this);
@@ -172,9 +171,14 @@ public class Game
 		currentPhase.onStart();
 	}
 
-	public Phase getCurrentPhase()
+	Phase getCurrentPhase()
 	{
 		return currentPhase;
+	}
+
+	public PhaseEnum getCurrentPhaseEnum()
+	{
+		return currentPhase.asEnum();
 	}
 
 	void setInvitationSent(Invitation invitSent, PlayerSeat invitingPlayer)
@@ -412,8 +416,8 @@ public class Game
 		broadcastEvent(Event.announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, pointsForCallerTeam, pointMultiplier));
 	}
 
-	void sendPlayerPoints()
+	public int getPoints(PlayerSeat seat)
 	{
-		broadcastEvent(Event.playerPoints(points.clone()));
+		return points[seat.asInt()];
 	}
 }

@@ -275,12 +275,6 @@ public class GameSession
 		return 4 - players.size();
 	}
 
-	public boolean isLobbyFull()
-	{
-		checkIsLobby();
-		return getFreeLobbyPlaces() == 0;
-	}
-
 	public long getLastModified()
 	{
 		return lastModified;
@@ -290,7 +284,7 @@ public class GameSession
 	{
 		checkIsLobby();
 
-		if (!isLobbyFull())
+		if (getFreeLobbyPlaces() > 0)
 			throw new IllegalStateException("GameSession needs more players to start");
 
 		state = State.GAME;
@@ -322,9 +316,6 @@ public class GameSession
 	public boolean addPlayer(Player player)
 	{
 		checkIsLobby();
-
-		if (isLobbyFull())
-			return false;
 
 		boolean userAlreadyInLobby = players.stream().anyMatch(p -> p.getUser().equals(player.getUser()));
 		if (userAlreadyInLobby)

@@ -43,9 +43,6 @@ public class GameSessionManager
 			for (User user : users)
 				gameSession.addPlayer(user.createPlayer());
 
-			if (gameSession.isLobbyFull())
-				gameSession.start();
-
 			gameSessions.put(gameSession.getID(), gameSession);
 			server.broadcastStatus();
 		});
@@ -58,7 +55,7 @@ public class GameSessionManager
 			throw new IllegalStateException("GameSession already started");
 
 		for (User bot : bots)
-			if (!gameSession.isLobbyFull())
+			if (gameSession.getFreeLobbyPlaces() > 0)
 				gameSession.addPlayer(bot.createPlayer());
 
 		gameSession.start();

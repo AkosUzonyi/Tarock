@@ -106,8 +106,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 		holder.isFriendView.setVisibility(user.isFriend() ? View.VISIBLE : View.GONE);
 		holder.isOnlineView.setImageResource(user.isOnline() ? R.drawable.online : R.drawable.offline);
 
-		holder.selectUser.setVisibility(user != USER_ANYBODY ? View.VISIBLE : View.GONE);
-		holder.selectUser.setImageResource(actionButtonImageRes);
+		holder.selectUser.setVisibility(actionButtonImageRes >= 0 && user != USER_ANYBODY ? View.VISIBLE : View.GONE);
+		if (actionButtonImageRes >= 0)
+			holder.selectUser.setImageResource(actionButtonImageRes);
+
 		holder.selectUser.setOnClickListener(v ->
 		{
 			if (userClickedListener != null)

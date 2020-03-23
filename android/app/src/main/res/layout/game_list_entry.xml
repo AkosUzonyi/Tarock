@@ -14,44 +14,11 @@
         android:layout_margin="@dimen/button_margin"
     />
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/game_users"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        >
-
-        <TextView
-            android:id="@+id/username0"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:gravity="center"
-        />
-
-        <TextView
-            android:id="@+id/username1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:gravity="center"
-        />
-
-        <TextView
-            android:id="@+id/username2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:gravity="center"
-        />
-
-        <TextView
-            android:id="@+id/username3"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.25"
-            android:gravity="center"
-        />
-    </LinearLayout>
+    />
 
     <LinearLayout
         android:orientation="horizontal"

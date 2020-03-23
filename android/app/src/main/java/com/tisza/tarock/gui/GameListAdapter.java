@@ -19,6 +19,8 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	private GameAdapterListener gameAdapterListener;
 	private Integer userID;
 
+	private UsersAdapter usersAdapter;
+
 	private static final DiffUtil.ItemCallback<GameInfo> gameInfoItemCallback = new DiffUtil.ItemCallback<GameInfo>()
 	{
 		@Override
@@ -40,6 +42,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		this.context = context;
 		this.gameAdapterListener = gameAdapterListener;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		usersAdapter = new UsersAdapter(context, -1, 4);
 	}
 
 	public void setData(List<GameInfo> list, Integer userID)
@@ -78,10 +81,9 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 
 		ViewHolder holder = new ViewHolder(view);
 		holder.gameTypeTextView = view.findViewById(R.id.game_type);
-		holder.userNameViews[0] = view.findViewById(R.id.username0);
-		holder.userNameViews[1] = view.findViewById(R.id.username1);
-		holder.userNameViews[2] = view.findViewById(R.id.username2);
-		holder.userNameViews[3] = view.findViewById(R.id.username3);
+		holder.usersRecyclerView = view.findViewById(R.id.game_users);
+		holder.usersRecyclerView.setAdapter(usersAdapter);
+		holder.usersRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
 		holder.joinGameButton = view.findViewById(R.id.join_game_button);
 		holder.deleteGameButton = view.findViewById(R.id.delete_game_button);
 
@@ -93,10 +95,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	{
 		GameInfo gameInfo = getItem(position);
 
-		for (int i = 0; i < 4; i++)
-		{
-			holder.userNameViews[i].setText(i < gameInfo.getUsers().size() ? gameInfo.getUsers().get(i).getName() : "");
-		}
+		usersAdapter.setUsers(gameInfo.getUsers());
 
 		int joinButtonText;
 		if (gameInfo.getState() == GameSessionState.LOBBY)
@@ -125,7 +124,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	public static class ViewHolder extends RecyclerView.ViewHolder
 	{
 		public TextView gameTypeTextView;
-		public TextView[] userNameViews = new TextView[4];
+		public RecyclerView usersRecyclerView;
 		public Button joinGameButton;
 		public Button deleteGameButton;
 

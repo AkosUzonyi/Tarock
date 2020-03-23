@@ -278,10 +278,10 @@ public class TarockDatabase
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public Single<Integer> createGame(int gameSessionID, PlayerSeat beginnerPlayer)
+	public Single<Integer> createGame(int gameSessionID, int beginnerPlayer)
 	{
 		return rxdatabase.update("INSERT INTO game(game_session_id, beginner_player, create_time) VALUES(?, ?, ?);")
-				.parameters(gameSessionID, beginnerPlayer.asInt(), System.currentTimeMillis())
+				.parameters(gameSessionID, beginnerPlayer, System.currentTimeMillis())
 				.returnGeneratedKeys().getAs(Integer.class).singleOrError()
 				.doOnSuccess(gameID ->
 						rxdatabase.update("UPDATE game_session SET current_game_id = ? WHERE id = ?;")
@@ -289,10 +289,10 @@ public class TarockDatabase
 				.compose(resultTransformerUpdateSingle());
 	}
 
-	public Single<Tuple3<Integer, PlayerSeat, Long>> getGame(int gameID)
+	public Single<Tuple3<Integer, Integer, Long>> getGame(int gameID)
 	{
 		return rxdatabase.select("SELECT game_session_id, beginner_player, create_time FROM game WHERE id = ?;")
-				.parameter(gameID).getAs(Integer.class, Integer.class, Long.class).map(tuple -> Tuple3.create(tuple._1(), PlayerSeat.fromInt(tuple._2()), tuple._3())).singleOrError()
+				.parameter(gameID).getAs(Integer.class, Integer.class, Long.class).singleOrError()
 				.compose(resultTransformerQuerySingle());
 	}
 

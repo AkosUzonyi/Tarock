@@ -147,11 +147,11 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setPlayerTeamInfo(e).build());
 		}
 
-		@Override public void startGame(GameType gameType, PlayerSeat beginnerPlayer)
+		@Override public void startGame(GameType gameType, int beginnerPlayer)
 		{
 			EventProto.Event.StartGame e = EventProto.Event.StartGame.newBuilder()
 					.setGameType(gameType.getID())
-					.setBeginnerPlayer(beginnerPlayer.asInt())
+					.setBeginnerPlayer(beginnerPlayer)
 					.build();
 			sendEvent(EventProto.Event.newBuilder().setStartGame(e).build());
 		}

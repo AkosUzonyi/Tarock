@@ -97,7 +97,7 @@ public class BiddingTest
 	@Test
 	public void test()
 	{
-		Game game = new Game(GameType.PASKIEVICS, PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1);
+		Game game = new Game(GameType.PASKIEVICS, new ArrayList<>(Card.getAll()), new int[4], 1);
 		game.start();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())

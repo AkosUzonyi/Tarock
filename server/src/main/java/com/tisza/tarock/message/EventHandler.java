@@ -18,7 +18,7 @@ public interface EventHandler
 	default void throwCards(PlayerSeat player) {}
 	default void turn(PlayerSeat player) {}
 	default void playerTeamInfo(PlayerSeat player, Team team) {}
-	default void startGame(GameType gameType, PlayerSeat beginnerPlayer) {}
+	default void startGame(GameType gameType, int beginnerPlayer) {}
 	default void playerCards(PlayerCards cards, boolean canBeThrown) {}
 	default void phaseChanged(PhaseEnum phase) {}
 	default void availableBids(Collection<Integer> bids) {}

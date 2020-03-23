@@ -14,7 +14,6 @@ import org.davidmoten.rx.jdbc.tuple.*;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.*;
 
 public class GameSession
 {
@@ -29,7 +28,7 @@ public class GameSession
 	private List<Player> players = new ArrayList<>();
 	private Set<Player> watchingPlayers = new HashSet<>();
 
-	private PlayerSeat currentBeginnerPlayer = PlayerSeat.SEAT0;
+	private int currentBeginnerPlayer = 0;
 	private Game currentGame;
 
 	private Single<Integer> currentGameID;
@@ -73,7 +72,7 @@ public class GameSession
 			DoubleRoundType doubleRoundType = gameSessionTuple._2();
 			int doubleRoundData = gameSessionTuple._3();
 			int currentGameID = gameSessionTuple._4();
-			PlayerSeat beginnerPlayer = gameTuple._2();
+			int beginnerPlayer = gameTuple._2();
 			long lastGameCreateTime = gameTuple._3();
 
 			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(doubleRoundType);
@@ -105,7 +104,8 @@ public class GameSession
 				return gameSession;
 			}
 
-			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			gameSession.pastEvents.add(EventInstance.broadcast(Event.startGame(gameType, beginnerPlayer)));
+			gameSession.currentGame = new Game(gameType, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
 			while (!actions.isEmpty() || !chats.isEmpty())
@@ -163,7 +163,7 @@ public class GameSession
 		database.getChats(gameTuple._1()).toList().map(chats ->
 		{
 			int id = gameTuple._1();
-			PlayerSeat beginnerPlayer = gameTuple._2();
+			int beginnerPlayer = gameTuple._2();
 			GameType gameType = gameSessionTuple._1();
 			DoubleRoundType doubleRoundType = gameSessionTuple._2();
 			long gameCreateTime = gameTuple._3();
@@ -192,7 +192,8 @@ public class GameSession
 				return gameSession;
 			}
 
-			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
+			gameSession.dispatchEvent(EventInstance.broadcast(Event.startGame(gameType, beginnerPlayer)));
+			gameSession.currentGame = new Game(gameType, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
 			gameSession.currentGame.start();
 
 			for (Tuple3<PlayerSeat, Action, Long> actionTuple : actions)
@@ -410,7 +411,8 @@ public class GameSession
 		currentGameID.doOnSuccess(gid -> database.setDeck(gid, deck)).subscribe();
 		actionOrdinal = 0;
 
-		currentGame = new Game(gameType, currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
+		dispatchEvent(EventInstance.broadcast(Event.startGame(gameType, currentBeginnerPlayer)));
+		currentGame = new Game(gameType, deck, points, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
 		dispatchNewEvents();
 	}
@@ -443,7 +445,7 @@ public class GameSession
 		{
 			if (currentGame.isNormalFinish())
 			{
-				currentBeginnerPlayer = currentBeginnerPlayer.nextPlayer();
+				currentBeginnerPlayer = (currentBeginnerPlayer + 1) % players.size();
 				doubleRoundTracker.gameFinished();
 			}
 			else

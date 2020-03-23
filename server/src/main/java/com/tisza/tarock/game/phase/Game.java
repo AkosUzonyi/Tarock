@@ -12,7 +12,6 @@ public class Game
 	public static final int ROUND_COUNT = 9;
 
 	private final GameType gameType;
-	private final PlayerSeat beginnerPlayer;
 	private final List<Card> deck;
 
 	private TeamInfoTracker teamInfoTracker;
@@ -61,10 +60,9 @@ public class Game
 		}
 	}
 
-	public Game(GameType gameType, PlayerSeat beginnerPlayer, List<Card> deck, int[] points, int pointMultiplier)
+	public Game(GameType gameType, List<Card> deck, int[] points, int pointMultiplier)
 	{
 		this.gameType = gameType;
-		this.beginnerPlayer = beginnerPlayer;
 		this.deck = deck;
 		this.points = points;
 		this.pointMultiplier = pointMultiplier;
@@ -84,7 +82,6 @@ public class Game
 		}
 		setTalon(cardsToDeal);
 
-		broadcastEvent(Event.startGame(gameType, beginnerPlayer));
 		for (PlayerSeat player : PlayerSeat.getAll())
 			sendEvent(player, Event.playerCards(playersCards.get(player).clone(), playersCards.get(player).canBeThrown()));
 
@@ -139,7 +136,7 @@ public class Game
 
 	public PlayerSeat getBeginnerPlayer()
 	{
-		return beginnerPlayer;
+		return PlayerSeat.SEAT0;
 	}
 
 	void setTalon(List<Card> talon)

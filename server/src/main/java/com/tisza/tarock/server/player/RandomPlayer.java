@@ -133,7 +133,7 @@ public class RandomPlayer extends Player
 			}
 		}
 
-		@Override public void startGame(GameType gameType, PlayerSeat beginnerPlayer)
+		@Override public void startGame(GameType gameType, int beginnerPlayer)
 		{
 			this.gameType = gameType;
 		}

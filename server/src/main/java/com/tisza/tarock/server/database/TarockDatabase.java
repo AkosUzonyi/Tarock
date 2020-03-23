@@ -236,30 +236,30 @@ public class TarockDatabase
 				.compose(resultTransformerUpdateCompletable());
 	}
 
-	public Completable addPlayer(int gameSessionID, PlayerSeat seat, User user)
+	public Completable addPlayer(int gameSessionID, int ordinal, User user)
 	{
-		return rxdatabase.update("INSERT INTO player(game_session_id, seat, user_id) VALUES(?, ?, ?);")
-				.parameters(gameSessionID, seat.asInt(), user.getID()).complete()
+		return rxdatabase.update("INSERT INTO player(game_session_id, ordinal, user_id) VALUES(?, ?, ?);")
+				.parameters(gameSessionID, ordinal, user.getID()).complete()
 				.compose(resultTransformerUpdateCompletable());
 	}
 
 	public Flowable<User> getUsersForGameSession(int gameSessionID)
 	{
-		return rxdatabase.select("SELECT user_id FROM player WHERE game_session_id = ? ORDER BY seat;")
+		return rxdatabase.select("SELECT user_id FROM player WHERE game_session_id = ? ORDER BY ordinal;")
 				.parameter(gameSessionID).getAs(Integer.class).map(this::getUser)
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public Completable setPlayerPoints(int gameSessionID, PlayerSeat seat, int value)
+	public Completable setPlayerPoints(int gameSessionID, int ordinal, int value)
 	{
-		return rxdatabase.update("UPDATE player SET points = ? WHERE game_session_id = ? AND seat = ?;")
-				.parameters(value, gameSessionID, seat.asInt()).complete()
+		return rxdatabase.update("UPDATE player SET points = ? WHERE game_session_id = ? AND ordinal = ?;")
+				.parameters(value, gameSessionID, ordinal).complete()
 				.compose(resultTransformerUpdateCompletable());
 	}
 
 	public Flowable<Integer> getPlayerPoints(int gameSessionID)
 	{
-		return rxdatabase.select("SELECT points FROM player WHERE game_session_id = ? ORDER BY seat;")
+		return rxdatabase.select("SELECT points FROM player WHERE game_session_id = ? ORDER BY ordinal;")
 				.parameter(gameSessionID).getAs(Integer.class)
 				.compose(resultTransformerQueryFlowable());
 	}

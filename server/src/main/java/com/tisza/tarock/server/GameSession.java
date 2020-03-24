@@ -404,12 +404,9 @@ public class GameSession
 		List<Card> deck = new ArrayList<>(Card.getAll());
 		Collections.shuffle(deck);
 
-		if (database != null)
-		{
-			currentGameID = database.createGame(id, currentBeginnerPlayer).cache();
-			currentGameID.doOnSuccess(gid -> database.setDeck(gid, deck)).subscribe();
-			actionOrdinal = 0;
-		}
+		currentGameID = database.createGame(id, currentBeginnerPlayer).cache();
+		currentGameID.doOnSuccess(gid -> database.setDeck(gid, deck)).subscribe();
+		actionOrdinal = 0;
 
 		currentGame = new Game(gameType, currentBeginnerPlayer, deck, points, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
@@ -431,7 +428,7 @@ public class GameSession
 			return;
 
 		boolean success = currentGame.processAction(player, action);
-		if (success && database != null)
+		if (success)
 		{
 			int ordinal = actionOrdinal++;
 			currentGameID.doOnSuccess(gameID -> database.addAction(gameID, player.asInt(), action, ordinal)).subscribe();
@@ -452,13 +449,10 @@ public class GameSession
 				doubleRoundTracker.gameInterrupted();
 			}
 
-			if (database != null)
-			{
-				database.setDoubleRoundData(id, doubleRoundTracker.getData());
+			database.setDoubleRoundData(id, doubleRoundTracker.getData());
 
-				for (PlayerSeat seat : PlayerSeat.getAll())
-					database.setPlayerPoints(id, seat, points[seat.asInt()]);
-			}
+			for (PlayerSeat seat : PlayerSeat.getAll())
+				database.setPlayerPoints(id, seat, points[seat.asInt()]);
 
 			startNewGame();
 		}

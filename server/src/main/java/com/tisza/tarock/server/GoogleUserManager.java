@@ -10,7 +10,7 @@ import java.util.*;
 
 public class GoogleUserManager
 {
-	private static final String CLIENT_ID = "622849615637-7dth7ktpr1mgk36ol7h7me819vbc8flg.apps.googleusercontent.com";
+	private static final String[] CLIENT_IDS = {"622849615637-ckunoefd465cq1072h0okal6qlbun0uq.apps.googleusercontent.com", "622849615637-3ibqdgqen3k7bmpt9lnrhqbik47nkb5h.apps.googleusercontent.com", "622849615637-7dth7ktpr1mgk36ol7h7me819vbc8flg.apps.googleusercontent.com", "622849615637-hn7peq0o1ofbs1p9oicum1ggiclmj5mb.apps.googleusercontent.com"};
 	private final TarockDatabase database;
 	private GoogleIdTokenVerifier tokenVerifier;
 
@@ -18,7 +18,7 @@ public class GoogleUserManager
 	{
 		this.database = database;
 		tokenVerifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), JacksonFactory.getDefaultInstance())
-				.setAudience(Collections.singletonList(CLIENT_ID))
+				.setAudience(Arrays.asList(CLIENT_IDS))
 				.build();
 	}
 

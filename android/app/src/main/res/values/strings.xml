@@ -72,7 +72,7 @@
     <string name="message_call">%1$s hívott: %2$s</string>
     <string name="message_announce">%1$s bemondta: %2$s</string>
 
-    <string name="press_ok">Nyomj OK-t a folyatatáshoz</string>
+    <string name="press_ok">Nyomj OK-t a folytatáshoz</string>
     <string name="cards_thrown">bedobta a lapjait</string>
 
     <plurals name="message_skart_tarock">

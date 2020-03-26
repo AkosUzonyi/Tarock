@@ -34,7 +34,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	public static final float PLAYED_CARD_DISTANCE = 1F;
 	public static final int PLAY_DURATION = 50;
 	public static final int TAKE_DURATION = 400;
-	public static final int DELAY = BuildConfig.DEBUG ? 500 : 1500;
+	public static final int DELAY = BuildConfig.DEBUG ? 500 : 2000;
 	public static final int CARDS_PER_ROW = 6;
 
 	private static final int MESSAGES_VIEW_INDEX = 0;
@@ -938,7 +938,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		view.setVisibility(View.VISIBLE);
 		Animation fadeAnimation = new AlphaAnimation(1, 0);
 		fadeAnimation.setDuration(500);
-		fadeAnimation.setStartTime(AnimationUtils.currentAnimationTimeMillis() + 2000);
+		fadeAnimation.setStartTime(AnimationUtils.currentAnimationTimeMillis() + DELAY);
 		fadeAnimation.setAnimationListener(new AnimationListener()
 		{
 			@Override

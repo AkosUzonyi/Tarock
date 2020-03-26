@@ -53,7 +53,7 @@ public class User
 
 	public Single<Player> createPlayer()
 	{
-		return getName().map(name -> isBot() ? new RandomPlayer(this, name, 500, 2000) : new ProtoPlayer(this, name));
+		return getName().map(name -> isBot() ? new RandomPlayer(this, name, 500, 2500) : new ProtoPlayer(this, name));
 	}
 
 	@Override

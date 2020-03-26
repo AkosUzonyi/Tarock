@@ -199,7 +199,7 @@
             android:layout_height="0dp"
             android:layout_alignTop="@id/my_cards_1"
             android:layout_alignBottom="@id/my_cards_0"
-            android:alpha="0.25"
+            android:alpha="0.4"
         />
 
         <View

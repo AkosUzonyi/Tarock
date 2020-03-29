@@ -3,6 +3,9 @@ round annoucement annoucablity
 game start names
 "enter lobby" text on button when lobby is full
 thrown cards not shown
+if inviter calls, the first option is still the invited card
+GameListFragment:36 out of bound exception
+call self: only allow in zebi
 
 renames:
 
@@ -14,6 +17,7 @@ announcement string modify
 database transactions
 okhttp cache size
 configuration file
+do not log socket exceptions
 
 features:
 error messages
@@ -25,6 +29,15 @@ android handle history mode
 store emails
 lobby notification
 notification while app is in foreground
+parosfacan
+throw cards when 3 bid last place
+statistics: color game points red/blue
+show talon
+sort users by online status
+rotate cards (just tarocks)
+cancel announcement
+improve ui for ultimo
+decrease game delete cooldown
 
 refactorizations:
 android package structure

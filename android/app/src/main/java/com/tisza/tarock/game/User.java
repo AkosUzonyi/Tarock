@@ -78,6 +78,9 @@ public class User implements Comparable<User>
 		if (isFriend != other.isFriend)
 			return isFriend ? -1 : 1;
 
+		if (online != other.online)
+			return online ? -1 : 1;
+
 		return id - other.id;
 	}
 }

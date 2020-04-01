@@ -33,7 +33,6 @@ parosfacan
 throw cards when 3 bid last place
 statistics: color game points red/blue
 show talon
-sort users by online status
 rotate cards (just tarocks)
 cancel announcement
 improve ui for ultimo

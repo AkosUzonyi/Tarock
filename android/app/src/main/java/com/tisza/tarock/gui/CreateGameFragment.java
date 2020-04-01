@@ -158,6 +158,8 @@ public class CreateGameFragment extends MainActivityFragment
 				searchResultUsers.add(user);
 		}
 
+		Collections.sort(searchResultUsers);
+
 		searchResultUsersAdapter.notifyDataSetChanged();
 	}
 
@@ -169,8 +171,16 @@ public class CreateGameFragment extends MainActivityFragment
 
 		selectedUsers.remove(position);
 		selectedUsersAdapter.notifyItemRemoved(position);
-		searchResultUsersAdapter.notifyItemInserted(searchResultUsers.size());
-		searchResultUsers.add(user);
+		for (int i = 0; i < searchResultUsers.size(); i++)
+		{
+			if (searchResultUsers.get(i).compareTo(user) > 0)
+			{
+				searchResultUsers.add(i, user);
+				searchResultUsersAdapter.notifyItemInserted(i);
+				break;
+			}
+		}
+
 		updateCreateButton();
 	}
 

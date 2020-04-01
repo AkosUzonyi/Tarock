@@ -18,8 +18,6 @@ public class GameSessionManager
 	private Map<Integer, GameSession> gameSessions = new HashMap<>();
 	private List<User> bots = new ArrayList<>();
 
-	private CompositeDisposable disposables = new CompositeDisposable();
-
 	public GameSessionManager(Server server)
 	{
 		this.server = server;
@@ -60,7 +58,6 @@ public class GameSessionManager
 		if (gameSession.getState() != GameSession.State.LOBBY)
 			throw new IllegalStateException("GameSession already started");
 
-		disposables.add(
 		Observable.fromIterable(bots).flatMapSingle(User::createPlayer).toList().subscribe(players ->
 		{
 			while (!gameSession.isLobbyFull())
@@ -68,7 +65,7 @@ public class GameSessionManager
 
 			gameSession.start();
 			server.broadcastStatus();
-		}));
+		});
 	}
 
 	public GameSession getGameSession(int id)
@@ -94,6 +91,5 @@ public class GameSessionManager
 
 	public void shutdown()
 	{
-		disposables.dispose();
 	}
 }

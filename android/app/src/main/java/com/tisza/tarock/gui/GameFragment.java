@@ -730,7 +730,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		Team selfTeam = myTeam == null ? Team.CALLER : myTeam;
 
 		statisticsGamepointsSelf.setText(String.valueOf(selfTeam == Team.CALLER ? callerGamePoints : opponentGamePoints));
+		statisticsGamepointsSelf.setTextColor(getResources().getColor(selfTeam == Team.CALLER ? R.color.caller_team : R.color.opponent_team));
 		statisticsGamepointsOpponent.setText(String.valueOf(selfTeam == Team.CALLER ? opponentGamePoints : callerGamePoints));
+		statisticsGamepointsOpponent.setTextColor(getResources().getColor(selfTeam == Team.CALLER ? R.color.opponent_team : R.color.caller_team));
 
 		statisticsPointMultiplierView.setVisibility(pointMultiplier == 1 ? View.GONE : View.VISIBLE);
 		statisticsPointMultiplierView.setText(getString(R.string.statictics_point_multiplier, pointMultiplier));

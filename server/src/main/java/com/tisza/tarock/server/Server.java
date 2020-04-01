@@ -32,8 +32,6 @@ public class Server implements Runnable
 	private final GoogleUserManager googleUserManager;
 	private final FirebaseNotificationSender firebaseNotificationSender;
 
-	private CompositeDisposable disposables = new CompositeDisposable();
-
 	public Server(int port)
 	{
 		this.port = port;
@@ -140,7 +138,6 @@ public class Server implements Runnable
 		}
 		finally
 		{
-			disposables.dispose();
 			closeSocket();
 
 			for (Client client : clients)
@@ -202,7 +199,6 @@ public class Server implements Runnable
 				builder.addAvailableGameSession(gameBuilder);
 			}
 
-			disposables.add(
 			database.getUsers().flatMapCompletable(user ->
 			client.getLoggedInUser().isFriendWith(user).flatMapCompletable(isFriend ->
 			Utils.userToProto(user, isFriend, isUserLoggedIn(user)).flatMapCompletable(userProto ->
@@ -210,7 +206,7 @@ public class Server implements Runnable
 				builder.addAvailableUser(userProto);
 				return Completable.complete();
 			})))
-			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build())));
+			.subscribe(() -> client.sendMessage(MainProto.Message.newBuilder().setServerStatus(builder.build()).build()));
 		}
 		}
 	}

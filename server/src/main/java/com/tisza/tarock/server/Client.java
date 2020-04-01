@@ -24,7 +24,6 @@ public class Client implements MessageHandler
 	private ProtoConnection connection;
 	private User loggedInUser = null;
 	private ProtoPlayer currentPlayer = null;
-	private CompositeDisposable disposables = new CompositeDisposable();
 
 	public Client(Server server, ProtoConnection connection)
 	{
@@ -51,12 +50,12 @@ public class Client implements MessageHandler
 				if (message.getLogin().hasFacebookToken())
 				{
 					String fbAccessToken = message.getLogin().getFacebookToken();
-					disposables.add(server.getFacebookUserManager().newAccessToken(fbAccessToken).subscribe(this::userLogin, this::userLoginException));
+					server.getFacebookUserManager().newAccessToken(fbAccessToken).subscribe(this::userLogin, this::userLoginException);
 				}
 				else if (message.getLogin().hasGoogleToken())
 				{
 					String googleToken = message.getLogin().getGoogleToken();
-					disposables.add(server.getGoogleUserManager().newToken(googleToken).subscribe(this::userLogin, this::userLoginException));
+					server.getGoogleUserManager().newToken(googleToken).subscribe(this::userLogin, this::userLoginException);
 				}
 				else
 				{
@@ -131,22 +130,20 @@ public class Client implements MessageHandler
 				}
 				else if (gameSession.getState() == GameSession.State.LOBBY)
 				{
-					disposables.add(
 					loggedInUser.createPlayer().subscribe(player ->
 					{
 						boolean added = gameSession.addPlayer(player);
 						if (added)
 							switchPlayer((ProtoPlayer)player);
-					}));
+					});
 				}
 				else if (gameSession.getState() == GameSession.State.GAME)
 				{
-					disposables.add(
 					loggedInUser.createPlayer().subscribe(player ->
 					{
 						gameSession.addKibic(player);
 						switchPlayer((ProtoPlayer)player);
-					}));
+					});
 				}
 
 				break;
@@ -162,11 +159,10 @@ public class Client implements MessageHandler
 
 			case JOIN_HISTORY_GAME:
 			{
-				disposables.add(
 				server.getGameSessionManager().createGameSessionHistoryView(message.getJoinHistoryGame().getGameId()).subscribe(gameSession ->
 				{
 					sendMessage(MainProto.Message.newBuilder().setJoinHistoryGameResult(MainProto.JoinHistoryGameResult.newBuilder().setGameSessionId(gameSession.getID())).build());
-				}));
+				});
 
 				break;
 			}
@@ -265,7 +261,6 @@ public class Client implements MessageHandler
 
 	public void disconnect()
 	{
-		disposables.dispose();
 		userLogin(null);
 		try
 		{

@@ -22,7 +22,6 @@ do not log socket exceptions
 features:
 error messages
 nickname
-view last round
 public chat
 multiple login
 android handle history mode

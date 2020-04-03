@@ -210,8 +210,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			playedCardViews[i] = new PlayedCardView(getActivity(), cardWidth, i);
 			playedCardViews[i].setOnClickListener(v ->
 			{
-				for (PlayedCardView playedCardView : playedCardViews)
-					playedCardView.showTaken();
+				if (((PlayedCardView)v).isTaken())
+					for (PlayedCardView playedCardView : playedCardViews)
+						playedCardView.showTaken();
 			});
 			gameplayView.addView(playedCardViews[i]);
 		}

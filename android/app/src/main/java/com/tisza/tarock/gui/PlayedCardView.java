@@ -161,6 +161,11 @@ public class PlayedCardView extends ImageView
 		return isTaking;
 	}
 
+	public boolean isTaken()
+	{
+		return currentCard == null && takenCard != null;
+	}
+
 	enum Orientation
 	{
 		DOWN(0, 1), RIGHT(1, 0), UP(0, -1), LEFT(-1, 0);

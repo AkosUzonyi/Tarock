@@ -53,7 +53,7 @@ class Changing extends Phase
 			List<Card> cardsFromTalon = remainingCards.subList(0, cardCount);
 			PlayerCards playerCards = game.getPlayerCards(player);
 			playerCards.addCards(cardsFromTalon);
-			game.sendEvent(player, Event.playerCards(playerCards.clone()));
+			game.sendEvent(player, Event.playerCards(playerCards.clone(), canThrow(player)));
 			game.sendEvent(player, Event.turn(player));
 			if (cardsFromTalon.isEmpty())
 				change(player, Collections.EMPTY_LIST);
@@ -111,7 +111,7 @@ class Changing extends Phase
 		
 		skartingPlayerCards.removeCards(cardsToSkart);
 		donePlayer.put(player, true);
-		game.sendEvent(player, Event.playerCards(skartingPlayerCards.clone()));
+		game.sendEvent(player, Event.playerCards(skartingPlayerCards.clone(), false));
 		game.broadcastEvent(Event.changeDone(player));
 
 		if (isFinished())
@@ -127,14 +127,14 @@ class Changing extends Phase
 
 		return true;
 	}
-	
+
 	@Override
 	public boolean throwCards(PlayerSeat player)
 	{
 		if (donePlayer.get(player))
 			return false;
 
-		if (!game.getPlayerCards(player).canBeThrown())
+		if (!canThrow(player))
 			return false;
 
 		game.broadcastEvent(Event.throwCards(player));
@@ -142,7 +142,13 @@ class Changing extends Phase
 
 		return true;
 	}
-	
+
+	private boolean canThrow(PlayerSeat player)
+	{
+		boolean zebiThrow = game.getGameType() == GameType.ZEBI && game.getWinnerBid() == 3 && game.getBidWinnerPlayer() == player && player.nextPlayer() == game.getBeginnerPlayer();
+		return game.getPlayerCards(player).canBeThrown() || zebiThrow;
+	}
+
 	private boolean isFinished()
 	{
 		for (boolean b : donePlayer)

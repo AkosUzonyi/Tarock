@@ -29,7 +29,6 @@ store emails
 lobby notification
 notification while app is in foreground
 parosfacan
-throw cards when 3 bid last place
 show talon
 rotate cards (just tarocks)
 cancel announcement

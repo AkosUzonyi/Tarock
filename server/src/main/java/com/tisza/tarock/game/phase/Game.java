@@ -86,7 +86,7 @@ public class Game
 
 		broadcastEvent(Event.startGame(gameType, beginnerPlayer));
 		for (PlayerSeat player : PlayerSeat.getAll())
-			sendEvent(player, Event.playerCards(playersCards.get(player).clone()));
+			sendEvent(player, Event.playerCards(playersCards.get(player).clone(), playersCards.get(player).canBeThrown()));
 
 		changePhase(new Bidding(this));
 	}

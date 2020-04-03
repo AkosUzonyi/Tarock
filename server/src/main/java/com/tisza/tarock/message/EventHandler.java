@@ -3,9 +3,6 @@ package com.tisza.tarock.message;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.phase.*;
-import com.tisza.tarock.server.*;
-import com.tisza.tarock.server.database.*;
-import com.tisza.tarock.server.player.*;
 
 import java.util.*;
 
@@ -21,7 +18,7 @@ public interface EventHandler
 	default void turn(PlayerSeat player) {}
 	default void playerTeamInfo(PlayerSeat player, Team team) {}
 	default void startGame(GameType gameType, PlayerSeat beginnerPlayer) {}
-	default void playerCards(PlayerCards cards) {}
+	default void playerCards(PlayerCards cards, boolean canBeThrown) {}
 	default void phaseChanged(PhaseEnum phase) {}
 	default void availableBids(Collection<Integer> bids) {}
 	default void availableCalls(Collection<Card> cards) {}

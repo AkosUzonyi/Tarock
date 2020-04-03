@@ -2,7 +2,6 @@ package com.tisza.tarock.server.player;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.server.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
@@ -150,11 +149,11 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setStartGame(e).build());
 		}
 
-		@Override public void playerCards(PlayerCards cards)
+		@Override public void playerCards(PlayerCards cards, boolean canBeThrown)
 		{
 			EventProto.Event.PlayerCards e = EventProto.Event.PlayerCards.newBuilder()
 					.addAllCard(cards.getCards().stream().map(Card::getID).collect(Collectors.toList()))
-					.setCanBeThrown(cards.canBeThrown())
+					.setCanBeThrown(canBeThrown)
 					.build();
 			sendEvent(EventProto.Event.newBuilder().setPlayerCards(e).build());
 		}

@@ -62,9 +62,9 @@ public interface Event
 		return handler -> handler.startGame(gameType, beginnerPlayer);
 	}
 
-	static Event playerCards(PlayerCards cards)
+	static Event playerCards(PlayerCards cards, boolean canBeThrown)
 	{
-		return handler -> handler.playerCards(cards);
+		return handler -> handler.playerCards(cards, canBeThrown);
 	}
 
 	static Event phaseChanged(PhaseEnum phase)

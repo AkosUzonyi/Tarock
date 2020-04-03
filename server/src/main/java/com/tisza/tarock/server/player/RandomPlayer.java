@@ -139,7 +139,7 @@ public class RandomPlayer extends Player
 		}
 
 		@Override
-		public void playerCards(PlayerCards cards)
+		public void playerCards(PlayerCards cards, boolean canBeThrown)
 		{
 			myCards = cards.clone();
 		}

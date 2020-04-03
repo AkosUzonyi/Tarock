@@ -82,7 +82,6 @@ public class PlayedCardView extends ImageView
 		if (isTaking)
 			return;
 
-		updateImage();
 		bringToFront();
 		startTakePlayAnimation(true);
 	}
@@ -92,7 +91,6 @@ public class PlayedCardView extends ImageView
 		takenCard = currentCard;
 		takenDir = Orientation.fromInt(dir);
 		currentCard = null;
-		isTaking = true;
 		startTakePlayAnimation(false);
 	}
 
@@ -101,14 +99,15 @@ public class PlayedCardView extends ImageView
 		if (isTaking || takenCard == null)
 			return;
 
-		isTaking = true;
-		updateImage();
 		startTakePlayAnimation(false);
 	}
 
 	private void startTakePlayAnimation(boolean play)
 	{
 		resetPosition();
+		if (!play)
+			isTaking = true;
+		updateImage();
 
 		Orientation dir = play ? orientation : takenDir;
 		float tx = (((View)getParent()).getWidth() * 0.5F + width * 0.25F) * dir.getX();

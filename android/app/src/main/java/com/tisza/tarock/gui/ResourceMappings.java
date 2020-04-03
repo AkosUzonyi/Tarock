@@ -3,6 +3,7 @@ package com.tisza.tarock.gui;
 import android.annotation.*;
 import android.content.*;
 import android.content.res.*;
+import android.util.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.card.*;
 
@@ -73,6 +74,19 @@ public class ResourceMappings
 		}
 		
 		silent = resources.getString(R.string.silent);
+	}
+
+	public static int getBitmapResForCard(Card card)
+	{
+		if (ResourceMappings.cardToImageResource.containsKey(card))
+		{
+			return cardToImageResource.get(card);
+		}
+		else
+		{
+			Log.e(GameFragment.LOG_TAG, card + " has no image");
+			return R.drawable.card_back;
+		}
 	}
 
 	public static String uppercaseCardName(Card card)

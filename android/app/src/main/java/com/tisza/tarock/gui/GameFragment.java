@@ -34,7 +34,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	public static final float PLAYED_CARD_DISTANCE = 1F;
 	public static final int PLAY_DURATION = 50;
 	public static final int TAKE_DURATION = 400;
-	public static final int DELAY = BuildConfig.DEBUG ? 500 : 2000;
+	public static final int DELAY = 2000;
 	public static final int CARDS_PER_ROW = 6;
 
 	private static final int MESSAGES_VIEW_INDEX = 0;
@@ -208,8 +208,15 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		for (int i = 0; i < 4; i++)
 		{
 			playedCardViews[i] = new PlayedCardView(getActivity(), cardWidth, i);
+			playedCardViews[i].setOnClickListener(v ->
+			{
+				if (((PlayedCardView)v).isTaken())
+					for (PlayedCardView playedCardView : playedCardViews)
+						playedCardView.showTaken();
+			});
 			gameplayView.addView(playedCardViews[i]);
 		}
+
 
 		statisticsView = layoutInflater.inflate(R.layout.statistics, centerSpace, false);
 		statisticsGamepointsSelf = (TextView)statisticsView.findViewById(R.id.statistics_gamepoints_self);
@@ -292,19 +299,13 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		statisticsSumPointsView.setText(null);
 
 		for (PlayedCardView playedCardView : playedCardViews)
-		{
-			playedCardView.setCard(null);
-		}
+			playedCardView.reset();
 
 		for (TextView nameView : playerNameViews)
-		{
 			nameView.setTextColor(getResources().getColor(R.color.unknown_team));
-		}
 
 		for (View skartView : skartViews)
-		{
 			skartView.setVisibility(View.GONE);
-		}
 	}
 
 	private void onGameInfoUpdate(GameInfo gameInfo)
@@ -643,9 +644,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		int pos = getPositionFromPlayerID(player);
 		final PlayedCardView playedCardView = playedCardViews[pos];
 		
-		playedCardView.setCard(card);
-		playedCardView.bringToFront();
-		playedCardView.animatePlay();
+		playedCardView.play(card);
 		
 		if (myCards != null && player == seat)
 		{
@@ -689,7 +688,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	{
 		for (PlayedCardView playedCardView : playedCardViews)
 		{
-			playedCardView.animateTake(getPositionFromPlayerID(winnerPlayer));
+			playedCardView.take(getPositionFromPlayerID(winnerPlayer));
 		}
 	}
 	
@@ -825,7 +824,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			lp.setMargins(margin, margin, margin, margin);
 			cardView.setLayoutParams(lp);
 			if (card != null)
-				cardView.setImageResource(PlayedCardView.getBitmapResForCard(card));
+				cardView.setImageResource(ResourceMappings.getBitmapResForCard(card));
 			
 			final LinearLayout parentView = i < cardsUp ? myCardsView1 : myCardsView0;
 			parentView.addView(cardView);

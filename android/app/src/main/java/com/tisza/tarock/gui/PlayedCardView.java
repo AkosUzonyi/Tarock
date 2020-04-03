@@ -1,12 +1,10 @@
 package com.tisza.tarock.gui;
 
+import android.animation.*;
 import android.annotation.*;
 import android.content.*;
-import android.os.*;
-import android.util.*;
 import android.view.*;
 import android.view.animation.*;
-import android.view.animation.Animation.*;
 import android.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.card.*;
@@ -14,150 +12,189 @@ import com.tisza.tarock.game.card.*;
 @SuppressLint("AppCompatCustomView")
 public class PlayedCardView extends ImageView
 {
-	private final Handler takeAnimationHandler;
-
 	private final int width;
-	private final int orientation;
-	private boolean isTaking = false;
+	private final Orientation orientation;
+
+	private boolean isTaking;
+	private Card currentCard;
+	private Card takenCard;
+	private Orientation takenDir;
+	private Animator currentAnimator;
 
 	public PlayedCardView(Context context, int width, int orientation)
 	{
 		super(context);
-		takeAnimationHandler = new Handler();
-		this.orientation = orientation;
+		this.orientation = Orientation.fromInt(orientation);
 		this.width = width;
 		RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(width, ViewGroup.LayoutParams.WRAP_CONTENT);
 		lp.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
 		setLayoutParams(lp);
 		setAdjustViewBounds(true);
-		resetPosition();
+		reset();
 	}
 
-	public void setCard(Card card)
+	public void reset()
 	{
+		currentCard = null;
+		takenCard = null;
+		isTaking = false;
 		resetPosition();
-
-		if (card == null)
-			setImageBitmap(null);
-		else
-			setImageResource(getBitmapResForCard(card));
-	}
-
-	private Animation createPositionAnimation()
-	{
-		Animation rotateAnim = new RotateAnimation(0, (orientation % 2) * 90, RotateAnimation.RELATIVE_TO_SELF, 0.5F,RotateAnimation.RELATIVE_TO_SELF, 0.5F);
-
-		float tx = 0;
-		float ty = 0;
-		switch (orientation)
-		{
-			case 0: ty = 1; break;
-			case 1: tx = 1; break;
-			case 2: ty = -1; break;
-			case 3: tx = -1; break;
-		}
-		tx *= width * GameFragment.PLAYED_CARD_DISTANCE;
-		ty *= width * GameFragment.PLAYED_CARD_DISTANCE;
-		Animation translateAnim = new TranslateAnimation(0, tx, 0, ty);
-
-		AnimationSet animSet = new AnimationSet(true);
-		animSet.addAnimation(rotateAnim);
-		animSet.addAnimation(translateAnim);
-
-		return animSet;
+		updateImage();
 	}
 
 	private void resetPosition()
 	{
-		takeAnimationHandler.removeCallbacksAndMessages(null);
-		isTaking = false;
-
-		Animation currentAnimation = getAnimation();
-		if (currentAnimation != null)
+		if (currentAnimator != null)
 		{
-			currentAnimation.setAnimationListener(null);
-			clearAnimation();
+			currentAnimator.cancel();
+			currentAnimator = null;
 		}
 
-		Animation animation = createPositionAnimation();
-		animation.setDuration(0);
-		animation.setInterpolator(new EndInterpolator());
-		animation.setFillAfter(true);
-		startAnimation(animation);
+		setTranslationX(width * GameFragment.PLAYED_CARD_DISTANCE * orientation.getX());
+		setTranslationY(width * GameFragment.PLAYED_CARD_DISTANCE * orientation.getY());
+		setRotation(orientation.isHorizontal() ? 90 : 0);
 	}
-	
-	public void animatePlay()
+
+	private void updateImage()
 	{
-		startTakePlayAnimation(true, orientation);
+		if (isTaking)
+			setCardImage(takenCard);
+		else if (currentCard != null)
+			setCardImage(currentCard);
+		else if (takenCard != null)
+			setImageResource(R.drawable.card_back);
+		else
+			setCardImage(null);
+	}
+
+	private void setCardImage(Card card)
+	{
+		if (card == null)
+			setImageBitmap(null);
+		else
+			setImageResource(ResourceMappings.getBitmapResForCard(card));
+	}
+
+	public void play(Card card)
+	{
+		currentCard = card;
+
+		if (isTaking)
+			return;
+
+		bringToFront();
+		startTakePlayAnimation(true);
 	}
 	
-	public void animateTake(int dir)
+	public void take(int dir)
+	{
+		takenCard = currentCard;
+		takenDir = Orientation.fromInt(dir);
+		currentCard = null;
+		startTakePlayAnimation(false);
+	}
+
+	public void showTaken()
+	{
+		if (isTaking || takenCard == null)
+			return;
+
+		startTakePlayAnimation(false);
+	}
+
+	private void startTakePlayAnimation(boolean play)
 	{
 		resetPosition();
-		isTaking = true;
-		takeAnimationHandler.postDelayed(() -> startTakePlayAnimation(false, dir), GameFragment.DELAY);
-	}
-	
-	private void startTakePlayAnimation(boolean play, int dir)
-	{
-		resetPosition();
+		if (!play)
+			isTaking = true;
+		updateImage();
 
-		float tx = 0;
-		float ty = 0;
-		switch (dir)
-		{
-			case 0: ty = 0.5F; break;
-			case 1: tx = 0.5F; break;
-			case 2: ty = -0.5F; break;
-			case 3: tx = -0.5F; break;
-		}
+		Orientation dir = play ? orientation : takenDir;
+		float tx = (((View)getParent()).getWidth() * 0.5F + width * 0.25F) * dir.getX();
+		float ty = (((View)getParent()).getHeight() * 0.5F + width * 0.25F) * dir.getY();
 
-		Interpolator interpolator = play ? new LinearInterpolator() : new ReverseInterpolator();
+		Interpolator interpolator = play ? new ReverseInterpolator() : new LinearInterpolator();
 		int duration = play ? GameFragment.PLAY_DURATION : GameFragment.TAKE_DURATION;
 
-		Animation moveAnim = new TranslateAnimation(TranslateAnimation.RELATIVE_TO_PARENT, tx, TranslateAnimation.RELATIVE_TO_PARENT, 0, TranslateAnimation.RELATIVE_TO_PARENT, ty, TranslateAnimation.RELATIVE_TO_PARENT, 0);
-		Animation positionAnim = createPositionAnimation();
-		moveAnim.setInterpolator(interpolator);
-		positionAnim.setInterpolator(interpolator);
+		ObjectAnimator moveXAnim = ObjectAnimator.ofFloat(this, View.TRANSLATION_X, getTranslationX(), tx);
+		ObjectAnimator moveYAnim = ObjectAnimator.ofFloat(this, View.TRANSLATION_Y, getTranslationY(), ty);
+		ObjectAnimator rotateAnim = ObjectAnimator.ofFloat(this, View.ROTATION, getRotation(), 0);
 
-		AnimationSet animSet = new AnimationSet(false);
-		animSet.addAnimation(positionAnim);
-		animSet.addAnimation(moveAnim);
+		AnimatorSet animSet = new AnimatorSet();
+		animSet.playTogether(moveXAnim, moveYAnim, rotateAnim);
+		animSet.setInterpolator(interpolator);
 		animSet.setDuration(duration);
-
-		animSet.setAnimationListener(new AnimationListener()
+		animSet.setStartDelay(play ? 0 : GameFragment.DELAY);
+		animSet.addListener(new AnimatorListenerAdapter()
 		{
-			@Override public void onAnimationStart(Animation animation) {}
-			@Override public void onAnimationRepeat(Animation animation) {}
-
 			@Override
-			public void onAnimationEnd(Animation animation)
+			public void onAnimationEnd(Animator animation)
 			{
-				resetPosition();
+				currentAnimator = null;
 
 				if (!play)
-					setCard(null);
+				{
+					isTaking = false;
+
+					if (currentCard == null)
+					{
+						setTranslationX(tx);
+						setTranslationY(ty);
+						setRotation(0);
+					}
+					else
+					{
+						resetPosition();
+					}
+				}
+
+				updateImage();
 			}
 		});
-
-		startAnimation(animSet);
+		animSet.start();
+		currentAnimator = animSet;
 	}
-	
+
 	public boolean isTaking()
 	{
 		return isTaking;
 	}
-	
-	public static int getBitmapResForCard(Card card)
+
+	public boolean isTaken()
 	{
-		if (ResourceMappings.cardToImageResource.containsKey(card))
+		return currentCard == null && takenCard != null;
+	}
+
+	enum Orientation
+	{
+		DOWN(0, 1), RIGHT(1, 0), UP(0, -1), LEFT(-1, 0);
+
+		private final int x, y;
+
+		Orientation(int x, int y)
 		{
-			return ResourceMappings.cardToImageResource.get(card);
+			this.x = x;
+			this.y = y;
 		}
-		else
+
+		public static Orientation fromInt(int n)
 		{
-			Log.e(GameFragment.LOG_TAG, card + " has no image");
-			return R.drawable.card_back;
+			return values()[n];
+		}
+
+		public int getX()
+		{
+			return x;
+		}
+
+		public int getY()
+		{
+			return y;
+		}
+
+		public boolean isHorizontal()
+		{
+			return ordinal() % 2 == 1;
 		}
 	}
 }

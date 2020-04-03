@@ -665,6 +665,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				});
 				shrinkAnimator.setDuration(PLAY_DURATION);
 				shrinkAnimator.start();
+				boolean shouldArrange = myCards.size() == CARDS_PER_ROW;
 				shrinkAnimator.addListener(new AnimatorListenerAdapter()
 				{
 					@Override
@@ -673,10 +674,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 						myCardsView0.removeView(myCardView);
 						myCardsView1.removeView(myCardView);
 
-						if (myCards.size() == CARDS_PER_ROW)
-						{
+						if (shouldArrange)
 							arrangeCards();
-						}
 					}
 				});
 			}

@@ -12,7 +12,7 @@ import java.util.*;
 
 public class GameSessionManager
 {
-	private static final int MAX_GAME_IDLE_TIME = 6 * 3600 * 1000;
+	private static final int MAX_GAME_IDLE_TIME = 3 * 3600 * 1000;
 
 	private final Server server;
 	private Map<Integer, GameSession> gameSessions = new HashMap<>();

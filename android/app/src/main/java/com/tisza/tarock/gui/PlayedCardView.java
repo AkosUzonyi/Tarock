@@ -111,8 +111,8 @@ public class PlayedCardView extends ImageView
 		resetPosition();
 
 		Orientation dir = play ? orientation : takenDir;
-		float tx = ((View)getParent()).getWidth() * dir.getX() * 0.5F;
-		float ty = ((View)getParent()).getHeight() * dir.getY() * 0.5F;
+		float tx = (((View)getParent()).getWidth() * 0.5F + width * 0.25F) * dir.getX();
+		float ty = (((View)getParent()).getHeight() * 0.5F + width * 0.25F) * dir.getY();
 
 		Interpolator interpolator = play ? new ReverseInterpolator() : new LinearInterpolator();
 		int duration = play ? GameFragment.PLAY_DURATION : GameFragment.TAKE_DURATION;

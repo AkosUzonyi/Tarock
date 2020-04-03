@@ -641,45 +641,36 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void playCard(int player, Card card)
 	{
-		int pos = getPositionFromPlayerID(player);
-		final PlayedCardView playedCardView = playedCardViews[pos];
-		
+		PlayedCardView playedCardView = playedCardViews[getPositionFromPlayerID(player)];
 		playedCardView.play(card);
-		
-		if (myCards != null && player == seat)
+
+		if (myCards == null || player != seat)
+			return;
+
+		myCards.remove(card);
+		View myCardView = cardToViewMapping.remove(card);
+
+		ValueAnimator shrinkAnimator = ValueAnimator.ofInt(myCardView.getWidth(), 0);
+		shrinkAnimator.addUpdateListener(animation ->
 		{
-			myCards.remove(card);
-
-			View myCardView = cardToViewMapping.remove(card);
-			if (myCardView != null)
+			myCardView.getLayoutParams().width = (Integer)animation.getAnimatedValue();
+			myCardView.requestLayout();
+		});
+		shrinkAnimator.setDuration(PLAY_DURATION);
+		boolean shouldArrange = myCards.size() == CARDS_PER_ROW;
+		shrinkAnimator.addListener(new AnimatorListenerAdapter()
+		{
+			@Override
+			public void onAnimationEnd(Animator animation)
 			{
-				int originalWidth = myCardView.getWidth();
-				int originalHeight = myCardView.getHeight();
+				myCardsView0.removeView(myCardView);
+				myCardsView1.removeView(myCardView);
 
-				ValueAnimator shrinkAnimator = ValueAnimator.ofInt(originalWidth, 0);
-				shrinkAnimator.addUpdateListener(animation ->
-				{
-					myCardView.getLayoutParams().width = (Integer)animation.getAnimatedValue();
-					//myCardView.getLayoutParams().height = originalHeight;
-					myCardView.requestLayout();
-				});
-				shrinkAnimator.setDuration(PLAY_DURATION);
-				shrinkAnimator.start();
-				boolean shouldArrange = myCards.size() == CARDS_PER_ROW;
-				shrinkAnimator.addListener(new AnimatorListenerAdapter()
-				{
-					@Override
-					public void onAnimationEnd(Animator animation)
-					{
-						myCardsView0.removeView(myCardView);
-						myCardsView1.removeView(myCardView);
-
-						if (shouldArrange)
-							arrangeCards();
-					}
-				});
+				if (shouldArrange)
+					arrangeCards();
 			}
-		}
+		});
+		shrinkAnimator.start();
 	}
 	
 	@Override

@@ -36,10 +36,14 @@
     <string name="cancel">Mégse</string>
     <string name="anybody">Bárki</string>
 
-    <string name="lobby_create">Lobby létrehozása %1$d ismeretlennel</string>
+    <plurals name="lobby_create">
+        <item quantity="other">Lobby létrehozása %1$d ismeretlennel</item>
+    </plurals>
     <string name="lobby_enter">Belépés a lobbyba</string>
     <string name="lobby_start">Lobby indítása</string>
-    <string name="lobby_start_with_bots">Lobby indítása %1$d robottal</string>
+    <plurals name="lobby_start_with_bots">
+        <item quantity="other">Lobby indítása %1$d robottal</item>
+    </plurals>
     <string name="lobby_start_with_bots_confirm_title">Biztosan elindítod a játékot robotokkal?</string>
     <string name="lobby_start_with_bots_confirm_body">A robotok véletlenszerűen döntenek, a játék nem élvezhető velük.</string>
     <string name="lobby_start_with_bots_confirm_yes">Indítás</string>
@@ -76,7 +80,6 @@
     <string name="cards_thrown">bedobta a lapjait</string>
 
     <plurals name="message_skart_tarock">
-        <item quantity="zero">Nem fektetett tarokkot</item>
         <item quantity="other">%1$d tarokkot fektetett</item>
     </plurals>
 

@@ -348,7 +348,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (userCount == 4)
 			lobbyStartButton.setText(R.string.lobby_start);
 		else
-			lobbyStartButton.setText(getString(R.string.lobby_start_with_bots, 4 - userCount));
+			lobbyStartButton.setText(getResources().getQuantityString(R.plurals.lobby_start_with_bots, 4 - userCount, 4 - userCount));
 
 		switch (gameInfo.getState())
 		{

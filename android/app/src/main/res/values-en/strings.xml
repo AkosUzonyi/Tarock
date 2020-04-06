@@ -1,13 +1,9 @@
 <resources>
-    <string name="facebook_app_id" translatable="false">1735167250066232</string>
-    <string name="fb_login_protocol_scheme" translatable="false">fb1735167250066232</string>
-    <string name="google_server_client_id" translatable="false">622849615637-7dth7ktpr1mgk36ol7h7me819vbc8flg.apps.googleusercontent.com</string>
-
     <string name="login_with_facebook">FACEBOOK</string>
     <string name="login_with_google">GOOGLE</string>
 
     <string name="update_available">New version available!</string>
-    <string name="update_please">Update the application to be able to play</string>
+    <string name="update_please">Update the application to play</string>
     <string name="update_accept">Update</string>
     <string name="update_deny">Exit</string>
 
@@ -18,33 +14,40 @@
     <string name="error_server_error_title">Server error</string>
     <string name="error_server_error_message">""</string>
     <string name="error_login_unsuccessful_title">Login failed</string>
-    <string name="error_login_unsuccessful_message">Maybe you're logged in on another device?</string>
+    <string name="error_login_unsuccessful_message">Maybe you\'re logged in on another device?</string>
 
     <string name="game_created_notification_title">%1$s would like to play Tarokk with you</string>
     <string name="game_created_notification_body">Players: %1$s, %2$s, %3$s, %4$s</string>
 
     <string name="app_name" translatable="false">Tarokk</string>
     <string name="play" translatable="false">Play</string>
+    <string name="settings">Settings</string>
     <string name="logout">Log out</string>
     <string name="new_game">New Game</string>
     <string name="connecting">Connecting to server&#8230;</string>
     <string name="logging_in">Logging in&#8230;</string>
-    <string name="join_game">Login</string>
+    <string name="join_game">Join</string>
     <string name="join_game_kibic">Spectate</string>
     <string name="delete_game">Delete</string>
     <string name="delete_game_confirm">Are you sure you want to delete the game?</string>
     <string name="cancel">Cancel</string>
     <string name="anybody">Anyone</string>
 
-    <string name="lobby_create">Creating Lobby with stranger %1$d</string>
-    <string name="lobby_enter">Entering the Lobby</string>
-    <string name="lobby_start">Lobby starting up</string>
-    <string name="lobby_start_with_bots">Lobby starting up with robot %1$d</string>
+    <plurals name="lobby_create">
+        <item quantity="one">Create lobby with %1$d stranger</item>
+        <item quantity="other">Create lobby with %1$d strangers</item>
+    </plurals>
+    <string name="lobby_enter">Enter the Lobby</string>
+    <string name="lobby_start">Start lobby</string>
+    <plurals name="lobby_start_with_bots">
+        <item quantity="one">Start lobby with %1$d robot</item>
+        <item quantity="other">Start lobby with %1$d robots</item>
+    </plurals>
     <string name="lobby_start_with_bots_confirm_title">Are you sure you want to start a game with robots?</string>
     <string name="lobby_start_with_bots_confirm_body">The bots make random decisions, the game is unenjoyable with them.</string>
     <string name="lobby_start_with_bots_confirm_yes">Start</string>
-    <string name="lobby_delete">Deleting Lobby</string>
-    <string name="lobby_leave">Leaving Lobby</string>
+    <string name="lobby_delete">Delete Lobby</string>
+    <string name="lobby_leave">Leave Lobby</string>
 
     <string name="players_search_hint">Searching player…</string>
     <string name="players">Players</string>
@@ -57,7 +60,7 @@
     <string name="ok">OK</string>
     <string name="throw_cards">Throw in</string>
     <string name="back">back</string>
-    <string name="announce">Announces</string>
+    <string name="announce">Announce</string>
     <string name="chat_hint">Message...</string>
     <string name="empty_seat">---</string>
 
@@ -76,8 +79,8 @@
     <string name="cards_thrown">threw in his cards</string>
 
     <plurals name="message_skart_tarock">
-        <item quantity="zero">laid no tarokks</item>
-        <item quantity="other">%1$d tarokk laid</item>
+        <item quantity="one">laid %1$d tarokk</item>
+        <item quantity="other">laid %1$d tarokks</item>
     </plurals>
 
     <string name="bid3">3</string>
@@ -182,7 +185,7 @@
     <string name="announcement_ketkiralyok">two kings game</string>
     <string name="announcement_haromkiralyok">three kings game</string>
     <string name="announcement_zaroparos">closing pair</string>
-    <string name="announcement_kisszincsalad">little suit faimily</string>
+    <string name="announcement_kisszincsalad">little suit family</string>
     <string name="announcement_nagyszincsalad">big suit family</string>
     <string name="announcement_facan">pheasant</string>
     <string name="announcement_kezbevacak">""</string>
@@ -194,7 +197,7 @@
 
     <string name="statictics_point_multiplier">Double round multiplier: %1$d</string>
     <string name="statistics_self">Own bonuses</string>
-    <string name="statistics_opponent">Opponent's bonuses</string>
+    <string name="statistics_opponent">Opponent\'s bonuses</string>
     <string name="statistics_points">point</string>
     <string name="statictics_sum">Total:</string>
 </resources>

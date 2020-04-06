@@ -179,8 +179,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				connectionViewModel.sendMessage(startMessage);
 			else
 				new AlertDialog.Builder(getContext())
-						.setTitle(R.string.lobby_start_with_bots_confirm_title)
-						.setMessage(R.string.lobby_start_with_bots_confirm_body)
+						.setTitle(Html.fromHtml(getString(R.string.lobby_start_with_bots_confirm_title)))
+						.setMessage(Html.fromHtml(getString(R.string.lobby_start_with_bots_confirm_body)))
 						.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> connectionViewModel.sendMessage(startMessage))
 						.setNegativeButton(R.string.cancel, null)
 						.show();

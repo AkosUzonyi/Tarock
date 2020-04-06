@@ -47,8 +47,8 @@
         <item quantity="one">Start lobby with %1$d robot</item>
         <item quantity="other">Start lobby with %1$d robots</item>
     </plurals>
-    <string name="lobby_start_with_bots_confirm_title">Are you sure you want to start a game with robots?</string>
-    <string name="lobby_start_with_bots_confirm_body">The bots make random decisions, the game is unenjoyable with them.</string>
+    <string name="lobby_start_with_bots_confirm_title"><![CDATA[<font color=\'#FF0000\'>Are you sure you want to start a game with robots?</font>]]></string>
+    <string name="lobby_start_with_bots_confirm_body"><![CDATA[The bots make random decisions, the game is <strong>unenjoyable</strong> with them.]]></string>
     <string name="lobby_start_with_bots_confirm_yes">Start</string>
     <string name="lobby_delete">Delete Lobby</string>
     <string name="lobby_leave">Leave Lobby</string>

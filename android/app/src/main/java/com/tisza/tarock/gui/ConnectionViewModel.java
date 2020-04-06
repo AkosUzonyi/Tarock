@@ -5,6 +5,7 @@ import android.content.*;
 import android.net.*;
 import android.os.*;
 import androidx.lifecycle.*;
+import androidx.preference.*;
 import com.facebook.*;
 import com.google.android.gms.auth.api.signin.*;
 import com.google.firebase.iid.*;
@@ -203,7 +204,8 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 				connectionState.setValue(loggedIn ? ConnectionState.LOGGED_IN : ConnectionState.CONNECTED);
 				userID.setValue(loggedIn ? message.getLoginResult().getUserId() : null);
 
-				if (loggedIn)
+				boolean notifications = PreferenceManager.getDefaultSharedPreferences(getApplication()).getBoolean("notifications", true);
+				if (loggedIn && notifications)
 					FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult ->
 					{
 						sendMessage(MainProto.Message.newBuilder().setFcmToken(MainProto.FCMToken.newBuilder()

@@ -4,6 +4,7 @@ import android.app.*;
 import android.content.*;
 import android.os.*;
 import androidx.lifecycle.*;
+import androidx.preference.*;
 import com.facebook.*;
 import com.facebook.login.*;
 import com.google.android.gms.auth.api.signin.*;
@@ -27,6 +28,10 @@ public class LoginViewModel extends AndroidViewModel
 	public LoginViewModel(Application application)
 	{
 		super(application);
+
+		boolean notifications = PreferenceManager.getDefaultSharedPreferences(application).getBoolean("notifications", true);
+		if (!notifications)
+			new FCMDeleteTokenAsyncTask().execute();
 
 		loginState =
 			Transformations.switchMap(fbAccessToken, fbAccessTokenValue ->

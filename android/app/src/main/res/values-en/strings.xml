@@ -33,6 +33,8 @@
     <string name="cancel">Cancel</string>
     <string name="anybody">Anyone</string>
 
+    <string name="settings_notification">Enable notifications</string>
+
     <plurals name="lobby_create">
         <item quantity="one">Create lobby with %1$d stranger</item>
         <item quantity="other">Create lobby with %1$d strangers</item>

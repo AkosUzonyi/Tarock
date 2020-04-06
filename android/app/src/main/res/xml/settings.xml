@@ -1,0 +1,35 @@
+<PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android"
+    app:title="@string/settings"
+    >
+
+    <SwitchPreferenceCompat
+        app:key="notifications"
+        app:title="@string/settings_notification"
+        android:defaultValue="true"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"
+    />
+
+    <ListPreference
+        app:key="language"
+        app:title="@string/settings_language"
+        app:entries="@array/settings_language_names"
+        app:entryValues="@array/settings_language_codes"
+        app:summary="%s"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"
+        >
+    </ListPreference>
+
+    <Preference
+        app:key="feedback"
+        app:title="Send feedback"
+        app:summary="Report technical issues or suggest new features"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"
+    />
+</PreferenceScreen>

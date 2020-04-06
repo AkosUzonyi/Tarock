@@ -25,6 +25,7 @@
 
     <string name="app_name" translatable="false">Tarokk</string>
     <string name="play" translatable="false">Play</string>
+    <string name="settings">Beállítások</string>
     <string name="logout">Kijelentkezés</string>
     <string name="new_game">Új játék</string>
     <string name="connecting">Csatlakozás a szerverhez&#8230;</string>
@@ -35,6 +36,17 @@
     <string name="delete_game_confirm">Biztosan törlöd a játékot?</string>
     <string name="cancel">Mégse</string>
     <string name="anybody">Bárki</string>
+
+    <string name="settings_notification">Értesítések engedélyezése</string>
+    <string name="settings_language" translatable="false">Nyelv/Language</string>
+    <string-array name="settings_language_names">
+        <item>Magyar</item>
+        <item>English</item>
+    </string-array>
+    <string-array name="settings_language_codes">
+        <item>hu</item>
+        <item>en</item>
+    </string-array>
 
     <plurals name="lobby_create">
         <item quantity="other">Lobby létrehozása %1$d ismeretlennel</item>

@@ -34,6 +34,8 @@
     <string name="anybody">Anyone</string>
 
     <string name="settings_notification">Enable notifications</string>
+    <string name="settings_feedback_title">Send feedback</string>
+    <string name="settings_feedback_summary">Report technical issues or suggest new features</string>
 
     <plurals name="lobby_create">
         <item quantity="one">Create lobby with %1$d stranger</item>

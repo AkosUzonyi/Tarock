@@ -47,6 +47,8 @@
         <item>hu</item>
         <item>en</item>
     </string-array>
+    <string name="settings_feedback_title">Visszajelzés küldése</string>
+    <string name="settings_feedback_summary">Hibák jelentése, vagy új ötletek jelzése</string>
 
     <plurals name="lobby_create">
         <item quantity="other">Lobby létrehozása %1$d ismeretlennel</item>

@@ -17,7 +17,7 @@ public abstract class AnnouncementBase implements Announcement
 		
 		boolean isAnnounced = game.getAnnouncementsState().isAnnounced(team, this);
 		int contraLevel = isAnnounced ? game.getAnnouncementsState().getContraLevel(team, this) : 0;
-		int winnerBid = pp.isSolo() && !game.isSoloIntentional() ? 0 : game.getWinnerBid();
+		int winnerBid = pp.isSolo() ? 0 : game.getWinnerBid();
 		int winnerBidMultiplier = isMultipliedByWinnerBid() ? (4 - winnerBid) : 1;
 		
 		int points;

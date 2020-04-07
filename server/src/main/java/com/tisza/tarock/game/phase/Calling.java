@@ -117,21 +117,21 @@ class Calling extends Phase
 				break;
 			}
 		}
-		
+
+		CardFilter cf = new CallableCardFilter();
 		if (canCallAnyTarock)
 		{
-			CardFilter cf = new CallableCardFilter();
 			for (Card c : Card.getAll())
-			{
 				if (cf.match(c))
-				{
 					callOptions.add(c);
-				}
-			}
+		}
+		else if (game.getGameType() == GameType.ZEBI)
+		{
+			callOptions.addAll(pc.filter(cf));
 		}
 		else
 		{
-			callOptions.addAll(pc.filter(new CallableCardFilter()));
+			callOptions.add(TarockCard.getTarockCard(20));
 		}
 		
 		return new ArrayList<>(callOptions);

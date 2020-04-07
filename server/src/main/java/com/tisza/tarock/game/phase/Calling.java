@@ -104,7 +104,7 @@ class Calling extends Phase
 		Set<Card> callOptions = new LinkedHashSet<>();
 
 		Invitation invit = game.getInvitSent();
-		if (invit != null)
+		if (invit != null && game.getInvitingPlayer() != callerPlayer)
 			callOptions.add(invit.getCard());
 
 		PlayerCards pc = game.getPlayerCards(callerPlayer);

@@ -595,7 +595,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				@Override
 				public String toString()
 				{
-					return ResourceMappings.roundNames[8];
+					return getString(R.string.ultimo_button);
 				}
 			});
 		}

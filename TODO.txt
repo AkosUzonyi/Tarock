@@ -33,7 +33,6 @@ show talon
 rotate cards (just tarocks)
 cancel announcement
 improve ui for ultimo
-add "..." to ultimo button text
 double round message
 
 refactorizations:

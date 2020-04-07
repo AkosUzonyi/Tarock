@@ -4,13 +4,14 @@ import android.graphics.*;
 import android.os.*;
 import android.view.*;
 import androidx.preference.*;
+import com.jakewharton.processphoenix.*;
 import com.tisza.tarock.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener
 {
 	public static final String TAG = "settings";
 
-	private boolean restartActivity = false;
+	private boolean restartApp = false;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -35,7 +36,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 		{
 			case "language":
 			case "notifications":
-				restartActivity = true;
+				restartApp = true;
 				break;
 		}
 		return true;
@@ -46,7 +47,7 @@ public class SettingsFragment extends PreferenceFragmentCompat implements Prefer
 	{
 		super.onDestroy();
 
-		if (restartActivity)
-			getActivity().recreate();
+		if (restartApp)
+			ProcessPhoenix.triggerRebirth(getContext());
 	}
 }

@@ -2,20 +2,15 @@ package com.tisza.tarock.gui;
 
 import android.app.*;
 import android.content.*;
-import android.content.res.*;
 import android.net.*;
 import android.os.*;
-import android.util.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.*;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.*;
-import androidx.preference.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.proto.*;
-
-import java.util.*;
 
 public class MainActivity extends AppCompatActivity implements GameListAdapter.GameAdapterListener
 {
@@ -32,7 +27,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	{
 		super.onCreate(savedInstanceState);
 
-		setAppLocale(PreferenceManager.getDefaultSharedPreferences(this).getString("language", "hu"));
+		LocaleManager.updateLocale(this);
 		setContentView(R.layout.main);
 
 		connectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
@@ -58,15 +53,6 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			if (gameSessionID < 0)
 				joinGame(gameSessionID);
 		});
-	}
-
-	private void setAppLocale(String localeCode)
-	{
-		Resources resources = getResources();
-		DisplayMetrics dm = resources.getDisplayMetrics();
-		Configuration config = resources.getConfiguration();
-		config.setLocale(new Locale(localeCode.toLowerCase()));
-		resources.updateConfiguration(config, dm);
 	}
 
 	public void openSettings()

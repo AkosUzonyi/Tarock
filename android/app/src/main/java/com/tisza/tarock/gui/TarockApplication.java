@@ -9,6 +9,7 @@ public class TarockApplication extends Application
 	public void onCreate()
 	{
 		super.onCreate();
+		LocaleManager.updateLocale(this);
 		ResourceMappings.init(this);
 		Picasso.setSingletonInstance(new Picasso.Builder(this).downloader(new OkHttpDownloader(this)).build());
 	}

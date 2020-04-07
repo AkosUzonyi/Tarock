@@ -26,6 +26,7 @@ public class GoogleUserManager
 	{
 		try
 		{
+			System.out.println(token);
 			GoogleIdToken idToken = tokenVerifier.verify(token);
 			if (idToken == null)
 				return Single.error(new Exception("Token verification failed"));

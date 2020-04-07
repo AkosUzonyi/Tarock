@@ -67,6 +67,13 @@ public class LoginFragment extends MainActivityFragment
 	}
 
 	@Override
+	public void onStart()
+	{
+		super.onStart();
+		loginViewModel.refresh();
+	}
+
+	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		super.onActivityResult(requestCode, resultCode, data);

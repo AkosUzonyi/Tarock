@@ -7,7 +7,9 @@ import androidx.lifecycle.*;
 import androidx.preference.*;
 import com.facebook.*;
 import com.facebook.login.*;
+import com.google.android.gms.auth.api.*;
 import com.google.android.gms.auth.api.signin.*;
+import com.google.android.gms.common.*;
 import com.google.android.gms.common.api.*;
 import com.google.android.gms.tasks.*;
 import com.google.firebase.iid.*;
@@ -23,6 +25,7 @@ public class LoginViewModel extends AndroidViewModel
 	private LiveData<AccessToken> fbAccessToken = new FbAccessTokenLiveData();
 	private MutableLiveData<GoogleSignInAccount> googleAccount = new MutableLiveData<>();
 
+	private final GoogleApiClient googleApiClient;
 	private GoogleSignInClient googleSignInClient;
 
 	public LoginViewModel(Application application)
@@ -62,7 +65,11 @@ public class LoginViewModel extends AndroidViewModel
 				.requestIdToken(application.getString(R.string.google_server_client_id))
 				.build();
 		googleSignInClient = GoogleSignIn.getClient(application, gso);
-		googleAccount.setValue(GoogleSignIn.getLastSignedInAccount(application));
+		googleApiClient = new GoogleApiClient.Builder(application)
+				.addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+				.build();
+
+		new GoogleSilentSignInAsyncTask().execute();
 	}
 
 	public LiveData<LoginState> getLoginState()
@@ -90,6 +97,11 @@ public class LoginViewModel extends AndroidViewModel
 		return googleSignInClient.getSignInIntent();
 	}
 
+	public void refresh()
+	{
+		new GoogleSilentSignInAsyncTask().execute();
+	}
+
 	public void googleLoginResult(int resultCode, Intent intent)
 	{
 		Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(intent);
@@ -114,6 +126,36 @@ public class LoginViewModel extends AndroidViewModel
 	public enum LoginState
 	{
 		LOGGED_OUT, FACEBOOK, GOOGLE;
+	}
+
+	private class GoogleSilentSignInAsyncTask extends AsyncTask<Void, Void, GoogleSignInAccount>
+	{
+		@Override
+		protected GoogleSignInAccount doInBackground(Void... voids)
+		{
+			try
+			{
+				ConnectionResult connectionResult = googleApiClient.blockingConnect();
+				if (!connectionResult.isSuccess())
+					return null;
+
+				GoogleSignInResult signInResult = Auth.GoogleSignInApi.silentSignIn(googleApiClient).await();
+				if (!signInResult.isSuccess())
+					return null;
+
+				return signInResult.getSignInAccount();
+			}
+			finally
+			{
+				googleApiClient.disconnect();
+			}
+		}
+
+		@Override
+		protected void onPostExecute(GoogleSignInAccount googleSignInAccount)
+		{
+			googleAccount.setValue(googleSignInAccount);
+		}
 	}
 
 	private class FCMDeleteTokenAsyncTask extends AsyncTask<Void, Void, Void>

@@ -19,15 +19,13 @@ public class TarockDatabase
 {
 	private static final Logger log = Logger.getLogger(TarockDatabase.class);
 
-	private static final String DATABASE_FILENAME = "tarock.db";
-
 	private final String dbURL;
 	private final Scheduler observerScheduler;
 	private Database rxdatabase;
 
 	public TarockDatabase()
 	{
-		dbURL = "jdbc:sqlite:" + new File(Main.DATA_DIR, DATABASE_FILENAME).getAbsolutePath();
+		dbURL = "jdbc:mysql://localhost/tarock?user=tarock&password=skiz";
 		observerScheduler = Schedulers.from(Main.GAME_EXECUTOR_SERVICE);
 	}
 
@@ -39,10 +37,7 @@ public class TarockDatabase
 		Flyway flyway = Flyway.configure().dataSource(dbURL, null, null).load();
 		flyway.migrate();
 
-		rxdatabase = Database.from(dbURL, 1);
-		rxdatabase.update("PRAGMA foreign_keys = ON").complete().subscribe();
-		rxdatabase.select("PRAGMA journal_mode = WAL;").count().subscribe();
-		rxdatabase.update("PRAGMA synchronous = NORMAL;").complete().subscribe();
+		rxdatabase = Database.from(dbURL, 50);
 	}
 
 	private void logException(Throwable e, StackTraceElement[] stackTrace)

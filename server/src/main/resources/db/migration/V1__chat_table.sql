@@ -1,11 +1,11 @@
 CREATE TABLE chat (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
     game_session_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     message VARCHAR(1024) NOT NULL,
     time BIGINT NOT NULL,
-    FOREIGN KEY(game_session_id) REFERENCES game_session(id),
-    FOREIGN KEY(user_id) REFERENCES user(id)
+    CONSTRAINT fk_chat_game_session_id FOREIGN KEY(game_session_id) REFERENCES game_session(id),
+    CONSTRAINT fk_chat_user_id FOREIGN KEY(user_id) REFERENCES user(id)
 );
 
 INSERT INTO chat(game_session_id, user_id, message, time)

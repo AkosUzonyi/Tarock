@@ -37,7 +37,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.google.protobuf:protobuf-java:3.10.0'
     compile 'org.json:json:20190722'
-    compile 'org.xerial:sqlite-jdbc:3.28.0'
     compile 'com.google.api-client:google-api-client:1.30.4'
     compile "org.flywaydb:flyway-core:6.0.6"
     compile 'com.github.davidmoten:rxjava2-jdbc:0.2.5'
@@ -45,6 +44,8 @@ dependencies {
     compile 'org.slf4j:slf4j-log4j12:1.7.29'
     compile 'com.google.api-client:google-api-client:1.30.6'
     compile 'com.google.firebase:firebase-admin:6.12.1'
+    compile 'mysql:mysql-connector-java:5.1.6'
+
 }
 
 buildscript {

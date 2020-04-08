@@ -3,7 +3,6 @@ round annoucement annoucablity
 game start names
 "enter lobby" text on button when lobby is full
 thrown cards not shown
-GameListFragment:36 out of bound exception
 
 renames:
 

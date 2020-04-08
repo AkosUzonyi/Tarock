@@ -33,6 +33,9 @@ public class GameListFragment extends MainActivityFragment
 			{
 				for (int i = positionStart; i < positionStart + itemCount; i++)
 				{
+					if (i >= gameListAdapter.getItemCount())
+						break;
+
 					if (gameListAdapter.getItem(i).containsUser(connectionViewModel.getUserID().getValue()))
 					{
 						gameRecyclerView.smoothScrollToPosition(i);

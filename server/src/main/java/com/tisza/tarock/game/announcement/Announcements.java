@@ -31,6 +31,7 @@ public class Announcements
 	public static final Szincsalad[] nagyszincsaladok = new Szincsalad[4];
 	public static final Facan pagatfacan = new Facan(Card.getTarockCard(1));
 	public static final Facan sasfacan = new Facan(Card.getTarockCard(2));
+	public static final ParosFacan parosfacan = new ParosFacan();
 	public static final XXIFogas xxiFogas = new XXIFogas();
 	public static final Map<Card, Map<Integer, Ultimo>> ultimok = new HashMap<>();
 
@@ -107,6 +108,7 @@ public class Announcements
 		
 		add(pagatfacan);
 		add(sasfacan);
+		add(parosfacan);
 		add(xxiFogas);
 		
 		for (int s = 0; s < 4; s++)

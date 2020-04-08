@@ -203,6 +203,7 @@
     <string name="announcement_kisszincsalad">kisszíncsalád</string>
     <string name="announcement_nagyszincsalad">nagyszíncsalád</string>
     <string name="announcement_facan">fácán</string>
+    <string name="announcement_parosfacan">párosfácán</string>
     <string name="announcement_kezbevacak">""</string>
     <string name="announcement_ultimo">""</string>
     <string name="announcement_unknown">ismeretlen</string>

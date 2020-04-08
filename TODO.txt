@@ -26,7 +26,6 @@ android handle history mode
 store emails
 lobby notification
 notification while app is in foreground
-parosfacan
 show talon
 rotate cards (just tarocks)
 cancel announcement

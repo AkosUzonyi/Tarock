@@ -649,6 +649,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		myCards.remove(card);
 		View myCardView = cardToViewMapping.remove(card);
+		if (myCardView == null)
+			return;
 
 		ValueAnimator shrinkAnimator = ValueAnimator.ofInt(myCardView.getWidth(), 0);
 		shrinkAnimator.addUpdateListener(animation ->

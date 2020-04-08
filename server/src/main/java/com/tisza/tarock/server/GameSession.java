@@ -9,6 +9,7 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.player.*;
 import io.reactivex.*;
+import org.apache.log4j.*;
 import org.davidmoten.rx.jdbc.tuple.*;
 
 import java.util.*;
@@ -17,6 +18,8 @@ import java.util.stream.*;
 
 public class GameSession
 {
+	private static final Logger log = Logger.getLogger(Client.class);
+
 	private final int id;
 	private final GameType gameType;
 	private final DoubleRoundTracker doubleRoundTracker;
@@ -93,6 +96,13 @@ public class GameSession
 				player.setGame(gameSession, seat);
 
 				gameSession.points[i] = points.get(i);
+			}
+
+			if (deck.size() != 42)
+			{
+				log.warn("Invalid deck for game: " + currentGameID);
+				gameSession.endSession();
+				return gameSession;
 			}
 
 			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());
@@ -173,6 +183,13 @@ public class GameSession
 				gameSession.players.add(player);
 				gameSession.watchingPlayers.add(player);
 				player.setGame(gameSession, seat);
+			}
+
+			if (deck.size() != 42)
+			{
+				log.warn("Invalid deck for game: " + gameID);
+				gameSession.endSession();
+				return gameSession;
 			}
 
 			gameSession.currentGame = new Game(gameType, beginnerPlayer, deck, gameSession.points, doubleRoundTracker.getCurrentMultiplier());

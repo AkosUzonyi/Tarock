@@ -25,7 +25,7 @@ public class TarockDatabase
 
 	public TarockDatabase()
 	{
-		dbURL = "jdbc:mysql://localhost/tarock?user=tarock&password=skiz";
+		dbURL = "jdbc:mysql://localhost/tarock?user=tarock&password=skiz&serverTimezone=UTC";
 		observerScheduler = Schedulers.from(Main.GAME_EXECUTOR_SERVICE);
 	}
 

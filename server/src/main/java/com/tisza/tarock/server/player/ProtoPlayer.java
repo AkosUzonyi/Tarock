@@ -42,8 +42,15 @@ public class ProtoPlayer extends Player implements MessageHandler
 	@Override
 	public void handleMessage(MainProto.Message message)
 	{
-		if (message.getMessageTypeCase() == MainProto.Message.MessageTypeCase.ACTION)
-			doAction(new Action(message.getAction()));
+		switch (message.getMessageTypeCase())
+		{
+			case ACTION:
+				doAction(new Action(message.getAction()));
+				break;
+			case CHAT:
+				chat(message.getChat().getMessage());
+				break;
+		}
 	}
 
 	@Override

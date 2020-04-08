@@ -47,7 +47,7 @@ public abstract class Player
 		this.seat = seat;
 	}
 
-	public void chat(String message)
+	protected void chat(String message)
 	{
 		if (gameSession != null)
 			gameSession.chat(user.getID(), message);

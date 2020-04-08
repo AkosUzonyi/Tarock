@@ -66,15 +66,8 @@ public class Client implements MessageHandler
 			}
 
 			case ACTION:
-				break;
-
 			case CHAT:
-			{
-				if (currentPlayer != null)
-					currentPlayer.chat(message.getChat().getMessage());
-
 				break;
-			}
 
 			case CREATE_GAME_SESSION:
 			{

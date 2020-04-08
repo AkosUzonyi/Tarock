@@ -297,7 +297,7 @@ public class TarockDatabase
 	public Completable setDeck(int gameID, List<Card> deck)
 	{
 		Flowable<Object> parameters = Flowable.range(0, deck.size())
-				.flatMap(i -> Flowable.just(gameID, i, deck.get(i).getID()));
+				.concatMap(i -> Flowable.just(gameID, i, deck.get(i).getID()));
 
 		return rxdatabase.update("INSERT INTO deck_card(game_id, ordinal, card) VALUES(?, ?, ?);")
 				.batchSize(deck.size()).parameterStream(parameters).complete()

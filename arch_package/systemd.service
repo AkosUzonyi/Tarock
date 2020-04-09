@@ -2,6 +2,9 @@
 Description=Tarock server
 After=network.target
 
+Wants=mysqld.service
+After=mysqld.service
+
 [Service]
 ExecStart=/usr/bin/tarock-server
 User=tarock

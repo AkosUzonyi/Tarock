@@ -150,6 +150,13 @@ public class TarockDatabase
 		return new User(userID, this);
 	}
 
+	public Flowable<UserData> getAllUserData()
+	{
+		return rxdatabase.select("SELECT id, name, img_url FROM user ORDER BY id;")
+				.getAs(Integer.class, String.class, String.class).map(tuple -> new UserData(tuple._1(), tuple._2(), tuple._3()))
+				.compose(resultTransformerQueryFlowable());
+	}
+
 	Single<String> getUserName(int userID)
 	{
 		return rxdatabase.select("SELECT name FROM user WHERE id = ?;")

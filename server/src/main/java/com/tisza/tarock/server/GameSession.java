@@ -141,7 +141,12 @@ public class GameSession
 					if (time < lastGameCreateTime)
 						continue;
 
-					gameSession.pastEvents.add(EventInstance.broadcast(Event.chat(userID, message)));
+					PlayerSeat chatPlayer = null;
+					for (int i = 0; i < 4; i++)
+						if (players.get(i).getUser().getID() == userID)
+							chatPlayer = PlayerSeat.fromInt(i);
+
+					gameSession.pastEvents.add(EventInstance.broadcast(Event.chat(userID, message, chatPlayer)));
 				}
 			}
 
@@ -229,7 +234,12 @@ public class GameSession
 					if (gameSession.state != State.GAME)
 						return;
 
-					gameSession.dispatchEvent(EventInstance.broadcast(Event.chat(userID, message)));
+					PlayerSeat chatPlayer = null;
+					for (int i = 0; i < 4; i++)
+						if (players.get(i).getUser().getID() == userID)
+							chatPlayer = PlayerSeat.fromInt(i);
+
+					gameSession.dispatchEvent(EventInstance.broadcast(Event.chat(userID, message, chatPlayer)));
 				},
 				time - gameCreateTime, TimeUnit.MILLISECONDS);
 			}
@@ -435,12 +445,23 @@ public class GameSession
 		if (historyView)
 			return;
 
-		dispatchEvent(EventInstance.broadcast(Event.chat(userID, message)));
+		PlayerSeat chatPlayer = null;
+		for (int i = 0; i < 4; i++)
+			if (players.get(i).getUser().getID() == userID)
+				chatPlayer = PlayerSeat.fromInt(i);
+
+		dispatchEvent(EventInstance.broadcast(Event.chat(userID, message, chatPlayer)));
 		database.chat(id, userID, message);
 	}
 
 	public void action(PlayerSeat player, Action action)
 	{
+		if (!historyView && action.getId().startsWith("chat:"))
+		{
+			chat(players.get(player.asInt()).getUser().getID(), action.getId().substring(5));
+			return;
+		}
+
 		if (historyView || currentGame == null)
 			return;
 

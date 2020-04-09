@@ -3,8 +3,6 @@ package com.tisza.tarock.message;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.phase.*;
-import com.tisza.tarock.server.*;
-import com.tisza.tarock.server.database.*;
 
 import java.util.*;
 
@@ -124,8 +122,8 @@ public interface Event
 		return handler -> handler.historyMode(isHistory);
 	}
 
-	static Event chat(int userID, String message)
+	static Event chat(int userID, String message, PlayerSeat player)
 	{
-		return handler -> handler.chat(userID, message);
+		return handler -> handler.chat(userID, message, player);
 	}
 }

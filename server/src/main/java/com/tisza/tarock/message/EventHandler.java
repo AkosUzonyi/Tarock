@@ -31,5 +31,5 @@ public interface EventHandler
 	default void playerPoints(int[] points) {}
 	default void pendingNewGame() {}
 	default void historyMode(boolean isHistory) {}
-	default void chat(int userID, String message) {}
+	default void chat(int userID, String message, PlayerSeat player) {}
 }

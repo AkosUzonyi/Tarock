@@ -191,12 +191,21 @@ public class Server implements Runnable
 			builder.addAvailableGameSession(gameBuilder);
 		}
 
-		database.getUsers().flatMapCompletable(user ->
-		Utils.userToProto(user, false, isUserLoggedIn(user)).flatMapCompletable(userProto ->
+		database.getAllUserData().flatMapCompletable(userdata ->
 		{
+			MainProto.User.Builder userProto = MainProto.User.newBuilder()
+					.setId(userdata.getId())
+					.setName(userdata.getName())
+					.setIsFriend(false)
+					.setOnline(isUserLoggedIn(new User(userdata.getId(), database)))
+					.setBot(userdata.isBot());
+
+			if (userdata.getImgURL() != null)
+				userProto.setImageUrl(userdata.getImgURL());
+
 			builder.addAvailableUser(userProto);
 			return Completable.complete();
-		}))
+		})
 		.subscribe(() ->
 		{
 			synchronized (clients)

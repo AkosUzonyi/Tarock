@@ -18,23 +18,6 @@ public class Utils
 				.build();
 	}
 
-	public static Single<MainProto.User> userToProto(User user, boolean isFriend, boolean loggedIn)
-	{
-		return Single.zip(user.getName(), user.getImageURL(), (name, imgURL) ->
-		{
-			MainProto.User.Builder builder = MainProto.User.newBuilder()
-					.setId(user.getID())
-					.setName(name)
-					.setIsFriend(isFriend)
-					.setOnline(loggedIn)
-					.setBot(user.isBot());
-
-			imgURL.ifPresent(builder::setImageUrl);
-
-			return builder.build();
-		});
-	}
-
 	public static MainProto.GameSession.State gameSessionStateToProto(GameSession.State state)
 	{
 		switch (state)

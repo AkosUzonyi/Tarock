@@ -142,7 +142,7 @@ public class GameSession
 						continue;
 
 					PlayerSeat chatPlayer = null;
-					for (int i = 0; i < 4; i++)
+					for (int i = 0; i < players.size(); i++)
 						if (players.get(i).getUser().getID() == userID)
 							chatPlayer = PlayerSeat.fromInt(i);
 
@@ -235,7 +235,7 @@ public class GameSession
 						return;
 
 					PlayerSeat chatPlayer = null;
-					for (int i = 0; i < 4; i++)
+					for (int i = 0; i < players.size(); i++)
 						if (players.get(i).getUser().getID() == userID)
 							chatPlayer = PlayerSeat.fromInt(i);
 
@@ -446,7 +446,7 @@ public class GameSession
 			return;
 
 		PlayerSeat chatPlayer = null;
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < players.size(); i++)
 			if (players.get(i).getUser().getID() == userID)
 				chatPlayer = PlayerSeat.fromInt(i);
 

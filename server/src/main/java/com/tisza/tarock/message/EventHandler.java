@@ -3,6 +3,7 @@ package com.tisza.tarock.message;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.phase.*;
+import com.tisza.tarock.server.database.*;
 
 import java.util.*;
 
@@ -31,5 +32,5 @@ public interface EventHandler
 	default void playerPoints(int[] points) {}
 	default void pendingNewGame() {}
 	default void historyMode(boolean isHistory) {}
-	default void chat(int userID, String message) {}
+	default void chat(User user, String message) {}
 }

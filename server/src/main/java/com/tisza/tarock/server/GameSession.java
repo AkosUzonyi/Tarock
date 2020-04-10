@@ -132,16 +132,16 @@ public class GameSession
 				}
 				else
 				{
-					Tuple3<Integer, String, Long> chatTuple = chats.remove(0);
+					Tuple3<User, String, Long> chatTuple = chats.remove(0);
 
-					int userID = chatTuple._1();
+					User user = chatTuple._1();
 					String message = chatTuple._2();
 					long time = chatTuple._3();
 
 					if (time < lastGameCreateTime)
 						continue;
 
-					gameSession.pastEvents.add(EventInstance.broadcast(Event.chat(userID, message)));
+					gameSession.pastEvents.add(EventInstance.broadcast(Event.chat(user, message)));
 				}
 			}
 
@@ -215,9 +215,9 @@ public class GameSession
 				time - gameCreateTime, TimeUnit.MILLISECONDS);
 			}
 
-			for (Tuple3<Integer, String, Long> chatTuple : chats)
+			for (Tuple3<User, String, Long> chatTuple : chats)
 			{
-				int userID = chatTuple._1();
+				User user = chatTuple._1();
 				String message = chatTuple._2();
 				long time = chatTuple._3();
 
@@ -229,7 +229,7 @@ public class GameSession
 					if (gameSession.state != State.GAME)
 						return;
 
-					gameSession.dispatchEvent(EventInstance.broadcast(Event.chat(userID, message)));
+					gameSession.dispatchEvent(EventInstance.broadcast(Event.chat(user, message)));
 				},
 				time - gameCreateTime, TimeUnit.MILLISECONDS);
 			}
@@ -424,13 +424,13 @@ public class GameSession
 		dispatchNewEvents();
 	}
 
-	public void chat(int userID, String message)
+	public void chat(User user, String message)
 	{
 		if (historyView)
 			return;
 
-		dispatchEvent(EventInstance.broadcast(Event.chat(userID, message)));
-		database.chat(id, userID, message);
+		dispatchEvent(EventInstance.broadcast(Event.chat(user, message)));
+		database.chat(id, user, message);
 	}
 
 	public void action(PlayerSeat player, Action action)

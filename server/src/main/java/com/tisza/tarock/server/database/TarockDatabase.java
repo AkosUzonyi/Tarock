@@ -264,17 +264,17 @@ public class TarockDatabase
 				.compose(resultTransformerQueryFlowable());
 	}
 
-	public Completable chat(int gameSessionID, int userID, String message)
+	public Completable chat(int gameSessionID, User user, String message)
 	{
 		return rxdatabase.update("INSERT INTO chat(game_session_id, user_id, message, time) VALUES(?, ?, ?, ?);")
-				.parameters(gameSessionID, userID, message, System.currentTimeMillis()).complete()
+				.parameters(gameSessionID, user.getID(), message, System.currentTimeMillis()).complete()
 				.compose(resultTransformerUpdateCompletable());
 	}
 
-	public Flowable<Tuple3<Integer, String, Long>> getChats(int gameSessionID)
+	public Flowable<Tuple3<User, String, Long>> getChats(int gameSessionID)
 	{
 		return rxdatabase.select("SELECT user_id, message, time FROM chat WHERE game_session_id = ? ORDER BY time;")
-				.parameter(gameSessionID).getAs(Integer.class, String.class, Long.class)
+				.parameter(gameSessionID).getAs(Integer.class, String.class, Long.class).map(tuple -> Tuple3.create(new User(tuple._1(), this), tuple._2(), tuple._3()))
 				.compose(resultTransformerQueryFlowable());
 	}
 

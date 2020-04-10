@@ -43,7 +43,7 @@ public abstract class Player
 	protected void chat(String message)
 	{
 		if (gameSession != null)
-			gameSession.chat(user.getID(), message);
+			gameSession.chat(user, message);
 	}
 
 	protected void doAction(Action action)

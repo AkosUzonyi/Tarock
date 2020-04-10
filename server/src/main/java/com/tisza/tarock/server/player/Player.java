@@ -8,23 +8,16 @@ import com.tisza.tarock.message.*;
 public abstract class Player
 {
 	private User user;
-	private String name;
 
 	private PlayerSeat seat;
 	private GameSession gameSession;
 
-	public Player(User user, String name)
+	public Player(User user)
 	{
 		this.user = user;
-		this.name = name;
 	}
 
 	public abstract void handleEvent(Event event);
-
-	public String getName()
-	{
-		return name;
-	}
 
 	public User getUser()
 	{

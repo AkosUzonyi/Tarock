@@ -62,7 +62,7 @@ public class GameSession
 	{
 		return
 		database.getGameSession(id).flatMap(gameSessionTuple ->
-		database.getUsersForGameSession(id).concatMapSingle(User::createPlayer).toList().flatMap(players ->
+		database.getUsersForGameSession(id).map(User::createPlayer).toList().flatMap(players ->
 		database.getPlayerPoints(id).toList().flatMap(points ->
 		database.getActions(gameSessionTuple._4()).toList().flatMap(actions ->
 		database.getDeck(gameSessionTuple._4()).toList().flatMap(deck ->
@@ -157,7 +157,7 @@ public class GameSession
 		return
 		database.getGame(gameID).flatMap(gameTuple ->
 		database.getGameSession(gameTuple._1()).flatMap(gameSessionTuple ->
-		database.getUsersForGameSession(gameTuple._1()).concatMapSingle(User::createPlayer).toList().flatMap(players ->
+		database.getUsersForGameSession(gameTuple._1()).map(User::createPlayer).toList().flatMap(players ->
 		database.getActions(gameID).toList().flatMap(actions ->
 		database.getDeck(gameID).toList().flatMap(deck ->
 		database.getChats(gameTuple._1()).toList().map(chats ->
@@ -404,12 +404,6 @@ public class GameSession
 	public GameType getGameType()
 	{
 		return gameType;
-	}
-
-	public List<String> getPlayerNames()
-	{
-		checkAlive();
-		return players.stream().map(Player::getName).collect(Collectors.toList());
 	}
 
 	private void startNewGame()

@@ -15,9 +15,9 @@ public class ProtoPlayer extends Player implements MessageHandler
 {
 	private ProtoConnection connection;
 
-	public ProtoPlayer(User user, String name)
+	public ProtoPlayer(User user)
 	{
-		super(user, name);
+		super(user);
 	}
 
 	public void useConnection(ProtoConnection connection)

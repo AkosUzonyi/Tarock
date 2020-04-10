@@ -78,17 +78,17 @@ public class Client implements MessageHandler
 
 				loggedInUser.getName().flatMapCompletable(loggedInUserName ->
 				Observable.concat(Observable.just(loggedInUser.getID()), Observable.fromIterable(createGame.getUserIDList())).map(server.getDatabase()::getUser).toList().flatMapCompletable(users ->
+				Observable.fromIterable(users).flatMapSingle(User::getName).toList().flatMapCompletable(userNames ->
 				server.getGameSessionManager().createGameSession(gameType, users, doubleRoundType).flatMapCompletable(gameSession ->
 				{
-					List<String> playerNames = gameSession.getPlayerNames();
 					Flowable.fromIterable(users).flatMap(User::getFCMTokens).flatMapSingle(fcmToken ->
-					Single.<Boolean>create(subscriber -> subscriber.onSuccess(server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameSession.getID(), loggedInUserName, playerNames)))
+					Single.<Boolean>create(subscriber -> subscriber.onSuccess(server.getFirebaseNotificationSender().sendNewGameNotification(fcmToken, gameSession.getID(), loggedInUserName, userNames)))
 							.subscribeOn(Schedulers.io())
 							.doOnSuccess(valid -> {if (!valid) server.getDatabase().removeFCMToken(fcmToken);})
 					).subscribe();
 
 					return Completable.complete();
-				}))).subscribe();
+				})))).subscribe();
 
 				break;
 			}
@@ -123,20 +123,16 @@ public class Client implements MessageHandler
 				}
 				else if (gameSession.getState() == GameSession.State.LOBBY)
 				{
-					loggedInUser.createPlayer().subscribe(player ->
-					{
-						boolean added = gameSession.addPlayer(player);
-						if (added)
-							switchPlayer((ProtoPlayer)player);
-					});
+					ProtoPlayer player = (ProtoPlayer)loggedInUser.createPlayer();
+					boolean added = gameSession.addPlayer(player);
+					if (added)
+						switchPlayer(player);
 				}
 				else if (gameSession.getState() == GameSession.State.GAME)
 				{
-					loggedInUser.createPlayer().subscribe(player ->
-					{
-						gameSession.addKibic(player);
-						switchPlayer((ProtoPlayer)player);
-					});
+					ProtoPlayer player = (ProtoPlayer)loggedInUser.createPlayer();
+					gameSession.addKibic(player);
+					switchPlayer(player);
 				}
 
 				break;

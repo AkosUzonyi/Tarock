@@ -38,18 +38,17 @@ public class GameSessionManager
 	public Single<GameSession> createGameSession(GameType gameType, List<User> users, DoubleRoundType doubleRoundType)
 	{
 		return
-		Observable.fromIterable(users).flatMapSingle(User::createPlayer).toList().flatMap(players ->
 		GameSession.createNew(gameType, doubleRoundType, server.getDatabase()).doOnSuccess(gameSession ->
 		{
-			for (Player player : players)
-				gameSession.addPlayer(player);
+			for (User user : users)
+				gameSession.addPlayer(user.createPlayer());
 
 			if (gameSession.isLobbyFull())
 				gameSession.start();
 
 			gameSessions.put(gameSession.getID(), gameSession);
 			server.broadcastStatus();
-		}));
+		});
 	}
 
 	public void startGameSessionLobbyWithBots(int id)
@@ -58,14 +57,12 @@ public class GameSessionManager
 		if (gameSession.getState() != GameSession.State.LOBBY)
 			throw new IllegalStateException("GameSession already started");
 
-		Observable.fromIterable(bots).flatMapSingle(User::createPlayer).toList().subscribe(players ->
-		{
-			while (!gameSession.isLobbyFull())
-				gameSession.addPlayer(players.remove(0));
+		for (User bot : bots)
+			if (!gameSession.isLobbyFull())
+				gameSession.addPlayer(bot.createPlayer());
 
-			gameSession.start();
-			server.broadcastStatus();
-		});
+		gameSession.start();
+		server.broadcastStatus();
 	}
 
 	public Single<GameSession> createGameSessionHistoryView(int gameID)

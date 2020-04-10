@@ -22,14 +22,14 @@ public class RandomPlayer extends Player
 	private Action lastActionInHistoryMode;
 	private boolean isMyTurn;
 
-	public RandomPlayer(User user, String name)
+	public RandomPlayer(User user)
 	{
-		this(user, name, 0, 0);
+		this(user, 0, 0);
 	}
 
-	public RandomPlayer(User user, String name, int delay, int extraDelay)
+	public RandomPlayer(User user, int delay, int extraDelay)
 	{
-		super(user, name);
+		super(user);
 		this.delay = delay;
 		this.extraDelay = extraDelay;
 	}

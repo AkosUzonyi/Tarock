@@ -3,6 +3,11 @@ round annoucement annoucablity
 game start names
 "enter lobby" text on button when lobby is full
 thrown cards not shown
+callable card order wrong (when all is callable)
+silent take cards after silent volat
+language changes randomly
+imgurl too long
+paskievics: t2 name: sas
 
 renames:
 
@@ -15,6 +20,7 @@ database transactions
 okhttp cache size
 configuration file
 do not log socket exceptions
+database transactions
 
 features:
 error messages
@@ -30,11 +36,15 @@ rotate cards (just tarocks)
 cancel announcement
 improve ui for ultimo
 double round message
+download csv
+donate
+shorter names
+kibic see cards
 
 refactorizations:
 android package structure
 player implement eventhandler
 rxjava events
 android logging
- 
+
 other:

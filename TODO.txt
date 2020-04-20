@@ -37,7 +37,6 @@ improve ui for ultimo
 double round message
 download csv
 donate
-shorter names
 kibic see cards
 
 refactorizations:

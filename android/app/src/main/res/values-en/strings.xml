@@ -69,20 +69,14 @@
     <string name="chat_hint">Message...</string>
     <string name="empty_seat">---</string>
 
-    <string name="turn_bid">Bidding</string>
-    <string name="turn_call">Call</string>
-    <string name="turn_announce">Announcements</string>
-
-    <string name="message_generic">%1$s %2$s</string>
     <string name="message_chat"><![CDATA[<font color=\'#FFC0C0\'>%1$s: %2$s</font>]]></string>
-    <string name="message_bid">%1$s bid: %2$s</string>
-    <string name="message_skart">%1$s discarded: %2$s</string>
-    <string name="message_call">%1$s called: %2$s</string>
-    <string name="message_announce">%1$s announced: %2$s</string>
-
-    <string name="press_ok">Press OK to continue</string>
-    <string name="cards_thrown">threw in his cards</string>
-
+    <string name="message_skart">laid: %1$s</string>
+    <string name="message_bidding"><![CDATA[<big><b>BIDDING</b></big>\n]]></string>
+    <string name="message_changing"><![CDATA[<br><big><b>DISCARDING</b></big>\n]]></string>
+    <string name="message_calling"><![CDATA[<br><big><b>CALLING</b></big>\n]]></string>
+    <string name="message_announcing"><![CDATA[<br><big><b>ANNOUNCING</b></big>\n]]></string>
+    <string name="message_cards_thrown">threw in his cards</string>
+    <string name="message_press_ok">Press OK to continue</string>
     <plurals name="message_skart_tarock">
         <item quantity="one">laid %1$d tarokk</item>
         <item quantity="other">laid %1$d tarokks</item>

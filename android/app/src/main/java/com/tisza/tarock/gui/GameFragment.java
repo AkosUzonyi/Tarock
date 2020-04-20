@@ -473,20 +473,23 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (phase == PhaseEnum.BIDDING)
 		{
 			showCenterView(MESSAGES_VIEW_INDEX);
+			displayMessage(R.string.message_bidding);
 		}
 		else if (phase == PhaseEnum.CHANGING)
 		{
 			showCenterView(MESSAGES_VIEW_INDEX);
-
 			higlightAllName();
+			displayMessage(R.string.message_changing);
 		}
 		else if (phase == PhaseEnum.CALLING)
 		{
 			showCenterView(MESSAGES_VIEW_INDEX);
+			displayMessage(R.string.message_calling);
 		}
 		else if (phase == PhaseEnum.ANNOUNCING)
 		{
 			showCenterView(MESSAGES_VIEW_INDEX);
+			displayMessage(R.string.message_announcing);
 		}
 		else if (phase == PhaseEnum.GAMEPLAY)
 		{
@@ -499,7 +502,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		else if (phase == PhaseEnum.INTERRUPTED)
 		{
 			availableActionsAdapter.clear();
-			displayMessage(R.string.press_ok);
+			displayMessage(R.string.message_press_ok);
 		}
 
 		skartViews[getPositionFromPlayerID(beginnerPlayer)].setVisibility(phase.isAfter(PhaseEnum.CHANGING) ? View.VISIBLE : View.GONE);
@@ -508,7 +511,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void throwCards(int player)
 	{
-		displayPlayerActionMessage(R.string.message_generic, player, getString(R.string.cards_thrown));
+		displayPlayerActionMessage(player, getString(R.string.message_cards_thrown));
 	}
 	
 	@Override
@@ -526,7 +529,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			availableActionsAdapter.clear();
 
 		String msg = ResourceMappings.bidToName.get(bid);
-		displayPlayerActionMessage(R.string.message_bid, player, msg);
+		displayPlayerActionMessage(player, msg);
 	}
 
 	@Override
@@ -558,7 +561,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (msg == null)
 			return;
 
-		displayPlayerActionMessage(R.string.message_skart, player, msg.toString());
+		displayPlayerActionMessage(player, getString(R.string.message_skart, msg.toString()));
 	}
 
 	@Override
@@ -570,7 +573,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			if (count > 0)
 			{
 				String msg = getResources().getQuantityString(R.plurals.message_skart_tarock, count, count);
-				displayPlayerActionMessage(R.string.message_generic, p, msg);
+				displayPlayerActionMessage(p, msg);
 			}
 		}
 	}
@@ -588,7 +591,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (player == seat)
 			availableActionsAdapter.clear();
 
-		displayPlayerActionMessage(R.string.message_call, player, ResourceMappings.uppercaseCardName(card));
+		displayPlayerActionMessage(player, ResourceMappings.uppercaseCardName(card));
 	}
 	
 	@Override
@@ -650,7 +653,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		setUltimoViewVisible(false);
 
 		String msg = announcement.toString();
-		displayPlayerActionMessage(R.string.message_announce, player, msg);
+		displayPlayerActionMessage(player, msg);
 	}
 
 	@Override
@@ -942,9 +945,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		messagesHtml += "<br>";
 	}
 
-	private void displayPlayerActionMessage(int actionRes, int player, String msg)
+	private void displayPlayerActionMessage(int player, String msg)
 	{
-		displayMessage(actionRes, getPlayerName(player), msg);
+		displayMessage(getPlayerName(player) + ": " + msg);
 		showPlayerMessageView(player, msg, R.drawable.player_message_background);
 	}
 	

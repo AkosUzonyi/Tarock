@@ -94,6 +94,7 @@ public class GameSession
 			for (int i = 0; i < players.size(); i++)
 			{
 				Player player = players.get(i);
+				player.setGame(gameSession, null);
 				player.setPoints(points.get(i));
 				gameSession.players.add(player);
 				gameSession.watchingPlayers.add(player);
@@ -184,6 +185,7 @@ public class GameSession
 			for (int i = 0; i < players.size(); i++)
 			{
 				Player player = players.get(i);
+				player.setGame(gameSession, null);
 				gameSession.players.add(player);
 				gameSession.watchingPlayers.add(player);
 			}
@@ -395,6 +397,8 @@ public class GameSession
 
 		pastEvents.clear();
 
+		for (Player player : players)
+			player.setGame(this, null);
 		for (PlayerSeat seat : PlayerSeat.getAll())
 			getPlayerBySeat(seat).setGame(this, seat);
 

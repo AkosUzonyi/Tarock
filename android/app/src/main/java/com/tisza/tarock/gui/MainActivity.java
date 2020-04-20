@@ -64,6 +64,17 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.commit();
 	}
 
+	public void openDonationFragment()
+	{
+		DonationFragment donationFragment = new DonationFragment();
+
+		getSupportFragmentManager().beginTransaction()
+				.replace(R.id.fragment_container, donationFragment, DonationFragment.TAG)
+				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+				.addToBackStack(null)
+				.commit();
+	}
+
 	private void connectionStateChanged(ConnectionViewModel.ConnectionState connectionState)
 	{
 		switch (connectionState)

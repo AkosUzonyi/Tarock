@@ -106,11 +106,22 @@
         android:layout_marginTop="@dimen/button_margin"
     />
     <Button
+        android:text="@string/donation"
+        android:id="@+id/donate_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/settings_button"
+        app:layout_constraintLeft_toLeftOf="@+id/button_left"
+        app:layout_constraintRight_toLeftOf="@+id/button_right"
+        android:layout_marginTop="@dimen/button_margin"
+        android:background="@drawable/player_message_background"
+    />
+    <Button
         android:text="@string/logout"
         android:id="@+id/logout_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/settings_button"
+        app:layout_constraintTop_toBottomOf="@+id/donate_button"
         app:layout_constraintLeft_toLeftOf="@+id/button_left"
         app:layout_constraintRight_toLeftOf="@+id/button_right"
         android:layout_marginTop="@dimen/button_margin"

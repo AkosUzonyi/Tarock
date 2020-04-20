@@ -18,7 +18,7 @@ public class LoginFragment extends MainActivityFragment
 
 	private CallbackManager facebookCallbackManager;
 	private TextView loginNameTextView;
-	private Button facebookButton, googleButton, playButton, settingsButton, logoutButton;
+	private Button facebookButton, googleButton, playButton, settingsButton, logoutButton, donateButton;
 	private ConnectionViewModel connectionViewModel;
 	private LoginViewModel loginViewModel;
 
@@ -41,12 +41,14 @@ public class LoginFragment extends MainActivityFragment
 		playButton = view.findViewById(R.id.play_button);
 		settingsButton = view.findViewById(R.id.settings_button);
 		logoutButton = view.findViewById(R.id.logout_button);
+		donateButton = view.findViewById(R.id.donate_button);
 
 		facebookButton.setOnClickListener(v -> LoginManager.getInstance().logIn(this, Collections.singleton("public_profile")));
 		googleButton.setOnClickListener(v -> startActivityForResult(loginViewModel.getGoogleLoginIntent(), REQUEST_CODE_GOOGLE_LOGIN));
 		playButton.setOnClickListener(v -> connectionViewModel.login());
 		settingsButton.setOnClickListener(v -> getMainActivity().openSettings());
 		logoutButton.setOnClickListener(v -> loginViewModel.logOut());
+		donateButton.setOnClickListener(v -> getMainActivity().openDonationFragment());
 
 		loginNameTextView = view.findViewById(R.id.login_name);
 		loginViewModel.getLoginName().observe(this, loginNameTextView::setText);

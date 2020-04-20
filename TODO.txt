@@ -36,7 +36,6 @@ cancel announcement
 improve ui for ultimo
 double round message
 download csv
-donate
 kibic see cards
 
 refactorizations:

@@ -5,6 +5,7 @@ import com.google.api.client.http.javanet.*;
 import com.google.api.client.json.jackson2.*;
 import com.tisza.tarock.server.database.*;
 import io.reactivex.*;
+import io.reactivex.schedulers.*;
 
 import java.util.*;
 
@@ -24,19 +25,19 @@ public class GoogleUserManager
 
 	public Single<User> newToken(String token)
 	{
-		try
+		return verifyToken(token).flatMap(payload -> database.setGoogleUserData(payload.getSubject(), (String)payload.get("name"), (String)payload.get("picture")));
+	}
+
+	private Single<GoogleIdToken.Payload> verifyToken(String token)
+	{
+		return Single.fromCallable(() ->
 		{
-			System.out.println(token);
 			GoogleIdToken idToken = tokenVerifier.verify(token);
 			if (idToken == null)
-				return Single.error(new Exception("Token verification failed"));
+				throw new Exception("Token verification failed");
 
-			GoogleIdToken.Payload payload = idToken.getPayload();
-			return database.setGoogleUserData(payload.getSubject(), (String)payload.get("name"), (String)payload.get("picture"));
-		}
-		catch (Exception e)
-		{
-			return Single.error(new Exception("Error during token verification", e));
-		}
+			return idToken.getPayload();
+		})
+		.subscribeOn(Schedulers.io());
 	}
 }

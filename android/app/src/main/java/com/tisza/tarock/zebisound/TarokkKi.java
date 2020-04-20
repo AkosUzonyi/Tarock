@@ -7,6 +7,7 @@ import com.tisza.tarock.game.card.*;
 class TarokkKi extends ZebiSound
 {
 	private final int count;
+	private boolean ultimo;
 	private int tarocks, suits;
 	private boolean activated;
 
@@ -19,15 +20,23 @@ class TarokkKi extends ZebiSound
 	@Override
 	public void startGame(GameType gameType, int beginnerPlayer)
 	{
+		ultimo = false;
 		tarocks = 0;
 		suits = 0;
 		activated = false;
 	}
 
 	@Override
+	public void announce(int player, Announcement announcement)
+	{
+		if (announcement.getID().substring(1).startsWith("ultimo"))
+			ultimo = true;
+	}
+
+	@Override
 	public void playCard(int player, Card playedCard)
 	{
-		if (activated)
+		if (!ultimo || activated)
 			return;
 
 		if (playedCard instanceof TarockCard)
@@ -35,7 +44,7 @@ class TarokkKi extends ZebiSound
 		else
 			suits++;
 
-		if (tarocks == count && suits < 6)
+		if (tarocks == count && suits < 4)
 		{
 			activate();
 			activated = true;

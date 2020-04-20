@@ -133,25 +133,25 @@
     <string-array name="tarokk_array">
         <item>pagát</item>
         <item>sas</item>
-        <item>hármas tarokk</item>
-        <item>négyes tarokk</item>
-        <item>ötös tarokk</item>
-        <item>hatos tarokk</item>
-        <item>hetes tarokk</item>
-        <item>nyolcas tarokk</item>
-        <item>kilences tarokk</item>
-        <item>tizes tarokk</item>
-        <item>tizenegyes tarokk</item>
-        <item>tizenkettes tarokk</item>
-        <item>tizenhármas tarokk</item>
-        <item>tizennégyes tarokk</item>
-        <item>tizenötös tarokk</item>
-        <item>tizenhatos tarokk</item>
-        <item>tizenhetes tarokk</item>
-        <item>tizennyolcas tarokk</item>
-        <item>tizenkilences tarokk</item>
-        <item>húszas tarokk</item>
-        <item>huszonegy</item>
+        <item>III</item>
+        <item>IIII</item>
+        <item>V</item>
+        <item>VI</item>
+        <item>VII</item>
+        <item>VIII</item>
+        <item>IX</item>
+        <item>X</item>
+        <item>XI</item>
+        <item>XII</item>
+        <item>XIII</item>
+        <item>XIV</item>
+        <item>XV</item>
+        <item>XVI</item>
+        <item>XVII</item>
+        <item>XVIII</item>
+        <item>XIX</item>
+        <item>XX</item>
+        <item>XXI</item>
         <item>skíz</item>
     </string-array>
 

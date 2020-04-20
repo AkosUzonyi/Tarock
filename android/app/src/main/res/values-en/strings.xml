@@ -123,24 +123,24 @@
     <string-array name="tarokk_array">
         <item>pagat</item>
         <item>eagle</item>
-        <item>tarokk III</item>
-        <item>tarokk IIII</item>
-        <item>tarokk V</item>
-        <item>tarokk VI</item>
-        <item>tarokk VII</item>
-        <item>tarokk VIII</item>
-        <item>tarokk IX</item>
-        <item>tarokk X</item>
-        <item>tarokk XI</item>
-        <item>tarokk XII</item>
-        <item>tarokk XIII</item>
-        <item>tarokk XIV</item>
-        <item>tarokk XV</item>
-        <item>tarokk XVI</item>
-        <item>tarokk XVII</item>
-        <item>tarokk XVIII</item>
-        <item>tarokk XIX</item>
-        <item>tarokk XX</item>
+        <item>III</item>
+        <item>IIII</item>
+        <item>V</item>
+        <item>VI</item>
+        <item>VII</item>
+        <item>VIII</item>
+        <item>IX</item>
+        <item>X</item>
+        <item>XI</item>
+        <item>XII</item>
+        <item>XIII</item>
+        <item>XIV</item>
+        <item>XV</item>
+        <item>XVI</item>
+        <item>XVII</item>
+        <item>XVIII</item>
+        <item>XIX</item>
+        <item>XX</item>
         <item>XXI</item>
         <item>skiz</item>
     </string-array>

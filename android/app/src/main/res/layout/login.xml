@@ -43,6 +43,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:src="@drawable/icon_client"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
         app:layout_constraintTop_toBottomOf="@+id/app_name_view"
         app:layout_constraintLeft_toLeftOf="@id/image_left"
         app:layout_constraintRight_toRightOf="@id/image_right"
@@ -160,14 +162,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0"
+        app:layout_constraintGuide_percent="0.22"
     />
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/image_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="1"
+        app:layout_constraintGuide_percent="0.78"
     />
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/center"

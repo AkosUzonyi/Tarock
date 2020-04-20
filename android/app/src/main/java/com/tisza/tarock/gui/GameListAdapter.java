@@ -19,8 +19,6 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	private GameAdapterListener gameAdapterListener;
 	private Integer userID;
 
-	private UsersAdapter usersAdapter;
-
 	private static final DiffUtil.ItemCallback<GameInfo> gameInfoItemCallback = new DiffUtil.ItemCallback<GameInfo>()
 	{
 		@Override
@@ -42,7 +40,6 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		this.context = context;
 		this.gameAdapterListener = gameAdapterListener;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		usersAdapter = new UsersAdapter(context, -1, 4);
 	}
 
 	public void setData(List<GameInfo> list, Integer userID)
@@ -82,7 +79,8 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		ViewHolder holder = new ViewHolder(view);
 		holder.gameTypeTextView = view.findViewById(R.id.game_type);
 		holder.usersRecyclerView = view.findViewById(R.id.game_users);
-		holder.usersRecyclerView.setAdapter(usersAdapter);
+		holder.usersAdapter = new UsersAdapter(context, -1, 4);
+		holder.usersRecyclerView.setAdapter(holder.usersAdapter);
 		holder.usersRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
 		holder.joinGameButton = view.findViewById(R.id.join_game_button);
 		holder.deleteGameButton = view.findViewById(R.id.delete_game_button);
@@ -95,7 +93,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	{
 		GameInfo gameInfo = getItem(position);
 
-		usersAdapter.setUsers(gameInfo.getUsers());
+		holder.usersAdapter.setUsers(gameInfo.getUsers());
 
 		int joinButtonText;
 		if (gameInfo.getState() == GameSessionState.LOBBY)
@@ -125,6 +123,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	{
 		public TextView gameTypeTextView;
 		public RecyclerView usersRecyclerView;
+		public UsersAdapter usersAdapter;
 		public Button joinGameButton;
 		public Button deleteGameButton;
 

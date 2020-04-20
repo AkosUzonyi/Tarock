@@ -1,6 +1,7 @@
 package com.tisza.tarock.message;
 
 import android.text.*;
+import android.util.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.net.*;
@@ -102,7 +103,7 @@ public class Action
 				handler.throwCards(player);
 				break;
 			default:
-				throw new IllegalArgumentException("invalid action: " + actionType);
+				Log.w("Action", "invalid action: " + actionType);
 		}
 	}
 }

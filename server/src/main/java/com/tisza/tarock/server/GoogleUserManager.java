@@ -25,7 +25,7 @@ public class GoogleUserManager
 
 	public Single<User> newToken(String token)
 	{
-		return verifyToken(token).flatMap(payload -> database.setGoogleUserData(payload.getSubject(), (String)payload.get("name"), (String)payload.get("picture")));
+		return verifyToken(token).flatMap(payload -> database.setGoogleUserData(payload.getSubject(), (String)payload.get("family_name") + " " + (String)payload.get("given_name"), (String)payload.get("picture")));
 	}
 
 	private Single<GoogleIdToken.Payload> verifyToken(String token)

@@ -34,7 +34,7 @@ public class FacebookUserManager
 	{
 		String accessTokenEncoded = URLEncoder.encode(accessToken, StandardCharsets.UTF_8);
 		Single<JSONObject> appJSONSingle = downloadJSONFromURL("https://graph.facebook.com/app/?access_token=" + accessTokenEncoded);
-		Single<JSONObject> userJSONSingle = downloadJSONFromURL("https://graph.facebook.com/me/?fields=id,name,picture.type(normal),friends&access_token=" + accessTokenEncoded);
+		Single<JSONObject> userJSONSingle = downloadJSONFromURL("https://graph.facebook.com/me/?fields=id,last_name,first_name,picture.type(normal),friends&access_token=" + accessTokenEncoded);
 
 		return Single.merge(Single.zip(appJSONSingle, userJSONSingle, (appJSON, userJSON) ->
 		{
@@ -42,7 +42,7 @@ public class FacebookUserManager
 				return Single.error(new Exception("wrong app id"));
 
 			String id = userJSON.getString("id");
-			String name = userJSON.getString("name");
+			String name = userJSON.getString("last_name") + " " + userJSON.getString("first_name");
 			String imgURL = null;
 			if (userJSON.has("picture"))
 				imgURL = userJSON.getJSONObject("picture").getJSONObject("data").getString("url");

@@ -363,7 +363,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		String firstName = getFirstName(user.getName());
 		for (User u : gameInfo.getUsers())
-			if (firstName.equals(getFirstName(u.getName())))
+			if (!u.equals(user) && getFirstName(u.getName()).equals(firstName))
 				return user.getName();
 
 		return firstName;

@@ -444,6 +444,15 @@ public class GameSession
 
 		if (currentGame.isFinished())
 		{
+			for (PlayerSeat seat : PlayerSeat.getAll())
+			{
+				Player p = getPlayerBySeat(seat);
+				p.addPoints(currentGame.getPoints(seat));
+				database.setPlayerPoints(id, players.indexOf(p), p.getPoints());
+			}
+
+			database.setDoubleRoundData(id, doubleRoundTracker.getData());
+
 			if (currentGame.isNormalFinish())
 			{
 				currentBeginnerPlayer = (currentBeginnerPlayer + 1) % players.size();
@@ -452,15 +461,6 @@ public class GameSession
 			else
 			{
 				doubleRoundTracker.gameInterrupted();
-			}
-
-			database.setDoubleRoundData(id, doubleRoundTracker.getData());
-
-			for (PlayerSeat seat : PlayerSeat.getAll())
-			{
-				Player p = getPlayerBySeat(seat);
-				p.addPoints(currentGame.getPoints(seat));
-				database.setPlayerPoints(id, players.indexOf(p), p.getPoints());
 			}
 
 			startNewGame();

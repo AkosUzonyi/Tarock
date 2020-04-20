@@ -308,6 +308,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			skartView.setVisibility(View.GONE);
 	}
 
+	public static String getFirstName(String name)
+	{
+		return name.substring(name.lastIndexOf(' ') + 1);
+	}
+
 	private void onGameInfoUpdate(GameInfo gameInfo)
 	{
 		this.gameInfo = gameInfo;
@@ -328,6 +333,25 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				seat = i;
 				break;
 			}
+		}
+
+		Set<String> firstNames = new HashSet<>();
+		Set<String> duplicateFirstNames = new HashSet<>();
+		for (User user : gameInfo.getUsers())
+		{
+			String firstName = getFirstName(user.getName());
+			if (!firstNames.add(firstName))
+				duplicateFirstNames.add(firstName);
+		}
+
+		displayNames.clear();
+		for (User user : gameInfo.getUsers())
+		{
+			String firstName = getFirstName(user.getName());
+			if (duplicateFirstNames.contains(firstName))
+				displayNames.add(user.getName());
+			else
+				displayNames.add(firstName);
 		}
 
 		for (int i = 0; i < 4; i++)
@@ -368,6 +392,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private List<User> users;
 	private GameInfo gameInfo;
+	private List<String> displayNames = new ArrayList<>();
 	private int myUserID;
 	private List<Card> myCards;
 	private int seat = -1;
@@ -902,7 +927,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private String getPlayerName(int player)
 	{
-		return gameInfo != null && player < gameInfo.getUsers().size() ? gameInfo.getUsers().get(player).getName() : getString(R.string.empty_seat);
+		return gameInfo != null && player < displayNames.size() ? displayNames.get(player) : getString(R.string.empty_seat);
 	}
 
 	private void displayMessage(int msgRes, Object ... formatArgs)

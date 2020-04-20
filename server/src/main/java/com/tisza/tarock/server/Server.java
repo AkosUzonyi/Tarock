@@ -120,7 +120,6 @@ public class Server implements Runnable
 			database.initialize();
 			firebaseNotificationSender.initialize();
 			gameSessionManager.initialize();
-			facebookUserManager.refreshImageURLs();
 
 			createServerSocket();
 

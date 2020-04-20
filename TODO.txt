@@ -6,7 +6,6 @@ thrown cards not shown
 callable card order wrong (when all is callable)
 silent take cards after silent volat
 language changes randomly
-imgurl too long
 paskievics: t2 name: sas
 
 renames:

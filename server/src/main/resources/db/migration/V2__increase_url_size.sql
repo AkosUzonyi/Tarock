@@ -1,0 +1,1 @@
+ALTER TABLE user MODIFY img_url VARCHAR(2083);

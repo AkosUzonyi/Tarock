@@ -9,6 +9,7 @@ import androidx.preference.*;
 import com.facebook.*;
 import com.google.android.gms.auth.api.signin.*;
 import com.google.firebase.iid.*;
+import com.tisza.tarock.*;
 import com.tisza.tarock.BuildConfig;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;

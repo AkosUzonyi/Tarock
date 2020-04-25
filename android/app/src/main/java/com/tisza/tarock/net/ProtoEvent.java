@@ -1,5 +1,6 @@
 package com.tisza.tarock.net;
 
+import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;

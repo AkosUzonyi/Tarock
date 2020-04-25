@@ -2,12 +2,11 @@ package com.tisza.tarock.message;
 
 import android.text.*;
 import android.util.*;
+import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.net.*;
 
 import java.util.*;
-import java.util.stream.*;
 
 public class Action
 {

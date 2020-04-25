@@ -1,4 +1,4 @@
-package com.tisza.tarock.net;
+package com.tisza.tarock;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;

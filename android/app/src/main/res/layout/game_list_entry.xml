@@ -2,13 +2,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="@drawable/game_list_entry_background"
+    android:padding="@dimen/button_margin"
+    android:layout_marginBottom="@dimen/button_margin"
     >
 
     <TextView
         android:id="@+id/game_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/button_text_size"
+        android:textSize="@dimen/large_text_size"
         android:textStyle="italic"
         android:layout_gravity="center"
         android:layout_margin="@dimen/button_margin"

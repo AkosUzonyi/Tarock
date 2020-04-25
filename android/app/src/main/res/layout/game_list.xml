@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/wood_texture"
-    android:padding="@dimen/default_padding"
+    android:padding="@dimen/button_margin"
     >
 
     <androidx.recyclerview.widget.RecyclerView

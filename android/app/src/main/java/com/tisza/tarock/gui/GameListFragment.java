@@ -23,7 +23,6 @@ public class GameListFragment extends MainActivityFragment
 		RecyclerView gameRecyclerView = view.findViewById(R.id.game_list);
 		gameRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 		gameRecyclerView.setItemAnimator(new DefaultItemAnimator());
-		gameRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 		gameRecyclerView.setAdapter(gameListAdapter);
 
 		gameListAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver()

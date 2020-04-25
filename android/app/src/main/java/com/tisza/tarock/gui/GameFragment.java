@@ -356,7 +356,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private User getUserOfPlayer(int player)
 	{
-		if (gameInfo == null || gameInfo.getUsers().size() < 4)
+		if (gameInfo == null || gameInfo.getState() != GameSessionState.GAME)
 			return null;
 
 		return gameInfo.getUsers().get((beginnerPlayerIndex + player) % gameInfo.getUsers().size());

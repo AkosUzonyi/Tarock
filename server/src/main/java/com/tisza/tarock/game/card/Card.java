@@ -4,7 +4,7 @@ import java.util.*;
 
 public abstract class Card
 {
-	private static final Map<String, Card> idToCard = new HashMap<>();
+	private static final Map<String, Card> idToCard = new LinkedHashMap<>();
 	private static final TarockCard[] tarockCards = new TarockCard[22];
 	private static final SuitCard[][] suitCards = new SuitCard[4][5];
 

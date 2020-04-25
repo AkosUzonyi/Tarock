@@ -504,9 +504,6 @@ public class GameSession
 
 	public void requestHistory(Player player)
 	{
-		if (currentGame == null)
-			return;
-
 		player.handleEvent(Event.historyMode(true));
 		for (EventInstance event : pastEvents)
 			if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())

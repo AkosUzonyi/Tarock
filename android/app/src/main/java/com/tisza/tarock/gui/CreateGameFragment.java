@@ -80,7 +80,7 @@ public class CreateGameFragment extends MainActivityFragment
 		recyclerViewSetupCommon(availableUsersView);
 		availableUsersView.setAdapter(searchResultUsersAdapter);
 
-		selectedUsersAdapter = new UsersAdapter(getContext(), R.drawable.ic_remove_circle_black_40dp, SELECT_USER_COUNT);
+		selectedUsersAdapter = new UsersAdapter(getContext(), R.drawable.ic_remove_circle_black_40dp);
 		selectedUsersAdapter.setUsersSelectedListener(this::deselectUser);
 		selectedUsersAdapter.setUsers(selectedUsers);
 		RecyclerView selectedUsersView = view.findViewById(R.id.selected_users);

@@ -412,6 +412,7 @@ public class GameSession
 		dispatchEvent(EventInstance.broadcast(Event.startGame(gameType, currentBeginnerPlayer)));
 		currentGame = new Game(gameType, deck, doubleRoundTracker.getCurrentMultiplier());
 		currentGame.start();
+		broadcastPlayerPoints();
 		dispatchNewEvents();
 	}
 
@@ -508,7 +509,6 @@ public class GameSession
 		for (EventInstance event : pastEvents)
 			if (event.getPlayerSeat() == null || event.getPlayerSeat() == player.getSeat())
 				player.handleEvent(event.getEvent());
-		broadcastPlayerPoints();
 		player.handleEvent(Event.historyMode(false));
 	}
 

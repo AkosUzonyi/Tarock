@@ -28,6 +28,13 @@
                 android:layout_marginBottom="@dimen/button_margin"
             />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/game_user_list_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/button_margin"
+            />
+
             <ScrollView
                 android:id="@+id/messages_scroll"
                 android:layout_width="match_parent"

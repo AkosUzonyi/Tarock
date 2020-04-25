@@ -13,6 +13,7 @@ import android.view.inputmethod.*;
 import android.widget.*;
 import androidx.appcompat.app.*;
 import androidx.lifecycle.*;
+import androidx.recyclerview.widget.*;
 import androidx.viewpager.widget.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.*;
@@ -59,6 +60,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private Button okButton;
 	private Button throwButton;
 	private Button lobbyStartButton;
+	private RecyclerView userListRecyclerView;
+	private UsersAdapter usersAdapter;
 
 	private View messagesFrame;
 
@@ -170,6 +173,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		messagesChatEditText = messagesFrame.findViewById(R.id.messages_chat_edit_text);
 		messagesChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
 		messagesChatEditText.setOnEditorActionListener(this);
+		userListRecyclerView = messagesFrame.findViewById(R.id.game_user_list_recycler_view);
+		userListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+		userListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+		usersAdapter = new UsersAdapter(getContext(), -1);
+		userListRecyclerView.setAdapter(usersAdapter);
 		lobbyStartButton = messagesFrame.findViewById(R.id.lobby_start_button);
 		lobbyStartButton.setOnClickListener(v ->
 		{
@@ -320,6 +328,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		updateSeat();
 
+		usersAdapter.setUsers(gameInfo.getUsers());
+
 		int userCount = gameInfo.getUsers().size();
 		if (userCount >= 4)
 			lobbyStartButton.setText(R.string.lobby_start);
@@ -330,10 +340,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		{
 			case LOBBY:
 				lobbyStartButton.setVisibility(View.VISIBLE);
+				userListRecyclerView.setVisibility(View.VISIBLE);
 				availableActionsListView.setVisibility(View.GONE);
 				break;
 			case GAME:
 				lobbyStartButton.setVisibility(View.GONE);
+				userListRecyclerView.setVisibility(View.GONE);
 				availableActionsListView.setVisibility(View.VISIBLE);
 				break;
 			case ENDED:

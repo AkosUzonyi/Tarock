@@ -30,7 +30,18 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		@Override
 		public boolean areContentsTheSame(GameInfo oldItem, GameInfo newItem)
 		{
-			return oldItem.getId() == newItem.getId() && oldItem.getUsers().equals(newItem.getUsers()) && oldItem.getType().equals(newItem.getType());
+			if (oldItem.getId() != newItem.getId() || oldItem.getType() != newItem.getType() || oldItem.getUsers().size() != newItem.getUsers().size())
+				return false;
+
+			for (int i = 0; i < oldItem.getUsers().size(); i++)
+			{
+				User oldUser = oldItem.getUsers().get(i);
+				User newUser = newItem.getUsers().get(i);
+				if (!oldUser.areContentsTheSame(newUser))
+					return false;
+			}
+
+			return true;
 		}
 	};
 

@@ -39,6 +39,14 @@ public class Utils
 		return result;
 	}
 
+	public static boolean equals(Object o0, Object o1)
+	{
+		if (o0 == null)
+			return o1 == null;
+
+		return o0.equals(o1);
+	}
+
 	public static GameSessionState gameSessionStateFromProto(MainProto.GameSession.State state)
 	{
 		switch (state)

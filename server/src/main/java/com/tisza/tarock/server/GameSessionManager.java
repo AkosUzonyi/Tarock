@@ -43,6 +43,9 @@ public class GameSessionManager
 			for (User user : users)
 				gameSession.addPlayer(user.createPlayer());
 
+			if (gameSession.getFreeLobbyPlaces() <= 0)
+				gameSession.start();
+
 			gameSessions.put(gameSession.getID(), gameSession);
 			server.broadcastStatus();
 		});

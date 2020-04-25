@@ -493,14 +493,12 @@ public class GameSession
 
 	private void dispatchEvent(EventInstance event)
 	{
-		checkGameStarted();
-
 		pastEvents.add(event);
 
 		if (event.getPlayerSeat() == null)
 			for (Player player : watchingPlayers)
 				player.handleEvent(event.getEvent());
-		else
+		else if (state == State.GAME)
 			getPlayerBySeat(event.getPlayerSeat()).handleEvent(event.getEvent());
 	}
 

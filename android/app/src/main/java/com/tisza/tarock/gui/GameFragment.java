@@ -452,8 +452,14 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	public void chat(int userID, String message)
 	{
 		for (int i = 0; i < 4; i++)
+		{
 			if (getUserOfPlayer(i) != null && getUserOfPlayer(i).getId() == userID)
+			{
 				showPlayerMessageView(i, message, R.drawable.player_message_background_chat);
+				displayMessage(getString(R.string.message_chat, getPlayerName(i), message));
+				return;
+			}
+		}
 
 		for (User kibicUser : users)
 			if (kibicUser.getId() == userID)

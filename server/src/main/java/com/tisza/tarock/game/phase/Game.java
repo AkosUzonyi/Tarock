@@ -12,7 +12,6 @@ public class Game
 	public static final int ROUND_COUNT = 9;
 
 	private final GameType gameType;
-	private final PlayerSeat beginnerPlayer;
 	private final List<Card> deck;
 
 	private TeamInfoTracker teamInfoTracker;
@@ -42,7 +41,7 @@ public class Game
 	private List<Round> roundsPassed = new ArrayList<>();
 	private PlayerSeatMap<Collection<Card>> wonCards = new PlayerSeatMap<>();
 
-	private int[] points;
+	private int[] points = new int[4];
 	private final int pointMultiplier;
 
 	private boolean finished = false;
@@ -61,12 +60,10 @@ public class Game
 		}
 	}
 
-	public Game(GameType gameType, PlayerSeat beginnerPlayer, List<Card> deck, int[] points, int pointMultiplier)
+	public Game(GameType gameType, List<Card> deck, int pointMultiplier)
 	{
 		this.gameType = gameType;
-		this.beginnerPlayer = beginnerPlayer;
 		this.deck = deck;
-		this.points = points;
 		this.pointMultiplier = pointMultiplier;
 
 		teamInfoTracker = new TeamInfoTracker(this);
@@ -84,7 +81,6 @@ public class Game
 		}
 		setTalon(cardsToDeal);
 
-		broadcastEvent(Event.startGame(gameType, beginnerPlayer));
 		for (PlayerSeat player : PlayerSeat.getAll())
 			sendEvent(player, Event.playerCards(playersCards.get(player).clone(), playersCards.get(player).canBeThrown()));
 
@@ -139,7 +135,7 @@ public class Game
 
 	public PlayerSeat getBeginnerPlayer()
 	{
-		return beginnerPlayer;
+		return PlayerSeat.SEAT0;
 	}
 
 	void setTalon(List<Card> talon)
@@ -175,9 +171,14 @@ public class Game
 		currentPhase.onStart();
 	}
 
-	public Phase getCurrentPhase()
+	Phase getCurrentPhase()
 	{
 		return currentPhase;
+	}
+
+	public PhaseEnum getCurrentPhaseEnum()
+	{
+		return currentPhase.asEnum();
 	}
 
 	void setInvitationSent(Invitation invitSent, PlayerSeat invitingPlayer)
@@ -415,8 +416,8 @@ public class Game
 		broadcastEvent(Event.announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, pointsForCallerTeam, pointMultiplier));
 	}
 
-	void sendPlayerPoints()
+	public int getPoints(PlayerSeat seat)
 	{
-		broadcastEvent(Event.playerPoints(points.clone()));
+		return points[seat.asInt()];
 	}
 }

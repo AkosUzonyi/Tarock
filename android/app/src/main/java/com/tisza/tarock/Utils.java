@@ -1,4 +1,4 @@
-package com.tisza.tarock.net;
+package com.tisza.tarock;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
@@ -37,6 +37,14 @@ public class Utils
 		for (T0 t : list)
 			result.add(f.apply(t));
 		return result;
+	}
+
+	public static boolean equals(Object o0, Object o1)
+	{
+		if (o0 == null)
+			return o1 == null;
+
+		return o0.equals(o1);
 	}
 
 	public static GameSessionState gameSessionStateFromProto(MainProto.GameSession.State state)

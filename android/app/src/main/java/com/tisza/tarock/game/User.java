@@ -1,5 +1,7 @@
 package com.tisza.tarock.game;
 
+import com.tisza.tarock.*;
+
 public class User implements Comparable<User>
 {
 	private final int id;
@@ -70,6 +72,11 @@ public class User implements Comparable<User>
 	public int hashCode()
 	{
 		return id;
+	}
+
+	public boolean areContentsTheSame(User other)
+	{
+		return id == other.id && Utils.equals(name, other.name) && Utils.equals(imgURL, other.imgURL) && isFriend == other.isFriend && online == other.online && bot == other.bot;
 	}
 
 	@Override

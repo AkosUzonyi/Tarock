@@ -8,7 +8,6 @@ import org.junit.runner.*;
 import org.junit.runners.*;
 
 import java.util.*;
-import java.util.stream.*;
 
 import static org.junit.Assert.*;
 import static org.junit.runners.Parameterized.*;
@@ -97,7 +96,7 @@ public class BiddingTest
 	@Test
 	public void test()
 	{
-		Game game = new Game(GameType.PASKIEVICS, PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1);
+		Game game = new Game(GameType.PASKIEVICS, new ArrayList<>(Card.getAll()), 1);
 		game.start();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())
@@ -114,16 +113,16 @@ public class BiddingTest
 			if (bidString.isEmpty())
 				continue;
 
-			assertEquals(PhaseEnum.BIDDING, game.getCurrentPhase().asEnum());
+			assertEquals(PhaseEnum.BIDDING, game.getCurrentPhaseEnum());
 
 			int bid = bidString.equals("-") ? -1 : Integer.parseInt(bidString);
 
 			game.processAction(PlayerSeat.fromInt(i % 4), Action.bid(bid));
 		}
 
-		assertNotEquals(PhaseEnum.BIDDING, game.getCurrentPhase().asEnum());
+		assertNotEquals(PhaseEnum.BIDDING, game.getCurrentPhaseEnum());
 
-		if (game.getCurrentPhase().asEnum() == PhaseEnum.INTERRUPTED)
+		if (game.getCurrentPhaseEnum() == PhaseEnum.INTERRUPTED)
 		{
 			assertEquals(expectedBidWinnerPlayer, "-");
 			assertEquals(expectedWinnerBid, "-");

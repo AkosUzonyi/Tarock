@@ -63,7 +63,7 @@ public class CountBiddings
 			bidding.bid(bidding.getCurrentPlayer(), bid);
 		}
 
-		if (game.getCurrentPhase().asEnum() != PhaseEnum.BIDDING)
+		if (game.getCurrentPhaseEnum() != PhaseEnum.BIDDING)
 		{
 			result.add(bids);
 			return result;
@@ -81,7 +81,7 @@ public class CountBiddings
 
 	private Game createNewGame()
 	{
-		Game game = new Game(GameType.PASKIEVICS, PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1);
+		Game game = new Game(GameType.PASKIEVICS, new ArrayList<>(Card.getAll()), 1);
 		game.start();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())

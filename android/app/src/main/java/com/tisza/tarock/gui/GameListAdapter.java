@@ -30,7 +30,18 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		@Override
 		public boolean areContentsTheSame(GameInfo oldItem, GameInfo newItem)
 		{
-			return oldItem.getId() == newItem.getId() && oldItem.getUsers().equals(newItem.getUsers()) && oldItem.getType().equals(newItem.getType());
+			if (oldItem.getId() != newItem.getId() || oldItem.getType() != newItem.getType() || oldItem.getUsers().size() != newItem.getUsers().size())
+				return false;
+
+			for (int i = 0; i < oldItem.getUsers().size(); i++)
+			{
+				User oldUser = oldItem.getUsers().get(i);
+				User newUser = newItem.getUsers().get(i);
+				if (!oldUser.areContentsTheSame(newUser))
+					return false;
+			}
+
+			return true;
 		}
 	};
 
@@ -67,6 +78,18 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		if (g0.getState() != g1.getState())
 			return g0.getState().ordinal() - g1.getState().ordinal();
 
+		int onlineCount0 = 0;
+		int onlineCount1 = 0;
+		for (User u : g0.getUsers())
+			if (u.isOnline() && !u.isBot())
+				onlineCount0++;
+		for (User u : g1.getUsers())
+			if (u.isOnline() && !u.isBot())
+				onlineCount1++;
+
+		if (onlineCount0 != onlineCount1)
+			return onlineCount1 - onlineCount0;
+
 		return g0.getId() - g1.getId();
 	}
 
@@ -78,10 +101,10 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 
 		ViewHolder holder = new ViewHolder(view);
 		holder.gameTypeTextView = view.findViewById(R.id.game_type);
-		holder.userNameViews[0] = view.findViewById(R.id.username0);
-		holder.userNameViews[1] = view.findViewById(R.id.username1);
-		holder.userNameViews[2] = view.findViewById(R.id.username2);
-		holder.userNameViews[3] = view.findViewById(R.id.username3);
+		holder.usersRecyclerView = view.findViewById(R.id.game_users);
+		holder.usersAdapter = new UsersAdapter(context, -1);
+		holder.usersRecyclerView.setAdapter(holder.usersAdapter);
+		holder.usersRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
 		holder.joinGameButton = view.findViewById(R.id.join_game_button);
 		holder.deleteGameButton = view.findViewById(R.id.delete_game_button);
 
@@ -93,10 +116,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	{
 		GameInfo gameInfo = getItem(position);
 
-		for (int i = 0; i < 4; i++)
-		{
-			holder.userNameViews[i].setText(i < gameInfo.getUsers().size() ? gameInfo.getUsers().get(i).getName() : "");
-		}
+		holder.usersAdapter.setUsers(gameInfo.getUsers());
 
 		int joinButtonText;
 		if (gameInfo.getState() == GameSessionState.LOBBY)
@@ -125,7 +145,8 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	public static class ViewHolder extends RecyclerView.ViewHolder
 	{
 		public TextView gameTypeTextView;
-		public TextView[] userNameViews = new TextView[4];
+		public RecyclerView usersRecyclerView;
+		public UsersAdapter usersAdapter;
 		public Button joinGameButton;
 		public Button deleteGameButton;
 

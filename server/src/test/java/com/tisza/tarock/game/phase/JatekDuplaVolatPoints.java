@@ -84,7 +84,7 @@ public class JatekDuplaVolatPoints
 	@Before
 	public void createGameState()
 	{
-		game = new Game(GameType.PASKIEVICS, PlayerSeat.SEAT0, new ArrayList<>(Card.getAll()), new int[4], 1)
+		game = new Game(GameType.PASKIEVICS, new ArrayList<>(Card.getAll()), 1)
 		{
 			@Override
 			public int calculateGamePoints(Team team)

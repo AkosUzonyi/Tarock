@@ -57,7 +57,7 @@ public interface Event
 		return handler -> handler.playerTeamInfo(otherPlayer, team);
 	}
 
-	static Event startGame(GameType gameType, PlayerSeat beginnerPlayer)
+	static Event startGame(GameType gameType, int beginnerPlayer)
 	{
 		return handler -> handler.startGame(gameType, beginnerPlayer);
 	}

@@ -24,10 +24,7 @@ class PendingNewGame extends Phase
 	public void onStart()
 	{
 		if (!doubleRound)
-		{
 			game.sendStatistics();
-			game.sendPlayerPoints();
-		}
 
 		game.broadcastEvent(Event.pendingNewGame());
 	}

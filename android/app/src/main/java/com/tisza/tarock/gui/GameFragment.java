@@ -13,6 +13,7 @@ import android.view.inputmethod.*;
 import android.widget.*;
 import androidx.appcompat.app.*;
 import androidx.lifecycle.*;
+import androidx.recyclerview.widget.*;
 import androidx.viewpager.widget.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.*;
@@ -59,6 +60,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private Button okButton;
 	private Button throwButton;
 	private Button lobbyStartButton;
+	private RecyclerView userListRecyclerView;
+	private UsersAdapter usersAdapter;
 
 	private View messagesFrame;
 
@@ -170,12 +173,17 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		messagesChatEditText = messagesFrame.findViewById(R.id.messages_chat_edit_text);
 		messagesChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
 		messagesChatEditText.setOnEditorActionListener(this);
+		userListRecyclerView = messagesFrame.findViewById(R.id.game_user_list_recycler_view);
+		userListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+		userListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+		usersAdapter = new UsersAdapter(getContext(), -1);
+		userListRecyclerView.setAdapter(usersAdapter);
 		lobbyStartButton = messagesFrame.findViewById(R.id.lobby_start_button);
 		lobbyStartButton.setOnClickListener(v ->
 		{
 			MainProto.Message startMessage = MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build();
 
-			if (gameInfo.getUsers().size() == 4)
+			if (gameInfo.getUsers().size() >= 4)
 				connectionViewModel.sendMessage(startMessage);
 			else
 				new AlertDialog.Builder(getContext())
@@ -308,11 +316,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			skartView.setVisibility(View.GONE);
 	}
 
-	public static String getFirstName(String name)
-	{
-		return name.substring(name.lastIndexOf(' ') + 1);
-	}
-
 	private void onGameInfoUpdate(GameInfo gameInfo)
 	{
 		this.gameInfo = gameInfo;
@@ -323,42 +326,79 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			return;
 		}
 
-		int userCount = gameInfo.getUsers().size();
+		updateSeat();
 
-		seat = -1;
-		for (int i = 0; i < userCount; i++)
+		usersAdapter.setUsers(gameInfo.getUsers());
+
+		int userCount = gameInfo.getUsers().size();
+		if (userCount >= 4)
+			lobbyStartButton.setText(R.string.lobby_start);
+		else
+			lobbyStartButton.setText(getResources().getQuantityString(R.plurals.lobby_start_with_bots, 4 - userCount, 4 - userCount));
+
+		switch (gameInfo.getState())
 		{
-			if (gameInfo.getUsers().get(i).getId() == myUserID)
+			case LOBBY:
+				lobbyStartButton.setVisibility(View.VISIBLE);
+				userListRecyclerView.setVisibility(View.VISIBLE);
+				availableActionsListView.setVisibility(View.GONE);
+				break;
+			case GAME:
+				lobbyStartButton.setVisibility(View.GONE);
+				userListRecyclerView.setVisibility(View.GONE);
+				availableActionsListView.setVisibility(View.VISIBLE);
+				break;
+			case ENDED:
+				getActivity().getSupportFragmentManager().popBackStack();
+				break;
+		}
+	}
+
+	private User getUserOfPlayer(int player)
+	{
+		if (gameInfo == null || gameInfo.getState() != GameSessionState.GAME)
+			return null;
+
+		return gameInfo.getUsers().get((beginnerPlayerIndex + player) % gameInfo.getUsers().size());
+	}
+
+	public static String getFirstName(String name)
+	{
+		return name.substring(name.lastIndexOf(' ') + 1);
+	}
+
+	private String getPlayerName(int player)
+	{
+		User user = getUserOfPlayer(player);
+		if (user == null)
+			return getString(R.string.empty_seat);
+
+		String firstName = getFirstName(user.getName());
+		for (User u : gameInfo.getUsers())
+			if (!u.equals(user) && getFirstName(u.getName()).equals(firstName))
+				return user.getName();
+
+		return firstName;
+	}
+
+	private void updateSeat()
+	{
+		seat = -1;
+		for (int i = 0; i < 4; i++)
+		{
+			User user = getUserOfPlayer(i);
+			if (user != null && user.getId() == myUserID)
 			{
 				seat = i;
 				break;
 			}
 		}
 
-		Set<String> firstNames = new HashSet<>();
-		Set<String> duplicateFirstNames = new HashSet<>();
-		for (User user : gameInfo.getUsers())
-		{
-			String firstName = getFirstName(user.getName());
-			if (!firstNames.add(firstName))
-				duplicateFirstNames.add(firstName);
-		}
-
-		displayNames.clear();
-		for (User user : gameInfo.getUsers())
-		{
-			String firstName = getFirstName(user.getName());
-			if (duplicateFirstNames.contains(firstName))
-				displayNames.add(user.getName());
-			else
-				displayNames.add(firstName);
-		}
-
 		for (int i = 0; i < 4; i++)
 		{
 			TextView playerNameView = playerNameViews[getPositionFromPlayerID(i)];
 			playerNameView.setText(R.string.empty_seat);
-			User user = i < userCount ? gameInfo.getUsers().get(i) : null;
+			User user = getUserOfPlayer(i);
 			if (user != null)
 			{
 				playerNameView.setText(user.getName());
@@ -368,37 +408,16 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
 		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
-
-		if (userCount == 4)
-			lobbyStartButton.setText(R.string.lobby_start);
-		else
-			lobbyStartButton.setText(getResources().getQuantityString(R.plurals.lobby_start_with_bots, 4 - userCount, 4 - userCount));
-
-		switch (gameInfo.getState())
-		{
-			case LOBBY:
-				lobbyStartButton.setVisibility(View.VISIBLE);
-				availableActionsListView.setVisibility(View.GONE);
-				break;
-			case GAME:
-				lobbyStartButton.setVisibility(View.GONE);
-				availableActionsListView.setVisibility(View.VISIBLE);
-				break;
-			case ENDED:
-				getActivity().getSupportFragmentManager().popBackStack();
-				break;
-		}
 	}
 
 	private List<User> users;
 	private GameInfo gameInfo;
-	private List<String> displayNames = new ArrayList<>();
 	private int myUserID;
 	private List<Card> myCards;
 	private int seat = -1;
 	private Team myTeam;
 	private GameType gameType;
-	private int beginnerPlayer;
+	private int beginnerPlayerIndex;
 
 	private Map<Card, View> cardToViewMapping = new HashMap<>();
 	
@@ -415,8 +434,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		resetGameViews();
 
 		this.gameType = gameType;
-		this.beginnerPlayer = beginnerPlayer;
+		this.beginnerPlayerIndex = beginnerPlayer;
 		myTeam = null;
+
+		updateSeat();
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
 		messagesHtml = "";
@@ -430,8 +451,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void chat(int userID, String message)
 	{
-		for (int i = 0; i < gameInfo.getUsers().size(); i++)
-			if (gameInfo.getUsers().get(i).getId() == userID)
+		for (int i = 0; i < 4; i++)
+			if (getUserOfPlayer(i) != null && getUserOfPlayer(i).getId() == userID)
 				showPlayerMessageView(i, message, R.drawable.player_message_background_chat);
 
 		for (User kibicUser : users)
@@ -505,7 +526,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			displayMessage(R.string.message_press_ok);
 		}
 
-		skartViews[getPositionFromPlayerID(beginnerPlayer)].setVisibility(phase.isAfter(PhaseEnum.CHANGING) ? View.VISIBLE : View.GONE);
+		skartViews[getPositionFromPlayerID(0)].setVisibility(phase.isAfter(PhaseEnum.CHANGING) ? View.VISIBLE : View.GONE);
 	}
 
 	@Override
@@ -926,11 +947,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 			showCenterView(pendingCenterView);
 		}, DELAY);
-	}
-
-	private String getPlayerName(int player)
-	{
-		return gameInfo != null && player < displayNames.size() ? displayNames.get(player) : getString(R.string.empty_seat);
 	}
 
 	private void displayMessage(int msgRes, Object ... formatArgs)

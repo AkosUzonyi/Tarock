@@ -68,7 +68,7 @@ public class TeamInfoTracker implements EventHandler
 	}
 
 	@Override
-	public void startGame(GameType gameType, PlayerSeat beginnerPlayer)
+	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		calledCard = null;
 		inviterSkartedTarock = false;

@@ -11,6 +11,7 @@ public abstract class Player
 
 	private PlayerSeat seat;
 	private GameSession gameSession;
+	private int points = 0;
 
 	public Player(User user)
 	{
@@ -38,6 +39,21 @@ public abstract class Player
 	{
 		this.gameSession = gameSession;
 		this.seat = seat;
+	}
+
+	public int getPoints()
+	{
+		return points;
+	}
+
+	public void setPoints(int points)
+	{
+		this.points = points;
+	}
+
+	public void addPoints(int points)
+	{
+		this.points += points;
 	}
 
 	protected void chat(String message)

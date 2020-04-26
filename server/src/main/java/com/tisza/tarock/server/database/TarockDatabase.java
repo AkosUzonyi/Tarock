@@ -37,7 +37,7 @@ public class TarockDatabase
 		Flyway flyway = Flyway.configure().dataSource(dbURL, null, null).load();
 		flyway.migrate();
 
-		rxdatabase = Database.from(dbURL, 50);
+		rxdatabase = Database.from(dbURL, 4);
 	}
 
 	private void logException(Throwable e, StackTraceElement[] stackTrace)

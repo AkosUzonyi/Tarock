@@ -12,6 +12,7 @@ class Bidding extends Phase
 	private PlayerSeat lastBidPlayer = null;
 	private int lastBidValue = 4;
 	private boolean isKept = false;
+	private boolean waitingForOverrideSelf = false;
 	
 	private PlayerSeatMap<BidState> playersState = new PlayerSeatMap<>(BidState.INITIAL);
 	
@@ -51,6 +52,14 @@ class Bidding extends Phase
 		
 		if (!getAvailableBids().contains(bid))
 			return false;
+
+		if (waitingForOverrideSelf)
+		{
+			game.broadcastEvent(Event.bid(player, bid));
+			game.setBidResult(player, bid);
+			game.changePhase(new Changing(game));
+			return true;
+		}
 		
 		if (bid == -1)
 		{
@@ -95,6 +104,12 @@ class Bidding extends Phase
 			{
 				game.changePhase(new PendingNewGame(game, true));
 			}
+			else if (game.getGameType() == GameType.ZEBI && lastBidValue > 0)
+			{
+				waitingForOverrideSelf = true;
+				currentPlayer = lastBidPlayer;
+				sendAvailableBids();
+			}
 			else
 			{
 				game.setBidResult(lastBidPlayer, lastBidValue);
@@ -124,10 +139,18 @@ class Bidding extends Phase
 
 	public List<Integer> getAvailableBids()
 	{
+		List<Integer> result = new ArrayList<>();
+
+		if (waitingForOverrideSelf)
+		{
+			for (int i = lastBidValue; i >= 0; i--)
+				result.add(i);
+
+			return result;
+		}
+
 		if (isFinished())
 			throw new IllegalStateException();
-
-		List<Integer> result = new ArrayList<>();
 
 		if (playersState.get(currentPlayer) == BidState.OUT)
 			return result;

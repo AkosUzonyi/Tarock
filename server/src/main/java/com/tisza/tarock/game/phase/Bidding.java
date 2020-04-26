@@ -152,9 +152,6 @@ class Bidding extends Phase
 		if (isFinished())
 			throw new IllegalStateException();
 
-		if (playersState.get(currentPlayer) == BidState.OUT)
-			return result;
-		
 		result.add(-1);
 		if (checkBiddingRequirements(currentPlayer))
 		{

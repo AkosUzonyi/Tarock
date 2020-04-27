@@ -17,6 +17,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 
 	private int actionButtonImageRes;
 	private int minimumLength;
+	private boolean imageVisible = true;
 	private Picasso picasso;
 	private LayoutInflater inflater;
 	private List<User> users = new ArrayList<>();
@@ -33,6 +34,11 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 		this.minimumLength = minimumLength;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		picasso = Picasso.with(context);
+	}
+
+	public void setImageVisible(boolean imageVisible)
+	{
+		this.imageVisible = imageVisible;
 	}
 
 	public void setUsersSelectedListener(UserClickedListener userClickedListener)
@@ -95,6 +101,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 			holder.nameView.setAlpha(1F);
 			holder.nameView.setTypeface(null, Typeface.NORMAL);
 		}
+
+		holder.profilePictureView.setVisibility(imageVisible ? View.VISIBLE : View.GONE);
 
 		if (user == USER_ANYBODY)
 			holder.profilePictureView.setImageResource(R.drawable.fb_unknown_image);

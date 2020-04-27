@@ -103,6 +103,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		holder.gameTypeTextView = view.findViewById(R.id.game_type);
 		holder.usersRecyclerView = view.findViewById(R.id.game_users);
 		holder.usersAdapter = new UsersAdapter(context, -1);
+		holder.usersAdapter.setImageVisible(false);
 		holder.usersRecyclerView.setAdapter(holder.usersAdapter);
 		holder.usersRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));
 		holder.joinGameButton = view.findViewById(R.id.join_game_button);

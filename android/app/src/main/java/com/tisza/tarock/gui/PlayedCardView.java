@@ -110,7 +110,7 @@ public class PlayedCardView extends ImageView
 		updateImage();
 
 		Orientation dir = play ? orientation : takenDir;
-		float tx = (((View)getParent()).getWidth() * 0.5F + width * 0.25F) * dir.getX();
+		float tx = (((View)getParent()).getWidth() * 0.5F + width * 0.2F) * dir.getX();
 		float ty = (((View)getParent()).getHeight() * 0.5F + width * 0.25F) * dir.getY();
 
 		Interpolator interpolator = play ? new ReverseInterpolator() : new LinearInterpolator();

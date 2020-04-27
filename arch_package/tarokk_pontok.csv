@@ -1,0 +1,29 @@
+#!/bin/bash
+
+parameters="user_id"
+for parameter in $parameters; do
+	pv=$(echo $QUERY_STRING | grep -Po "$parameter=[^&]*")
+
+	if [ "$?" -ne 0 ]; then
+		echo "Status: 400 Bad Request"
+		echo "Content-Type: text/html"
+		echo
+		echo "<h1>Status: 400 Bad Request</h1>"
+		exit 0
+	fi
+
+	declare "$pv"
+done
+echo 'Content-type: text/csv; charset=utf-8'
+echo
+
+mysql -u tarock -pskiz tarock -N << EOF | tr '\t' ','
+select from_unixtime(game_session.create_time / 1000), game_session.type, group_concat(user.name order by user.name separator ","), group_concat(player.points order by user.name separator ",")
+from game_session, player, user, player as filterplayer
+where player.game_session_id = game_session.id and
+player.user_id = user.id and
+filterplayer.game_session_id = game_session.id and
+filterplayer.user_id = $user_id
+group by game_session.id
+order by game_session.create_time, user.name
+EOF

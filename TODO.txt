@@ -31,7 +31,6 @@ rotate cards (just tarocks)
 cancel announcement
 improve ui for ultimo
 double round message
-download csv
 kibic see cards
 
 refactorizations:

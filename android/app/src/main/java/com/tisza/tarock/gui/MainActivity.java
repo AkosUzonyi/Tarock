@@ -1,20 +1,26 @@
 package com.tisza.tarock.gui;
 
+import android.*;
 import android.app.*;
 import android.content.*;
+import android.content.pm.*;
 import android.net.*;
 import android.os.*;
+import androidx.annotation.*;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.*;
+import androidx.core.app.*;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.*;
 import com.tisza.tarock.proto.*;
 
 public class MainActivity extends AppCompatActivity implements GameListAdapter.GameAdapterListener
 {
 	private static final int DISCONNECT_DELAY_SEC = 40;
+	private static final int DOWNLOAD_CSV_REQUEST_CODE = 1;
 
 	private ConnectionViewModel connectionViewModel;
 	private ProgressDialog progressDialog;
@@ -205,6 +211,36 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.setPositiveButton(R.string.delete_game, (dialog, which) -> connectionViewModel.sendMessage(deleteMessage))
 				.setNegativeButton(R.string.cancel, null)
 				.show();
+	}
+
+	public void downloadCsv()
+	{
+		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED ||
+		    ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+		{
+			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, DOWNLOAD_CSV_REQUEST_CODE);
+			return;
+		}
+
+		DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse("http://" + BuildConfig.SERVER_HOSTNAME + "/cgi-bin/tarock/tarokk_pontok.csv?user_id=" + connectionViewModel.getUserID().getValue()));
+		downloadRequest.allowScanningByMediaScanner();
+		downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+		downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "tarokk_pontok.csv");
+		DownloadManager downloadmanager = (DownloadManager)getSystemService(Context.DOWNLOAD_SERVICE);
+		downloadmanager.enqueue(downloadRequest);
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+	{
+		if (requestCode == DOWNLOAD_CSV_REQUEST_CODE)
+		{
+			for (int grantResult : grantResults)
+				if (grantResult != PackageManager.PERMISSION_GRANTED)
+					return;
+
+			downloadCsv();
+		}
 	}
 
 	@Override

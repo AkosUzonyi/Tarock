@@ -48,6 +48,9 @@ public class GameListFragment extends MainActivityFragment
 		connectionViewModel.getGames().observe(this, v -> updateList());
 		connectionViewModel.getUserID().observe(this, v -> updateList());
 
+		View downloadCsvButton = view.findViewById(R.id.download_csv_button);
+		downloadCsvButton.setOnClickListener(v -> getMainActivity().downloadCsv());
+
 		Button createNewGameButton = view.findViewById(R.id.new_game_button);
 		createNewGameButton.setOnClickListener(v -> getMainActivity().createNewGame());
 

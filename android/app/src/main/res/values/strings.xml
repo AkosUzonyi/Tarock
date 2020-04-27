@@ -36,6 +36,7 @@
     <string name="delete_game_confirm">Biztosan törlöd a játékot?</string>
     <string name="cancel">Mégse</string>
     <string name="anybody">Bárki</string>
+    <string name="download_points">Pontszámok letöltése:</string>
 
     <string name="settings_notification">Értesítések engedélyezése</string>
     <string name="settings_language" translatable="false">Nyelv/Language</string>

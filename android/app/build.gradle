@@ -22,7 +22,7 @@ android {
         applicationId "com.tisza.tarock"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 17
+        versionCode 18
         versionName getVersionName()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

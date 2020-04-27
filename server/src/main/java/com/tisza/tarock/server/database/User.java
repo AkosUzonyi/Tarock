@@ -53,7 +53,7 @@ public class User
 
 	public Player createPlayer()
 	{
-		return isBot() ? new RandomPlayer(this, 500, 2500) : new ProtoPlayer(this);
+		return isBot() ? new RandomPlayer(this, 500, 3000) : new ProtoPlayer(this);
 	}
 
 	@Override

@@ -112,6 +112,8 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 			picasso.load(user.getImageURL()).error(R.drawable.fb_unknown_image).into(holder.profilePictureView);
 
 		holder.isFriendView.setVisibility(user.isFriend() ? View.VISIBLE : View.GONE);
+
+		holder.isOnlineView.setVisibility(user.isBot() ? View.GONE : View.VISIBLE);
 		holder.isOnlineView.setImageResource(user.isOnline() ? R.drawable.online : R.drawable.offline);
 
 		holder.selectUser.setVisibility(actionButtonImageRes >= 0 && user != USER_ANYBODY ? View.VISIBLE : View.GONE);

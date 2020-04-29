@@ -18,7 +18,7 @@
     <string name="error_server_error_title">Szerverhiba</string>
     <string name="error_server_error_message">""</string>
     <string name="error_login_unsuccessful_title">Sikertelen bejelentkezés</string>
-    <string name="error_login_unsuccessful_message">Lehet, hogy másik eszközön már be vagy jelentkezve?</string>
+    <string name="error_login_unsuccessful_message">""</string>
 
     <string name="game_created_notification_title">%1$s tarokkozni szeretne veled</string>
     <string name="game_created_notification_body">Játékosok: %1$s, %2$s, %3$s, %4$s</string>

@@ -2,37 +2,40 @@ package com.tisza.tarock.server.player;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
-import com.tisza.tarock.server.net.*;
 import com.tisza.tarock.proto.*;
+import com.tisza.tarock.server.database.*;
+import com.tisza.tarock.server.net.*;
+import org.apache.log4j.*;
 
 import java.util.*;
 import java.util.stream.*;
 
 public class ProtoPlayer extends Player implements MessageHandler
 {
-	private ProtoConnection connection;
+	private static final Logger log = Logger.getLogger(ProtoPlayer.class);
+
+	private Collection<ProtoConnection> connections = new HashSet<>();
 
 	public ProtoPlayer(User user)
 	{
 		super(user);
 	}
 
-	public void useConnection(ProtoConnection connection)
+	public void addConnection(ProtoConnection connection)
 	{
-		if (this.connection != null)
-			this.connection.removeMessageHandler(this);
-
-		this.connection = connection;
-
-		if (connection != null)
-		{
-			connection.addMessageHandler(this);
-			requestHistory();
-		}
+		connections.add(connection);
+		connection.addMessageHandler(this);
+		requestHistory();
 	}
+
+	public void removeConnection(ProtoConnection connection)
+	{
+		connection.removeMessageHandler(this);
+		connections.remove(connection);
+	}
+
 	@Override
 	public void handleEvent(Event event)
 	{
@@ -56,17 +59,14 @@ public class ProtoPlayer extends Player implements MessageHandler
 	@Override
 	public void connectionClosed()
 	{
-		connection = null;
 	}
 
 	private final EventHandler eventHandler = new EventHandler()
 	{
 		private void sendEvent(EventProto.Event event)
 		{
-			if (connection == null)
-				return;
-
-			connection.sendMessage(MainProto.Message.newBuilder().setEvent(event).build());
+			for (ProtoConnection connection : connections)
+				connection.sendMessage(MainProto.Message.newBuilder().setEvent(event).build());
 		}
 
 		private void sendPlayerActionEvent(PlayerSeat player, Action action)

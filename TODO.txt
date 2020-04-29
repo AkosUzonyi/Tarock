@@ -21,7 +21,6 @@ features:
 error messages
 nickname
 public chat
-multiple login
 android handle history mode
 store emails
 lobby notification

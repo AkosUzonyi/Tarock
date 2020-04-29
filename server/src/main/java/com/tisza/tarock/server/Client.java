@@ -6,15 +6,12 @@ import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.net.*;
 import com.tisza.tarock.server.player.*;
-import io.reactivex.Observable;
 import io.reactivex.*;
-import io.reactivex.disposables.*;
 import io.reactivex.schedulers.*;
 import org.apache.log4j.*;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 public class Client implements MessageHandler
 {
@@ -180,7 +177,7 @@ public class Client implements MessageHandler
 
 		if (currentPlayer != null)
 		{
-			currentPlayer.useConnection(null);
+			currentPlayer.removeConnection(connection);
 
 			switch (currentPlayer.getGameSession().getState())
 			{
@@ -192,7 +189,7 @@ public class Client implements MessageHandler
 		currentPlayer = player;
 
 		if (currentPlayer != null)
-			currentPlayer.useConnection(connection);
+			currentPlayer.addConnection(connection);
 
 		server.broadcastStatus();
 	}
@@ -205,23 +202,15 @@ public class Client implements MessageHandler
 		if (loggedInUser == newUser)
 			return;
 
-		if (newUser != null && server.isUserLoggedIn(newUser))
-		{
-			int id = newUser.getID();
-			newUser.getName().subscribe(name -> log.info("Login rejected (already logged in): " + name + " (id: " + id + ")"));
-		}
-		else
-		{
-			switchPlayer(null);
+		switchPlayer(null);
 
-			if (loggedInUser != null)
-				logUserLoggedInStatus(false);
+		if (loggedInUser != null)
+			logUserLoggedInStatus(false);
 
-			loggedInUser = newUser;
+		loggedInUser = newUser;
 
-			if (loggedInUser != null)
-				logUserLoggedInStatus(true);
-		}
+		if (loggedInUser != null)
+			logUserLoggedInStatus(true);
 
 		MainProto.LoginResult.Builder loginMessageBuilder = MainProto.LoginResult.newBuilder();
 		if (loggedInUser != null)

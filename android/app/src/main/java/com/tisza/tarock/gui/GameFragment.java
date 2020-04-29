@@ -380,6 +380,15 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		return gameInfo.getUsers().get((beginnerPlayerIndex + player) % gameInfo.getUsers().size());
 	}
 
+	private int getPlayerOfUser(int userID)
+	{
+		for (int i = 0; i < 4; i++)
+			if (getUserOfPlayer(i) != null && getUserOfPlayer(i).getId() == userID)
+				return i;
+
+		return -1;
+	}
+
 	public static String getFirstName(String name)
 	{
 		return name.substring(name.lastIndexOf(' ') + 1);
@@ -391,26 +400,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (user == null)
 			return getString(R.string.empty_seat);
 
-		String firstName = getFirstName(user.getName());
-		for (User u : gameInfo.getUsers())
-			if (!u.equals(user) && getFirstName(u.getName()).equals(firstName))
-				return user.getName();
-
-		return firstName;
+		return shortUserNames.get(gameInfo.getUsers().indexOf(user));
 	}
 
 	private void updateSeat()
 	{
-		seat = -1;
-		for (int i = 0; i < 4; i++)
-		{
-			User user = getUserOfPlayer(i);
-			if (user != null && user.getId() == myUserID)
-			{
-				seat = i;
-				break;
-			}
-		}
+		seat = getPlayerOfUser(myUserID);
 
 		for (int i = 0; i < 4; i++)
 		{
@@ -470,19 +465,18 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void chat(int userID, String message)
 	{
-		for (int i = 0; i < 4; i++)
+		int player = getPlayerOfUser(userID);
+		if (player >= 0)
 		{
-			if (getUserOfPlayer(i) != null && getUserOfPlayer(i).getId() == userID)
-			{
-				showPlayerMessageView(i, message, R.drawable.player_message_background_chat);
-				displayMessage(getString(R.string.message_chat, getPlayerName(i), message));
-				return;
-			}
+			showPlayerMessageView(player, message, R.drawable.player_message_background_chat);
+			displayMessage(getString(R.string.message_chat, getPlayerName(player), message));
 		}
-
-		for (User kibicUser : users)
-			if (kibicUser.getId() == userID)
-				displayMessage(getString(R.string.message_chat, kibicUser.getName(), message));
+		else
+		{
+			for (User kibicUser : users)
+				if (kibicUser.getId() == userID)
+					displayMessage(getString(R.string.message_chat, kibicUser.getName(), message));
+		}
 	}
 
 	@Override

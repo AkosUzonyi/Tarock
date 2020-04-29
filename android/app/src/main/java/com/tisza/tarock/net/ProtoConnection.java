@@ -14,7 +14,7 @@ public class ProtoConnection implements Closeable
 {
 	private static final String HELLO_STRING = "Tarokk";
 	private static final int VERSION = 3;
-	private static final int KEEP_ALIVE_DELAY = 8;
+	private static final int KEEP_ALIVE_DELAY = 1;
 	private static final int SOCKET_TIMEOUT = 10;
 
 	private final Executor messageHandlerExecutor;

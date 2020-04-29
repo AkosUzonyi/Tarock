@@ -330,6 +330,24 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		usersAdapter.setUsers(gameInfo.getUsers());
 
+		Set<String> firstNames = new HashSet<>();
+		Set<String> duplicateFirstNames = new HashSet<>();
+		for (User user : gameInfo.getUsers())
+		{
+			String firstName = getFirstName(user.getName());
+			if (!firstNames.add(firstName))
+				duplicateFirstNames.add(firstName);
+		}
+		shortUserNames = new ArrayList<>();
+		for (User user : gameInfo.getUsers())
+		{
+			String firstName = getFirstName(user.getName());
+			if (!duplicateFirstNames.contains(firstName))
+				shortUserNames.add(firstName);
+			else
+				shortUserNames.add(user.getName());
+		}
+
 		int userCount = gameInfo.getUsers().size();
 		if (userCount >= 4)
 			lobbyStartButton.setText(R.string.lobby_start);
@@ -411,6 +429,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	private List<User> users;
+	private List<String> shortUserNames;
 	private GameInfo gameInfo;
 	private int myUserID;
 	private List<Card> myCards;

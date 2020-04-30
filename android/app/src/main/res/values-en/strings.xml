@@ -88,6 +88,7 @@
     <string name="bid1">1</string>
     <string name="bid0">Solo</string>
     <string name="bid_passz">Pass</string>
+    <string name="bid_keep">Hold</string>
 
     <string name="game_type">Game type: </string>
     <string name="double_round_type">Double round: </string>

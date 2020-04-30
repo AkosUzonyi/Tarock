@@ -66,6 +66,7 @@ public class ResourceMappings
 			cardToName.put(card, tarockNames[i - 1]);
 		}
 
+		bidToName.put(-2, resources.getString(R.string.bid_keep));
 		bidToName.put(-1, resources.getString(R.string.bid_passz));
 		for (int i = 0; i <= 3; i++)
 		{

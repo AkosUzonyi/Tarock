@@ -98,6 +98,7 @@
     <string name="bid1">1</string>
     <string name="bid0">Szóló</string>
     <string name="bid_passz">Passz</string>
+    <string name="bid_keep">Tartom</string>
 
     <string name="game_type">Játék típus: </string>
     <string name="double_round_type">Duplakör: </string>

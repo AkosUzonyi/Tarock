@@ -438,6 +438,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	
 	private List<Card> cardsToSkart = new ArrayList<>();
 	private boolean skarting = false;
+	private int prevBid;
 
 	@Override
 	public void startGame(GameType gameType, int beginnerPlayer)
@@ -452,6 +453,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
 		messagesHtml = "";
+		prevBid = 4;
 	}
 
 	private void doAction(Action action)
@@ -550,13 +552,13 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	{
 		displayPlayerActionMessage(player, getString(R.string.message_cards_thrown));
 	}
-	
+
 	@Override
 	public void availableBids(List<Integer> bids)
 	{
 		availableActionsAdapter.clear();
 		for (int bid : bids)
-			availableActionsAdapter.add(new Bid(bid));
+			availableActionsAdapter.add(new Bid(bid, bid == prevBid));
 	}
 	
 	@Override
@@ -565,8 +567,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (player == seat)
 			availableActionsAdapter.clear();
 
-		String msg = ResourceMappings.bidToName.get(bid);
+		String msg = ResourceMappings.bidToName.get(bid == prevBid ? -2 : bid);
 		displayPlayerActionMessage(player, msg);
+
+		if (bid >= 0)
+			prevBid = bid;
 	}
 
 	@Override

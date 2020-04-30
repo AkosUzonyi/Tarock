@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		super.onCreate(savedInstanceState);
+		super.onCreate(null);
 
 		LocaleManager.updateLocale(this);
 		setContentView(R.layout.main);
@@ -43,16 +43,13 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		handler = new Handler();
 		disconnectRunnable = connectionViewModel::disconnect;
 
-		if (savedInstanceState == null)
-		{
-			LoginFragment loginFragment = new LoginFragment();
-			getSupportFragmentManager().beginTransaction()
-					.add(R.id.fragment_container, loginFragment, LoginFragment.TAG)
-					.commit();
+		LoginFragment loginFragment = new LoginFragment();
+		getSupportFragmentManager().beginTransaction()
+				.add(R.id.fragment_container, loginFragment, LoginFragment.TAG)
+				.commit();
 
-			if (getIntent().hasExtra(GameFragment.KEY_GAME_ID))
-				connectionViewModel.login();
-		}
+		if (getIntent().hasExtra(GameFragment.KEY_GAME_ID))
+			connectionViewModel.login();
 
 		connectionViewModel.getHistoryGameSessionID().observe(this, gameSessionID ->
 		{

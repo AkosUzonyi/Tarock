@@ -701,6 +701,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			okButton.setVisibility(View.GONE);
 			availableActionsAdapter.clear();
 		}
+
+		showPlayerMessageView(player, getString(R.string.passz), R.drawable.player_message_background);
 	}
 
 	@Override

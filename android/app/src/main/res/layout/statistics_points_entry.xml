@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginTop="@dimen/statistics_margin_big"
+    >
+
+    <TextView
+        android:id="@+id/statistics_points_name"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textAppearance="@style/game_text"
+        android:gravity="center"
+    />
+
+    <TextView
+        android:id="@+id/statistics_points_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/statistics_margin"
+        android:textAppearance="@style/game_text"
+        android:gravity="center"
+    />
+</LinearLayout>

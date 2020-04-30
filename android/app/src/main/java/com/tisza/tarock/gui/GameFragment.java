@@ -87,8 +87,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private LinearLayout statisticsSelfEntriesView;
 	private LinearLayout statisticsOpponentEntriesView;
 	private TextView statisticsSumPointsView;
-	private TextView[] statisticsPointsNameViews = new TextView[4];
-	private TextView[] statisticsPointsValueViews = new TextView[4];
+	private RecyclerView statisticsPointsView;
+	private StatisticsPointsAdapter statisticsPointsAdapter;
 	private EditText statisticsChatEditText;
 
 	private ConnectionViewModel connectionViewModel;
@@ -233,14 +233,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		statisticsSelfEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_self_entries_list);
 		statisticsOpponentEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_opponent_entries_list);
 		statisticsSumPointsView = (TextView)statisticsView.findViewById(R.id.statistics_sum_points);
-		statisticsPointsNameViews[0] = (TextView)statisticsView.findViewById(R.id.statistics_points_name_0);
-		statisticsPointsNameViews[1] = (TextView)statisticsView.findViewById(R.id.statistics_points_name_1);
-		statisticsPointsNameViews[2] = (TextView)statisticsView.findViewById(R.id.statistics_points_name_2);
-		statisticsPointsNameViews[3] = (TextView)statisticsView.findViewById(R.id.statistics_points_name_3);
-		statisticsPointsValueViews[0] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_0);
-		statisticsPointsValueViews[1] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_1);
-		statisticsPointsValueViews[2] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_2);
-		statisticsPointsValueViews[3] = (TextView)statisticsView.findViewById(R.id.statistics_points_value_3);
+		statisticsPointsView = statisticsView.findViewById(R.id.statistics_points);
+		statisticsPointsView.setLayoutManager(new GridLayoutManager(getContext(), 4));
+		statisticsPointsAdapter = new StatisticsPointsAdapter();
+		statisticsPointsView.setAdapter(statisticsPointsAdapter);
 		statisticsChatEditText = statisticsView.findViewById(R.id.statistics_chat_edit_text);
 		statisticsChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
 		statisticsChatEditText.setOnEditorActionListener(this);
@@ -347,6 +343,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			else
 				shortUserNames.add(user.getName());
 		}
+		statisticsPointsAdapter.setNames(shortUserNames);
 
 		int userCount = gameInfo.getUsers().size();
 		if (userCount >= 4)
@@ -825,14 +822,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void playerPoints(List<Integer> playerPoints)
 	{
-		for (int i = 0; i < 4; i++)
-		{
-			TextView nameView = statisticsPointsNameViews[i];
-			nameView.setText(getPlayerName(i));
-
-			TextView pointsView = statisticsPointsValueViews[i];
-			pointsView.setText(String.valueOf(playerPoints.get(i)));
-		}
+		statisticsPointsAdapter.setPoints(playerPoints);
 	}
 
 	@Override

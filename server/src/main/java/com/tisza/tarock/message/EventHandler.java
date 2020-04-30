@@ -29,7 +29,7 @@ public interface EventHandler
 	default void availableAnnouncements(List<AnnouncementContra> announcements) {}
 	default void cardsTaken(PlayerSeat player) {}
 	default void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier) {}
-	default void playerPoints(int[] points) {}
+	default void playerPoints(List<Integer> points) {}
 	default void pendingNewGame() {}
 	default void historyMode(boolean isHistory) {}
 	default void chat(User user, String message) {}

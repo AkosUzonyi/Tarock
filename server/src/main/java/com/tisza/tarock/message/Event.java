@@ -109,7 +109,7 @@ public interface Event
 		return handler -> handler.announcementStatistics(selfGamePoints, opponentGamePoints, announcementResults, sumPoints, pointMultiplier);
 	}
 
-	static Event playerPoints(int[] points)
+	static Event playerPoints(List<Integer> points)
 	{
 		return handler -> handler.playerPoints(points);
 	}

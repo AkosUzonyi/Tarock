@@ -56,7 +56,10 @@ public class ProtoConnection implements Closeable
 					}
 				}
 			}
-			catch (SocketTimeoutException ignored) {}
+			catch (SocketTimeoutException e)
+			{
+				log.warn("Socket timeout: " + getRemoteAddress());
+			}
 			catch (IOException e)
 			{
 				log.warn("Exception in reader thread", e);

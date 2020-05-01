@@ -80,15 +80,28 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 
 		int onlineCount0 = 0;
 		int onlineCount1 = 0;
+		int realPlayerCount0 = 0;
+		int realPlayerCount1 = 0;
 		for (User u : g0.getUsers())
+		{
 			if (u.isOnline() && !u.isBot())
 				onlineCount0++;
+			if (!u.isBot())
+				realPlayerCount0++;
+		}
 		for (User u : g1.getUsers())
+		{
 			if (u.isOnline() && !u.isBot())
 				onlineCount1++;
+			if (!u.isBot())
+				realPlayerCount1++;
+		}
 
 		if (onlineCount0 != onlineCount1)
 			return onlineCount1 - onlineCount0;
+
+		if (realPlayerCount0 != realPlayerCount1)
+			return realPlayerCount1 - realPlayerCount0;
 
 		return g0.getId() - g1.getId();
 	}

@@ -471,12 +471,12 @@ public class GameSession
 	private void broadcastPlayerPoints()
 	{
 		List<Integer> points = new ArrayList<>();
-		for (int i = 0; i < players.size(); i++)
+		for (Player player : players)
 		{
-			int point = players.get(i).getPoints();
-			int seat = i - currentBeginnerPlayer;
-			if (seat >= 0 && seat < 4)
-				point += currentGame.getPoints(PlayerSeat.fromInt(seat));
+			int point = player.getPoints();
+			PlayerSeat seat = player.getSeat();
+			if (seat != null)
+				point += currentGame.getPoints(seat);
 			points.add(point);
 		}
 

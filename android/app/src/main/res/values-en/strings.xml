@@ -76,7 +76,7 @@
     <string name="message_changing"><![CDATA[<br><big><b>DISCARDING</b></big>\n]]></string>
     <string name="message_calling"><![CDATA[<br><big><b>CALLING</b></big>\n]]></string>
     <string name="message_announcing"><![CDATA[<br><big><b>ANNOUNCING</b></big>\n]]></string>
-    <string name="message_cards_thrown">threw in his cards</string>
+    <string name="message_cards_thrown">threw in their cards</string>
     <string name="message_press_ok">Press OK to continue</string>
     <plurals name="message_skart_tarock">
         <item quantity="one">laid %1$d tarokk</item>

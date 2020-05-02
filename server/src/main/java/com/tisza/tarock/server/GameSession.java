@@ -334,7 +334,6 @@ public class GameSession
 		if (pos < 0)
 			return false;
 
-		PlayerSeat seat = PlayerSeat.fromInt(pos);
 		players.remove(player);
 		watchingPlayers.remove(player);
 		player.setGame(null, null);

@@ -3,7 +3,6 @@ package com.tisza.tarock.message;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.phase.*;
-import com.tisza.tarock.server.*;
 import com.tisza.tarock.server.database.*;
 
 import java.util.*;

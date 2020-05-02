@@ -79,7 +79,7 @@ public class Game
 				getPlayerCards(player).addCard(cardsToDeal.remove(0));
 			}
 		}
-		setTalon(cardsToDeal);
+		talon = cardsToDeal;
 
 		for (PlayerSeat player : PlayerSeat.getAll())
 			sendEvent(player, Event.playerCards(playersCards.get(player).clone(), playersCards.get(player).canBeThrown()));
@@ -136,11 +136,6 @@ public class Game
 	public PlayerSeat getBeginnerPlayer()
 	{
 		return PlayerSeat.SEAT0;
-	}
-
-	void setTalon(List<Card> talon)
-	{
-		this.talon = talon;
 	}
 
 	public List<Card> getTalon()

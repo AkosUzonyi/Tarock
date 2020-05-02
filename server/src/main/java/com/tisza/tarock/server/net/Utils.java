@@ -4,8 +4,6 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.*;
-import com.tisza.tarock.server.database.*;
-import io.reactivex.*;
 
 public class Utils
 {

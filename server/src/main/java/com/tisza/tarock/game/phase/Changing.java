@@ -56,7 +56,7 @@ class Changing extends Phase
 			game.sendEvent(player, Event.playerCards(playerCards.clone(), canThrow(player)));
 			game.sendEvent(player, Event.turn(player));
 			if (cardsFromTalon.isEmpty())
-				change(player, Collections.EMPTY_LIST);
+				change(player, Collections.emptyList());
 			cardsFromTalon.clear();
 
 			player = player.nextPlayer();

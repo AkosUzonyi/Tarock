@@ -2,6 +2,8 @@
     <color name="unknown_team">#000000</color>
     <color name="caller_team">#000070</color>
     <color name="opponent_team">#900000</color>
+    <color name="caller_team_light">#B0B0FF</color>
+    <color name="opponent_team_light">#FFC0C0</color>
 
     <color name="game_text">#EEEEEE</color>
     <color name="announcement_failed">#FF6000</color>

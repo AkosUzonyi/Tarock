@@ -26,6 +26,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:textAppearance="@style/game_text"
+                android:textColor="@color/caller_team_light"
                 />    
         
             <TextView
@@ -35,7 +36,8 @@
                 android:layout_marginLeft="20dp"
                 android:gravity="center"
                 android:textAppearance="@style/game_text"
-                />    
+                android:textColor="@color/opponent_team_light"
+                />
         </LinearLayout>
 
         <TextView

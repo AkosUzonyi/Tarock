@@ -144,6 +144,8 @@ public class GameSession
 				}
 			}
 
+			gameSession.broadcastPlayerPoints();
+
 			for (Player player : players)
 				gameSession.requestHistory(player);
 

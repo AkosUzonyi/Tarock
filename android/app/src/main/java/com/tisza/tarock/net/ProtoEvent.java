@@ -83,8 +83,9 @@ public class ProtoEvent implements Event
 				break;
 			case PLAYER_POINTS:
 				EventProto.Event.PlayerPoints playerPointsEvent = event.getPlayerPoints();
-				List<Integer> playerPoints = playerPointsEvent.getPlayerPointList();
-				handler.playerPoints(playerPoints);
+				List<Integer> points = playerPointsEvent.getPointList();
+				List<Integer> incrementPoints = playerPointsEvent.getIncrementPointsList();
+				handler.playerPoints(points, incrementPoints);
 				break;
 			case PENDING_NEW_GAME:
 				handler.pendingNewGame();

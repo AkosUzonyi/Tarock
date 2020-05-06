@@ -99,7 +99,8 @@ message Event
 	}
 	message PlayerPoints
 	{
-		repeated sint32 player_point = 1;
+		repeated sint32 point = 1;
+		repeated sint32 increment_points = 2;
 	}
 	message PendingNewGame
 	{

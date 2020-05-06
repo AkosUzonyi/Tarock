@@ -22,4 +22,14 @@
         android:textAppearance="@style/game_text"
         android:gravity="center"
     />
+
+    <TextView
+        android:id="@+id/statistics_increment_points"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textAppearance="@style/game_text"
+        android:textSize="10sp"
+        android:gravity="center"
+    />
 </LinearLayout>

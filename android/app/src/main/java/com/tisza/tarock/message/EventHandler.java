@@ -9,7 +9,7 @@ public interface EventHandler
 {
 	default void startGame(GameType gameType, int beginnerPlayer) {}
 	default void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier) {}
-	default void playerPoints(List<Integer> playerPoints) {}
+	default void playerPoints(List<Integer> points, List<Integer> incrementPoints) {}
 	default void announce(int player, Announcement announcementContra) {}
 	default void announcePassz(int player) {}
 	default void availableAnnouncements(List<Announcement> announcements) {}

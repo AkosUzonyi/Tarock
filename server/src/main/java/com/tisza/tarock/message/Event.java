@@ -108,9 +108,9 @@ public interface Event
 		return handler -> handler.announcementStatistics(selfGamePoints, opponentGamePoints, announcementResults, sumPoints, pointMultiplier);
 	}
 
-	static Event playerPoints(List<Integer> points)
+	static Event playerPoints(List<Integer> points, List<Integer> incrementPoints)
 	{
-		return handler -> handler.playerPoints(points);
+		return handler -> handler.playerPoints(points, incrementPoints);
 	}
 
 	static Event pendingNewGame()

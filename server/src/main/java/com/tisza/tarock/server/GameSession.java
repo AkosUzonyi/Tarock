@@ -470,16 +470,18 @@ public class GameSession
 	private void broadcastPlayerPoints()
 	{
 		List<Integer> points = new ArrayList<>();
+		List<Integer> incrementPoints = new ArrayList<>();
 		for (Player player : players)
 		{
 			int point = player.getPoints();
 			PlayerSeat seat = player.getSeat();
-			if (seat != null)
-				point += currentGame.getPoints(seat);
-			points.add(point);
+			int incrementPoint = seat == null ? 0 : currentGame.getPoints(seat);
+
+			incrementPoints.add(incrementPoint);
+			points.add(point + incrementPoint);
 		}
 
-		dispatchEvent(EventInstance.broadcast(Event.playerPoints(points)));
+		dispatchEvent(EventInstance.broadcast(Event.playerPoints(points, incrementPoints)));
 	}
 
 	private Player getPlayerBySeat(PlayerSeat seat)

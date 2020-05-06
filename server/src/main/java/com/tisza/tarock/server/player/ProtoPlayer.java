@@ -244,10 +244,11 @@ public class ProtoPlayer extends Player implements MessageHandler
 		}
 
 		@Override
-		public void playerPoints(List<Integer> points)
+		public void playerPoints(List<Integer> points, List<Integer> incrementPoints)
 		{
 			EventProto.Event.PlayerPoints.Builder e = EventProto.Event.PlayerPoints.newBuilder()
-					.addAllPlayerPoint(points);
+					.addAllPoint(points)
+					.addAllIncrementPoints(incrementPoints);
 
 			sendEvent(EventProto.Event.newBuilder().setPlayerPoints(e).build());
 		}

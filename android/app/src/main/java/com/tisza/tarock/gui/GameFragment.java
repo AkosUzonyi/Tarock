@@ -824,9 +824,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	@Override
-	public void playerPoints(List<Integer> playerPoints)
+	public void playerPoints(List<Integer> points, List<Integer> incrementPoints)
 	{
-		statisticsPointsAdapter.setPoints(playerPoints);
+		statisticsPointsAdapter.setPoints(points);
+		statisticsPointsAdapter.setIncrementPoints(incrementPoints);
 	}
 
 	@Override

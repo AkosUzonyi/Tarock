@@ -11,6 +11,7 @@ public class StatisticsPointsAdapter extends RecyclerView.Adapter<StatisticsPoin
 {
 	private List<String> names = new ArrayList<>();
 	private List<Integer> points = new ArrayList<>();
+	private List<Integer> incrementPoints = new ArrayList<>();
 
 	public void setNames(List<String> names)
 	{
@@ -23,6 +24,13 @@ public class StatisticsPointsAdapter extends RecyclerView.Adapter<StatisticsPoin
 	{
 		this.points.clear();
 		this.points.addAll(points);
+		notifyDataSetChanged();
+	}
+
+	public void setIncrementPoints(List<Integer> incrementPoints)
+	{
+		this.incrementPoints.clear();
+		this.incrementPoints.addAll(incrementPoints);
 		notifyDataSetChanged();
 	}
 
@@ -40,6 +48,7 @@ public class StatisticsPointsAdapter extends RecyclerView.Adapter<StatisticsPoin
 		ViewHolder holder = new ViewHolder(view);
 		holder.nameView = view.findViewById(R.id.statistics_points_name);
 		holder.pointsView = view.findViewById(R.id.statistics_points_value);
+		holder.incrementPointsView = view.findViewById(R.id.statistics_increment_points);
 
 		return holder;
 	}
@@ -49,12 +58,17 @@ public class StatisticsPointsAdapter extends RecyclerView.Adapter<StatisticsPoin
 	{
 		holder.nameView.setText(names.get(position));
 		holder.pointsView.setText(String.valueOf(position < points.size() ? points.get(position) : 0));
+
+		int incrementPoint = position < incrementPoints.size() ? incrementPoints.get(position) : 0;
+		holder.incrementPointsView.setVisibility(incrementPoint != 0 ? View.VISIBLE : View.GONE);
+		holder.incrementPointsView.setText(String.format("(%+d)", incrementPoint));
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder
 	{
 		public TextView nameView;
 		public TextView pointsView;
+		public TextView incrementPointsView;
 
 		public ViewHolder(View view)
 		{

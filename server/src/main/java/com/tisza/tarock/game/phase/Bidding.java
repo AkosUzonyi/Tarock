@@ -182,6 +182,8 @@ class Bidding extends Phase
 			if (defaultBid == 3)
 				result.add(0);
 		}
+
+		result.sort(Collections.reverseOrder());
 		return result;
 	}
 	

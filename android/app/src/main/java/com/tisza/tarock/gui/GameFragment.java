@@ -81,10 +81,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private PlayedCardView[] playedCardViews;
 
 	private View statisticsView;
-	private TextView statisticsGamepointsSelf;
+	private TextView statisticsGamepointsCaller;
 	private TextView statisticsGamepointsOpponent;
 	private TextView statisticsPointMultiplierView;
-	private LinearLayout statisticsSelfEntriesView;
+	private LinearLayout statisticsCallerEntriesView;
 	private LinearLayout statisticsOpponentEntriesView;
 	private TextView statisticsSumPointsView;
 	private RecyclerView statisticsPointsView;
@@ -227,10 +227,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 
 		statisticsView = layoutInflater.inflate(R.layout.statistics, centerSpace, false);
-		statisticsGamepointsSelf = (TextView)statisticsView.findViewById(R.id.statistics_gamepoints_self);
+		statisticsGamepointsCaller = (TextView)statisticsView.findViewById(R.id.statistics_gamepoints_caller);
 		statisticsGamepointsOpponent = (TextView)statisticsView.findViewById(R.id.statistics_gamepoints_opponent);
 		statisticsPointMultiplierView = (TextView)statisticsView.findViewById(R.id.statistics_point_multiplier);
-		statisticsSelfEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_self_entries_list);
+		statisticsCallerEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_caller_entries_list);
 		statisticsOpponentEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_opponent_entries_list);
 		statisticsSumPointsView = (TextView)statisticsView.findViewById(R.id.statistics_sum_points);
 		statisticsPointsView = statisticsView.findViewById(R.id.statistics_points);
@@ -295,10 +295,10 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		cardsHighlightView.setVisibility(View.GONE);
 		cardsBackgroundColorView.setBackgroundDrawable(null);
 
-		statisticsGamepointsSelf.setText(null);
+		statisticsGamepointsCaller.setText(null);
 		statisticsGamepointsOpponent.setText(null);
 		statisticsPointMultiplierView.setVisibility(View.GONE);
-		statisticsSelfEntriesView.removeAllViews();
+		statisticsCallerEntriesView.removeAllViews();
 		statisticsOpponentEntriesView.removeAllViews();
 		statisticsSumPointsView.setText(null);
 
@@ -792,20 +792,17 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	{
 		Team selfTeam = myTeam == null ? Team.CALLER : myTeam;
 
-		statisticsGamepointsSelf.setText(String.valueOf(selfTeam == Team.CALLER ? callerGamePoints : opponentGamePoints));
-		statisticsGamepointsSelf.setTextColor(getResources().getColor(selfTeam == Team.CALLER ? R.color.caller_team : R.color.opponent_team));
-		statisticsGamepointsOpponent.setText(String.valueOf(selfTeam == Team.CALLER ? opponentGamePoints : callerGamePoints));
-		statisticsGamepointsOpponent.setTextColor(getResources().getColor(selfTeam == Team.CALLER ? R.color.opponent_team : R.color.caller_team));
+		statisticsGamepointsCaller.setText(String.valueOf(callerGamePoints));
+		statisticsGamepointsOpponent.setText(String.valueOf(opponentGamePoints));
 
 		statisticsPointMultiplierView.setVisibility(pointMultiplier == 1 ? View.GONE : View.VISIBLE);
 		statisticsPointMultiplierView.setText(getString(R.string.statictics_point_multiplier, pointMultiplier));
 
-		statisticsSelfEntriesView.removeAllViews();
+		statisticsCallerEntriesView.removeAllViews();
 		statisticsOpponentEntriesView.removeAllViews();
 		for (AnnouncementResult announcementResult : announcementResults)
 		{
-			boolean self = announcementResult.getTeam() == selfTeam;
-			ViewGroup viewToAppend = self ? statisticsSelfEntriesView : statisticsOpponentEntriesView;
+			ViewGroup viewToAppend = announcementResult.getTeam() == Team.CALLER ? statisticsCallerEntriesView : statisticsOpponentEntriesView;
 
 			View entryView = layoutInflater.inflate(R.layout.statistics_entry, viewToAppend, false);
 			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
@@ -815,7 +812,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			int announcerPoints = announcementResult.getPoints();
 			if (announcerPoints < 0)
 				nameView.setTextColor(getResources().getColor(R.color.announcement_failed));
-			int myPoints = announcerPoints * (self ? 1 : -1);
+			int myPoints = announcerPoints * (announcementResult.getTeam() == selfTeam ? 1 : -1);
 			pointsView.setText(String.valueOf(myPoints));
 			pointsView.setVisibility(myPoints == 0 ? View.GONE : View.VISIBLE);
 

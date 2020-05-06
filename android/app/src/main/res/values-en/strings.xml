@@ -198,8 +198,8 @@
     <string name="announcement_kilenctarokk">nine tarokks</string>
 
     <string name="statictics_point_multiplier">Double round multiplier: %1$d</string>
-    <string name="statistics_self">Own bonuses</string>
-    <string name="statistics_opponent">Opponent\'s bonuses</string>
+    <string name="statistics_self">Declarer bonuses</string>
+    <string name="statistics_opponent">Opposition bonuses</string>
     <string name="statistics_points">point</string>
     <string name="statictics_sum">Total:</string>
 

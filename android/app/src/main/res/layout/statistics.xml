@@ -21,7 +21,7 @@
             >
         
             <TextView
-                android:id="@+id/statistics_gamepoints_self"
+                android:id="@+id/statistics_gamepoints_caller"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -59,7 +59,7 @@
         />
 
         <LinearLayout
-            android:id="@+id/statistics_self_entries_list"
+            android:id="@+id/statistics_caller_entries_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"

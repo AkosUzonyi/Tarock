@@ -1,7 +1,6 @@
 bugs:
 game start names
 thrown cards not shown
-silent take cards after silent volat
 language changes randomly
 paskievics: t2 name: sas
 take animation delay not working on a few devices

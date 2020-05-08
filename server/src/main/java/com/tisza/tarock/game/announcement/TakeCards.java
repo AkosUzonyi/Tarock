@@ -1,7 +1,7 @@
 package com.tisza.tarock.game.announcement;
 
-import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.phase.*;
 
 public abstract class TakeCards extends AnnouncementBase
@@ -15,18 +15,12 @@ public abstract class TakeCards extends AnnouncementBase
 	public Result isSuccessful(Game game, Team team)
 	{
 		for (PlayerSeat opponentPlayer : game.getPlayerPairs().getPlayersInTeam(team.getOther()))
-		{
 			for (Card opponentCard : game.getWonCards(opponentPlayer))
-			{
 				if (hasToBeTaken(opponentCard))
-				{
 					return Result.FAILED;
-				}
-			}
-		}
 
-		boolean canBeSilent = canBeSilent() && !game.getAnnouncementsState().isAnnounced(team, Announcements.volat);
-		return canBeSilent ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
+		boolean volatHidesSilent = this != Announcements.volat && (game.getAnnouncementsState().isAnnounced(team, Announcements.volat) || Announcements.volat.isSuccessful(game, team) == Result.SUCCESSFUL_SILENT);
+		return canBeSilent() && !volatHidesSilent ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 	}
 
 	@Override

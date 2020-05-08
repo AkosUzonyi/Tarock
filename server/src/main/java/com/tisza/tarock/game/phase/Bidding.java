@@ -123,7 +123,7 @@ class Bidding extends Phase
 	@Override
 	public boolean throwCards(PlayerSeat player)
 	{
-		if (!game.getPlayerCards(player).canBeThrown())
+		if (!game.getPlayerCards(player).canBeThrown(game.getGameType()))
 			return false;
 
 		game.broadcastEvent(Event.throwCards(player));

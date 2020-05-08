@@ -82,7 +82,7 @@ public class Game
 		talon = cardsToDeal;
 
 		for (PlayerSeat player : PlayerSeat.getAll())
-			sendEvent(player, Event.playerCards(playersCards.get(player).clone(), playersCards.get(player).canBeThrown()));
+			sendEvent(player, Event.playerCards(playersCards.get(player).clone(), playersCards.get(player).canBeThrown(gameType)));
 
 		changePhase(new Bidding(this));
 	}

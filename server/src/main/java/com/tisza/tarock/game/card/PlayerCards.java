@@ -1,5 +1,6 @@
 package com.tisza.tarock.game.card;
 
+import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.filter.*;
 
 import java.util.*;
@@ -98,16 +99,17 @@ public class PlayerCards
 		return Collections.EMPTY_LIST;
 	}
 
-	public boolean canBeThrown()
+	public boolean canBeThrown(GameType gameType)
 	{
 		List<Card> tarocks = filter(new TarockFilter());
 
-		if (tarocks.size() < 2)
+		if (tarocks.size() <= (gameType.hasParent(GameType.ZEBI) ? 1 : 0))
 			return true;
 
 		tarocks.remove(Card.getTarockCard(1));
-		tarocks.remove(Card.getTarockCard(2));
 		tarocks.remove(Card.getTarockCard(21));
+		if (gameType.hasParent(GameType.MAGAS))
+			tarocks.remove(Card.getTarockCard(2));
 
 		if (tarocks.size() == 0)
 			return true;

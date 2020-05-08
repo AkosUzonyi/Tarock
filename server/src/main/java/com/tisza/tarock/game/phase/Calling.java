@@ -125,7 +125,7 @@ class Calling extends Phase
 				if (cf.match(c))
 					callOptions.add(c);
 		}
-		else if (game.getGameType() == GameType.ZEBI)
+		else if (game.getGameType().hasParent(GameType.ZEBI))
 		{
 			callOptions.addAll(pc.filter(cf));
 		}

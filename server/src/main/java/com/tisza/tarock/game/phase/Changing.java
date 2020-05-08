@@ -145,7 +145,7 @@ class Changing extends Phase
 
 	private boolean canThrow(PlayerSeat player)
 	{
-		boolean zebiThrow = game.getGameType() == GameType.ZEBI && game.getWinnerBid() == 3 && game.getBidWinnerPlayer() == player && player.nextPlayer() == game.getBeginnerPlayer();
+		boolean zebiThrow = game.getGameType().hasParent(GameType.ZEBI) && game.getWinnerBid() == 3 && game.getBidWinnerPlayer() == player && player.nextPlayer() == game.getBeginnerPlayer();
 		return game.getPlayerCards(player).canBeThrown() || zebiThrow;
 	}
 

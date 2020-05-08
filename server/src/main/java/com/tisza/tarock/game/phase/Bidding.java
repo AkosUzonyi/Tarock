@@ -104,7 +104,7 @@ class Bidding extends Phase
 			{
 				game.changePhase(new PendingNewGame(game, true));
 			}
-			else if (game.getGameType() == GameType.ZEBI && lastBidValue > 0)
+			else if (game.getGameType().hasParent(GameType.ZEBI) && lastBidValue > 0)
 			{
 				waitingForOverrideSelf = true;
 				currentPlayer = lastBidPlayer;

@@ -120,7 +120,11 @@ public class GameSession
 					Action action = actionTuple._2();
 					long time = actionTuple._3();
 
-					gameSession.currentGame.processAction(player, action);
+					if (!gameSession.currentGame.processAction(player, action))
+					{
+						log.warn("Invalid action while loading game: " + currentGameID + " action: " + action.getId());
+						break;
+					}
 
 					EventInstance event;
 					while ((event = gameSession.currentGame.popNextEvent()) != null)
@@ -210,7 +214,9 @@ public class GameSession
 					if (gameSession.state != State.GAME)
 						return;
 
-					gameSession.currentGame.processAction(player, action);
+					if (!gameSession.currentGame.processAction(player, action))
+						log.warn("Invalid action while replaying game: " + gameID + " action: " + action.getId());
+
 					gameSession.dispatchNewEvents();
 
 					if (gameSession.currentGame.isFinished())

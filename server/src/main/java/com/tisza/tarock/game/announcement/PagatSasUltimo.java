@@ -14,19 +14,14 @@ public class PagatSasUltimo extends Ultimo
 	@Override
 	public GameType getGameType()
 	{
+		if (getCard().equals(Card.getTarockCard(2)))
+			return GameType.MAGAS;
+
 		switch (getRound())
 		{
-			case 8:
-				if (getCard().equals(Card.getTarockCard(1)))
-					return GameType.PASKIEVICS;
-				else
-					return GameType.ILLUSZTRALT;
-
-			case 7:
-				return GameType.ILLUSZTRALT;
-
-			case 6: case 5:
-				return GameType.MAGAS;
+			case 8:         return GameType.PASKIEVICS;
+			case 7:         return GameType.ILLUSZTRALT;
+			case 6: case 5: return GameType.MAGAS;
 		}
 		throw new RuntimeException();
 	}

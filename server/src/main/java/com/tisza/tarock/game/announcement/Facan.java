@@ -4,24 +4,11 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.phase.*;
 
-public class Facan extends RoundAnnouncement
+public class Facan extends Ultimo
 {
-	private final Card card;
-
 	Facan(Card card)
 	{
-		this.card = card;
-	}
-
-	@Override
-	public String getID()
-	{
-		return "facan" + "C" + card.getID();
-	}
-
-	public Card getCard()
-	{
-		return card;
+		super(0, card);
 	}
 
 	@Override
@@ -34,7 +21,7 @@ public class Facan extends RoundAnnouncement
 	public Result isSuccessful(Game game, Team team)
 	{
 		Round round = game.getRound(0);
-		PlayerSeat theCardPlayer = round.getPlayerOfCard(card);
+		PlayerSeat theCardPlayer = round.getPlayerOfCard(getCard());
 		if (theCardPlayer == null) return Result.FAILED;
 		
 		PlayerPairs playerPairs = game.getPlayerPairs();
@@ -78,20 +65,8 @@ public class Facan extends RoundAnnouncement
 	}
 
 	@Override
-	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	protected boolean canBeSilent()
 	{
-		return false;
-	}
-
-	@Override
-	protected boolean containsRound(int round)
-	{
-		return round == 0;
-	}
-
-	@Override
-	public boolean canBeAnnounced(IAnnouncing announcing)
-	{
-		return false;
+		return true;
 	}
 }

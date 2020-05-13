@@ -231,7 +231,6 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		"ketkiralyok",
 		"haromkiralyok",
 		"zaroparos",
-		"facan",
 		"xxifogas",
 		"ultimo",
 		"kisszincsalad",

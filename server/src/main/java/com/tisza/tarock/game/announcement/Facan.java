@@ -20,36 +20,22 @@ public class Facan extends Ultimo
 	@Override
 	public Result isSuccessful(Game game, Team team)
 	{
+		PlayerPairs playerPairs = game.getPlayerPairs();
+
 		Round round = game.getRound(0);
 		PlayerSeat theCardPlayer = round.getPlayerOfCard(getCard());
-		if (theCardPlayer == null) return Result.FAILED;
-		
-		PlayerPairs playerPairs = game.getPlayerPairs();
-		
-		if (playerPairs.getTeam(theCardPlayer) != team)
-		{
+
+		if (theCardPlayer == null || playerPairs.getTeam(theCardPlayer) != team)
 			return Result.FAILED;
-		}
-		else
-		{
-			PlayerSeat winnerPlayer = round.getWinner();
-			
-			if (winnerPlayer == theCardPlayer)
-			{
-				return Result.SUCCESSFUL_SILENT;
-			}
-			else
-			{
-				for (PlayerSeat opponentPlayer : playerPairs.getPlayersInTeam(team.getOther()))
-				{
-					if (round.getCardByPlayer(opponentPlayer) instanceof TarockCard)
-					{
-						return Result.FAILED_SILENT;
-					}
-				}
-				return Result.FAILED;
-			}
-		}
+
+		if (theCardPlayer == round.getWinner())
+			return Result.SUCCESSFUL_SILENT;
+
+		for (PlayerSeat opponentPlayer : playerPairs.getPlayersInTeam(team.getOther()))
+			if (round.getCardByPlayer(opponentPlayer) instanceof TarockCard)
+				return Result.FAILED_SILENT;
+
+		return Result.FAILED;
 	}
 
 	@Override

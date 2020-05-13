@@ -34,14 +34,10 @@ public class PagatSasUltimo extends Ultimo
 	@Override
 	public Result isSuccessful(Game game, Team team)
 	{
-		Result zaroparosSuccessful = Announcements.zaroparos.isSuccessful(game, team);
-
-		if (zaroparosSuccessful == Result.SUCCESSFUL)
-		{
-			//it just prevents silent pagatsas ultimo, when zaroparos is successful (zaroparos and pagatsas can't be announced together)
+		//it just prevents silent pagatsas ultimo, when zaroparos is announced (zaroparos and pagatsas can't be announced together)
+		if (game.getAnnouncementsState().isAnnounced(team, Announcements.zaroparos))
 			return Result.FAILED;
-		}
-		
+
 		return super.isSuccessful(game, team);
 	}
 	

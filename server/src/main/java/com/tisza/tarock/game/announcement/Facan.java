@@ -32,7 +32,7 @@ public class Facan extends Ultimo
 			return Result.SUCCESSFUL_SILENT;
 
 		for (PlayerSeat opponentPlayer : playerPairs.getPlayersInTeam(team.getOther()))
-			if (round.getCardByPlayer(opponentPlayer) instanceof TarockCard)
+			if (round.getCardByPlayer(opponentPlayer).doesBeat(getCard()))
 				return Result.FAILED_SILENT;
 
 		return Result.FAILED;

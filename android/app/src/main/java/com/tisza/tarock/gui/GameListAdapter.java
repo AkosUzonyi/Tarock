@@ -103,7 +103,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		if (realPlayerCount0 != realPlayerCount1)
 			return realPlayerCount1 - realPlayerCount0;
 
-		return g0.getId() - g1.getId();
+		return g1.getId() - g0.getId();
 	}
 
 	@NonNull

@@ -17,7 +17,7 @@ public class ParosFacan extends AnnouncementBase
 	@Override
 	public GameType getGameType()
 	{
-		return GameType.ZEBI;
+		return GameType.MAGAS;
 	}
 
 	@Override
@@ -31,9 +31,6 @@ public class ParosFacan extends AnnouncementBase
 		PlayerSeat xxiPlayer = round.getPlayerOfCard(Card.getTarockCard(21));
 		PlayerSeat skizPlayer = round.getPlayerOfCard(Card.getTarockCard(22));
 
-		if (!(round.getFirstCard() instanceof SuitCard) || playerPairs.getTeam(round.getBeginnerPlayer()) == team)
-			return Result.FAILED;
-
 		if (xxiPlayer == null || playerPairs.getTeam(xxiPlayer) != team)
 			return Result.FAILED;
 
@@ -43,7 +40,14 @@ public class ParosFacan extends AnnouncementBase
 		if (skizPlayer != null && playerPairs.getTeam(xxiPlayer) != team)
 			return Result.FAILED_SILENT;
 
-		return Result.SUCCESSFUL_SILENT;
+		boolean canBeSilent;
+
+		if (game.getGameType().hasParent(GameType.ZEBI))
+			canBeSilent = round.getFirstCard() instanceof SuitCard && playerPairs.getTeam(round.getBeginnerPlayer()) == team.getOther();
+		else
+			canBeSilent = pagatPlayer != null && playerPairs.getTeam(pagatPlayer) == team.getOther() || sasPlayer != null && playerPairs.getTeam(sasPlayer) == team.getOther();
+
+		return canBeSilent ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 	}
 
 	@Override
@@ -55,6 +59,6 @@ public class ParosFacan extends AnnouncementBase
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
-		return false;
+		return announcing.getPlayerPairs().getTeam(PlayerSeat.SEAT0) != announcing.getCurrentTeam();
 	}
 }

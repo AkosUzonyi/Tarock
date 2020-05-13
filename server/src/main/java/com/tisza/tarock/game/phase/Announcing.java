@@ -109,7 +109,7 @@ class Announcing extends Phase implements IAnnouncing
 			{
 				if (isAnnounced(origAnnouncer, a))
 				{
-					if (a.canContra())
+					if (a.canContra(this))
 					{
 						AnnouncementContra ac = new AnnouncementContra(a, getContraLevel(origAnnouncer, a) + 1);
 						if (ac.getContraLevel() < MAX_CONTRA_LEVEL && ac.getNextTeamToContra(origAnnouncer) == currentPlayerTeam)
@@ -158,8 +158,8 @@ class Announcing extends Phase implements IAnnouncing
 		else
 		{
 			Team originalAnnouncer = ac.getNextTeamToContra(currentPlayerTeam);
-			
-			return a.canContra() &&
+
+			return a.canContra(this) &&
 			       ac.getContraLevel() < MAX_CONTRA_LEVEL &&
 			       isAnnounced(originalAnnouncer, a) &&
 			       ac.getContraLevel() == getContraLevel(originalAnnouncer, a) + 1;

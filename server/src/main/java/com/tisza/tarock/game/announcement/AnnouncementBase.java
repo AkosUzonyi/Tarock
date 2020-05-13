@@ -80,7 +80,7 @@ public abstract class AnnouncementBase implements Announcement
 	}
 	
 	@Override
-	public boolean canContra()
+	public boolean canContra(IAnnouncing announcing)
 	{
 		return true;
 	}

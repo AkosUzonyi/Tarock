@@ -40,20 +40,30 @@ public class PagatSasUltimo extends Ultimo
 
 		return super.isSuccessful(game, team);
 	}
-	
+
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 		PlayerSeat player = announcing.getCurrentPlayer();
-		
+
 		if (announcing.isAnnounced(team, Announcements.zaroparos))
 			return false;
-		
-		if (getRound() == 8 && announcing.getCards(player).getTarockCount() >= 8 && announcing.getTarockCountAnnounced(player) == null)
+
+		if (announcing.getCards(player).getTarockCount() >= 8 && announcing.getTarockCountAnnounced(player) == null)
 			return false;
 
 		return super.canBeAnnounced(announcing);
+	}
+
+	@Override
+	public boolean canContra(IAnnouncing announcing)
+	{
+		PlayerSeat player = announcing.getCurrentPlayer();
+		if (announcing.getCards(player).getTarockCount() >= 8 && announcing.getTarockCountAnnounced(player) == null)
+			return false;
+
+		return super.canContra(announcing);
 	}
 
 	@Override

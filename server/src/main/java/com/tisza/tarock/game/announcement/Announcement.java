@@ -10,7 +10,7 @@ public interface Announcement
 	GameType getGameType();
 	boolean canBeAnnounced(IAnnouncing announcing);
 	void onAnnounced(IAnnouncing announcing);
-	boolean canContra();
+	boolean canContra(IAnnouncing announcing);
 	boolean requireIdentification();
 	boolean shouldBeStored();
 }

@@ -4,7 +4,7 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.phase.*;
 
-public class ParosFacan extends AnnouncementBase
+public class ParosFacan extends RoundAnnouncement
 {
 	ParosFacan() {}
 
@@ -60,5 +60,17 @@ public class ParosFacan extends AnnouncementBase
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		return announcing.getPlayerPairs().getTeam(PlayerSeat.SEAT0) != announcing.getCurrentTeam();
+	}
+
+	@Override
+	protected boolean containsRound(int round)
+	{
+		return round == 0;
+	}
+
+	@Override
+	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	{
+		return announcement instanceof PagatSasUltimo || announcement instanceof Facan || announcement instanceof XXIUltimo || announcement instanceof Zaroparos || announcement == Announcements.kismadar;
 	}
 }

@@ -23,6 +23,9 @@ public abstract class RoundAnnouncement extends AnnouncementBase
 			if (other.canOverrideAnnouncement(this))
 				return false;
 
+			if (!announcing.getGameType().hasParent(GameType.MAGAS) && canOverrideAnnouncement(other))
+				return false;
+
 			if (hasCommonRoundWith(other) && !canOverrideAnnouncement(other))
 				return false;
 		}

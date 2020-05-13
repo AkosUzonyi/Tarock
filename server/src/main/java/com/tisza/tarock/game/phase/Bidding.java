@@ -30,7 +30,7 @@ class Bidding extends Phase
 	@Override
 	public void onStart()
 	{
-		currentPlayer = game.getBeginnerPlayer();
+		currentPlayer = PlayerSeat.SEAT0;
 		sendAvailableBids();
 	}
 

@@ -24,7 +24,7 @@ class Gameplay extends Phase
 	@Override
 	public void onStart()
 	{
-		currentRound = new Round(game.getBeginnerPlayer());
+		currentRound = new Round(PlayerSeat.SEAT0);
 		game.broadcastEvent(Event.turn(currentRound.getCurrentPlayer()));
 
 		game.sendInGameStatistics();

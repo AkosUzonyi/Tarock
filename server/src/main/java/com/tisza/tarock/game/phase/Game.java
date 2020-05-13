@@ -133,11 +133,6 @@ public class Game
 		return playersCards.get(player);
 	}
 
-	public PlayerSeat getBeginnerPlayer()
-	{
-		return PlayerSeat.SEAT0;
-	}
-
 	public List<Card> getTalon()
 	{
 		return talon;

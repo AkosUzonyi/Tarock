@@ -29,7 +29,6 @@ public class ParosFacan extends RoundAnnouncement
 		PlayerSeat pagatPlayer = round.getPlayerOfCard(Card.getTarockCard(1));
 		PlayerSeat sasPlayer = round.getPlayerOfCard(Card.getTarockCard(2));
 		PlayerSeat xxiPlayer = round.getPlayerOfCard(Card.getTarockCard(21));
-		PlayerSeat skizPlayer = round.getPlayerOfCard(Card.getTarockCard(22));
 
 		if (xxiPlayer == null || playerPairs.getTeam(xxiPlayer) != team)
 			return Result.FAILED;
@@ -37,15 +36,14 @@ public class ParosFacan extends RoundAnnouncement
 		if (pagatPlayer == null && sasPlayer == null)
 			return Result.FAILED;
 
-		if (skizPlayer != null && playerPairs.getTeam(xxiPlayer) != team)
-			return Result.FAILED_SILENT;
-
 		boolean canBeSilent;
-
 		if (game.getGameType().hasParent(GameType.ZEBI))
 			canBeSilent = round.getFirstCard() instanceof SuitCard && playerPairs.getTeam(round.getBeginnerPlayer()) == team.getOther();
 		else
 			canBeSilent = pagatPlayer != null && playerPairs.getTeam(pagatPlayer) == team.getOther() || sasPlayer != null && playerPairs.getTeam(sasPlayer) == team.getOther();
+
+		if (round.getWinner() != xxiPlayer)
+			return canBeSilent ? Result.FAILED_SILENT : Result.FAILED;
 
 		return canBeSilent ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 	}

@@ -55,20 +55,6 @@ public class Zaroparos extends LastRounds
 	}
 
 	@Override
-	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
-	{
-		if (announcement instanceof Ultimo)
-		{
-			Ultimo ultimoAnnouncement = (Ultimo)announcement;
-
-			if (isValidCard(ultimoAnnouncement.getCard()) && ultimoAnnouncement.getRound() >= 7)
-				return true;
-		}
-
-		return super.canOverrideAnnouncement(announcement);
-	}
-
-	@Override
 	protected boolean isSameCategory(LastRounds otherAnnouncements)
 	{
 		return otherAnnouncements instanceof Zaroparos;

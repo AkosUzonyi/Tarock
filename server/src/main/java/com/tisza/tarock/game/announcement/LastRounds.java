@@ -41,11 +41,21 @@ public abstract class LastRounds extends RoundAnnouncement
 	@Override
 	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
 	{
-		if (!(announcement instanceof LastRounds))
-			return false;
+		if (announcement instanceof LastRounds)
+		{
+			LastRounds otherLastRounds = (LastRounds)announcement;
+			if (isSameCategory(otherLastRounds) && getRoundCount() > otherLastRounds.getRoundCount())
+				return true;
+		}
 
-		LastRounds otherLastRounds = (LastRounds)announcement;
-		return isSameCategory(otherLastRounds) && getRoundCount() > otherLastRounds.getRoundCount();
+		if (announcement instanceof Ultimo)
+		{
+			Ultimo ultimo = (Ultimo)announcement;
+			if (containsRound(ultimo.getRound()) && isValidCard(ultimo.getCard()))
+				return true;
+		}
+
+		return false;
 	}
 
 	@Override

@@ -40,23 +40,12 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 
 	private MutableLiveData<Integer> historyGameSessionID = new MutableLiveData<>(0);
 
-	public ConnectionViewModel(Application application) throws IOException, GeneralSecurityException
+	public ConnectionViewModel(Application application)
 	{
 		super(application);
 
 		connectivityManager = (ConnectivityManager)application.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-		SSLSessionCache sslSessionCache = new SSLSessionCache(application);
-		SSLCertificateSocketFactory sslCertificateSocketFactory = (SSLCertificateSocketFactory)SSLCertificateSocketFactory.getDefault(0, sslSessionCache);
-
-		String trustStoreFile = "truststore.bks";
-		KeyStore ks = KeyStore.getInstance("BKS");
-		ks.load(application.getAssets().open(trustStoreFile), "000000".toCharArray());
-		TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-		tmf.init(ks);
-
-		sslCertificateSocketFactory.setTrustManagers(tmf.getTrustManagers());
-		socketFactory = sslCertificateSocketFactory;
+		socketFactory = SSLCertificateSocketFactory.getDefault(0, new SSLSessionCache(application));
 	}
 
 	public LiveData<ConnectionState> getConnectionState()

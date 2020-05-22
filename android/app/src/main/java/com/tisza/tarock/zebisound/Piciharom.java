@@ -10,7 +10,7 @@ class Piciharom extends ZebiSound
 {
 	public Piciharom(Context context)
 	{
-		super(context, 0.3F, R.raw.piciharom);
+		super(context, 0.15F, R.raw.piciharom);
 	}
 
 	@Override

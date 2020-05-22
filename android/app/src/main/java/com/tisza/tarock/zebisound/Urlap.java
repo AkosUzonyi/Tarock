@@ -14,7 +14,7 @@ class Urlap extends ZebiSound
 
 	public Urlap(Context context)
 	{
-		super(context, 1F, R.raw.urlapomvan);
+		super(context, 0.4F, R.raw.urlapomvan);
 	}
 
 	@Override

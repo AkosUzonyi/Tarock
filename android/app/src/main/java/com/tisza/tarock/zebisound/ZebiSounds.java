@@ -65,6 +65,7 @@ public class ZebiSounds
 		zebiSounds.add(new CardSound(context, Card.getSuitCard(2, 4), R.raw.pikkdama));
 		zebiSounds.add(new CardSound(context, Card.getTarockCard(12), R.raw.tizenkettesezaz));
 		zebiSounds.add(new AnnouncementSuccecfulSound(context, Announcement.fromID("svolat"), R.raw.volatszep));
+		zebiSounds.add(new Pagatultimobukott(context));
 	}
 
 	public Collection<ZebiSound> getZebiSounds()

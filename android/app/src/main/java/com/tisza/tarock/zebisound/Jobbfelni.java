@@ -12,7 +12,7 @@ class Jobbfelni extends ZebiSound
 
 	public Jobbfelni(Context context)
 	{
-		super(context, 0.7F, R.raw.jobbfelni);
+		super(context, 1F, R.raw.jobbfelni);
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import com.tisza.tarock.game.*;
 
 class Ezisamienk extends ZebiSound
 {
-	private int myID;
+	private int lastWinnerPlayer;
 	private int takeCount;
 
 	public Ezisamienk(Context context)
@@ -17,22 +17,20 @@ class Ezisamienk extends ZebiSound
 	@Override
 	public void startGame(GameType gameType, int beginnerPlayer)
 	{
-		this.myID = myID;
+		lastWinnerPlayer = -1;
 		takeCount = 0;
 	}
 
 	@Override
 	public void cardsTaken(int winnerPlayer)
 	{
-		if (winnerPlayer == myID)
+		if (winnerPlayer != lastWinnerPlayer)
 		{
-			takeCount++;
-		}
-		else
-		{
+			lastWinnerPlayer = winnerPlayer;
 			takeCount = 0;
 		}
 
+		takeCount++;
 		if (takeCount >= 3)
 			activate();
 	}

@@ -9,7 +9,6 @@ import java.util.*;
 
 class DamaMienk extends ZebiSound
 {
-	private int myID;
 	private Card[] lastCards = new Card[4];
 
 	public DamaMienk(Context context)

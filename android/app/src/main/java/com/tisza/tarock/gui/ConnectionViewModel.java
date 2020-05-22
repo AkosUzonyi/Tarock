@@ -313,8 +313,13 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		{
 			try
 			{
-				Socket socket = socketFactory.createSocket();
+				SSLSocket socket = (SSLSocket)socketFactory.createSocket();
 				socket.connect(new InetSocketAddress(BuildConfig.SERVER_HOSTNAME, BuildConfig.SERVER_PORT), 1000);
+
+				boolean verified = HttpsURLConnection.getDefaultHostnameVerifier().verify("tarokk.net", socket.getSession());
+				if (!verified)
+					return null;
+
 				ProtoConnection protoConnection = new ProtoConnection(socket, uiThreadExecutor);
 				return protoConnection;
 			}

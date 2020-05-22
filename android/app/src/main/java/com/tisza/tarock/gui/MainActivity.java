@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			return;
 		}
 
-		DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse("http://" + BuildConfig.SERVER_HOSTNAME + "/cgi-bin/tarock/tarokk_pontok.csv?user_id=" + connectionViewModel.getUserID().getValue()));
+		DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse("https://tarokk.net/cgi-bin/tarock/tarokk_pontok.csv?user_id=" + connectionViewModel.getUserID().getValue()));
 		downloadRequest.allowScanningByMediaScanner();
 		downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 		downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "tarokk_pontok.csv");

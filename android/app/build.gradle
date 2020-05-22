@@ -35,7 +35,7 @@ android {
         }
         release {
             resValue "string", "app_version", "v${defaultConfig.versionName}"
-            buildConfigField "String", 'SERVER_HOSTNAME', "\"akos0.ddns.net\""
+            buildConfigField "String", 'SERVER_HOSTNAME', "\"tarokk.net\""
             buildConfigField "int", 'SERVER_PORT', "8128"
 
             minifyEnabled false

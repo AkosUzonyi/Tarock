@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 public class ProtoConnection implements Closeable
 {
 	private static final String HELLO_STRING = "Tarokk";
-	private static final int VERSION = 4;
+	private static final int VERSION = 5;
 	private static final int KEEP_ALIVE_DELAY = 1;
 	private static final int SOCKET_TIMEOUT = 10;
 

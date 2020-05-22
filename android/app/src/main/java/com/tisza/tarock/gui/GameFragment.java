@@ -367,6 +367,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				getActivity().getSupportFragmentManager().popBackStack();
 				break;
 		}
+
+		zebiSounds.setEnabled(gameInfo.getType() == GameType.ZEBI && gameInfo.containsUser(121));
 	}
 
 	private User getUserOfPlayer(int player)
@@ -451,7 +453,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		updateSeat();
 
-		zebiSounds.setEnabled(BuildConfig.DEBUG && gameType == GameType.ZEBI);
 		messagesHtml = "";
 		prevBid = 4;
 	}

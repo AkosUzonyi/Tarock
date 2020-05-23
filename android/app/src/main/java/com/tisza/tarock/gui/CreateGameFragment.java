@@ -154,8 +154,7 @@ public class CreateGameFragment extends MainActivityFragment
 			boolean matchQuery = normalizeString(user.getName()).contains(queryNormalized);
 			boolean alreadySelected = selectedUsers.contains(user);
 			boolean isMe = connectionViewModel.getUserID().getValue() != null && user.getId() == connectionViewModel.getUserID().getValue();
-			boolean isBot = user.isBot();
-			if (matchQuery && !alreadySelected && !isMe && !isBot)
+			if (matchQuery && !alreadySelected && !isMe && !user.isBot() && user.isOnline())
 				searchResultUsers.add(user);
 		}
 

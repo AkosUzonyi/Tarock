@@ -4,6 +4,7 @@ import com.tisza.tarock.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.net.*;
+import com.tisza.tarock.server.player.*;
 import io.reactivex.*;
 import org.apache.log4j.*;
 
@@ -189,22 +190,32 @@ public class Server implements Runnable
 			builder.addAvailableGameSession(gameBuilder);
 		}
 
-		database.getAllUserData().flatMapCompletable(userdata ->
+		database.getAllUserData().doOnNext(userdata ->
 		{
+			boolean isOnline = isUserLoggedIn(new User(userdata.getId(), database));
+			boolean isPlaying = false;
+			for (GameSession gameSession : gameSessionManager.getGameSessions())
+				if (gameSession.getState() != GameSession.State.ENDED)
+					for (Player player : gameSession.getPlayers())
+						if (player.getUser().getID() == userdata.getId())
+							isPlaying = true;
+
+			if (!isOnline && !isPlaying)
+				return;
+
 			MainProto.User.Builder userProto = MainProto.User.newBuilder()
 					.setId(userdata.getId())
 					.setName(userdata.getName())
 					.setIsFriend(false)
-					.setOnline(isUserLoggedIn(new User(userdata.getId(), database)))
+					.setOnline(isOnline)
 					.setBot(userdata.isBot());
 
 			if (userdata.getImgURL() != null)
 				userProto.setImageUrl(userdata.getImgURL());
 
 			builder.addAvailableUser(userProto);
-			return Completable.complete();
 		})
-		.subscribe(() ->
+		.ignoreElements().subscribe(() ->
 		{
 			synchronized (clients)
 			{

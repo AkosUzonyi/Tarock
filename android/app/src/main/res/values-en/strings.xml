@@ -39,10 +39,7 @@
     <string name="settings_feedback_title">Send feedback</string>
     <string name="settings_feedback_summary">Report technical issues or suggest new features</string>
 
-    <plurals name="lobby_create">
-        <item quantity="one">Create lobby with %1$d stranger</item>
-        <item quantity="other">Create lobby with %1$d strangers</item>
-    </plurals>
+    <string name="lobby_create">Create lobby</string>
     <string name="lobby_enter">Enter the Lobby</string>
     <string name="lobby_start">Start lobby</string>
     <plurals name="lobby_start_with_bots">

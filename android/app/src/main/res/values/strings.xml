@@ -52,9 +52,7 @@
     <string name="settings_feedback_title">Visszajelzés küldése</string>
     <string name="settings_feedback_summary">Hibák jelentése, vagy új ötletek jelzése</string>
 
-    <plurals name="lobby_create">
-        <item quantity="other">Lobby létrehozása %1$d ismeretlennel</item>
-    </plurals>
+    <string name="lobby_create">Lobby létrehozása</string>
     <string name="lobby_enter">Belépés a lobbyba</string>
     <string name="lobby_start">Lobby indítása</string>
     <plurals name="lobby_start_with_bots">

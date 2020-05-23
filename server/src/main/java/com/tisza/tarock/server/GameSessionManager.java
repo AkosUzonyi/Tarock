@@ -32,17 +32,12 @@ public class GameSessionManager
 				.ignoreElements().blockingAwait();
 	}
 
-	public Single<GameSession> createGameSession(GameType gameType, List<User> users, DoubleRoundType doubleRoundType)
+	public Single<GameSession> createGameSession(GameType gameType, DoubleRoundType doubleRoundType, User creator)
 	{
 		return
 		GameSession.createNew(gameType, doubleRoundType, server.getDatabase()).doOnSuccess(gameSession ->
 		{
-			for (User user : users)
-				gameSession.addPlayer(user.createPlayer());
-
-			if (gameSession.getFreeLobbyPlaces() <= 0)
-				gameSession.start();
-
+			gameSession.addPlayer(creator.createPlayer());
 			gameSessions.put(gameSession.getID(), gameSession);
 			server.broadcastStatus();
 		});

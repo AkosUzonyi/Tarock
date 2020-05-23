@@ -78,8 +78,7 @@ message GameSession
 message CreateGameSession
 {
     required string type = 1;
-    repeated int32 userID = 2;
-    required string double_round_type = 3;
+    required string double_round_type = 2;
 }
 
 message DeleteGameSession

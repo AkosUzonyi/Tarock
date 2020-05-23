@@ -12,6 +12,15 @@
         app:allowDividerBelow="true"
     />
 
+    <SwitchPreferenceCompat
+        app:key="sounds"
+        app:title="@string/settings_sounds"
+        android:defaultValue="true"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"
+    />
+
     <ListPreference
         app:key="language"
         app:title="@string/settings_language"

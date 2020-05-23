@@ -13,6 +13,7 @@ import android.view.inputmethod.*;
 import android.widget.*;
 import androidx.appcompat.app.*;
 import androidx.lifecycle.*;
+import androidx.preference.*;
 import androidx.recyclerview.widget.*;
 import androidx.viewpager.widget.*;
 import com.tisza.tarock.R;
@@ -368,7 +369,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				break;
 		}
 
-		zebiSounds.setEnabled(gameInfo.getType() == GameType.ZEBI && gameInfo.containsUser(121));
+		boolean soundsEnabled = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("sounds", true);
+		zebiSounds.setEnabled(soundsEnabled && gameInfo.getType() == GameType.ZEBI && gameInfo.containsUser(121));
 	}
 
 	private User getUserOfPlayer(int player)

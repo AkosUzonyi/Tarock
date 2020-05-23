@@ -37,11 +37,4 @@
         android:layout_height="match_parent"
         android:layout_marginRight="@dimen/user_margin"
     />
-
-    <ImageView
-        android:id="@+id/select_user"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:src="@drawable/ic_remove_circle_black_40dp"
-    />
 </LinearLayout>

@@ -15,22 +15,19 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 {
 	private static final User USER_ANYBODY = new User(0, "", null, false, false, false);
 
-	private int actionButtonImageRes;
 	private int minimumLength;
 	private boolean imageVisible = true;
 	private Picasso picasso;
 	private LayoutInflater inflater;
 	private List<User> users = new ArrayList<>();
-	private UserClickedListener userClickedListener;
 
-	public UsersAdapter(Context context, int actionButtonImageRes)
+	public UsersAdapter(Context context)
 	{
-		this(context, actionButtonImageRes, 0);
+		this(context, 0);
 	}
 
-	public UsersAdapter(Context context, int actionButtonImageRes, int minimumLength)
+	public UsersAdapter(Context context, int minimumLength)
 	{
-		this.actionButtonImageRes = actionButtonImageRes;
 		this.minimumLength = minimumLength;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		picasso = Picasso.with(context);
@@ -39,11 +36,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 	public void setImageVisible(boolean imageVisible)
 	{
 		this.imageVisible = imageVisible;
-	}
-
-	public void setUsersSelectedListener(UserClickedListener userClickedListener)
-	{
-		this.userClickedListener = userClickedListener;
 	}
 
 	public void setUsers(List<User> users)
@@ -79,7 +71,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 		holder.nameView = view.findViewById(R.id.user_name);
 		holder.isFriendView = view.findViewById(R.id.is_user_friend);
 		holder.isOnlineView = view.findViewById(R.id.is_user_online);
-		holder.selectUser = view.findViewById(R.id.select_user);
 
 		return holder;
 	}
@@ -115,16 +106,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 
 		holder.isOnlineView.setVisibility(user.isBot() ? View.GONE : View.VISIBLE);
 		holder.isOnlineView.setImageResource(user.isOnline() ? R.drawable.online : R.drawable.offline);
-
-		holder.selectUser.setVisibility(actionButtonImageRes >= 0 && user != USER_ANYBODY ? View.VISIBLE : View.GONE);
-		if (actionButtonImageRes >= 0)
-			holder.selectUser.setImageResource(actionButtonImageRes);
-
-		holder.selectUser.setOnClickListener(v ->
-		{
-			if (userClickedListener != null)
-				userClickedListener.userClicked(user);
-		});
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder
@@ -133,16 +114,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 		public TextView nameView;
 		public View isFriendView;
 		public ImageView isOnlineView;
-		public ImageView selectUser;
 
 		public ViewHolder(View view)
 		{
 			super(view);
 		}
-	}
-
-	public interface UserClickedListener
-	{
-		void userClicked(User users);
 	}
 }

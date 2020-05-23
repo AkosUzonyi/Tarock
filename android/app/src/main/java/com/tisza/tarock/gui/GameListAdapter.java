@@ -115,7 +115,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		ViewHolder holder = new ViewHolder(view);
 		holder.gameTypeTextView = view.findViewById(R.id.game_type);
 		holder.usersRecyclerView = view.findViewById(R.id.game_users);
-		holder.usersAdapter = new UsersAdapter(context, -1);
+		holder.usersAdapter = new UsersAdapter(context);
 		holder.usersAdapter.setImageVisible(false);
 		holder.usersRecyclerView.setAdapter(holder.usersAdapter);
 		holder.usersRecyclerView.setLayoutManager(new GridLayoutManager(context, 2));

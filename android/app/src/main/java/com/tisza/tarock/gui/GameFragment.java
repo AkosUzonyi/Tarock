@@ -177,7 +177,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		userListRecyclerView = messagesFrame.findViewById(R.id.game_user_list_recycler_view);
 		userListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 		userListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-		usersAdapter = new UsersAdapter(getContext(), -1);
+		usersAdapter = new UsersAdapter(getContext());
 		userListRecyclerView.setAdapter(usersAdapter);
 		lobbyStartButton = messagesFrame.findViewById(R.id.lobby_start_button);
 		lobbyStartButton.setOnClickListener(v ->

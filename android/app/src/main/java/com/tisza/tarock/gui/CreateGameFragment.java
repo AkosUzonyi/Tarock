@@ -72,6 +72,8 @@ public class CreateGameFragment extends MainActivityFragment
 		createButton = view.findViewById(R.id.create_game_button);
 		createButton.setOnClickListener(v -> createButtonClicked());
 
+		connectionViewModel.getGames().observe(this, this::onGameInfoUpdate);
+
 		searchResultUsersAdapter = new UsersAdapter(getContext(), R.drawable.ic_add_circle_black_40dp);
 		searchResultUsersAdapter.setUsersSelectedListener(this::selectUser);
 		searchResultUsersAdapter.setUsers(searchResultUsers);
@@ -95,6 +97,23 @@ public class CreateGameFragment extends MainActivityFragment
 		updateCreateButton();
 
 		return view;
+	}
+
+	private void onGameInfoUpdate(List<GameInfo> games)
+	{
+		Integer myUserID = connectionViewModel.getUserID().getValue();
+		if (myUserID == null)
+			return;
+
+		for (GameInfo gameInfo : games)
+		{
+			if (gameInfo.getState() == GameSessionState.LOBBY && gameInfo.containsUser(myUserID))
+			{
+				getMainActivity().getSupportFragmentManager().popBackStack();
+				getMainActivity().joinGame(gameInfo.getId());
+				break;
+			}
+		}
 	}
 
 	private void recyclerViewSetupCommon(RecyclerView recyclerView)
@@ -131,8 +150,6 @@ public class CreateGameFragment extends MainActivityFragment
 		}
 
 		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setCreateGameSession(builder).build());
-
-		getActivity().getSupportFragmentManager().popBackStack();
 	}
 
 	private static String normalizeString(CharSequence str)

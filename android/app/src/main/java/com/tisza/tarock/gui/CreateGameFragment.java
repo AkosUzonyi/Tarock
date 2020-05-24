@@ -1,17 +1,15 @@
 package com.tisza.tarock.gui;
 
+import android.app.*;
 import android.content.*;
 import android.os.*;
 import android.view.*;
-import android.view.inputmethod.*;
 import android.widget.*;
 import androidx.lifecycle.*;
-import androidx.recyclerview.widget.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.proto.*;
 
-import java.text.*;
 import java.util.*;
 
 public class CreateGameFragment extends MainActivityFragment
@@ -24,6 +22,7 @@ public class CreateGameFragment extends MainActivityFragment
 
 	private Spinner gameTypeSpinner, doubleRoundTypeSpinner;
 	private Button createButton;
+	private ProgressDialog progressDialog;
 
 	private ConnectionViewModel connectionViewModel;
 
@@ -45,6 +44,10 @@ public class CreateGameFragment extends MainActivityFragment
 		createButton = view.findViewById(R.id.create_game_button);
 		createButton.setOnClickListener(v -> createButtonClicked());
 
+		progressDialog = new ProgressDialog(getContext());
+		progressDialog.setMessage(getString(R.string.lobby_create));
+		progressDialog.setCancelable(false);
+
 		connectionViewModel.getGames().observe(this, this::onGameInfoUpdate);
 
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
@@ -64,6 +67,7 @@ public class CreateGameFragment extends MainActivityFragment
 		{
 			if (gameInfo.getState() == GameSessionState.LOBBY && gameInfo.containsUser(myUserID))
 			{
+				progressDialog.dismiss();
 				getMainActivity().getSupportFragmentManager().popBackStack();
 				getMainActivity().joinGame(gameInfo.getId());
 				break;
@@ -85,5 +89,7 @@ public class CreateGameFragment extends MainActivityFragment
 		builder.setDoubleRoundType(DoubleRoundType.values()[doubleRoundTypeSpinner.getSelectedItemPosition()].getID());
 
 		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setCreateGameSession(builder).build());
+
+		progressDialog.show();
 	}
 }

@@ -41,6 +41,15 @@ public class Kings extends LastRounds
 	}
 
 	@Override
+	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	{
+		if (count == 1)
+			return false;
+
+		return super.canOverrideAnnouncement(announcement);
+	}
+
+	@Override
 	protected int getRoundCount()
 	{
 		return count;

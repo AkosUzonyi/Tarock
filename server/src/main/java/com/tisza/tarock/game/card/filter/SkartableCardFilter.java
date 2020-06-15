@@ -18,8 +18,9 @@ public class SkartableCardFilter implements CardFilter
 		if (c instanceof TarockCard)
 		{
 			int minValue = gameType.hasParent(GameType.MAGAS) ? 3 : 2;
+			int maxValue = gameType.hasParent(GameType.ZEBI) ? 20 : 19;
 			int value = ((TarockCard)c).getValue();
-			return value >= minValue && value <= 20;
+			return value >= minValue && value <= maxValue;
 		}
 		else
 		{

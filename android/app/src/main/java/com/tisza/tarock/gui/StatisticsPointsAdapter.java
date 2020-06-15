@@ -57,7 +57,7 @@ public class StatisticsPointsAdapter extends RecyclerView.Adapter<StatisticsPoin
 	public void onBindViewHolder(ViewHolder holder, int position)
 	{
 		holder.nameView.setText(names.get(position));
-		holder.pointsView.setText(String.valueOf(position < points.size() ? points.get(position) : 0));
+		holder.pointsView.setText(String.valueOf(position < points.size() ? (int)points.get(position) : 0));
 
 		int incrementPoint = position < incrementPoints.size() ? incrementPoints.get(position) : 0;
 		holder.incrementPointsView.setVisibility(incrementPoint != 0 ? View.VISIBLE : View.GONE);

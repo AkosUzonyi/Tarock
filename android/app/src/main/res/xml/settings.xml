@@ -6,7 +6,7 @@
     <SwitchPreferenceCompat
         app:key="notifications"
         app:title="@string/settings_notification"
-        android:defaultValue="true"
+        app:defaultValue="true"
         app:iconSpaceReserved="false"
         app:allowDividerAbove="true"
         app:allowDividerBelow="true"
@@ -15,7 +15,7 @@
     <SwitchPreferenceCompat
         app:key="sounds"
         app:title="@string/settings_sounds"
-        android:defaultValue="true"
+        app:defaultValue="true"
         app:iconSpaceReserved="false"
         app:allowDividerAbove="true"
         app:allowDividerBelow="true"
@@ -26,6 +26,7 @@
         app:title="@string/settings_language"
         app:entries="@array/settings_language_names"
         app:entryValues="@array/settings_language_codes"
+        app:defaultValue="1"
         app:summary="%s"
         app:iconSpaceReserved="false"
         app:allowDividerAbove="true"

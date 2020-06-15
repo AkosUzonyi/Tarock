@@ -74,7 +74,7 @@ public class TarockCount implements Announcement
 	@Override
 	public boolean requireIdentification()
 	{
-		return true;
+		return false;
 	}
 
 	@Override

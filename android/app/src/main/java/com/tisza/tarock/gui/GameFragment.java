@@ -17,7 +17,6 @@ import androidx.preference.*;
 import androidx.recyclerview.widget.*;
 import androidx.viewpager.widget.*;
 import com.tisza.tarock.R;
-import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
@@ -152,13 +151,13 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			public View getView(int position, View convertView, ViewGroup parent)
 			{
 				View view = super.getView(position, convertView, parent);
-				view.setOnClickListener(v ->
+				view.setOnClickListener(new DoubleClickListener(getContext(), v ->
 				{
 					ActionButtonItem actionButton = getItem(position);
 					if (actionButton.getAction() != null)
 						doAction(actionButton.getAction());
 					actionButton.onClicked();
-				});
+				}));
 				return view;
 			}
 		};
@@ -202,7 +201,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		ultimoViewManager = new UltimoViewManager(getActivity(), layoutInflater, (LinearLayout)messagesFrame.findViewById(R.id.ultimo_spinner_list));
 		ultimoBackButton.setOnClickListener(v -> setUltimoViewVisible(false));
 
-		announceButton.setOnClickListener(v ->
+		announceButton.setOnClickListener(new DoubleClickListener(getContext(), v ->
 		{
 			Announcement announcement = ultimoViewManager.getCurrentSelectedAnnouncement();
 
@@ -210,7 +209,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				throw new RuntimeException();
 
 			doAction(Action.announce(announcement));
-		});
+		}));
 
 		gameplayView = (RelativeLayout)layoutInflater.inflate(R.layout.gameplay, centerSpace, false);
 		playedCardViews = new PlayedCardView[4];
@@ -302,6 +301,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		statisticsCallerEntriesView.removeAllViews();
 		statisticsOpponentEntriesView.removeAllViews();
 		statisticsSumPointsView.setText(null);
+
+		cardClickListener = null;
 
 		for (PlayedCardView playedCardView : playedCardViews)
 			playedCardView.reset();
@@ -439,9 +440,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private PhaseEnum gamePhase;
 	
 	private String messagesHtml = "";
-	
+
+	private OnClickListener cardClickListener;
 	private List<Card> cardsToSkart = new ArrayList<>();
-	private boolean skarting = false;
 	private int prevBid;
 
 	@Override
@@ -522,6 +523,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			showCenterView(MESSAGES_VIEW_INDEX);
 			higlightAllName();
 			displayMessage(R.string.message_changing);
+			setSkartCardClickListener();
 		}
 		else if (phase == PhaseEnum.CALLING)
 		{
@@ -536,6 +538,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		else if (phase == PhaseEnum.GAMEPLAY)
 		{
 			showCenterViewDelayed(GAMEPLAY_VIEW_INDEX);
+			setPlayCardClickListener();
 		}
 		else if (phase == PhaseEnum.END)
 		{
@@ -586,7 +589,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			okButton.setVisibility(View.GONE);
 			throwButton.setVisibility(View.GONE);
 			cardsToSkart.clear();
-			skarting = false;
+			cardClickListener = null;
 		}
 	}
 
@@ -764,8 +767,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	{
 		if (gamePhase == PhaseEnum.CHANGING)
 		{
-			skarting = true;
-
 			okButton.setVisibility(View.VISIBLE);
 			okButton.setOnClickListener(v -> doAction(Action.skart(cardsToSkart)));
 		}
@@ -887,41 +888,46 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			final LinearLayout parentView = i < cardsUp ? myCardsView1 : myCardsView0;
 			parentView.addView(cardView);
 			cardToViewMapping.put(card, cardView);
-			
-			cardView.setOnClickListener(new OnClickListener()
+
+			cardView.setTag(card);
+			cardView.setOnClickListener(view ->
 			{
-				private boolean selectedForSkart = false;
-				@Override
-				public void onClick(View v)
-				{
-					if (skarting)
-					{
-						if (!selectedForSkart)
-						{
-							cardsToSkart.add(card);
-							selectedForSkart = true;
-							Animation a = new TranslateAnimation(0, 0, 0, -v.getHeight() / 5);
-							a.setDuration(300);
-							a.setFillAfter(true);
-							v.startAnimation(a);
-						}
-						else
-						{
-							cardsToSkart.remove(card);
-							selectedForSkart = false;
-							Animation a = new TranslateAnimation(0, 0, -v.getHeight() / 5, 0);
-							a.setDuration(300);
-							a.setFillAfter(true);
-							v.startAnimation(a);
-						}
-					}
-					else if (gamePhase == PhaseEnum.GAMEPLAY && !playedCardViews[0].isTaking())
-					{
-						doAction(Action.play(card));
-					}
-				}
+				if (cardClickListener != null)
+					cardClickListener.onClick(view);
 			});
 		}
+	}
+
+	private void setSkartCardClickListener()
+	{
+		cardClickListener = v ->
+		{
+			Card card = (Card)v.getTag();
+			if (!cardsToSkart.contains(card))
+			{
+				cardsToSkart.add(card);
+				Animation a = new TranslateAnimation(0, 0, 0, -v.getHeight() / 5);
+				a.setDuration(300);
+				a.setFillAfter(true);
+				v.startAnimation(a);
+			}
+			else
+			{
+				cardsToSkart.remove(card);
+				Animation a = new TranslateAnimation(0, 0, -v.getHeight() / 5, 0);
+				a.setDuration(300);
+				a.setFillAfter(true);
+				v.startAnimation(a);
+			}
+		};
+	}
+
+	private void setPlayCardClickListener()
+	{
+		cardClickListener = new DoubleClickListener(getContext(), v ->
+		{
+			doAction(Action.play((Card)v.getTag()));
+		});
 	}
 
 	private void removeAllMyCardsView()

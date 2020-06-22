@@ -21,6 +21,15 @@
         app:allowDividerBelow="true"
     />
 
+    <SwitchPreferenceCompat
+        app:key="double_click"
+        app:title="@string/settings_double_click"
+        app:defaultValue="false"
+        app:iconSpaceReserved="false"
+        app:allowDividerAbove="true"
+        app:allowDividerBelow="true"
+    />
+
     <ListPreference
         app:key="language"
         app:title="@string/settings_language"

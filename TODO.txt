@@ -33,7 +33,6 @@ cancel announcement
 improve ui for ultimo
 double round message
 kibic see cards
-double click
 override bid game option
 
 refactorizations:

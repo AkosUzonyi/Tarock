@@ -40,6 +40,7 @@
 
     <string name="settings_notification">Értesítések engedélyezése</string>
     <string name="settings_sounds">Hangok</string>
+    <string name="settings_double_click">Dupla kattintás</string>
     <string name="settings_language" translatable="false">Nyelv/Language</string>
     <string-array name="settings_language_names">
         <item>Magyar</item>

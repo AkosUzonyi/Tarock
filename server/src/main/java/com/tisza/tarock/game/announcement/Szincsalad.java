@@ -49,7 +49,7 @@ public class Szincsalad extends LastRounds
 	@Override
 	protected boolean isSameCategory(LastRounds otherAnnouncements)
 	{
-		return otherAnnouncements instanceof Szincsalad;
+		return otherAnnouncements instanceof Szincsalad && suit == ((Szincsalad)otherAnnouncements).suit;
 	}
 
 	@Override

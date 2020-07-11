@@ -25,7 +25,7 @@ public class XXIFogas extends AnnouncementBase
 	{
 		int points = super.calculatePoints(game, team);
 
-		if (game.getGameType() == GameType.ZEBI)
+		if (game.getGameType().hasParent(GameType.MAGAS))
 			points = points * 30 / 21; //a bit hacky, but hey, this rule is also hacky
 
 		return points;

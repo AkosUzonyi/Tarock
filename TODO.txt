@@ -4,6 +4,7 @@ thrown cards not shown
 language changes randomly
 paskievics: t2 name: sas
 take animation delay not working on a few devices
+tarock count
 double round length with moreplayers
 XX skart
 

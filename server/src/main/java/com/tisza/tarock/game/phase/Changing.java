@@ -61,6 +61,12 @@ class Changing extends Phase
 
 			player = player.nextPlayer();
 		}
+
+		if (game.getPlayerCards(game.getBidWinnerPlayer()).getCards().stream().noneMatch(Card::isHonor))
+		{
+			game.broadcastEvent(Event.throwCards(player));
+			game.changePhase(new PendingNewGame(game, true));
+		}
 	}
 	
 	@Override
@@ -137,8 +143,8 @@ class Changing extends Phase
 
 	private boolean canThrow(PlayerSeat player)
 	{
-		boolean zebiThrow = game.getGameType().hasParent(GameType.ZEBI) && game.getWinnerBid() == 3 && game.getBidWinnerPlayer() == player && player == PlayerSeat.SEAT3;
-		return game.getPlayerCards(player).canBeThrown(game.getGameType()) || zebiThrow;
+		boolean lastPlayerThrow = game.getWinnerBid() == 3 && game.getBidWinnerPlayer() == player && player == PlayerSeat.SEAT3;
+		return game.getPlayerCards(player).canBeThrown(game.getGameType()) || lastPlayerThrow;
 	}
 
 	private boolean isFinished()

@@ -182,6 +182,12 @@ class Bidding extends Phase
 			if (defaultBid == 3)
 				result.add(0);
 		}
+		else
+		{
+			if (currentPlayer == PlayerSeat.SEAT3 && lastBidPlayer == null)
+				result.add(3);
+		}
+
 
 		result.sort(Collections.reverseOrder());
 		return result;

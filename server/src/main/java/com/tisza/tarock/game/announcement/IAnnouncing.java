@@ -22,6 +22,6 @@ public interface IAnnouncing
 	PlayerPairs getPlayerPairs();
 	boolean canAnnounce(AnnouncementContra a);
 	PlayerCards getCards(PlayerSeat player);
-	PlayerSeat getPlayerToAnnounceSolo();
+	boolean shouldHkpBeAnnounced();
 	GameType getGameType();
 }

@@ -95,18 +95,10 @@ class Changing extends Phase
 		
 		int tarockCount = 0;
 		for (Card c : cardsToSkart)
-		{
 			if (c instanceof TarockCard)
-			{
 				tarockCount++;
-				if (c.equals(Card.getTarockCard(20)))
-				{
-					game.setPlayerSkarted20(player);
-				}
-			}
 
-			game.addCardToSkart(player == game.getBidWinnerPlayer() ? Team.CALLER : Team.OPPONENT, c);
-		}
+		game.setSkart(player, cardsToSkart);
 		tarockCounts.put(player, tarockCount);
 		
 		skartingPlayerCards.removeCards(cardsToSkart);
@@ -118,7 +110,7 @@ class Changing extends Phase
 		{
 			game.broadcastEvent(Event.skartTarock(tarockCounts));
 
-			List<Card> callerSkartedTarocks = game.getSkartForTeam(Team.CALLER).stream().filter(c -> c instanceof TarockCard).collect(Collectors.toList());
+			List<Card> callerSkartedTarocks = game.getSkart(game.getBidWinnerPlayer()).stream().filter(c -> c instanceof TarockCard).collect(Collectors.toList());
 			if (!callerSkartedTarocks.isEmpty())
 				game.broadcastEvent(Event.skart(game.getBidWinnerPlayer(), callerSkartedTarocks));
 

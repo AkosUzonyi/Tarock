@@ -95,7 +95,7 @@ public class TeamInfoTracker implements EventHandler
 		if (game.getInvitAccepted() != null && !inviterSkartedTarock)
 			revealAllTeamInfo();
 
-		if (game.getSkartForTeam(Team.CALLER).contains(card))
+		if (game.getSkart(game.getBidWinnerPlayer()).contains(card))
 			revealAllTeamInfo();
 	}
 

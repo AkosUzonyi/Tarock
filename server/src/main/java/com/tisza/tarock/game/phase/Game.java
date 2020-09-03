@@ -28,9 +28,9 @@ public class Game
 	private PlayerSeat bidWinnerPlayer = null;
 	private int winnerBid;
 
-	private Map<Team, List<Card>> skartForTeams = new HashMap<>();
-	private PlayerSeat playerSkarted20 = null;
+	private PlayerSeatMap<Collection<Card>> skartedCards = new PlayerSeatMap<>();
 
+	private Card calledCard = null;
 	private PlayerPairs playerPairs = null;
 	private boolean isSoloIntentional = false;
 	private Invitation invitAccepted = null;
@@ -52,11 +52,6 @@ public class Game
 		{
 			playersCards.put(player, new PlayerCards());
 			wonCards.put(player, new ArrayList<>());
-		}
-
-		for (Team t : Team.values())
-		{
-			skartForTeams.put(t, new ArrayList<>());
 		}
 	}
 
@@ -209,24 +204,27 @@ public class Game
 		return winnerBid;
 	}
 
-	void addCardToSkart(Team team, Card card)
+	void setSkart(PlayerSeat player, Collection<Card> cards)
 	{
-		skartForTeams.get(team).add(card);
+		skartedCards.put(player, cards);
 	}
 
-	public List<Card> getSkartForTeam(Team team)
+	public Collection<Card> getSkart(PlayerSeat player)
 	{
-		return skartForTeams.get(team);
+		return skartedCards.get(player);
 	}
 
-	void setPlayerSkarted20(PlayerSeat playerSkarted20)
+	public Card getCalledCard()
 	{
-		this.playerSkarted20 = playerSkarted20;
+		return calledCard;
 	}
 
-	public PlayerSeat getPlayerSkarted20()
+	void setCalledCard(Card card)
 	{
-		return playerSkarted20;
+		calledCard = card;
+
+		if (invitSent != null && card.equals(invitSent.getCard()))
+			invitAccepted = invitSent;
 	}
 
 	void setPlayerPairs(PlayerPairs playerPairs)
@@ -249,24 +247,9 @@ public class Game
 		return isSoloIntentional;
 	}
 
-	void invitAccepted()
-	{
-		invitAccepted = invitSent;
-	}
-
 	public Invitation getInvitAccepted()
 	{
 		return invitAccepted;
-	}
-
-	void setPlayerToAnnounceSolo(PlayerSeat playerToAnnounceSolo)
-	{
-		this.playerToAnnounceSolo = playerToAnnounceSolo;
-	}
-
-	public PlayerSeat getPlayerToAnnounceSolo()
-	{
-		return playerToAnnounceSolo;
 	}
 
 	public AnnouncementsState getAnnouncementsState()
@@ -320,12 +303,14 @@ public class Game
 				points += c.getPoints();
 
 		if (countSelfTeamSkart)
-			for (Card c : getSkartForTeam(team))
-				points += c.getPoints();
+			for (PlayerSeat player : playerPairs.getPlayersInTeam(team))
+				for (Card c : skartedCards.get(player))
+					points += c.getPoints();
 
 		if (countOpponentTeamSkart)
-			for (Card c : getSkartForTeam(team.getOther()))
-				points += c.getPoints();
+			for (PlayerSeat player : playerPairs.getPlayersInTeam(team.getOther()))
+				for (Card c : skartedCards.get(player))
+					points += c.getPoints();
 
 		return points;
 	}

@@ -29,13 +29,14 @@ class Calling extends Phase
 		callerPlayer = game.getBidWinnerPlayer();
 		
 		canCallAnyTarock = false;
-		for (Card c : game.getSkartForTeam(Team.OPPONENT))
+		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			if (c instanceof TarockCard)
-			{
-				canCallAnyTarock = true;
-				break;
-			}
+			if (player == callerPlayer)
+				continue;
+
+			for (Card c : game.getSkart(player))
+				if (c instanceof TarockCard)
+					canCallAnyTarock = true;
 		}
 
 		sendAvailableCalls();
@@ -66,26 +67,14 @@ class Calling extends Phase
 		//if the player called a card that had been skarted
 		if (calledPlayer == null)
 		{
-			if (game.getSkartForTeam(Team.CALLER).contains(card))
+			if (game.getSkart(game.getBidWinnerPlayer()).contains(card))
 				game.setSoloIntentional();
 
 			calledPlayer = callerPlayer;
-			
-			if (card.equals(Card.getTarockCard(20)) && game.getPlayerSkarted20() != callerPlayer)
-			{
-				if (game.getPlayerSkarted20() == null)
-					throw new RuntimeException();
-				game.setPlayerToAnnounceSolo(game.getPlayerSkarted20());
-			}
 		}
 
+		game.setCalledCard(card);
 		game.setPlayerPairs(new PlayerPairs(callerPlayer, calledPlayer));
-
-		Invitation invit = game.getInvitSent();
-		if (invit != null && card.equals(invit.getCard()))
-		{
-			game.invitAccepted();
-		}
 
 		game.broadcastEvent(Event.call(player, card));
 		game.changePhase(new Announcing(game));

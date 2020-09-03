@@ -64,7 +64,7 @@ class Announcing extends Phase implements IAnnouncing
 		if (player != currentPlayer)
 			return false;
 		
-		if (Announcements.hkp.canBeAnnounced(this))
+		if (shouldHkpBeAnnounced())
 		{
 			//game.sendEvent(player, new EventActionFailed(Reason.CONTRAJATEK_REQUIRED));
 			return false;
@@ -130,11 +130,9 @@ class Announcing extends Phase implements IAnnouncing
 			}
 		}
 		
-		if (Announcements.hkp.canBeAnnounced(this))
-		{
+		if (shouldHkpBeAnnounced())
 			list.remove(new AnnouncementContra(Announcements.jatek, 1));
-		}
-		
+
 		game.sendEvent(currentPlayer, Event.availableAnnouncements(list));
 		game.broadcastEvent(Event.turn(currentPlayer));
 	}
@@ -144,10 +142,10 @@ class Announcing extends Phase implements IAnnouncing
 	{
 		Team currentPlayerTeam = getCurrentTeam();
 		Announcement a = ac.getAnnouncement();
-		
-		if (ac.equals(new AnnouncementContra(Announcements.jatek, 1)) && Announcements.hkp.canBeAnnounced(this))
+
+		if (ac.equals(new AnnouncementContra(Announcements.jatek, 1)) && shouldHkpBeAnnounced())
 			return false;
-		
+
 		if (ac.getContraLevel() == 0)
 		{
 			return (!needsIdentification() || !a.requireIdentification()) &&
@@ -250,9 +248,15 @@ class Announcing extends Phase implements IAnnouncing
 	}
 
 	@Override
-	public PlayerSeat getPlayerToAnnounceSolo()
+	public boolean shouldHkpBeAnnounced()
 	{
-		return game.getPlayerToAnnounceSolo();
+		if (isAnnounced(getCurrentTeam(), Announcements.hkp))
+			return false;
+
+		if (getContraLevel(Team.CALLER, Announcements.jatek) > 0)
+			return false;
+
+		return game.getSkart(currentPlayer).contains(game.getCalledCard());
 	}
 
 	@Override

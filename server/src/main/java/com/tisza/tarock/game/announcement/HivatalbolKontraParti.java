@@ -24,12 +24,6 @@ public class HivatalbolKontraParti extends AnnouncementWrapper
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
-		if (announcing.isAnnounced(announcing.getCurrentTeam(), Announcements.hkp))
-			return false;
-		
-		if (announcing.getCurrentPlayer() != announcing.getPlayerToAnnounceSolo())
-			return false;
-		
-		return announcing.getContraLevel(Team.CALLER, Announcements.jatek) == 0;
+		return announcing.shouldHkpBeAnnounced();
 	}
 }

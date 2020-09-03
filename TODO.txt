@@ -6,7 +6,7 @@ paskievics: t2 name: sas
 take animation delay not working on a few devices
 tarock count
 double round length with moreplayers
-XX skart
+facan points
 
 renames:
 
@@ -36,6 +36,7 @@ improve ui for ultimo
 double round message
 kibic see cards
 override bid game option
+lobby paramters (eg. XX skart)
 
 refactorizations:
 android package structure

@@ -37,6 +37,7 @@ double round message
 kibic see cards
 override bid game option
 lobby paramters (eg. XX skart)
+ultikassza
 
 refactorizations:
 android package structure

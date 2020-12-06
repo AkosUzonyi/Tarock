@@ -38,6 +38,7 @@ kibic see cards
 override bid game option
 lobby paramters (eg. XX skart)
 ultikassza
+download points: more details
 
 refactorizations:
 android package structure
@@ -46,3 +47,5 @@ rxjava events
 android logging
 
 other:
+throwing cards not possible after rapid solo
+better ux for starting lobby

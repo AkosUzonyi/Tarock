@@ -17,7 +17,7 @@ public class ResourceMappings
 	public static Map<Card, Integer> cardToImageResource = new HashMap<>();
 	public static Map<Integer, String> bidToName = new HashMap<>();
 
-	public static String[] roundNames;
+	public static String[] trickNames;
 	public static String[] contraNames;
 	public static String[] tarockNames;
 	public static String[] suitNames;
@@ -32,7 +32,7 @@ public class ResourceMappings
 
 		Resources resources = context.getResources();
 		
-		roundNames = resources.getStringArray(R.array.round_array);
+		trickNames = resources.getStringArray(R.array.trick_array);
 		contraNames = resources.getStringArray(R.array.contra_array);
 		tarockNames = resources.getStringArray(R.array.tarokk_array);
 		suitNames = resources.getStringArray(R.array.suit_array);

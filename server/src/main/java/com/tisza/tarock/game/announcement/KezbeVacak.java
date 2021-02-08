@@ -4,26 +4,26 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.phase.*;
 
-public class KezbeVacak extends RoundAnnouncement
+public class KezbeVacak extends TrickAnnouncement
 {
-	private final int roundIndex;
+	private final int trickIndex;
 	private final Card cardToTakeWith;
 		
-	KezbeVacak(int roundIndex, Card cardToTakeWith)
+	KezbeVacak(int trickIndex, Card cardToTakeWith)
 	{
-		this.roundIndex = roundIndex;
+		this.trickIndex = trickIndex;
 		this.cardToTakeWith = cardToTakeWith;
 	}
 
 	@Override
 	public String getID()
 	{
-		return "kezbevacak" + "R" + roundIndex;
+		return "kezbevacak" + "R" + trickIndex;
 	}
 
-	public int getRound()
+	public int getTrick()
 	{
-		return roundIndex;
+		return trickIndex;
 	}
 
 	public Card getCard()
@@ -40,20 +40,20 @@ public class KezbeVacak extends RoundAnnouncement
 	@Override
 	public Result isSuccessful(Game game, Team team)
 	{
-		Round round = game.getRound(roundIndex);
-		PlayerSeat theCardPlayer = round.getPlayerOfCard(cardToTakeWith);
+		Trick trick = game.getTrick(trickIndex);
+		PlayerSeat theCardPlayer = trick.getPlayerOfCard(cardToTakeWith);
 		if (theCardPlayer == null) return Result.FAILED;
 		
 		if (game.getPlayerPairs().getTeam(theCardPlayer) != team)
 			return Result.FAILED;
 		
-		if (round.getWinner() != theCardPlayer)
+		if (trick.getWinner() != theCardPlayer)
 			return Result.FAILED;
 		
-		for (int i = 0; i < roundIndex; i++)
+		for (int i = 0; i < trickIndex; i++)
 		{
-			round = game.getRound(i);
-			PlayerSeat winner = round.getWinner();
+			trick = game.getTrick(i);
+			PlayerSeat winner = trick.getWinner();
 			
 			if (game.getPlayerPairs().getTeam(winner) != team)
 				return Result.FAILED;
@@ -63,13 +63,13 @@ public class KezbeVacak extends RoundAnnouncement
 	}
 
 	@Override
-	protected boolean containsRound(int round)
+	protected boolean containsTrick(int trick)
 	{
-		return this.roundIndex == round;
+		return this.trickIndex == trick;
 	}
 
 	@Override
-	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	protected boolean canOverrideAnnouncement(TrickAnnouncement announcement)
 	{
 		return false;
 	}

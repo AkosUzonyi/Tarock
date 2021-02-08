@@ -166,8 +166,8 @@ public class UltimoSelector
 			if (announcement.hasSuit())
 				properties.add(new SuitProperty(announcement.getSuit()));
 
-			if (announcement.hasRound())
-				properties.add(new RoundProperty(announcement.getRound()));
+			if (announcement.hasTrick())
+				properties.add(new TrickProperty(announcement.getTrick()));
 
 			return new AvailableUltimoEntry(properties, announcement);
 		}
@@ -317,34 +317,34 @@ public class UltimoSelector
 		}
 	}
 
-	private static class RoundProperty implements UltimoProperty
+	private static class TrickProperty implements UltimoProperty
 	{
-		private final int round;
+		private final int trick;
 
-		public RoundProperty(int round)
+		public TrickProperty(int trick)
 		{
-			this.round = round;
+			this.trick = trick;
 		}
 
 		@Override
 		public int hashCode()
 		{
-			return 400 - round;
+			return 400 - trick;
 		}
 
 		@Override
 		public boolean equals(Object other)
 		{
-			if (!(other instanceof RoundProperty))
+			if (!(other instanceof TrickProperty))
 				return false;
 
-			return round == ((RoundProperty)other).round;
+			return trick == ((TrickProperty)other).trick;
 		}
 
 		@Override
 		public String toString()
 		{
-			return ResourceMappings.roundNames[round];
+			return ResourceMappings.trickNames[trick];
 		}
 	}
 }

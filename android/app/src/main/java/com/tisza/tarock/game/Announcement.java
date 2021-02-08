@@ -13,15 +13,15 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 	private final int contraLevel;
 	private final int suit;
 	private final Card card;
-	private final int round;
+	private final int trick;
 
-	private Announcement(String id, String name, int suit, Card card, int round, int contraLevel)
+	private Announcement(String id, String name, int suit, Card card, int trick, int contraLevel)
 	{
 		this.id = id;
 		this.name = name;
 		this.suit = suit;
 		this.card = card;
-		this.round = round;
+		this.trick = trick;
 		this.contraLevel = contraLevel;
 	}
 
@@ -39,7 +39,7 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		int contraLevel;
 		int suit = -1;
 		Card card = null;
-		int round = -1;
+		int trick = -1;
 
 		int pos = 0;
 
@@ -70,11 +70,11 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 				case 'R':
 					try
 					{
-						round = Integer.parseInt(substr);
+						trick = Integer.parseInt(substr);
 					}
 					catch (NumberFormatException e)
 					{
-						throw new IllegalArgumentException("invalid round number: " + round);
+						throw new IllegalArgumentException("invalid trick number: " + trick);
 					}
 					break;
 				default:
@@ -82,7 +82,7 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 			}
 		}
 
-		return new Announcement(id, name, suit, card, round, contraLevel);
+		return new Announcement(id, name, suit, card, trick, contraLevel);
 	}
 
 	private static int parseSuit(String str)
@@ -120,8 +120,8 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 			builder.appendWord(ResourceMappings.suitNames[getSuit()]);
 		if (hasCard())
 			builder.appendWord(ResourceMappings.cardToName.get(getCard()));
-		if (hasRound())
-			builder.appendWord(ResourceMappings.roundNames[getRound()]);
+		if (hasTrick())
+			builder.appendWord(ResourceMappings.trickNames[getTrick()]);
 
 		String nameText = ResourceMappings.getAnnouncementNameText(getName());
 		if (nameText == null)
@@ -172,14 +172,14 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		return card;
 	}
 
-	public boolean hasRound()
+	public boolean hasTrick()
 	{
-		return round >= 0;
+		return trick >= 0;
 	}
 
-	public int getRound()
+	public int getTrick()
 	{
-		return round;
+		return trick;
 	}
 
 	@Override
@@ -194,7 +194,7 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 
 		if (suit != that.suit)
 			return false;
-		if (round != that.round)
+		if (trick != that.trick)
 			return false;
 		if (contraLevel != that.contraLevel)
 			return false;
@@ -209,7 +209,7 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		int result = name != null ? name.hashCode() : 0;
 		result = 31 * result + suit;
 		result = 31 * result + (card != null ? card.hashCode() : 0);
-		result = 31 * result + round;
+		result = 31 * result + trick;
 		result = 31 * result + contraLevel;
 		return result;
 	}
@@ -261,8 +261,8 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		if (hasCard() && other.hasCard() && !card.equals(other.card))
 			return card.compareTo(other.card);
 
-		if (hasRound() && other.hasRound() && round != other.round)
-			return (round - other.round) * (name.equals("ultimo") ? -1 : 1);
+		if (hasTrick() && other.hasTrick() && trick != other.trick)
+			return (trick - other.trick) * (name.equals("ultimo") ? -1 : 1);
 
 		return 0;
 	}

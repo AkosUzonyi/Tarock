@@ -8,7 +8,7 @@ import java.util.*;
 
 class Gameplay extends Phase
 {
-	private Round currentRound;
+	private Trick currentTrick;
 	
 	public Gameplay(Game game)
 	{
@@ -24,8 +24,8 @@ class Gameplay extends Phase
 	@Override
 	public void onStart()
 	{
-		currentRound = new Round(PlayerSeat.SEAT0);
-		game.broadcastEvent(Event.turn(currentRound.getCurrentPlayer()));
+		currentTrick = new Trick(PlayerSeat.SEAT0);
+		game.broadcastEvent(Event.turn(currentTrick.getCurrentPlayer()));
 
 		game.sendInGameStatistics();
 	}
@@ -33,7 +33,7 @@ class Gameplay extends Phase
 	@Override
 	public boolean playCard(PlayerSeat player, Card card)
 	{
-		if (player != currentRound.getCurrentPlayer())
+		if (player != currentTrick.getCurrentPlayer())
 			return false;
 		
 		if (!getPlayableCards().contains(card))
@@ -43,23 +43,23 @@ class Gameplay extends Phase
 		}
 
 		game.getPlayerCards(player).removeCard(card);
-		currentRound.placeCard(card);
+		currentTrick.placeCard(card);
 
 		game.broadcastEvent(Event.playCard(player, card));
 		
-		if (currentRound.isFinished())
+		if (currentTrick.isFinished())
 		{
-			game.addRound(currentRound);
-			PlayerSeat winner = currentRound.getWinner();
-			game.addWonCards(winner, currentRound.getCards());
-			currentRound = game.areAllRoundsPassed() ? null : new Round(winner);
+			game.addTrick(currentTrick);
+			PlayerSeat winner = currentTrick.getWinner();
+			game.addWonCards(winner, currentTrick.getCards());
+			currentTrick = game.areAllTricksPassed() ? null : new Trick(winner);
 			
 			game.broadcastEvent(Event.cardsTaken(winner));
 		}
 		
-		if (currentRound != null)
+		if (currentTrick != null)
 		{
-			game.broadcastEvent(Event.turn(currentRound.getCurrentPlayer()));
+			game.broadcastEvent(Event.turn(currentTrick.getCurrentPlayer()));
 		}
 		else
 		{
@@ -71,8 +71,8 @@ class Gameplay extends Phase
 	
 	private Collection<Card> getPlayableCards()
 	{
-		PlayerCards pc = game.getPlayerCards(currentRound.getCurrentPlayer());
-		Card firstCard = currentRound.getFirstCard();
+		PlayerCards pc = game.getPlayerCards(currentTrick.getCurrentPlayer());
+		Card firstCard = currentTrick.getFirstCard();
 		return pc.getPlayableCards(firstCard);
 	}
 }

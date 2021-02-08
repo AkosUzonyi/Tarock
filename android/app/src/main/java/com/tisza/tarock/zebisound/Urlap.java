@@ -9,7 +9,7 @@ import java.util.*;
 
 class Urlap extends ZebiSound
 {
-	private boolean newRound;
+	private boolean newTrick;
 	private boolean[] tarocksPlayed = new boolean[23];
 
 	public Urlap(Context context)
@@ -21,7 +21,7 @@ class Urlap extends ZebiSound
 	public void startGame(GameType gameType, int beginnerPlayer)
 	{
 		Arrays.fill(tarocksPlayed, false);
-		newRound = true;
+		newTrick = true;
 	}
 
 	@Override
@@ -31,14 +31,14 @@ class Urlap extends ZebiSound
 		{
 			int tarockValue = ((TarockCard)playedCard).getValue();
 
-			if (newRound && isUrlap(tarockValue))
+			if (newTrick && isUrlap(tarockValue))
 				activate();
 
 			tarocksPlayed[tarockValue] = true;
 		}
 
 
-		newRound = false;
+		newTrick = false;
 	}
 
 	private boolean isUrlap(int tarockValue)
@@ -53,6 +53,6 @@ class Urlap extends ZebiSound
 	@Override
 	public void cardsTaken(int winnerPlayer)
 	{
-		newRound = true;
+		newTrick = true;
 	}
 }

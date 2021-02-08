@@ -6,9 +6,9 @@ import com.tisza.tarock.game.phase.*;
 
 public class PagatSasUltimo extends Ultimo
 {
-	PagatSasUltimo(int roundIndex, TarockCard cardToTakeWith)
+	PagatSasUltimo(int trickIndex, TarockCard cardToTakeWith)
 	{
-		super(roundIndex, cardToTakeWith);
+		super(trickIndex, cardToTakeWith);
 	}
 
 	@Override
@@ -17,7 +17,7 @@ public class PagatSasUltimo extends Ultimo
 		if (getCard().equals(Card.getTarockCard(2)))
 			return GameType.MAGAS;
 
-		switch (getRound())
+		switch (getTrick())
 		{
 			case 8:         return GameType.PASKIEVICS;
 			case 7:         return GameType.ILLUSZTRALT;
@@ -64,12 +64,12 @@ public class PagatSasUltimo extends Ultimo
 	@Override
 	public int getPoints()
 	{
-		return 10 * (9 - getRound());
+		return 10 * (9 - getTrick());
 	}
 
 	@Override
 	public boolean canBeSilent()
 	{
-		return getRound() == 8;
+		return getTrick() == 8;
 	}
 }

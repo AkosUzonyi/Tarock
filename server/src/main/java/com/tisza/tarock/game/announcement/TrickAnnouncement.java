@@ -3,19 +3,19 @@ package com.tisza.tarock.game.announcement;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.phase.*;
 
-public abstract class RoundAnnouncement extends AnnouncementBase
+public abstract class TrickAnnouncement extends AnnouncementBase
 {
-	RoundAnnouncement() {}
+	TrickAnnouncement() {}
 
-	protected abstract boolean containsRound(int round);
-	protected abstract boolean canOverrideAnnouncement(RoundAnnouncement announcement);
+	protected abstract boolean containsTrick(int trick);
+	protected abstract boolean canOverrideAnnouncement(TrickAnnouncement announcement);
 
 	@Override
 	public boolean canBeAnnounced(IAnnouncing announcing)
 	{
 		Team team = announcing.getCurrentTeam();
 
-		for (RoundAnnouncement other : Announcements.getRoundAnnouncements())
+		for (TrickAnnouncement other : Announcements.getTrickAnnouncements())
 		{
 			if (!announcing.isAnnounced(team, other))
 				continue;
@@ -26,18 +26,18 @@ public abstract class RoundAnnouncement extends AnnouncementBase
 			if (!announcing.getGameType().hasParent(GameType.MAGAS) && canOverrideAnnouncement(other))
 				return false;
 
-			if (hasCommonRoundWith(other) && !canOverrideAnnouncement(other))
+			if (hasCommonTrickWith(other) && !canOverrideAnnouncement(other))
 				return false;
 		}
 
 		return super.canBeAnnounced(announcing);
 	}
 
-	private boolean hasCommonRoundWith(RoundAnnouncement other)
+	private boolean hasCommonTrickWith(TrickAnnouncement other)
 	{
-		for (int round = 0; round < Game.ROUND_COUNT; round++)
+		for (int trick = 0; trick < Game.ROUND_COUNT; trick++)
 		{
-			if (containsRound(round) && other.containsRound(round))
+			if (containsTrick(trick) && other.containsTrick(trick))
 				return true;
 		}
 
@@ -51,7 +51,7 @@ public abstract class RoundAnnouncement extends AnnouncementBase
 
 		Team team = announcing.getCurrentTeam();
 
-		for (RoundAnnouncement other : Announcements.getRoundAnnouncements())
+		for (TrickAnnouncement other : Announcements.getTrickAnnouncements())
 		{
 			if (announcing.isAnnounced(team, other) && canOverrideAnnouncement(other))
 				announcing.clearAnnouncement(team, other);

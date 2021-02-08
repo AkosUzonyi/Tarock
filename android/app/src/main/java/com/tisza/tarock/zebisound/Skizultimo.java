@@ -7,7 +7,7 @@ import com.tisza.tarock.game.card.*;
 
 class Skizultimo extends ZebiSound
 {
-	private int roundIndex;
+	private int trickIndex;
 
 	public Skizultimo(Context context)
 	{
@@ -17,19 +17,19 @@ class Skizultimo extends ZebiSound
 	@Override
 	public void startGame(GameType gameType, int beginnerPlayer)
 	{
-		roundIndex = 0;
+		trickIndex = 0;
 	}
 
 	@Override
 	public void cardsTaken(int winnerPlayer)
 	{
-		roundIndex++;
+		trickIndex++;
 	}
 
 	@Override
 	public void playCard(int player, Card card)
 	{
-		if (roundIndex == 8 && card.equals(Card.getTarockCard(22)))
+		if (trickIndex == 8 && card.equals(Card.getTarockCard(22)))
 			activate();
 	}
 }

@@ -4,7 +4,7 @@ import com.tisza.tarock.game.card.*;
 
 import java.util.*;
 
-public class Round
+public class Trick
 {
 	private final PlayerSeat beginnerPlayer;
 	private PlayerSeat currentPlayer;
@@ -12,7 +12,7 @@ public class Round
 	private PlayerSeatMap<Card> cards = new PlayerSeatMap<>();
 	private boolean finished = false;
 	
-	public Round(PlayerSeat beginnerPlayer)
+	public Trick(PlayerSeat beginnerPlayer)
 	{
 		if (beginnerPlayer == null)
 			throw new IllegalArgumentException("beginnerPlayer == null");
@@ -35,7 +35,7 @@ public class Round
 	public PlayerSeat getWinner()
 	{
 		if (!isFinished())
-			throw new IllegalStateException("Round has not finished");
+			throw new IllegalStateException("Trick has not finished");
 		return winnerPlayer;
 	}
 	

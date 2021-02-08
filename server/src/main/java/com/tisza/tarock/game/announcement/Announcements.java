@@ -9,7 +9,7 @@ public class Announcements
 	private static final Map<String, Announcement> idmap = new HashMap<>();
 	private static final List<Announcement> list = new ArrayList<>();
 
-	private static final List<RoundAnnouncement> roundAnnouncements = new ArrayList<>();
+	private static final List<TrickAnnouncement> trickAnnouncements = new ArrayList<>();
 
 	public static final Jatek jatek = new Jatek();
 	public static final HivatalbolKontraParti hkp = new HivatalbolKontraParti();
@@ -38,9 +38,9 @@ public class Announcements
 		return list;
 	}
 
-	public static Collection<RoundAnnouncement> getRoundAnnouncements()
+	public static Collection<TrickAnnouncement> getTrickAnnouncements()
 	{
-		return roundAnnouncements;
+		return trickAnnouncements;
 	}
 
 	public static Announcement getByID(String id)
@@ -58,8 +58,8 @@ public class Announcements
 		idmap.put(announcement.getID(), announcement);
 		list.add(announcement);
 
-		if (announcement instanceof RoundAnnouncement)
-			roundAnnouncements.add((RoundAnnouncement)announcement);
+		if (announcement instanceof TrickAnnouncement)
+			trickAnnouncements.add((TrickAnnouncement)announcement);
 	}
 
 	static
@@ -113,10 +113,10 @@ public class Announcements
 			{
 				SuitCard card = Card.getSuitCard(s, v);
 				ultimok.put(card, new HashMap<>());
-				for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
+				for (int trickIndex = 8; trickIndex >= 5; trickIndex--)
 				{
-					Ultimo announcement = new Szinultimo(roundIndex, card);
-					ultimok.get(card).put(roundIndex, announcement);
+					Ultimo announcement = new Szinultimo(trickIndex, card);
+					ultimok.get(card).put(trickIndex, announcement);
 					add(announcement);
 				}
 			}
@@ -126,10 +126,10 @@ public class Announcements
 		{
 			TarockCard card = Card.getTarockCard(t);
 			ultimok.put(card, new HashMap<>());
-			for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
+			for (int trickIndex = 8; trickIndex >= 5; trickIndex--)
 			{
-				Ultimo announcement = new PagatSasUltimo(roundIndex, card);
-				ultimok.get(card).put(roundIndex, announcement);
+				Ultimo announcement = new PagatSasUltimo(trickIndex, card);
+				ultimok.get(card).put(trickIndex, announcement);
 				add(announcement);
 			}
 
@@ -141,10 +141,10 @@ public class Announcements
 		{
 			Card card = Card.getTarockCard(21);
 			ultimok.put(card, new HashMap<>());
-			for (int roundIndex = 8; roundIndex >= 5; roundIndex--)
+			for (int trickIndex = 8; trickIndex >= 5; trickIndex--)
 			{
-				Ultimo announcement = new XXIUltimo(roundIndex);
-				ultimok.get(card).put(roundIndex, announcement);
+				Ultimo announcement = new XXIUltimo(trickIndex);
+				ultimok.get(card).put(trickIndex, announcement);
 				add(announcement);
 			}
 		}

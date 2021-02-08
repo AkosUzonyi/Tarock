@@ -4,21 +4,21 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.phase.*;
 
-public abstract class Ultimo extends RoundAnnouncement
+public abstract class Ultimo extends TrickAnnouncement
 {
-	private final int roundIndex;
+	private final int trickIndex;
 	private final Card cardToTakeWith;
 		
-	Ultimo(int roundIndex, Card cardToTakeWith)
+	Ultimo(int trickIndex, Card cardToTakeWith)
 	{
-		this.roundIndex = roundIndex;
+		this.trickIndex = trickIndex;
 		this.cardToTakeWith = cardToTakeWith;
 	}
 
 	@Override
 	public String getID()
 	{
-		return "ultimo" + "C" + cardToTakeWith.getID() + "R" + roundIndex;
+		return "ultimo" + "C" + cardToTakeWith.getID() + "R" + trickIndex;
 	}
 
 	public final Card getCard()
@@ -26,16 +26,16 @@ public abstract class Ultimo extends RoundAnnouncement
 		return cardToTakeWith;
 	}
 
-	public final int getRound()
+	public final int getTrick()
 	{
-		return roundIndex;
+		return trickIndex;
 	}
 
 	@Override
 	protected Result isSuccessful(Game game, Team team)
 	{
-		Round round = game.getRound(roundIndex);
-		PlayerSeat theCardPlayer = round.getPlayerOfCard(cardToTakeWith);
+		Trick trick = game.getTrick(trickIndex);
+		PlayerSeat theCardPlayer = trick.getPlayerOfCard(cardToTakeWith);
 		if (theCardPlayer == null) return Result.FAILED;
 		
 		if (game.getPlayerPairs().getTeam(theCardPlayer) != team)
@@ -44,7 +44,7 @@ public abstract class Ultimo extends RoundAnnouncement
 		}
 		else
 		{
-			if (round.getWinner() == theCardPlayer)
+			if (trick.getWinner() == theCardPlayer)
 			{
 				return canBeSilent() ? Result.SUCCESSFUL_SILENT : Result.SUCCESSFUL;
 			}
@@ -56,20 +56,20 @@ public abstract class Ultimo extends RoundAnnouncement
 	}
 
 	@Override
-	protected boolean containsRound(int round)
+	protected boolean containsTrick(int trick)
 	{
-		return this.roundIndex == round;
+		return this.trickIndex == trick;
 	}
 
 	@Override
-	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	protected boolean canOverrideAnnouncement(TrickAnnouncement announcement)
 	{
 		if (!(announcement instanceof Ultimo))
 			return false;
 
 		Ultimo otherUltimo = (Ultimo)announcement;
 
-		return cardToTakeWith == otherUltimo.cardToTakeWith && roundIndex < otherUltimo.roundIndex;
+		return cardToTakeWith == otherUltimo.cardToTakeWith && trickIndex < otherUltimo.trickIndex;
 	}
 
 	protected boolean canBeSilent()

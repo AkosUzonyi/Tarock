@@ -7,8 +7,8 @@ import com.tisza.tarock.game.card.*;
 
 class Pagatultimobukott extends ZebiSound
 {
-	private int round;
-	private int pagatInLastRoundPlayer;
+	private int trick;
+	private int pagatInLastTrickPlayer;
 
 	public Pagatultimobukott(Context context)
 	{
@@ -18,23 +18,23 @@ class Pagatultimobukott extends ZebiSound
 	@Override
 	public void startGame(GameType gameType, int beginnerPlayer)
 	{
-		round = 0;
-		pagatInLastRoundPlayer = -1;
+		trick = 0;
+		pagatInLastTrickPlayer = -1;
 	}
 
 	@Override
 	public void playCard(int player, Card playedCard)
 	{
-		if (round == 8 && playedCard.equals(Card.getTarockCard(1)))
-			pagatInLastRoundPlayer = player;
+		if (trick == 8 && playedCard.equals(Card.getTarockCard(1)))
+			pagatInLastTrickPlayer = player;
 	}
 
 	@Override
 	public void cardsTaken(int winnerPlayer)
 	{
-		round++;
+		trick++;
 
-		if (pagatInLastRoundPlayer >= 0 && pagatInLastRoundPlayer != winnerPlayer)
+		if (pagatInLastTrickPlayer >= 0 && pagatInLastTrickPlayer != winnerPlayer)
 			activate();
 	}
 }

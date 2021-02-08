@@ -85,7 +85,7 @@ public class RandomPlayer extends Player
 		@Override public void call(PlayerSeat player, Card card) {}
 
 		private Card currentFirstCard = null;
-		private int cardsInRound;
+		private int cardsInTrick;
 
 		@Override
 		public void playCard(PlayerSeat player, Card card)
@@ -93,15 +93,15 @@ public class RandomPlayer extends Player
 			if (player == getSeat())
 				myCards.removeCard(card);
 
-			if (cardsInRound == 0)
+			if (cardsInTrick == 0)
 				currentFirstCard = card;
 
-			cardsInRound++;
+			cardsInTrick++;
 
-			if (cardsInRound == 4)
+			if (cardsInTrick == 4)
 				currentFirstCard = null;
 
-			cardsInRound %= 4;
+			cardsInTrick %= 4;
 		}
 
 		@Override public void readyForNewGame(PlayerSeat player) {}

@@ -6,9 +6,9 @@ import com.tisza.tarock.game.phase.*;
 
 public class XXIUltimo extends Ultimo
 {
-	XXIUltimo(int roundIndex)
+	XXIUltimo(int trickIndex)
 	{
-		super(roundIndex, Card.getTarockCard(21));
+		super(trickIndex, Card.getTarockCard(21));
 	}
 
 	@Override
@@ -45,6 +45,6 @@ public class XXIUltimo extends Ultimo
 	@Override
 	public int getPoints()
 	{
-		return getRound() == 8 ? 21 : (10 - getRound()) * 10;
+		return getTrick() == 8 ? 21 : (10 - getTrick()) * 10;
 	}
 }

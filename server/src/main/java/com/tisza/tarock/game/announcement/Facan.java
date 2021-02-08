@@ -22,17 +22,17 @@ public class Facan extends Ultimo
 	{
 		PlayerPairs playerPairs = game.getPlayerPairs();
 
-		Round round = game.getRound(0);
-		PlayerSeat theCardPlayer = round.getPlayerOfCard(getCard());
+		Trick trick = game.getTrick(0);
+		PlayerSeat theCardPlayer = trick.getPlayerOfCard(getCard());
 
 		if (theCardPlayer == null || playerPairs.getTeam(theCardPlayer) != team)
 			return Result.FAILED;
 
-		if (theCardPlayer == round.getWinner())
+		if (theCardPlayer == trick.getWinner())
 			return Result.SUCCESSFUL_SILENT;
 
 		for (PlayerSeat opponentPlayer : playerPairs.getPlayersInTeam(team.getOther()))
-			if (round.getCardByPlayer(opponentPlayer).doesBeat(getCard()))
+			if (trick.getCardByPlayer(opponentPlayer).doesBeat(getCard()))
 				return Result.FAILED_SILENT;
 
 		return Result.FAILED;

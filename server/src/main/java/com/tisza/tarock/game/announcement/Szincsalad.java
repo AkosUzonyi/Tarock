@@ -3,7 +3,7 @@ package com.tisza.tarock.game.announcement;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 
-public class Szincsalad extends LastRounds
+public class Szincsalad extends LastTricks
 {
 	private final int suit;
 	private final boolean kis;
@@ -35,7 +35,7 @@ public class Szincsalad extends LastRounds
 	}
 
 	@Override
-	protected int getRoundCount()
+	protected int getTrickCount()
 	{
 		return kis ? 2 : 3;
 	}
@@ -47,7 +47,7 @@ public class Szincsalad extends LastRounds
 	}
 
 	@Override
-	protected boolean isSameCategory(LastRounds otherAnnouncements)
+	protected boolean isSameCategory(LastTricks otherAnnouncements)
 	{
 		return otherAnnouncements instanceof Szincsalad && suit == ((Szincsalad)otherAnnouncements).suit;
 	}

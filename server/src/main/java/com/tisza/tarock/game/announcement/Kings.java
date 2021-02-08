@@ -3,7 +3,7 @@ package com.tisza.tarock.game.announcement;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 
-public class Kings extends LastRounds
+public class Kings extends LastTricks
 {
 	private static final int[] points = new int[]{8, 60, 100};
 	
@@ -41,7 +41,7 @@ public class Kings extends LastRounds
 	}
 
 	@Override
-	protected boolean canOverrideAnnouncement(RoundAnnouncement announcement)
+	protected boolean canOverrideAnnouncement(TrickAnnouncement announcement)
 	{
 		if (count == 1)
 			return false;
@@ -50,7 +50,7 @@ public class Kings extends LastRounds
 	}
 
 	@Override
-	protected int getRoundCount()
+	protected int getTrickCount()
 	{
 		return count;
 	}
@@ -62,7 +62,7 @@ public class Kings extends LastRounds
 	}
 
 	@Override
-	protected boolean isSameCategory(LastRounds otherAnnouncements)
+	protected boolean isSameCategory(LastTricks otherAnnouncements)
 	{
 		return otherAnnouncements instanceof Kings;
 	}

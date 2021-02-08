@@ -3,7 +3,7 @@ package com.tisza.tarock.game.announcement;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.*;
 
-public class Zaroparos extends LastRounds
+public class Zaroparos extends LastTricks
 {
 	Zaroparos(){}
 
@@ -20,7 +20,7 @@ public class Zaroparos extends LastRounds
 	}
 
 	@Override
-	protected int getRoundCount()
+	protected int getTrickCount()
 	{
 		return 2;
 	}
@@ -40,11 +40,11 @@ public class Zaroparos extends LastRounds
 	{
 		Team team = announcing.getCurrentTeam();
 
-		for (int round = 0; round < 7; round++)
+		for (int trick = 0; trick < 7; trick++)
 		{
 			for (int tarock = 1; tarock <= 2; tarock++)
 			{
-				Ultimo pagatsasUltimo = Announcements.ultimok.get(Card.getTarockCard(tarock)).get(round);
+				Ultimo pagatsasUltimo = Announcements.ultimok.get(Card.getTarockCard(tarock)).get(trick);
 
 				if (announcing.isAnnounced(team, pagatsasUltimo))
 					return false;
@@ -55,7 +55,7 @@ public class Zaroparos extends LastRounds
 	}
 
 	@Override
-	protected boolean isSameCategory(LastRounds otherAnnouncements)
+	protected boolean isSameCategory(LastTricks otherAnnouncements)
 	{
 		return otherAnnouncements instanceof Zaroparos;
 	}

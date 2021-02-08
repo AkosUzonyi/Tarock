@@ -18,7 +18,7 @@ public abstract class Ultimo extends TrickAnnouncement
 	@Override
 	public String getID()
 	{
-		return "ultimo" + "C" + cardToTakeWith.getID() + "R" + trickIndex;
+		return "ultimo" + "C" + cardToTakeWith.getID() + "T" + trickIndex;
 	}
 
 	public final Card getCard()

@@ -67,7 +67,7 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 				case 'C':
 					card = Card.fromId(substr);
 					break;
-				case 'R':
+				case 'T':
 					try
 					{
 						trick = Integer.parseInt(substr);

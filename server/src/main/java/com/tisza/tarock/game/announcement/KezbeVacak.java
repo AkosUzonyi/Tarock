@@ -18,7 +18,7 @@ public class KezbeVacak extends TrickAnnouncement
 	@Override
 	public String getID()
 	{
-		return "kezbevacak" + "R" + trickIndex;
+		return "kezbevacak" + "T" + trickIndex;
 	}
 
 	public int getTrick()

@@ -14,7 +14,7 @@ class TarokkFekszik extends ZebiSound
 	}
 
 	@Override
-	public void skartTarock(int[] counts)
+	public void foldTarock(int[] counts)
 	{
 		for (int count : counts)
 		{

@@ -28,9 +28,9 @@ public class Action
 		return new Action("bid:" + (bid < 0 ? "p" : bid));
 	}
 
-	public static Action skart(List<Card> cards)
+	public static Action fold(List<Card> cards)
 	{
-		return new Action("skart:" + cards.stream().map(Card::getID).collect(Collectors.joining(",")));
+		return new Action("fold:" + cards.stream().map(Card::getID).collect(Collectors.joining(",")));
 	}
 
 	public static Action call(Card card)
@@ -73,8 +73,8 @@ public class Action
 			case "bid":
 				int bid = actionParams.equals("p") ? -1 : Integer.parseInt(actionParams);
 				return handler.bid(player, bid);
-			case "skart":
-				return handler.change(player, Arrays.stream(actionParams.split(",")).filter(s -> !s.isEmpty()).map(Card::fromId).collect(Collectors.toList()));
+			case "fold":
+				return handler.fold(player, Arrays.stream(actionParams.split(",")).filter(s -> !s.isEmpty()).map(Card::fromId).collect(Collectors.toList()));
 			case "call":
 				return handler.call(player, Card.fromId(actionParams));
 			case "announce":

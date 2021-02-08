@@ -522,7 +522,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		{
 			showCenterView(MESSAGES_VIEW_INDEX);
 			higlightAllName();
-			displayMessage(R.string.message_changing);
+			displayMessage(R.string.message_folding);
 			setSkartCardClickListener();
 		}
 		else if (phase == PhaseEnum.CALLING)
@@ -581,7 +581,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	@Override
-	public void changeDone(int player)
+	public void foldDone(int player)
 	{
 		setHiglighted(player, false);
 		if (player == seat)
@@ -594,7 +594,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	@Override
-	public void skart(int player, List<Card> cards)
+	public void fold(int player, List<Card> cards)
 	{
 		StringBuilder msg = null;
 		for (Card card : cards)
@@ -609,18 +609,18 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (msg == null)
 			return;
 
-		displayPlayerActionMessage(player, getString(R.string.message_skart, msg.toString()));
+		displayPlayerActionMessage(player, getString(R.string.message_fold, msg.toString()));
 	}
 
 	@Override
-	public void skartTarock(int[] counts)
+	public void foldTarock(int[] counts)
 	{
 		for (int p = 0; p < 4; p++)
 		{
 			int count = counts[p];
 			if (count > 0)
 			{
-				String msg = getResources().getQuantityString(R.plurals.message_skart_tarock, count, count);
+				String msg = getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
 				displayPlayerActionMessage(p, msg);
 			}
 		}
@@ -768,7 +768,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (gamePhase == PhaseEnum.CHANGING)
 		{
 			okButton.setVisibility(View.VISIBLE);
-			okButton.setOnClickListener(v -> doAction(Action.skart(cardsToSkart)));
+			okButton.setOnClickListener(v -> doAction(Action.fold(cardsToSkart)));
 		}
 		else
 		{

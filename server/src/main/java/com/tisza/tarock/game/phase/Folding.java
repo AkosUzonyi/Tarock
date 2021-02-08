@@ -8,14 +8,14 @@ import com.tisza.tarock.message.*;
 import java.util.*;
 import java.util.stream.*;
 
-class Changing extends Phase
+class Folding extends Phase
 {
 	private final SkartableCardFilter cardFilter;
 	
 	private PlayerSeatMap<Boolean> donePlayer = new PlayerSeatMap<>(false);
 	private PlayerSeatMap<Integer> tarockCounts = new PlayerSeatMap<>();
 	
-	public Changing(Game game)
+	public Folding(Game game)
 	{
 		super(game);
 		cardFilter = new SkartableCardFilter(game.getGameType());
@@ -56,7 +56,7 @@ class Changing extends Phase
 			game.sendEvent(player, Event.playerCards(playerCards.clone(), canThrow(player)));
 			game.sendEvent(player, Event.turn(player));
 			if (cardsFromTalon.isEmpty())
-				change(player, Collections.emptyList());
+				fold(player, Collections.emptyList());
 			cardsFromTalon.clear();
 
 			player = player.nextPlayer();
@@ -70,14 +70,14 @@ class Changing extends Phase
 	}
 	
 	@Override
-	public boolean change(PlayerSeat player, List<Card> cardsToSkart)
+	public boolean fold(PlayerSeat player, List<Card> cardsToSkart)
 	{
 		if (donePlayer.get(player))
 			return false;
 		
-		PlayerCards skartingPlayerCards = game.getPlayerCards(player);
+		PlayerCards foldingPlayerCards = game.getPlayerCards(player);
 
-		if (skartingPlayerCards.size() - cardsToSkart.size() != Game.ROUND_COUNT)
+		if (foldingPlayerCards.size() - cardsToSkart.size() != Game.ROUND_COUNT)
 		{
 			//game.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
 			return false;
@@ -95,7 +95,7 @@ class Changing extends Phase
 			if (!checkedSkartCards.add(c))
 				return false;
 
-			if (!skartingPlayerCards.hasCard(c))
+			if (!foldingPlayerCards.hasCard(c))
 				return false;
 		}
 		
@@ -107,18 +107,18 @@ class Changing extends Phase
 		game.setSkart(player, cardsToSkart);
 		tarockCounts.put(player, tarockCount);
 		
-		skartingPlayerCards.removeCards(cardsToSkart);
+		foldingPlayerCards.removeCards(cardsToSkart);
 		donePlayer.put(player, true);
-		game.sendEvent(player, Event.playerCards(skartingPlayerCards.clone(), false));
-		game.broadcastEvent(Event.changeDone(player));
+		game.sendEvent(player, Event.playerCards(foldingPlayerCards.clone(), false));
+		game.broadcastEvent(Event.foldDone(player));
 
 		if (isFinished())
 		{
-			game.broadcastEvent(Event.skartTarock(tarockCounts));
+			game.broadcastEvent(Event.foldTarock(tarockCounts));
 
 			List<Card> callerSkartedTarocks = game.getSkart(game.getBidWinnerPlayer()).stream().filter(c -> c instanceof TarockCard).collect(Collectors.toList());
 			if (!callerSkartedTarocks.isEmpty())
-				game.broadcastEvent(Event.skart(game.getBidWinnerPlayer(), callerSkartedTarocks));
+				game.broadcastEvent(Event.fold(game.getBidWinnerPlayer(), callerSkartedTarocks));
 
 			game.changePhase(new Calling(game));
 		}

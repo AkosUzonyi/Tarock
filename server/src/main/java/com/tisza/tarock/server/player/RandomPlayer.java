@@ -117,7 +117,7 @@ public class RandomPlayer extends Player
 			if (phase == PhaseEnum.CHANGING)
 			{
 				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter(gameType)).subList(0, myCards.size() - 9);
-				enqueueActionDelayed(Action.skart(cardsToSkart), 0);
+				enqueueActionDelayed(Action.fold(cardsToSkart), 0);
 			}
 			else if (phase == PhaseEnum.GAMEPLAY)
 			{
@@ -163,8 +163,8 @@ public class RandomPlayer extends Player
 			enqueueActionDelayed(Action.call(chooseRandom(cards)), delay);
 		}
 
-		@Override public void changeDone(PlayerSeat player) {}
-		@Override public void skartTarock(PlayerSeatMap<Integer> counts) {}
+		@Override public void foldDone(PlayerSeat player) {}
+		@Override public void foldTarock(PlayerSeatMap<Integer> counts) {}
 
 		@Override public void availableAnnouncements(List<AnnouncementContra> announcements)
 		{

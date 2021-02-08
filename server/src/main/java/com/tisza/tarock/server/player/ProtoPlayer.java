@@ -189,21 +189,21 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setAvailableCalls(e).build());
 		}
 
-		@Override public void changeDone(PlayerSeat player)
+		@Override public void foldDone(PlayerSeat player)
 		{
 			EventProto.Event.ChangeDone e = EventProto.Event.ChangeDone.newBuilder()
 					.setPlayer(player.asInt())
 					.build();
-			sendEvent(EventProto.Event.newBuilder().setChangeDone(e).build());
+			sendEvent(EventProto.Event.newBuilder().setFoldDone(e).build());
 		}
 
 		@Override
-		public void skart(PlayerSeat player, List<Card> cards)
+		public void fold(PlayerSeat player, List<Card> cards)
 		{
-			sendPlayerActionEvent(player, Action.skart(cards));
+			sendPlayerActionEvent(player, Action.fold(cards));
 		}
 
-		@Override public void skartTarock(PlayerSeatMap<Integer> counts)
+		@Override public void foldTarock(PlayerSeatMap<Integer> counts)
 		{
 			EventProto.Event.SkartTarock.Builder e = EventProto.Event.SkartTarock.newBuilder();
 

@@ -17,7 +17,7 @@ message Event
 		PhaseChanged phase_changed = 4;
 		AvailableBids available_bids= 5;
 		AvailableCalls available_calls = 6;
-		ChangeDone change_done = 7;
+		ChangeDone fold_done = 7;
 		SkartTarock skart_tarock = 8;
 		AvailableAnnouncements available_announcements = 9;
 		CardsTaken cards_taken = 10;

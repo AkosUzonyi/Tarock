@@ -83,14 +83,14 @@
     <string name="empty_seat">---</string>
 
     <string name="message_chat"><![CDATA[<font color=\'#FFC0C0\'>%1$s: %2$s</font>]]></string>
-    <string name="message_skart">fektetett: %1$s</string>
+    <string name="message_fold">fektetett: %1$s</string>
     <string name="message_bidding"><![CDATA[<big><b>LICIT</b></big>\n]]></string>
-    <string name="message_changing"><![CDATA[<br><big><b>SKARTOLÁS</b></big>\n]]></string>
+    <string name="message_folding"><![CDATA[<br><big><b>SKARTOLÁS</b></big>\n]]></string>
     <string name="message_calling"><![CDATA[<br><big><b>HÍVÁS</b></big>\n]]></string>
     <string name="message_announcing"><![CDATA[<br><big><b>BEMONDÁSOK</b></big>\n]]></string>
     <string name="message_cards_thrown">bedobta a lapjait</string>
     <string name="message_press_ok">Nyomj OK-t a folytatáshoz</string>
-    <plurals name="message_skart_tarock">
+    <plurals name="message_fold_tarock">
         <item quantity="other">%1$d tarokkot fektetett</item>
     </plurals>
 

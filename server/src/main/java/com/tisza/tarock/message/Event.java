@@ -81,16 +81,16 @@ public interface Event
 		return handler -> handler.availableCalls(cards);
 	}
 
-	static Event changeDone(PlayerSeat player)
+	static Event foldDone(PlayerSeat player)
 	{
-		return handler -> handler.changeDone(player);
+		return handler -> handler.foldDone(player);
 	}
 
-	static Event skart(PlayerSeat player, List<Card> cards) { return handler -> handler.skart(player, cards); }
+	static Event fold(PlayerSeat player, List<Card> cards) { return handler -> handler.fold(player, cards); }
 
-	static Event skartTarock(PlayerSeatMap<Integer> counts)
+	static Event foldTarock(PlayerSeatMap<Integer> counts)
 	{
-		return handler -> handler.skartTarock(counts);
+		return handler -> handler.foldTarock(counts);
 	}
 
 	static Event availableAnnouncements(List<AnnouncementContra> announcements)

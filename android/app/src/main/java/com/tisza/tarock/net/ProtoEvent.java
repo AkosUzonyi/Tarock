@@ -55,8 +55,8 @@ public class ProtoEvent implements Event
 			case AVAILABLE_CALLS:
 				handler.availableCalls(cardIDsToCards(event.getAvailableCalls().getCardList()));
 				break;
-			case CHANGE_DONE:
-				handler.changeDone(event.getChangeDone().getPlayer());
+			case FOLD_DONE:
+				handler.foldDone(event.getFoldDone().getPlayer());
 				break;
 			case SKART_TAROCK:
 				int[] tarockCounts = new int[4];
@@ -64,7 +64,7 @@ public class ProtoEvent implements Event
 				{
 					tarockCounts[i] = event.getSkartTarock().getCount(i);
 				}
-				handler.skartTarock(tarockCounts);
+				handler.foldTarock(tarockCounts);
 				break;
 			case AVAILABLE_ANNOUNCEMENTS:
 				handler.availableAnnouncements(Utils.announcementListFromProto(event.getAvailableAnnouncements().getAnnouncementList()));

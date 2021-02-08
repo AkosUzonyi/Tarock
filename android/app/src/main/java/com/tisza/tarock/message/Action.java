@@ -30,9 +30,9 @@ public class Action
 		return new Action("bid:" + (bid < 0 ? "p" : bid));
 	}
 
-	public static Action skart(List<Card> cards)
+	public static Action fold(List<Card> cards)
 	{
-		return new Action("skart:" + TextUtils.join(",", Utils.map(cards, Card::getID)));
+		return new Action("fold:" + TextUtils.join(",", Utils.map(cards, Card::getID)));
 	}
 
 	public static Action call(Card card)
@@ -76,12 +76,12 @@ public class Action
 				int bid = actionParams.equals("p") ? -1 : Integer.parseInt(actionParams);
 				handler.bid(player, bid);
 				break;
-			case "skart":
+			case "fold":
 				List<Card> cards = new ArrayList<>();
 				for (String cardID : actionParams.split(","))
 					if (!cardID.isEmpty())
 						cards.add(Card.fromId(cardID));
-				handler.skart(player, cards);
+				handler.fold(player, cards);
 				break;
 			case "call":
 				handler.call(player, Card.fromId(actionParams));

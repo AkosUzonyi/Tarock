@@ -46,7 +46,7 @@ abstract class Phase implements ActionHandler
 	}
 
 	@Override
-	public boolean change(PlayerSeat player, List<Card> cards)
+	public boolean fold(PlayerSeat player, List<Card> cards)
 	{
 		return wrongPhase("change");
 	}

@@ -23,9 +23,9 @@ public interface EventHandler
 	default void phaseChanged(PhaseEnum phase) {}
 	default void availableBids(Collection<Integer> bids) {}
 	default void availableCalls(Collection<Card> cards) {}
-	default void changeDone(PlayerSeat player) {}
-	default void skart(PlayerSeat player, List<Card> cards) {}
-	default void skartTarock(PlayerSeatMap<Integer> counts) {}
+	default void foldDone(PlayerSeat player) {}
+	default void fold(PlayerSeat player, List<Card> cards) {}
+	default void foldTarock(PlayerSeatMap<Integer> counts) {}
 	default void availableAnnouncements(List<AnnouncementContra> announcements) {}
 	default void cardsTaken(PlayerSeat player) {}
 	default void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier) {}

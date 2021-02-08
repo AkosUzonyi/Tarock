@@ -64,7 +64,7 @@ class Calling extends Phase
 		if (calledPlayer == callerPlayer)
 			game.setSoloIntentional();
 
-		//if the player called a card that had been skarted
+		//if the player called a card that had been folded
 		if (calledPlayer == null)
 		{
 			if (game.getSkart(game.getBidWinnerPlayer()).contains(card))

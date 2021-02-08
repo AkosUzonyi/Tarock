@@ -57,7 +57,7 @@ class Bidding extends Phase
 		{
 			game.broadcastEvent(Event.bid(player, bid));
 			game.setBidResult(player, bid);
-			game.changePhase(new Changing(game));
+			game.changePhase(new Folding(game));
 			return true;
 		}
 		
@@ -113,7 +113,7 @@ class Bidding extends Phase
 			else
 			{
 				game.setBidResult(lastBidPlayer, lastBidValue);
-				game.changePhase(new Changing(game));
+				game.changePhase(new Folding(game));
 			}
 		}
 

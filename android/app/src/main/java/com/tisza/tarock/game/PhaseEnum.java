@@ -17,7 +17,7 @@ public enum PhaseEnum
 		switch (this)
 		{
 			case BIDDING: return "bidding";
-			case CHANGING: return "changing";
+			case CHANGING: return "folding";
 			case CALLING: return "calling";
 			case ANNOUNCING: return "announcing";
 			case GAMEPLAY: return "gameplay";
@@ -32,7 +32,7 @@ public enum PhaseEnum
 		switch (id)
 		{
 			case "bidding": return BIDDING;
-			case "changing": return CHANGING;
+			case "folding": return CHANGING;
 			case "calling": return CALLING;
 			case "announcing": return ANNOUNCING;
 			case "gameplay": return GAMEPLAY;

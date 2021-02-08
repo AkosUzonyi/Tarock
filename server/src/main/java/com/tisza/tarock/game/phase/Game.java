@@ -28,7 +28,7 @@ public class Game
 	private PlayerSeat bidWinnerPlayer = null;
 	private int winnerBid;
 
-	private PlayerSeatMap<Collection<Card>> skartedCards = new PlayerSeatMap<>();
+	private PlayerSeatMap<Collection<Card>> foldedCards = new PlayerSeatMap<>();
 
 	private Card calledCard = null;
 	private PlayerPairs playerPairs = null;
@@ -206,12 +206,12 @@ public class Game
 
 	void setSkart(PlayerSeat player, Collection<Card> cards)
 	{
-		skartedCards.put(player, cards);
+		foldedCards.put(player, cards);
 	}
 
 	public Collection<Card> getSkart(PlayerSeat player)
 	{
-		return skartedCards.get(player);
+		return foldedCards.get(player);
 	}
 
 	public Card getCalledCard()
@@ -304,12 +304,12 @@ public class Game
 
 		if (countSelfTeamSkart)
 			for (PlayerSeat player : playerPairs.getPlayersInTeam(team))
-				for (Card c : skartedCards.get(player))
+				for (Card c : foldedCards.get(player))
 					points += c.getPoints();
 
 		if (countOpponentTeamSkart)
 			for (PlayerSeat player : playerPairs.getPlayersInTeam(team.getOther()))
-				for (Card c : skartedCards.get(player))
+				for (Card c : foldedCards.get(player))
 					points += c.getPoints();
 
 		return points;

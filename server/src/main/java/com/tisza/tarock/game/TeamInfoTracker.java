@@ -75,7 +75,7 @@ public class TeamInfoTracker implements EventHandler
 	}
 
 	@Override
-	public void skartTarock(PlayerSeatMap<Integer> counts)
+	public void foldTarock(PlayerSeatMap<Integer> counts)
 	{
 		if (game.getInvitSent() != null && counts.get(game.getInvitingPlayer()) > 0)
 			inviterSkartedTarock = true;

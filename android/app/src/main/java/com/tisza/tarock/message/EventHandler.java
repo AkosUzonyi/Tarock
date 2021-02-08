@@ -19,12 +19,12 @@ public interface EventHandler
 	default void call(int player, Card card) {}
 	default void cardsTaken(int winnerPlayer) {}
 	default void throwCards(int player) {}
-	default void changeDone(int player) {}
+	default void foldDone(int player) {}
 	default void phaseChanged(PhaseEnum phase) {}
 	default void playCard(int player, Card card) {}
 	default void cardsChanged(List<Card> pc, boolean canBeThrown) {}
-	default void skart(int player, List<Card> cards) {}
-	default void skartTarock(int[] counts) {}
+	default void fold(int player, List<Card> cards) {}
+	default void foldTarock(int[] counts) {}
 	default void turn(int player) {}
 	default void playerTeamInfo(int player, Team team) {}
 	default void wrongAction() {}

@@ -26,6 +26,7 @@
     <string name="app_name" translatable="false">Tarokk</string>
     <string name="play" translatable="false">Play</string>
     <string name="settings">Beállítások</string>
+    <string name="rules">Szabályok</string>
     <string name="logout">Kijelentkezés</string>
     <string name="new_game">Új játék</string>
     <string name="connecting">Csatlakozás a szerverhez&#8230;</string>

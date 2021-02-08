@@ -1,10 +1,12 @@
 package com.tisza.tarock.gui;
 
 import android.content.*;
+import android.net.*;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
 import androidx.lifecycle.*;
+import androidx.preference.*;
 import com.facebook.*;
 import com.facebook.login.*;
 import com.tisza.tarock.R;
@@ -18,7 +20,7 @@ public class LoginFragment extends MainActivityFragment
 
 	private CallbackManager facebookCallbackManager;
 	private TextView loginNameTextView;
-	private Button facebookButton, googleButton, playButton, settingsButton, logoutButton, donateButton;
+	private Button facebookButton, googleButton, playButton, settingsButton, rulesButton, logoutButton, donateButton;
 	private ConnectionViewModel connectionViewModel;
 	private LoginViewModel loginViewModel;
 
@@ -40,6 +42,7 @@ public class LoginFragment extends MainActivityFragment
 		googleButton = view.findViewById(R.id.google_login_button);
 		playButton = view.findViewById(R.id.play_button);
 		settingsButton = view.findViewById(R.id.settings_button);
+		rulesButton = view.findViewById(R.id.rules_button);
 		logoutButton = view.findViewById(R.id.logout_button);
 		donateButton = view.findViewById(R.id.donate_button);
 
@@ -47,6 +50,7 @@ public class LoginFragment extends MainActivityFragment
 		googleButton.setOnClickListener(v -> startActivityForResult(loginViewModel.getGoogleLoginIntent(), REQUEST_CODE_GOOGLE_LOGIN));
 		playButton.setOnClickListener(v -> connectionViewModel.login());
 		settingsButton.setOnClickListener(v -> getMainActivity().openSettings());
+		rulesButton.setOnClickListener(v -> openRules());
 		logoutButton.setOnClickListener(v -> loginViewModel.logOut());
 		donateButton.setOnClickListener(v -> getMainActivity().openDonationFragment());
 
@@ -66,6 +70,20 @@ public class LoginFragment extends MainActivityFragment
 		});
 
 		return view;
+	}
+
+	private void openRules()
+	{
+		String language = PreferenceManager.getDefaultSharedPreferences(getContext()).getString("language", "hu");
+		String url = "https://tarokk.net/tarokk/Tarokk_description_" + language + ".pdf";
+
+		Intent browserIntent = new Intent(Intent.ACTION_VIEW);
+		browserIntent.setDataAndType(Uri.parse(url), "application/pdf");
+
+		Intent chooser = Intent.createChooser(browserIntent, null);
+		chooser.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+		startActivity(chooser);
 	}
 
 	@Override

@@ -87,7 +87,7 @@ public class GameSession
 			if (deck.size() != 42)
 			{
 				log.warn("Invalid deck for game: " + currentGameID);
-				gameSession.endSession();
+				gameSession.deleteSession();
 				return gameSession;
 			}
 
@@ -184,7 +184,7 @@ public class GameSession
 			if (deck.size() != 42)
 			{
 				log.warn("Invalid deck for game: " + gameID);
-				gameSession.endSession();
+				gameSession.deleteSession();
 				return gameSession;
 			}
 
@@ -220,7 +220,7 @@ public class GameSession
 					gameSession.dispatchNewEvents();
 
 					if (gameSession.currentGame.isFinished())
-						gameSession.endSession();
+						gameSession.deleteSession();
 				},
 				time - gameCreateTime, TimeUnit.MILLISECONDS);
 			}
@@ -252,8 +252,8 @@ public class GameSession
 
 	private void checkAlive()
 	{
-		if (state == State.ENDED)
-			throw new IllegalStateException("GameSession is ended");
+		if (state == State.DELETED)
+			throw new IllegalStateException("GameSession is deleted");
 	}
 
 	private void checkIsLobby()
@@ -311,12 +311,12 @@ public class GameSession
 		return state;
 	}
 
-	public void endSession()
+	public void deleteSession()
 	{
 		currentGame = null;
 		if (!historyView)
 			database.endGameSession(id);
-		state = State.ENDED;
+		state = State.DELETED;
 	}
 
 	public boolean addPlayer(Player player)
@@ -347,7 +347,7 @@ public class GameSession
 		player.setGame(null, null);
 
 		if (!hasAnyRealPlayer())
-			endSession();
+			deleteSession();
 
 		return true;
 	}
@@ -529,6 +529,6 @@ public class GameSession
 
 	public enum State
 	{
-		LOBBY, GAME, ENDED
+		LOBBY, GAME, DELETED
 	}
 }

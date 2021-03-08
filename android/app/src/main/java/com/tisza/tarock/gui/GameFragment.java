@@ -365,7 +365,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				userListRecyclerView.setVisibility(View.GONE);
 				availableActionsListView.setVisibility(View.VISIBLE);
 				break;
-			case ENDED:
+			case DELETED:
 				getActivity().getSupportFragmentManager().popBackStack();
 				break;
 		}

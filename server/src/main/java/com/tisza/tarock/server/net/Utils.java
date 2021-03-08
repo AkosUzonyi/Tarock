@@ -22,7 +22,7 @@ public class Utils
 		{
 			case LOBBY: return MainProto.GameSession.State.LOBBY;
 			case GAME: return MainProto.GameSession.State.GAME;
-			case ENDED: return MainProto.GameSession.State.ENDED;
+			case DELETED: return MainProto.GameSession.State.DELETED;
 			default: throw new IllegalArgumentException("unknown game state: " + state);
 		}
 	}

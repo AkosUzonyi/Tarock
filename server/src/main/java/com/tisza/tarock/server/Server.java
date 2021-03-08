@@ -5,7 +5,6 @@ import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.net.*;
 import com.tisza.tarock.server.player.*;
-import io.reactivex.*;
 import org.apache.log4j.*;
 
 import javax.net.ssl.*;
@@ -178,7 +177,7 @@ public class Server implements Runnable
 
 		for (GameSession gameSession : gameSessionManager.getGameSessions())
 		{
-			if (gameSession.getState() == GameSession.State.ENDED)
+			if (gameSession.getState() == GameSession.State.DELETED)
 				continue;
 
 			MainProto.GameSession.Builder gameBuilder = MainProto.GameSession.newBuilder()
@@ -195,7 +194,7 @@ public class Server implements Runnable
 			boolean isOnline = isUserLoggedIn(new User(userdata.getId(), database));
 			boolean isPlaying = false;
 			for (GameSession gameSession : gameSessionManager.getGameSessions())
-				if (gameSession.getState() != GameSession.State.ENDED)
+				if (gameSession.getState() != GameSession.State.DELETED)
 					for (Player player : gameSession.getPlayers())
 						if (player.getUser().getID() == userdata.getId())
 							isPlaying = true;

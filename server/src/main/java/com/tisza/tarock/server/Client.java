@@ -6,8 +6,6 @@ import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.server.net.*;
 import com.tisza.tarock.server.player.*;
-import io.reactivex.*;
-import io.reactivex.schedulers.*;
 import org.apache.log4j.*;
 
 import java.io.*;
@@ -82,7 +80,7 @@ public class Client implements MessageHandler
 				int gameSessionID = message.getDeleteGameSession().getGameSessionId();
 				GameSession gameSession = server.getGameSessionManager().getGameSession(gameSessionID);
 				if (gameSession.isUserPlaying(loggedInUser))
-					gameSession.endSession();
+					gameSession.deleteSession();
 
 				server.broadcastStatus();
 				break;
@@ -97,7 +95,7 @@ public class Client implements MessageHandler
 				}
 
 				GameSession gameSession = server.getGameSessionManager().getGameSession(message.getJoinGameSession().getGameSessionId());
-				if (gameSession.getState() == GameSession.State.ENDED)
+				if (gameSession.getState() == GameSession.State.DELETED)
 					break;
 
 				if (gameSession.isUserPlaying(loggedInUser))

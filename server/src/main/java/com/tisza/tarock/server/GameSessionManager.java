@@ -85,9 +85,9 @@ public class GameSessionManager
 	{
 		for (GameSession gameSession : gameSessions.values())
 			if (gameSession.getLastModified() < System.currentTimeMillis() - MAX_GAME_IDLE_TIME)
-				gameSession.endSession();
+				gameSession.deleteSession();
 
-		gameSessions.entrySet().removeIf(entry -> entry.getValue().getState() == GameSession.State.ENDED);
+		gameSessions.entrySet().removeIf(entry -> entry.getValue().getState() == GameSession.State.DELETED);
 
 		server.broadcastStatus();
 	}

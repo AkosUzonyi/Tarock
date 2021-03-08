@@ -53,7 +53,7 @@ public class Utils
 		{
 			case LOBBY: return GameSessionState.LOBBY;
 			case GAME: return GameSessionState.GAME;
-			case ENDED: return GameSessionState.ENDED;
+			case DELETED: return GameSessionState.DELETED;
 			default: throw new IllegalArgumentException("unknown game state: " + state);
 		}
 	}

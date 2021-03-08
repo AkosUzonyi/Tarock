@@ -2,5 +2,5 @@ package com.tisza.tarock.game;
 
 public enum GameSessionState
 {
-	LOBBY, GAME, ENDED
+	LOBBY, GAME, DELETED
 }

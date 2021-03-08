@@ -18,14 +18,34 @@ public class AnnouncementContra implements Comparable<AnnouncementContra>
 
 	public String getID()
 	{
-		return (isAnnounced() ? contraLevel : "s") + announcement.getID();
+		String contraString;
+		if (contraLevel > 0)
+			contraString = "K" + contraLevel;
+		else if (contraLevel == 0)
+			contraString = "";
+		else
+			contraString = "Ks";
+
+		return announcement.getID() + contraString;
 	}
 
 	public static AnnouncementContra fromID(String id)
 	{
-		Announcement announcement = Announcements.getByID(id.substring(1));
-		int contraLevel = id.charAt(0) == 's' ? -1 : Integer.parseInt(id.substring(0, 1));
+		String announcementID;
+		int contraLevel;
+		int kIndex = id.indexOf('K');
+		if (kIndex < 0)
+		{
+			contraLevel = 0;
+			announcementID = id;
+		}
+		else
+		{
+			contraLevel = id.charAt(kIndex + 1) == 's' ? -1 : Integer.parseInt(id.substring(kIndex + 1, kIndex + 2));
+			announcementID = id.substring(0, kIndex);
+		}
 
+		Announcement announcement = Announcements.getByID(announcementID);
 		return new AnnouncementContra(announcement, contraLevel);
 	}
 

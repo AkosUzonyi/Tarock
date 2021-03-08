@@ -36,21 +36,12 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 			throw new NullPointerException();
 
 		String name;
-		int contraLevel;
+		int contraLevel = 0;
 		int suit = -1;
 		Card card = null;
 		int trick = -1;
 
 		int pos = 0;
-
-		char contraLevelChar = id.charAt(pos++);
-		if (contraLevelChar == 's')
-			contraLevel = -1;
-		else
-			if (Character.isDigit(contraLevelChar))
-				contraLevel = Character.digit(contraLevelChar, 10);
-			else
-				throw new IllegalArgumentException("invalid card id: " + id);
 
 		name = id.substring(pos, pos = nextUppercase(id, pos));
 
@@ -76,6 +67,9 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 					{
 						throw new IllegalArgumentException("invalid trick number: " + trick);
 					}
+					break;
+				case 'K':
+					contraLevel = substr.equals("s") ? -1 : Integer.parseInt(substr);
 					break;
 				default:
 					throw new IllegalArgumentException("invalid announcement modifier: " + c);

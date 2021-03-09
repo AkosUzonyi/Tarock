@@ -62,6 +62,8 @@ class Folding extends Phase
 			player = player.nextPlayer();
 		}
 
+		game.setAllTurn();
+
 		if (game.getPlayerCards(game.getBidWinnerPlayer()).getCards().stream().noneMatch(Card::isHonor))
 		{
 			game.broadcastEvent(Event.throwCards(player));
@@ -109,6 +111,7 @@ class Folding extends Phase
 		
 		foldingPlayerCards.removeCards(cardsToSkart);
 		donePlayer.put(player, true);
+		game.setTurnOf(player, false);
 		game.sendEvent(player, Event.playerCards(foldingPlayerCards.clone(), false));
 		game.broadcastEvent(Event.foldDone(player));
 

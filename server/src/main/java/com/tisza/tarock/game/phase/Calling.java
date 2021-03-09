@@ -85,6 +85,7 @@ class Calling extends Phase
 		if (game.getInvitSent() != null && card.equals(game.getInvitSent().getCard()))
 		{
 			game.invitAccepted();
+
 			if (game.getSkart(callerPlayer).stream().noneMatch(c -> c instanceof TarockCard))
 				game.revealAllTeamInfo();
 		}
@@ -101,7 +102,7 @@ class Calling extends Phase
 	private void sendAvailableCalls()
 	{
 		game.sendEvent(callerPlayer, Event.availableCalls(getCallableCards()));
-		game.broadcastEvent(Event.turn(callerPlayer));
+		game.turn(callerPlayer);
 	}
 
 	private List<Card> getCallableCards()

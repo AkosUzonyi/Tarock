@@ -29,6 +29,7 @@ class PendingNewGame extends Phase
 			game.revealAllTeamInfo();
 		}
 
+		game.setAllTurn();
 		game.broadcastEvent(Event.pendingNewGame());
 	}
 
@@ -40,6 +41,7 @@ class PendingNewGame extends Phase
 		if (wasReady)
 			return false;
 
+		game.setTurnOf(player, false);
 		game.broadcastEvent(Event.readyForNewGame(player));
 
 		if (allReady())

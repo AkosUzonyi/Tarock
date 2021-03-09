@@ -25,7 +25,7 @@ class Gameplay extends Phase
 	public void onStart()
 	{
 		currentTrick = new Trick(PlayerSeat.SEAT0);
-		game.broadcastEvent(Event.turn(currentTrick.getCurrentPlayer()));
+		game.turn(currentTrick.getCurrentPlayer());
 
 		game.sendInGameStatistics();
 	}
@@ -62,7 +62,7 @@ class Gameplay extends Phase
 
 		if (currentTrick != null)
 		{
-			game.broadcastEvent(Event.turn(currentTrick.getCurrentPlayer()));
+			game.turn(currentTrick.getCurrentPlayer());
 		}
 		else
 		{

@@ -196,7 +196,7 @@ class Bidding extends Phase
 	private void sendAvailableBids()
 	{
 		game.sendEvent(currentPlayer, Event.availableBids(getAvailableBids()));
-		game.broadcastEvent(Event.turn(currentPlayer));
+		game.turn(currentPlayer);
 	}
 
 	private boolean checkBiddingRequirements(PlayerSeat player)

@@ -15,6 +15,7 @@ public class Game
 	private final List<Card> deck;
 
 	private Set<TeamInfo> teamInfos = new HashSet<>();
+	private PlayerSeatMap<Boolean> turns = new PlayerSeatMap<>();
 
 	private List<EventInstance> newEvents = new ArrayList<>();
 
@@ -156,6 +157,28 @@ public class Game
 	public PhaseEnum getCurrentPhaseEnum()
 	{
 		return currentPhase.asEnum();
+	}
+
+	void turn(PlayerSeat player)
+	{
+		turns.fill(false);
+		turns.put(player, true);
+		broadcastEvent(Event.turn(player));
+	}
+
+	void setTurnOf(PlayerSeat player, boolean turn)
+	{
+		turns.put(player, turn);
+	}
+
+	void setAllTurn()
+	{
+		turns.fill(true);
+	}
+
+	public boolean getTurn(PlayerSeat player)
+	{
+		return turns.get(player);
 	}
 
 	void setInvitationSent(Invitation invitSent, PlayerSeat invitingPlayer)

@@ -145,7 +145,7 @@ class Announcing extends Phase implements IAnnouncing
 			list.remove(new AnnouncementContra(Announcements.jatek, 1));
 
 		game.sendEvent(currentPlayer, Event.availableAnnouncements(list));
-		game.broadcastEvent(Event.turn(currentPlayer));
+		game.turn(currentPlayer);
 	}
 	
 	@Override

@@ -45,6 +45,9 @@ class Gameplay extends Phase
 		game.getPlayerCards(player).removeCard(card);
 		currentTrick.placeCard(card);
 
+		if (card == game.getCalledCard())
+			game.revealAllTeamInfo();
+
 		game.broadcastEvent(Event.playCard(player, card));
 		
 		if (currentTrick.isFinished())
@@ -56,7 +59,7 @@ class Gameplay extends Phase
 			
 			game.broadcastEvent(Event.cardsTaken(winner));
 		}
-		
+
 		if (currentTrick != null)
 		{
 			game.broadcastEvent(Event.turn(currentTrick.getCurrentPlayer()));

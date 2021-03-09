@@ -14,7 +14,7 @@ public class Game
 	private final GameType gameType;
 	private final List<Card> deck;
 
-	private TeamInfoTracker teamInfoTracker;
+	private Set<TeamInfo> teamInfos = new HashSet<>();
 
 	private List<EventInstance> newEvents = new ArrayList<>();
 
@@ -60,8 +60,6 @@ public class Game
 		this.gameType = gameType;
 		this.deck = deck;
 		this.pointMultiplier = pointMultiplier;
-
-		teamInfoTracker = new TeamInfoTracker(this);
 	}
 
 	public void start()
@@ -133,15 +131,9 @@ public class Game
 		return talon;
 	}
 
-	public TeamInfoTracker getTeamInfoTracker()
-	{
-		return teamInfoTracker;
-	}
-
 	public void broadcastEvent(Event event)
 	{
 		newEvents.add(EventInstance.broadcast(event));
-		event.handle(teamInfoTracker);
 	}
 
 	public void sendEvent(PlayerSeat player, Event event)
@@ -222,9 +214,6 @@ public class Game
 	void setCalledCard(Card card)
 	{
 		calledCard = card;
-
-		if (invitSent != null && card.equals(invitSent.getCard()))
-			invitAccepted = invitSent;
 	}
 
 	void setPlayerPairs(PlayerPairs playerPairs)
@@ -245,6 +234,11 @@ public class Game
 	public boolean isSoloIntentional()
 	{
 		return isSoloIntentional;
+	}
+
+	void invitAccepted()
+	{
+		invitAccepted = invitSent;
 	}
 
 	public Invitation getInvitAccepted()
@@ -280,6 +274,52 @@ public class Game
 	public Collection<Card> getWonCards(PlayerSeat player)
 	{
 		return wonCards.get(player);
+	}
+
+	void addNewTeamInfo(PlayerSeat player, PlayerSeat otherPlayer)
+	{
+		if (teamInfos.add(new TeamInfo(player, otherPlayer)))
+			sendEvent(player, Event.playerTeamInfo(otherPlayer, getPlayerPairs().getTeam(otherPlayer)));
+	}
+
+	void revealAllTeamInfoOf(PlayerSeat player)
+	{
+		for (PlayerSeat p : PlayerSeat.getAll())
+		{
+			addNewTeamInfo(p, player);
+		}
+		broadcastEvent(Event.playerTeamInfo(player, getPlayerPairs().getTeam(player)));
+	}
+
+	void revealAllTeamInfoFor(PlayerSeat player)
+	{
+		for (PlayerSeat p : PlayerSeat.getAll())
+		{
+			addNewTeamInfo(player, p);
+		}
+	}
+
+	void revealAllTeamInfo()
+	{
+		for (PlayerSeat player : PlayerSeat.getAll())
+		{
+			revealAllTeamInfoOf(player);
+		}
+	}
+
+	boolean isTeamInfoGlobalOf(PlayerSeat player)
+	{
+		for (PlayerSeat p : PlayerSeat.getAll())
+		{
+			if (!hasTeamInfo(p, player))
+				return false;
+		}
+		return true;
+	}
+
+	public boolean hasTeamInfo(PlayerSeat player, PlayerSeat otherPlayer)
+	{
+		return teamInfos.contains(new TeamInfo(player, otherPlayer));
 	}
 
 	public int calculateGamePoints(Team team)

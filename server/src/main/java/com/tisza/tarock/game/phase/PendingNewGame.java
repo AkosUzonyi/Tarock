@@ -24,7 +24,10 @@ class PendingNewGame extends Phase
 	public void onStart()
 	{
 		if (!doubleRound)
+		{
 			game.sendStatistics();
+			game.revealAllTeamInfo();
+		}
 
 		game.broadcastEvent(Event.pendingNewGame());
 	}

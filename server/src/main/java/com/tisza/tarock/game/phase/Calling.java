@@ -76,6 +76,22 @@ class Calling extends Phase
 		game.setCalledCard(card);
 		game.setPlayerPairs(new PlayerPairs(callerPlayer, calledPlayer));
 
+		for (PlayerSeat p : PlayerSeat.getAll())
+			game.addNewTeamInfo(p, p);
+
+		if (!game.getPlayerPairs().isSolo() || game.isSoloIntentional())
+			game.revealAllTeamInfoFor(calledPlayer);
+
+		if (game.getInvitSent() != null && card.equals(game.getInvitSent().getCard()))
+		{
+			game.invitAccepted();
+			if (game.getSkart(callerPlayer).stream().noneMatch(c -> c instanceof TarockCard))
+				game.revealAllTeamInfo();
+		}
+
+		if (game.getSkart(callerPlayer).contains(card))
+			game.revealAllTeamInfo();
+
 		game.broadcastEvent(Event.call(player, card));
 		game.changePhase(new Announcing(game));
 

@@ -52,6 +52,17 @@ class Announcing extends Phase implements IAnnouncing
 		if (ac.getContraLevel() == 0)
 			ac.getAnnouncement().onAnnounced(this);
 
+		if (ac.getAnnouncement() == Announcements.hkp)
+			game.revealAllTeamInfo();
+
+		if (ac.getAnnouncement().requireIdentification())
+		{
+			if (player == game.getPlayerPairs().getCalled() && !game.getPlayerPairs().isSolo())
+				game.revealAllTeamInfo();
+			else
+				game.revealAllTeamInfoOf(player);
+		}
+
 		game.broadcastEvent(Event.announce(player, ac));
 		sendAvailableAnnouncements();
 
@@ -172,7 +183,7 @@ class Announcing extends Phase implements IAnnouncing
 		Team currentPlayerTeam = game.getPlayerPairs().getTeam(currentPlayer);
 		Team lastAnnouncerTeam = game.getPlayerPairs().getTeam(lastAnnouncer);
 		
-		return currentPlayerTeam != lastAnnouncerTeam && !game.getTeamInfoTracker().isTeamInfoGlobalOf(currentPlayer);
+		return currentPlayerTeam != lastAnnouncerTeam && !game.isTeamInfoGlobalOf(currentPlayer);
 	}
 
 	@Override

@@ -1,3 +1,18 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+}
+
 group 'com.tisza'
 
 def getVersionName = { ->
@@ -38,23 +53,18 @@ dependencies {
     compile 'com.google.protobuf:protobuf-java:3.10.0'
     compile 'org.json:json:20190722'
     compile 'com.google.api-client:google-api-client:1.30.4'
-    compile "org.flywaydb:flyway-core:6.0.6"
+    //compile "org.flywaydb:flyway-core:6.0.6"
     compile 'com.github.davidmoten:rxjava2-jdbc:0.2.5'
     compile 'log4j:log4j:1.2.17'
-    compile 'org.slf4j:slf4j-log4j12:1.7.29'
+    //compile 'org.slf4j:slf4j-log4j12:1.7.29'
     compile 'com.google.api-client:google-api-client:1.30.6'
     compile 'com.google.firebase:firebase-admin:6.12.1'
-    compile 'mysql:mysql-connector-java:8.0.19'
-
-}
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.10'
-    }
+    compile 'mysql:mysql-connector-java:8.0.19' //TODO compile -> implementation
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.modelmapper:modelmapper:2.3.9'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 sourceSets {
@@ -63,6 +73,10 @@ sourceSets {
             srcDir '../proto'
         }
     }
+}
+
+test {
+    useJUnitPlatform()
 }
 
 protobuf {

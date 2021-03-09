@@ -39,6 +39,11 @@ public class GameSession
 	private long lastModified;
 	private boolean historyView = false;
 
+	public Game getCurrentGame()
+	{
+		return currentGame;
+	}
+
 	private GameSession(int id, GameType gameType, DoubleRoundTracker doubleRoundTracker, TarockDatabase database)
 	{
 		this.id = id;

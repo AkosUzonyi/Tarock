@@ -10,7 +10,6 @@ import io.reactivex.schedulers.*;
 import org.apache.log4j.*;
 import org.davidmoten.rx.jdbc.*;
 import org.davidmoten.rx.jdbc.tuple.*;
-import org.flywaydb.core.*;
 
 import java.io.*;
 import java.util.*;
@@ -33,9 +32,6 @@ public class TarockDatabase
 	{
 		if (rxdatabase != null)
 			throw new IllegalStateException();
-
-		Flyway flyway = Flyway.configure().dataSource(dbURL, null, null).load();
-		flyway.migrate();
 
 		rxdatabase = Database.from(dbURL, 4);
 	}

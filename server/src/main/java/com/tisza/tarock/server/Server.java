@@ -16,6 +16,7 @@ import java.util.stream.*;
 
 public class Server implements Runnable
 {
+	public static Server instance;
 	private static final Logger log = Logger.getLogger(Server.class);
 
 	private final int port;
@@ -33,6 +34,7 @@ public class Server implements Runnable
 	public Server(int port)
 	{
 		this.port = port;
+		instance = this;
 
 		database = new TarockDatabase();
 		gameSessionManager = new GameSessionManager(this);

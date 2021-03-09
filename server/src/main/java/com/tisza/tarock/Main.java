@@ -2,10 +2,13 @@ package com.tisza.tarock;
 
 import com.tisza.tarock.server.*;
 import org.apache.log4j.*;
+import org.springframework.boot.*;
+import org.springframework.boot.autoconfigure.*;
 
 import java.io.*;
 import java.util.concurrent.*;
 
+@SpringBootApplication
 public class Main
 {
 	private static final Logger log = Logger.getLogger(Main.class);
@@ -17,6 +20,8 @@ public class Main
 	{
 		Server server = new Server(8128);
 		server.start();
+
+		SpringApplication.run(Main.class, args);
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() ->
 		{

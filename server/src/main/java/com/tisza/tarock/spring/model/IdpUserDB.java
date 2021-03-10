@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.*;
 import javax.persistence.*;
 
 @Entity
-public class IdpUser
+public class IdpUserDB
 {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

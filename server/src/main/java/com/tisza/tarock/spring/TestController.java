@@ -3,9 +3,8 @@ package com.tisza.tarock.spring;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.server.*;
 import com.tisza.tarock.spring.model.*;
-import com.tisza.tarock.spring.model.User;
+import com.tisza.tarock.spring.model.UserDB;
 import com.tisza.tarock.spring.repository.*;
-import javassist.*;
 import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.annotation.*;
@@ -26,6 +25,10 @@ public class TestController
 	private IdpUserRepository idpUserRepository;
 	@Autowired
 	private GameSessionRepository gameSessionRepository;
+	@Autowired
+	private PlayerRepository playerRepository;
+	@Autowired
+	private GameRepository gameRepository;
 
 	private static final String template = "Hello, %s!";
 	private final AtomicLong counter = new AtomicLong();
@@ -44,20 +47,36 @@ public class TestController
 	}
 
 	@GetMapping("/idp")
-	public ResponseEntity<IdpUser> idp()
+	public ResponseEntity<IdpUserDB> idp()
 	{
-		Iterable<IdpUser> idpusers = idpUserRepository.findAll();
+		Iterable<IdpUserDB> idpusers = idpUserRepository.findAll();
 		return new ResponseEntity<>(idpusers.iterator().next(), HttpStatus.OK);
 	}
 
 	@GetMapping("/users/{userID}")
-	public ResponseEntity<User> user(@PathVariable int userID)
+	public ResponseEntity<UserDB> user(@PathVariable int userID)
 	{
-		Optional<User> user = userRepository.findById(userID);
+		Optional<UserDB> user = userRepository.findById(userID);
 		if (user.isEmpty())
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
 		return new ResponseEntity<>(user.get(), HttpStatus.OK);
+	}
+
+	@GetMapping("/games/{gameId}")
+	public ResponseEntity<GameDB> game(@PathVariable int gameId)
+	{
+		Optional<GameDB> game = gameRepository.findById(gameId);
+		if (game.isEmpty())
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+		return new ResponseEntity<>(game.get(), HttpStatus.OK);
+	}
+
+	@GetMapping("/player")
+	public ResponseEntity<PlayerDB> player()
+	{
+		return new ResponseEntity<>(playerRepository.findAll().iterator().next(), HttpStatus.OK);
 	}
 
 	@GetMapping("/gameSessions")
@@ -66,6 +85,16 @@ public class TestController
 		List<GameSessionDB> gameSessions = new ArrayList<>();
 		gameSessionRepository.findAll().forEach(gameSessions::add);
 		return new ResponseEntity<>(gameSessions, HttpStatus.OK);
+	}
+
+	@GetMapping("/gameSessions/{gameSessionId}")
+	public ResponseEntity<GameSessionDB> gameSessions(@PathVariable int gameSessionId)
+	{
+		Optional<GameSessionDB> gameSession = gameSessionRepository.findById(gameSessionId);
+		if (gameSession.isEmpty())
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+
+		return new ResponseEntity<>(gameSession.get(), HttpStatus.OK);
 	}
 
 	@GetMapping("/longpoll")

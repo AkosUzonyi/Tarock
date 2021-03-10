@@ -5,7 +5,6 @@ import java.util.*;
 
 @Entity
 @Table(name = "game_session")
-//@SecondaryTable(name = "player", pkJoinColumns = @PrimaryKeyJoinColumn(name = "game_session_id"))
 public class GameSessionDB
 {
 	@Id
@@ -18,15 +17,10 @@ public class GameSessionDB
 
 	public int doubleRoundData;
 
-	/*@Column(table="player", name="user_id")
-	public List<Integer> users;
-
-	@Column(table="player", name="points")
-	public List<Integer> playerPoints;*/
-
-	@OneToMany(targetEntity = PlayerDB.class, fetch = FetchType.EAGER, cascade = CascadeType.ALL/*, mappedBy = "gameSession"*/)
+	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name="game_session_id", referencedColumnName = "id")
-	public List<PlayerDB> player;
+	@OrderBy("ordinal")
+	public List<PlayerDB> players;
 
 	public Integer currentGameId;
 

@@ -261,7 +261,7 @@ class Announcing extends Phase implements IAnnouncing
 	@Override
 	public boolean shouldHkpBeAnnounced()
 	{
-		if (isAnnounced(getCurrentTeam(), Announcements.hkp))
+		if (getCurrentTeam() != Team.OPPONENT)
 			return false;
 
 		if (getContraLevel(Team.CALLER, Announcements.jatek) > 0)

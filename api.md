@@ -191,9 +191,12 @@ Response:
         "type": "paskievics"|"illusztralt"|"magas"|"zebi",
         "doubleRoundType": "none"|"peculating"|"stacking"|"multiplying"
         "state": "lobby"|"game"|"deleted",
-        "users": [Int],
-        "playerPoints": [Int, Int, Int, Int]
+        "players": [{
+                "userId": Int,
+                "points": Int
+        }],
         "currentGameID": Int?
+        "createTime": Long
 }
 ```
 

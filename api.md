@@ -265,7 +265,7 @@ Response:
 
 ### GET /gameSessions/{gameSessionID}/chat
 
-Returns the chat messages sent to this game session.
+Returns the chat messages sent to this game session. Maximum 100 messages returned.
 
 Parameters:
 - from: Return messages sent after this unix timestamp in milliseconds. If 0 or missing, return all messages. If this parameter is provided and there are no messages sent after this time, the connection is kept alive, until at least one message arrives (long polling).
@@ -408,7 +408,7 @@ Response:
         "statistics": {
                 "callerCardPoints": Int,
                 "opponentCardPoints": Int,
-                "announcements": [{
+                "announcementResults": [{
                         "announcement": Announcement,
                         "points": Int,
                         "team": "caller"|"opponent"

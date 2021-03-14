@@ -48,6 +48,6 @@ public enum GameType
 			case "magas": return MAGAS;
 			case "zebi": return ZEBI;
 		}
-		throw new IllegalArgumentException("invalid game type: " + id);
+		return null;
 	}
 }

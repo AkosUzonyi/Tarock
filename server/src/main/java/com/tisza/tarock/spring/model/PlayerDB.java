@@ -9,6 +9,7 @@ import java.io.*;
 public class PlayerDB
 {
 	@Id
+	//@Column(name = "game_session_id")
 	public int gameSessionId;
 
 	@Id

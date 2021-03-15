@@ -1,5 +1,7 @@
 package com.tisza.tarock.spring.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.io.*;
 
@@ -9,12 +11,18 @@ import java.io.*;
 public class PlayerDB
 {
 	@Id
-	//@Column(name = "game_session_id")
+	@JsonIgnore
 	public int gameSessionId;
 
 	@Id
+	@JsonIgnore
 	public int ordinal;
 
+	@ManyToOne
+	@JoinColumn(name = "userId", insertable = false, updatable = false)
+	public UserDB user;
+
+	@JsonIgnore
 	public int userId;
 
 	public int points;

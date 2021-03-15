@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.*;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "idp_user")
 public class IdpUserDB
 {
 	@Id

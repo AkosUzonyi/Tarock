@@ -14,7 +14,10 @@ public class UserDB
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int id;
+
 	public String name;
-	public String img_url;
+
+	public String imgUrl;
+
 	public long registrationTime;
 }

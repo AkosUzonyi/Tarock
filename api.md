@@ -163,7 +163,7 @@ Response:
 {
         "id": Int,
         "name": String,
-        "imageURL": String?,
+        "imgUrl": String?,
         "isOnline": Bool,
         "isBot": Bool
 }
@@ -176,6 +176,12 @@ Redirects to the logged in user profile.
 Response:
 - 303: Redirect to the user profile
 - 401: Authentication is required (using /auth/login)
+
+### POST /keepAlive
+
+Clients should send this request in every 10 seconds. This serves two purposes:
+- Marks the currently logged in user online (for other users to see that you are connected to the game)
+- Keeps a TCP connection alive, making requests faster (no TCP+TLS handshake needed)
 
 ### GET /gameSessions/{gameSessionID}
 
@@ -192,7 +198,7 @@ Response:
         "doubleRoundType": "none"|"peculating"|"stacking"|"multiplying"
         "state": "lobby"|"game"|"deleted",
         "players": [{
-                "userId": Int,
+                "user": User,
                 "points": Int
         }],
         "currentGameID": Int?
@@ -298,7 +304,7 @@ Response:
 - 204: Message successfully sent
 - 401: Authentication is required (using /auth/login)
 - 404: Game session does not exists
-- 413: The message length exceeded the 255 character limit
+- 413: The message length exceeds the 255 character limit
 
 ### GET /games/{gameID}
 
@@ -312,7 +318,7 @@ Response:
 {
         "id": Int,
         "type": "paskievics"|"illusztralt"|"magas"|"zebi",
-        "gameSessionID": Int,
+        "gameSession": GameSession,
         "beginnerPlayer": Int,
         "createTime": Long,
 }
@@ -356,6 +362,7 @@ Response:
 - 401: Authentication is required (using /auth/login)
 - 403: The authenticated user is not playing in this game
 - 404: Game does not exists
+- 413: The length of the action string exceeds the 255 character limit
 - 422: The action does not comply with the game rules
 
 ### GET /games/{gameID}/state

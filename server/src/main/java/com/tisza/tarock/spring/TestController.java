@@ -1,7 +1,11 @@
 package com.tisza.tarock.spring;
 
 import com.tisza.tarock.game.*;
+import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
+import com.tisza.tarock.game.phase.*;
+import com.tisza.tarock.message.*;
+import com.tisza.tarock.server.player.*;
 import com.tisza.tarock.spring.dto.*;
 import com.tisza.tarock.spring.model.*;
 import com.tisza.tarock.spring.model.UserDB;
@@ -11,12 +15,15 @@ import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.context.annotation.*;
 import org.springframework.http.*;
+import org.springframework.transaction.annotation.*;
 import org.springframework.validation.annotation.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.*;
 import org.springframework.web.util.*;
 
 import java.net.*;
 import java.util.*;
+import java.util.stream.*;
 
 @RestController
 @Scope("session")
@@ -35,15 +42,27 @@ public class TestController
 	@Autowired
 	private ChatRepository chatRepository;
 	@Autowired
-	private ChatDeferredResultService chatDeferredResultService;
+	private ListDeferredResultService<ChatDB> chatDeferredResultService;
+	@Autowired
+	private ListDeferredResultService<ActionDB> actionDeferredResultService;
 
 	Logger logger = LoggerFactory.getLogger(TestController.class);
 
 	@GetMapping("/idp")
-	public ResponseEntity<IdpUserDB> idp()
+	public ResponseEntity<IdpUserDB> idp() throws InterruptedException
 	{
+		Thread.sleep(1000);
 		Iterable<IdpUserDB> idpusers = idpUserRepository.findAll();
 		return new ResponseEntity<>(idpusers.iterator().next(), HttpStatus.OK);
+	}
+
+	private GameSessionDB findGameSessionOrThrow(int gameSessionId)
+	{
+		Optional<GameSessionDB> gameSessionDB = gameSessionRepository.findById(gameSessionId);
+		if (gameSessionDB.isEmpty() || gameSessionDB.get().state.equals("deleted"))
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+		return gameSessionDB.get();
 	}
 
 	@GetMapping("/users/{userID}")
@@ -65,11 +84,8 @@ public class TestController
 	@GetMapping("/gameSessions/{gameSessionID}")
 	public ResponseEntity<GameSessionDB> gameSession(@PathVariable int gameSessionID)
 	{
-		Optional<GameSessionDB> gameSession = gameSessionRepository.findById(gameSessionID);
-		if (gameSession.isEmpty())
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-		return new ResponseEntity<>(gameSession.get(), HttpStatus.OK);
+		//TODO: return in deleted state or 404?
+		return new ResponseEntity<>(findGameSessionOrThrow(gameSessionID), HttpStatus.OK);
 	}
 
 	@PostMapping("/gameSessions")
@@ -107,56 +123,235 @@ public class TestController
 	@DeleteMapping("/gameSessions/{gameSessionID}")
 	public ResponseEntity<Void> deleteGameSession(@PathVariable int gameSessionID)
 	{
-		Optional<GameSessionDB> gameSession = gameSessionRepository.findById(gameSessionID);
-		if (gameSession.isEmpty())
+		Optional<GameSessionDB> gameSessionOptional = gameSessionRepository.findById(gameSessionID);
+		if (gameSessionOptional.isEmpty() || gameSessionOptional.get().state.equals("deleted"))
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		int userID = 4; //TODO
-		boolean containsUser = gameSession.get().players.stream().anyMatch(p -> p.userId == userID);
+		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionID);
+
+		int userId = 4; //TODO
+		boolean containsUser = gameSession.players.stream().anyMatch(p -> p.userId == userId);
 		if (!containsUser)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-		if (gameSession.get().state.equals("lobby"))
-			gameSession.get().players.clear();
+		if (gameSession.state.equals("lobby"))
+			gameSession.players.clear();
 
-		gameSession.get().state = "deleted";
+		gameSession.state = "deleted";
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	@PostMapping("/gameSessions/{gameSessionID}/join")
+	public ResponseEntity<Void> joinGameSession(@PathVariable int gameSessionID)
+	{
+		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionID);
+
+		if (!gameSession.state.equals("lobby"))
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+		int userId = 4; //TODO
+		boolean containsUser = gameSession.players.stream().anyMatch(p -> p.userId == userId);
+		if (containsUser)
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+		PlayerDB player = new PlayerDB();
+		player.gameSessionId = gameSessionID;
+		player.ordinal = gameSession.players.size();
+		player.points = 0;
+		player.userId = userId;
+		gameSession.players.add(player);
+
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@PostMapping("/gameSessions/{gameSessionID}/leave")
+	public ResponseEntity<Void> leaveGameSession(@PathVariable int gameSessionID)
+	{
+		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionID);
+
+		if (!gameSession.state.equals("lobby"))
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+		int userId = 4; //TODO
+		gameSession.players.removeIf(p -> p.userId == userId);
+
+		if (gameSession.players.isEmpty())
+			gameSession.state = "deleted";
+
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@PostMapping("/gameSessions/{gameSessionID}/start")
+	public ResponseEntity<Void> startGameSession(@PathVariable int gameSessionID)
+	{
+		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionID);
+
+		if (!gameSession.state.equals("lobby"))
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+		int userId = 4; //TODO
+		if (gameSession.players.stream().noneMatch(p -> p.userId == userId))
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+		int playerCount = gameSession.players.size();
+		while (playerCount < 4)
+		{
+			PlayerDB bot = new PlayerDB();
+			bot.gameSessionId = gameSessionID;
+			bot.ordinal = playerCount++;
+			bot.userId = 4 - playerCount + 1;
+			bot.points = 0;
+			gameSession.players.add(bot);
+		}
+
+		Collections.shuffle(gameSession.players);
+		for (int i = 0; i < playerCount; i++)
+			gameSession.players.get(i).ordinal = i;
+
+		gameSession.state = "game";
+		startNewGame(gameSession, 0);
+
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	private GameDB findGameOrThrow(int gameId)
+	{
+		Optional<GameDB> gameDB = gameRepository.findById(gameId);
+		if (gameDB.isEmpty())
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+		return gameDB.get();
+	}
+
+	private void startNewGame(GameSessionDB gameSession, int beginnerPlayer)
+	{
+		if (!gameSession.state.equals("game"))
+			throw new IllegalStateException();
+
+		GameDB gameDB = new GameDB();
+		gameDB.gameSession = gameSession;
+		gameDB.actions = new ArrayList<>();
+		gameDB.beginnerPlayer = beginnerPlayer;
+		gameDB.createTime = System.currentTimeMillis();
+		gameDB = gameRepository.save(gameDB);
+
+		gameSession.currentGameId = gameDB.id;
+
+		List<Card> deck = new ArrayList<>(Card.getAll());
+		Collections.shuffle(deck);
+		List<DeckCardDB> deckDB = new ArrayList<>();
+		for (Card card : deck)
+		{
+			DeckCardDB deckCardDB = new DeckCardDB();
+			deckCardDB.card = card.getID();
+			deckCardDB.gameId = gameDB.id;
+			deckCardDB.ordinal = deckDB.size();
+			deckDB.add(deckCardDB);
+		}
+
+		gameDB.deckCards = deckDB;
+		gameDB = gameRepository.save(gameDB);
+
+		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(gameSession.doubleRoundType);
+		doubleRoundTracker.setData(gameSession.doubleRoundData);
+
+		Game game = new Game(gameSession.type, deck, doubleRoundTracker.getCurrentMultiplier());
+		game.start(); //TODO: delete start method
 	}
 
 	@GetMapping("/games/{gameID}")
 	public ResponseEntity<GameDB> game(@PathVariable int gameID)
 	{
-		Optional<GameDB> game = gameRepository.findById(gameID);
-		if (game.isEmpty())
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-		return new ResponseEntity<>(game.get(), HttpStatus.OK);
+		return new ResponseEntity<>(findGameOrThrow(gameID), HttpStatus.OK);
 	}
 
 	@GetMapping("/games/{gameID}/actions")
-	public ResponseEntity<List<ActionDB>> gameActions(@PathVariable int gameID, @RequestParam(defaultValue = "0") int fromIndex)
+	public Object getActions(@PathVariable int gameID, @RequestParam(defaultValue = "0") int fromIndex)
 	{
-		Optional<GameDB> game = gameRepository.findById(gameID);
-		if (game.isEmpty())
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		GameDB game = findGameOrThrow(gameID);
 
-		List<ActionDB> actions = game.get().actions;
+		List<ActionDB> actions = game.actions;
 		List<ActionDB> sublist = actions.subList(fromIndex, actions.size());
-		if (sublist.isEmpty());
-			//TODO
+		if (sublist.isEmpty()) //TODO: longpoll boolean parameter?
+			return actionDeferredResultService.getDeferredResult(gameID);
 
 		return new ResponseEntity<>(sublist, HttpStatus.OK);
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE)
+	@PostMapping("/games/{gameID}/actions")
+	public ResponseEntity<Void> postAction(@PathVariable int gameID, @RequestBody ActionPostDTO actionPostDTO)
+	{
+		if (actionPostDTO.action.length() >= 256)
+			return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
+
+		GameDB gameDB = findGameOrThrow(gameID);
+
+		int userId = 4; //TODO
+		Optional<PlayerDB> player = gameDB.gameSession.players.stream().filter(p -> p.userId == userId).findFirst();
+		if (player.isEmpty())
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+		int playerCount = gameDB.gameSession.players.size();
+		int seat = (player.get().ordinal - gameDB.beginnerPlayer + playerCount) % playerCount;
+
+		List<Card> deck = gameDB.deckCards.stream().map(deckCardDB -> Card.fromId(deckCardDB.card)).collect(Collectors.toList());
+		Game game = new Game(gameDB.gameSession.type, deck, 1); //TODO: point multiplier
+		for (ActionDB a : gameDB.actions)
+			game.processAction(PlayerSeat.fromInt(a.seat), new Action(a.action));
+
+		boolean success;
+		try
+		{
+			Action action = new Action(actionPostDTO.action);
+			success = game.processAction(PlayerSeat.fromInt(seat), action);
+		}
+		catch (IllegalArgumentException e) //TODO: cleaner way?
+		{
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+		if (!success)
+			return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+
+		ActionDB actionDB = new ActionDB();
+		actionDB.gameId = gameID;
+		actionDB.ordinal = gameDB.actions.size();
+		actionDB.seat = seat;
+		actionDB.action = actionPostDTO.action;
+		actionDB.time = System.currentTimeMillis();
+		gameDB.actions.add(actionDB);
+
+		if (game.isFinished())
+		{
+			for (PlayerSeat s : PlayerSeat.getAll())
+			{
+				PlayerDB p = gameDB.gameSession.players.get((gameDB.beginnerPlayer + s.asInt()) % playerCount);
+				p.points += game.getPoints(s);
+			}
+
+			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(gameDB.gameSession.doubleRoundType);
+			doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
+			if (game.isNormalFinish())
+				doubleRoundTracker.gameFinished();
+			else
+				doubleRoundTracker.gameInterrupted();
+			gameDB.gameSession.doubleRoundData = doubleRoundTracker.getData();
+
+			startNewGame(gameDB.gameSession, (gameDB.beginnerPlayer + 1) % gameDB.gameSession.players.size());
+		}
+
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@GetMapping("/gameSessions/{gameSessionID}/chat")
 	public Object chatGet(@PathVariable int gameSessionID, @RequestParam(defaultValue = "0") long from)
 	{
-		Optional<GameSessionDB> gameSession = gameSessionRepository.findById(gameSessionID);
-		if (gameSession.isEmpty())
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		findGameSessionOrThrow(gameSessionID);
 
-		List<ChatDB> chats = chatRepository.findTop100ByTimeGreaterThanEqual(from);
+		List<ChatDB> chats = chatRepository.findTop100ByGameSessionIdAndTimeGreaterThanEqual(gameSessionID, from);
 		if (chats.isEmpty())
 			return chatDeferredResultService.getDeferredResult(gameSessionID);
 
@@ -164,25 +359,23 @@ public class TestController
 	}
 
 	@PostMapping("/gameSessions/{gameSessionID}/chat")
-	public ResponseEntity<Void> chatPost(@PathVariable int gameSessionID, @RequestBody ChatRequestDTO chatRequestDTO)
+	public ResponseEntity<Void> chatPost(@PathVariable int gameSessionID, @RequestBody ChatPostDTO chatPostDTO)
 	{
-		if (chatRequestDTO.message.length() >= 256)
+		if (chatPostDTO.message.length() >= 256)
 			return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
 
-		Optional<GameSessionDB> gameSession = gameSessionRepository.findById(gameSessionID);
-		if (gameSession.isEmpty())
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		findGameSessionOrThrow(gameSessionID);
 
 		int userID = 4; //TODO
 
 		ChatDB chatDB = new ChatDB();
 		chatDB.gameSessionId = gameSessionID;
-		chatDB.message = chatRequestDTO.message;
+		chatDB.message = chatPostDTO.message;
 		chatDB.time = System.currentTimeMillis();
 		chatDB.userId = userID;
 
 		chatDB = chatRepository.save(chatDB);
-		chatDeferredResultService.newChat(gameSessionID, chatDB);
+		chatDeferredResultService.notifyNewResult(gameSessionID, chatDB);
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}

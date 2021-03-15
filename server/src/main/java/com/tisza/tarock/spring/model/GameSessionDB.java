@@ -1,5 +1,6 @@
 package com.tisza.tarock.spring.model;
 
+import com.fasterxml.jackson.annotation.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.doubleround.*;
 
@@ -14,7 +15,7 @@ public class GameSessionDB
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int id;
 
-	@Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.STRING) //TODO: lowercase
 	public GameType type;
 
 	public String state;
@@ -22,10 +23,11 @@ public class GameSessionDB
 	@Enumerated(EnumType.STRING)
 	public DoubleRoundType doubleRoundType;
 
+	@JsonIgnore
 	public int doubleRoundData;
 
 	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinColumn(name="gameSessionId", referencedColumnName = "id")
+	@JoinColumn(name="gameSessionId")
 	@OrderBy("ordinal")
 	public List<PlayerDB> players;
 

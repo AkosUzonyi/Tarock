@@ -32,8 +32,9 @@ public class ChatDeferredResultService
 		}
 	}
 
-	public DeferredResult<List<ChatDB>> getDeferredResult(int gameSessionID)
+	public DeferredResult<List<ChatDB>> getDeferredResult(int gameSessionID, long from)
 	{
+		//TODO: from paramter
 		DeferredResult<List<ChatDB>> deferredResult = new DeferredResult<>(TIMEOUT, new ResponseEntity<Void>(HttpStatus.REQUEST_TIMEOUT));
 		getDeferredResultList(gameSessionID).add(deferredResult);
 		return deferredResult;

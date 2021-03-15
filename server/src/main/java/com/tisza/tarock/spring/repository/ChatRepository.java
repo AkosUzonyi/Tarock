@@ -8,5 +8,5 @@ import java.util.*;
 public interface ChatRepository extends CrudRepository<ChatDB, Integer>
 {
 	//TODO: paging
-	List<ChatDB> findTop100ByTimeGreaterThanEqual(long time);
+	List<ChatDB> findTop100ByGameSessionIdAndTimeGreaterThanEqual(int gameSessionId, long time);
 }

@@ -1,5 +1,7 @@
 package com.tisza.tarock.spring.model;
 
+import com.fasterxml.jackson.annotation.*;
+
 import javax.persistence.*;
 import java.util.*;
 
@@ -12,7 +14,7 @@ public class GameDB
 	public int id;
 
 	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "game_session_id", referencedColumnName = "id")
+	//@JoinColumn(name = "game_session_id", referencedColumnName = "id")
 	public GameSessionDB gameSession;
 
 	public int beginnerPlayer;
@@ -20,12 +22,14 @@ public class GameDB
 	public long createTime;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name="gameId", referencedColumnName = "id")
+	@JoinColumn(name="gameId")
 	@OrderBy("ordinal")
+	@JsonIgnore
 	public List<DeckCardDB> deckCards;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name="gameId", referencedColumnName = "id")
+	@JoinColumn(name="gameId")
 	@OrderBy("ordinal")
+	@JsonIgnore
 	public List<ActionDB> actions;
 }

@@ -164,6 +164,11 @@ public class Game
 		return currentPhase.getAvailableActions();
 	}
 
+	public boolean canThrowCards(PlayerSeat player)
+	{
+		return currentPhase.canThrowCards(player);
+	}
+
 	void turn(PlayerSeat player)
 	{
 		turns.fill(false);

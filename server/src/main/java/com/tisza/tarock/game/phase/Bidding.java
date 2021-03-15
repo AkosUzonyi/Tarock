@@ -120,17 +120,11 @@ class Bidding extends Phase
 
 		return true;
 	}
-	
+
 	@Override
-	public boolean throwCards(PlayerSeat player)
+	public boolean canThrowCards(PlayerSeat player)
 	{
-		if (!game.getPlayerCards(player).canBeThrown(game.getGameType()))
-			return false;
-
-		game.broadcastEvent(Event.throwCards(player));
-		game.changePhase(new PendingNewGame(game, true));
-
-		return true;
+		return game.getPlayerCards(player).canBeThrown(game.getGameType());
 	}
 
 	public PlayerSeat getCurrentPlayer()

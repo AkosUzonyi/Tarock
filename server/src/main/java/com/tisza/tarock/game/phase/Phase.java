@@ -26,6 +26,11 @@ abstract class Phase implements ActionHandler
 		return Collections.emptyList();
 	}
 
+	public boolean canThrowCards(PlayerSeat player)
+	{
+		return false;
+	}
+
 	@Override
 	public boolean announce(PlayerSeat player, AnnouncementContra announcementContra)
 	{
@@ -71,7 +76,12 @@ abstract class Phase implements ActionHandler
 	@Override
 	public boolean throwCards(PlayerSeat player)
 	{
-		return wrongPhase("throwCards");
+		if (!canThrowCards(player))
+			return false;
+
+		game.broadcastEvent(Event.throwCards(player));
+		game.changePhase(new PendingNewGame(game, true));
+		return true;
 	}
 
 	private boolean wrongPhase(String action)

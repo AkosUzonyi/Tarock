@@ -53,7 +53,7 @@ class Folding extends Phase
 			List<Card> cardsFromTalon = remainingCards.subList(0, cardCount);
 			PlayerCards playerCards = game.getPlayerCards(player);
 			playerCards.addCards(cardsFromTalon);
-			game.sendEvent(player, Event.playerCards(playerCards.clone(), canThrow(player)));
+			game.sendEvent(player, Event.playerCards(playerCards.clone(), canThrowCards(player)));
 			game.sendEvent(player, Event.turn(player));
 			if (cardsFromTalon.isEmpty())
 				fold(player, Collections.emptyList());
@@ -130,22 +130,11 @@ class Folding extends Phase
 	}
 
 	@Override
-	public boolean throwCards(PlayerSeat player)
+	public boolean canThrowCards(PlayerSeat player)
 	{
 		if (donePlayer.get(player))
 			return false;
 
-		if (!canThrow(player))
-			return false;
-
-		game.broadcastEvent(Event.throwCards(player));
-		game.changePhase(new PendingNewGame(game, true));
-
-		return true;
-	}
-
-	private boolean canThrow(PlayerSeat player)
-	{
 		boolean lastPlayerThrow = game.getWinnerBid() == 3 && game.getBidWinnerPlayer() == player && player == PlayerSeat.SEAT3;
 		return game.getPlayerCards(player).canBeThrown(game.getGameType()) || lastPlayerThrow;
 	}

@@ -5,6 +5,7 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 class Bidding extends Phase
 {
@@ -197,6 +198,12 @@ class Bidding extends Phase
 	{
 		game.sendEvent(currentPlayer, Event.availableBids(getAvailableBids()));
 		game.turn(currentPlayer);
+	}
+
+	@Override
+	public List<Action> getAvailableActions()
+	{
+		return getAvailableBids().stream().map(Action::bid).collect(Collectors.toList());
 	}
 
 	private boolean checkBiddingRequirements(PlayerSeat player)

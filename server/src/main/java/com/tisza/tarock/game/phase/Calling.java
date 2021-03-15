@@ -6,6 +6,7 @@ import com.tisza.tarock.game.card.filter.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 class Calling extends Phase
 {
@@ -103,6 +104,12 @@ class Calling extends Phase
 	{
 		game.sendEvent(callerPlayer, Event.availableCalls(getCallableCards()));
 		game.turn(callerPlayer);
+	}
+
+	@Override
+	public List<Action> getAvailableActions()
+	{
+		return getCallableCards().stream().map(Action::call).collect(Collectors.toList());
 	}
 
 	private List<Card> getCallableCards()

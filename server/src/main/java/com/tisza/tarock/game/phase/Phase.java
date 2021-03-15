@@ -21,6 +21,11 @@ abstract class Phase implements ActionHandler
 	public abstract PhaseEnum asEnum();
 	public abstract void onStart();
 
+	public List<Action> getAvailableActions()
+	{
+		return Collections.emptyList();
+	}
+
 	@Override
 	public boolean announce(PlayerSeat player, AnnouncementContra announcementContra)
 	{

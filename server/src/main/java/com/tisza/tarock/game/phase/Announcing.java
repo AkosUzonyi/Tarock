@@ -7,6 +7,7 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
+import java.util.stream.*;
 
 class Announcing extends Phase implements IAnnouncing
 {
@@ -106,8 +107,8 @@ class Announcing extends Phase implements IAnnouncing
 	{
 		return lastAnnouncer == currentPlayer;
 	}
-	
-	private void sendAvailableAnnouncements()
+
+	private List<AnnouncementContra> getAvailableAnnouncements()
 	{
 		List<AnnouncementContra> list = new ArrayList<>();
 		
@@ -144,10 +145,21 @@ class Announcing extends Phase implements IAnnouncing
 		if (shouldHkpBeAnnounced())
 			list.remove(new AnnouncementContra(Announcements.jatek, 1));
 
-		game.sendEvent(currentPlayer, Event.availableAnnouncements(list));
+		return list;
+	}
+
+	private void sendAvailableAnnouncements()
+	{
+		game.sendEvent(currentPlayer, Event.availableAnnouncements(getAvailableAnnouncements()));
 		game.turn(currentPlayer);
 	}
-	
+
+	@Override
+	public List<Action> getAvailableActions()
+	{
+		return getAvailableAnnouncements().stream().map(Action::announce).collect(Collectors.toList());
+	}
+
 	@Override
 	public boolean canAnnounce(AnnouncementContra ac)
 	{

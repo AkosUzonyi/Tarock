@@ -159,6 +159,11 @@ public class Game
 		return currentPhase.asEnum();
 	}
 
+	public List<Action> getAvailableActions()
+	{
+		return currentPhase.getAvailableActions();
+	}
+
 	void turn(PlayerSeat player)
 	{
 		turns.fill(false);

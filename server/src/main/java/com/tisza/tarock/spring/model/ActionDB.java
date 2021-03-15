@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "deck_card")
+@Table(name = "action")
 @IdClass(ActionId.class)
 public class ActionDB
 {

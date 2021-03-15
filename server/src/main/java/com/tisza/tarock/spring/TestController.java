@@ -5,7 +5,6 @@ import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
-import com.tisza.tarock.server.player.*;
 import com.tisza.tarock.spring.dto.*;
 import com.tisza.tarock.spring.model.*;
 import com.tisza.tarock.spring.model.UserDB;
@@ -94,10 +93,10 @@ public class TestController
 		//TODO: request parameters not null
 
 		GameSessionDB gameSession = new GameSessionDB();
-		gameSession.type = GameType.fromID(createGameSessionDTO.type);
+		gameSession.type = createGameSessionDTO.type; //TODO: validate type
 		gameSession.state = "lobby";
 		gameSession.players = new ArrayList<>();
-		gameSession.doubleRoundType = DoubleRoundType.fromID(createGameSessionDTO.doubleRoundType);
+		gameSession.doubleRoundType = createGameSessionDTO.doubleRoundType; //TODO: validate type
 		gameSession.doubleRoundData = 0;
 		gameSession.currentGameId = null;
 		gameSession.createTime = System.currentTimeMillis();
@@ -252,13 +251,6 @@ public class TestController
 		}
 
 		gameDB.deckCards = deckDB;
-		gameDB = gameRepository.save(gameDB);
-
-		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(gameSession.doubleRoundType);
-		doubleRoundTracker.setData(gameSession.doubleRoundData);
-
-		Game game = new Game(gameSession.type, deck, doubleRoundTracker.getCurrentMultiplier());
-		game.start(); //TODO: delete start method
 	}
 
 	@GetMapping("/games/{gameID}")
@@ -268,12 +260,13 @@ public class TestController
 	}
 
 	@GetMapping("/games/{gameID}/actions")
-	public Object getActions(@PathVariable int gameID, @RequestParam(defaultValue = "0") int fromIndex)
+	public Object getActions(@PathVariable int gameID, @RequestParam(defaultValue = "0") int from)
 	{
 		GameDB game = findGameOrThrow(gameID);
 
+		//TODO: hide fold actions
 		List<ActionDB> actions = game.actions;
-		List<ActionDB> sublist = actions.subList(fromIndex, actions.size());
+		List<ActionDB> sublist = actions.subList(from, actions.size());
 		if (sublist.isEmpty()) //TODO: longpoll boolean parameter?
 			return actionDeferredResultService.getDeferredResult(gameID);
 
@@ -332,7 +325,7 @@ public class TestController
 				p.points += game.getPoints(s);
 			}
 
-			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(gameDB.gameSession.doubleRoundType);
+			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
 			doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
 			if (game.isNormalFinish())
 				doubleRoundTracker.gameFinished();

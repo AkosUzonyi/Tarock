@@ -27,7 +27,7 @@ class Gameplay extends Phase
 		currentTrick = new Trick(PlayerSeat.SEAT0);
 		game.turn(currentTrick.getCurrentPlayer());
 
-		game.sendInGameStatistics();
+		game.calculateInGameStatistics();
 	}
 
 	@Override

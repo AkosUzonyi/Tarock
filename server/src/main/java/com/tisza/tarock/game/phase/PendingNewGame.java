@@ -25,7 +25,7 @@ class PendingNewGame extends Phase
 	{
 		if (!doubleRound)
 		{
-			game.sendStatistics();
+			game.calculateStatistics();
 			game.revealAllTeamInfo();
 		}
 

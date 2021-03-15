@@ -42,6 +42,10 @@ public class Game
 	private List<Trick> tricksPassed = new ArrayList<>();
 	private PlayerSeatMap<Collection<Card>> wonCards = new PlayerSeatMap<>();
 
+	private int callerCardPoints = 0;
+	private int opponentCardPoints = 0;
+	private List<AnnouncementResult> announcementResults = new ArrayList<>();
+	private int sumPoints = 0;
 	private int[] points = new int[4];
 	private final int pointMultiplier;
 
@@ -388,10 +392,8 @@ public class Game
 		return points;
 	}
 
-	void sendInGameStatistics()
+	void calculateInGameStatistics()
 	{
-		List<AnnouncementResult> announcementResults = new ArrayList<>();
-
 		for (Team team : Team.values())
 		{
 			for (Announcement announcement : Announcements.getAll())
@@ -411,12 +413,8 @@ public class Game
 		broadcastEvent(Event.announcementStatistics(0, 0, announcementResults, 0, pointMultiplier));
 	}
 
-	void sendStatistics()
+	void calculateStatistics()
 	{
-		int pointsForCallerTeam = 0;
-		List<AnnouncementResult> announcementResults = new ArrayList<>();
-		int callerCardPoints = 0, opponentCardPoints = 0;
-
 		for (Team team : Team.values())
 		{
 			if (team == Team.CALLER)
@@ -432,7 +430,7 @@ public class Game
 				int announcementPoints = announcement.calculatePoints(this, team);
 				announcementPoints *= pointMultiplier;
 
-				pointsForCallerTeam += announcementPoints * (team == Team.CALLER ? 1 : -1);
+				sumPoints += announcementPoints * (team == Team.CALLER ? 1 : -1);
 
 				if (announcementPoints != 0)
 				{
@@ -455,13 +453,38 @@ public class Game
 
 		for (int i = 0; i < 4; i++)
 		{
-			points[i] -= pointsForCallerTeam;
+			points[i] -= sumPoints;
 			points[i] -= allTarockCountPoints;
 		}
-		points[playerPairs.getCaller().asInt()] += pointsForCallerTeam * 2;
-		points[playerPairs.getCalled().asInt()] += pointsForCallerTeam * 2;
+		points[playerPairs.getCaller().asInt()] += sumPoints * 2;
+		points[playerPairs.getCalled().asInt()] += sumPoints * 2;
 
-		broadcastEvent(Event.announcementStatistics(callerCardPoints, opponentCardPoints, announcementResults, pointsForCallerTeam, pointMultiplier));
+		broadcastEvent(Event.announcementStatistics(callerCardPoints, opponentCardPoints, announcementResults, sumPoints, pointMultiplier));
+	}
+
+	public int getCallerCardPoints()
+	{
+		return callerCardPoints;
+	}
+
+	public int getOpponentCardPoints()
+	{
+		return opponentCardPoints;
+	}
+
+	public List<AnnouncementResult> getAnnouncementResults()
+	{
+		return announcementResults;
+	}
+
+	public int getSumPoints()
+	{
+		return sumPoints;
+	}
+
+	public int getPointMultiplier()
+	{
+		return pointMultiplier;
 	}
 
 	public int getPoints(PlayerSeat seat)

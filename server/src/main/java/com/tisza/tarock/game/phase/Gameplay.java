@@ -25,8 +25,8 @@ class Gameplay extends Phase
 	public void onStart()
 	{
 		currentTrick = new Trick(PlayerSeat.SEAT0);
+		game.addTrick(currentTrick);
 		game.turn(currentTrick.getCurrentPlayer());
-
 		game.calculateInGameStatistics();
 	}
 
@@ -52,11 +52,10 @@ class Gameplay extends Phase
 		
 		if (currentTrick.isFinished())
 		{
-			game.addTrick(currentTrick);
 			PlayerSeat winner = currentTrick.getWinner();
 			game.addWonCards(winner, currentTrick.getCards());
 			currentTrick = game.areAllTricksPassed() ? null : new Trick(winner);
-			
+			game.addTrick(currentTrick);
 			game.broadcastEvent(Event.cardsTaken(winner));
 		}
 

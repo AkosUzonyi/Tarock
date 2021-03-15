@@ -39,7 +39,7 @@ public class Game
 
 	private AnnouncementsState announcementsState = new AnnouncementsState();
 
-	private List<Trick> tricksPassed = new ArrayList<>();
+	private List<Trick> tricks = new ArrayList<>();
 	private PlayerSeatMap<Collection<Card>> wonCards = new PlayerSeatMap<>();
 
 	private int callerCardPoints = 0;
@@ -290,17 +290,22 @@ public class Game
 
 	void addTrick(Trick trick)
 	{
-		tricksPassed.add(trick);
+		tricks.add(trick);
 	}
 
 	boolean areAllTricksPassed()
 	{
-		return tricksPassed.size() >= ROUND_COUNT;
+		return tricks.size() >= ROUND_COUNT;
 	}
 
 	public Trick getTrick(int index)
 	{
-		return tricksPassed.get(index);
+		return tricks.get(index);
+	}
+
+	public int getTrickCount()
+	{
+		return tricks.size();
 	}
 
 	void addWonCards(PlayerSeat player, Collection<Card> collection)

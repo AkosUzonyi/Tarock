@@ -273,6 +273,17 @@ public class TestController
 		return new ResponseEntity<>(sublist, HttpStatus.OK);
 	}
 
+	private Game loadGame(GameDB gameDB)
+	{
+		List<Card> deck = gameDB.deckCards.stream().map(deckCardDB -> Card.fromId(deckCardDB.card)).collect(Collectors.toList());
+		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, 1); //TODO: point multiplier
+		game.start();
+		for (ActionDB a : gameDB.actions)
+			game.processAction(PlayerSeat.fromInt(a.seat), new Action(a.action));
+
+		return game;
+	}
+
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@PostMapping("/games/{gameID}/actions")
 	public ResponseEntity<Void> postAction(@PathVariable int gameID, @RequestBody ActionPostDTO actionPostDTO)
@@ -287,13 +298,9 @@ public class TestController
 		if (player.isEmpty())
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
+		Game game = loadGame(gameDB);
 		int playerCount = gameDB.gameSession.players.size();
 		int seat = (player.get().ordinal - gameDB.beginnerPlayer + playerCount) % playerCount;
-
-		List<Card> deck = gameDB.deckCards.stream().map(deckCardDB -> Card.fromId(deckCardDB.card)).collect(Collectors.toList());
-		Game game = new Game(gameDB.gameSession.type, deck, 1); //TODO: point multiplier
-		for (ActionDB a : gameDB.actions)
-			game.processAction(PlayerSeat.fromInt(a.seat), new Action(a.action));
 
 		boolean success;
 		try
@@ -337,6 +344,100 @@ public class TestController
 		}
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+	}
+
+	@GetMapping("/games/{gameID}/state")
+	public ResponseEntity<GameStateDTO> getGameState(@PathVariable int gameID)
+	{
+		GameDB gameDB = findGameOrThrow(gameID);
+		Game game = loadGame(gameDB);
+		PlayerSeat me = null; //TODO
+
+		GameStateDTO gameStateDTO = new GameStateDTO();
+		gameStateDTO.phase = game.getCurrentPhaseEnum().getID();
+		gameStateDTO.canThrowCards = me != null && game.canThrowCards(me);
+		if (me != null && game.getTurn(me))
+			gameStateDTO.availableActions = game.getAvailableActions().stream().map(Action::getId).collect(Collectors.toList());
+		//TODO: caller tarock fold
+
+		gameStateDTO.statistics.callerCardPoints = game.getCallerCardPoints();
+		gameStateDTO.statistics.opponentCardPoints = game.getOpponentCardPoints();
+		for (AnnouncementResult ar : game.getAnnouncementResults())
+		{
+			GameStateDTO.AnnouncementResult arDTO = new GameStateDTO.AnnouncementResult();
+			arDTO.announcement = ar.getAnnouncementContra().getID();
+			arDTO.points = ar.getPoints();
+			arDTO.team = ar.getTeam() == Team.CALLER ? "caller" : "opponent";
+			gameStateDTO.statistics.announcementResults.add(arDTO);
+		}
+		gameStateDTO.statistics.sumPoints = game.getSumPoints();
+		gameStateDTO.statistics.pointMultiplier = game.getPointMultiplier();
+
+		Collection<Card> callerSkart = game.getSkart(game.getBidWinnerPlayer());
+		if (callerSkart == null)
+			gameStateDTO.callerTarockFold = Collections.emptyList();
+		else
+			gameStateDTO.callerTarockFold = callerSkart.stream()
+					.filter(c -> c instanceof TarockCard)
+					.map(Card::getID)
+					.collect(Collectors.toList());
+
+		Trick currentTrick, previousTrick;
+		if (game.getTrickCount() == 0)
+		{
+			previousTrick = null;
+			currentTrick = new Trick(PlayerSeat.SEAT0);
+		}
+		else if (game.getTrickCount() == 1)
+		{
+			previousTrick = null;
+			currentTrick = game.getTrick(0);
+		}
+		else
+		{
+			previousTrick = game.getTrick(game.getTrickCount() - 2);
+			currentTrick = game.getTrick(game.getTrickCount() - 1);
+		}
+
+		gameStateDTO.currentTrick = new ArrayList<>();
+		if (previousTrick == null)
+		{
+			gameStateDTO.previousTrick = null;
+			gameStateDTO.previousTrickWinner = null;
+		}
+		else
+		{
+			gameStateDTO.previousTrick = new ArrayList<>();
+			gameStateDTO.previousTrickWinner = previousTrick.getWinner().asInt();
+		}
+
+		for (PlayerSeat p : PlayerSeat.getAll())
+		{
+			if (p == me)
+				gameStateDTO.cards.add(game.getPlayerCards(p).getCards().stream().map(Card::getID).collect(Collectors.toList()));
+			else
+				gameStateDTO.cards.add(null);
+
+			gameStateDTO.turn.add(game.getTurn(p));
+
+			String teamInfo = null;
+			if (game.isTeamInfoGlobalOf(p) || (me != null && game.hasTeamInfo(me, p)))
+				teamInfo = game.getPlayerPairs().getTeam(p) == Team.CALLER ? "caller" : "opponent";
+			gameStateDTO.teamInfo.add(teamInfo);
+
+			gameStateDTO.currentTrick.add(currentTrick.getCardByPlayer(p) == null ? null : currentTrick.getCardByPlayer(p).getID());
+
+			if (previousTrick != null)
+				gameStateDTO.previousTrick.add(previousTrick.getCardByPlayer(p) == null ? null : previousTrick.getCardByPlayer(p).getID());
+
+			Collection<Card> skart = game.getSkart(p);
+			if (skart == null)
+				gameStateDTO.tarockFoldCount.add(0);
+			else
+				gameStateDTO.tarockFoldCount.add((int) skart.stream().filter(c -> c instanceof TarockCard).count());
+		}
+
+		return new ResponseEntity<>(gameStateDTO, HttpStatus.OK);
 	}
 
 	@GetMapping("/gameSessions/{gameSessionID}/chat")

@@ -379,6 +379,7 @@ The fields in the response:
 - teamInfo: Used for coloring the names of players, indicating which team they are in. Null means the player doesn't know which team the other player is in.
 - availableActions: A list of actions that are executable at this by the player (if it's an other player's turn, the list is empty). Only bid, call, and announce actions are listed this way. Used for displaying action buttons.
 - tarockFoldCount: Count of folded tarocks for each player. All 0 before folding.
+- callerTarockFold: The list of tarock cards folded by the caller player. Empty before folding.
 - currentTrick: The cards played in the current trick by each player. Null means no card was played in the current trick by the player. Used for displaying card on the table.
 - previousTrick: The cards played in the previous trick by each player. Either a 4 element list or null, if no previous trick present.
 - previousTrickWinner: The seat number of the player, who won the last trick. Used for the taking animation, and positioning the taken cards.
@@ -409,6 +410,7 @@ Response:
         "teamInfo": ["caller"|"opponent"|null, "caller"|"opponent"|null, "caller"|"opponent"|null, "caller"|"opponent"|null],
         "availableActions": [String],
         "tarockFoldCount": [Int, Int, Int, Int],
+        "callerTarockFold": [Card],
         "currentTrick": [Card?, Card?, Card?, Card?],
         "previousTrick": [Card, Card, Card, Card]?,
         "previousTrickWinner": Int?,

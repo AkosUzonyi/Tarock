@@ -4,23 +4,24 @@ import java.util.*;
 
 public class GameStateDTO
 {
-	public List<String> cards;
+	public List<List<String>> cards = new ArrayList<>();
 	public String phase;
-	public List<Boolean> turn;
+	public List<Boolean> turn = new ArrayList<>();
 	public boolean canThrowCards;
-	public List<String> teamInfo;
-	public List<String> availableActions;
-	public List<Integer> tarockFoldCount;
-	public List<String> currentTrick;
-	public List<String> previousTrick;
-	public int previousTrickWinner;
-	public Statistics statistics;
+	public List<String> teamInfo = new ArrayList<>();
+	public List<String> availableActions = new ArrayList<>();
+	public List<String> callerTarockFold = new ArrayList<>();
+	public List<Integer> tarockFoldCount = new ArrayList<>();
+	public List<String> currentTrick = new ArrayList<>();
+	public List<String> previousTrick = new ArrayList<>();
+	public Integer previousTrickWinner;
+	public Statistics statistics = new Statistics();
 
 	public static class Statistics
 	{
 		public int callerCardPoints;
 		public int opponentCardPoints;
-		public List<AnnouncementResult> announcementResults;
+		public List<AnnouncementResult> announcementResults = new ArrayList<>();
 		public int sumPoints;
 		public int pointMultiplier;
 	}

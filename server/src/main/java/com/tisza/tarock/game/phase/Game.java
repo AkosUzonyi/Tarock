@@ -349,7 +349,7 @@ public class Game
 		}
 	}
 
-	boolean isTeamInfoGlobalOf(PlayerSeat player)
+	public boolean isTeamInfoGlobalOf(PlayerSeat player)
 	{
 		for (PlayerSeat p : PlayerSeat.getAll())
 		{

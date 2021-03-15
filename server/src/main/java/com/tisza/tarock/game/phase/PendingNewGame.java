@@ -30,7 +30,6 @@ class PendingNewGame extends Phase
 		}
 
 		game.setAllTurn();
-		game.broadcastEvent(Event.pendingNewGame());
 	}
 
 	@Override
@@ -42,7 +41,6 @@ class PendingNewGame extends Phase
 			return false;
 
 		game.setTurnOf(player, false);
-		game.broadcastEvent(Event.readyForNewGame(player));
 
 		if (allReady())
 			game.finish();

@@ -48,8 +48,6 @@ class Gameplay extends Phase
 		if (card == game.getCalledCard())
 			game.revealAllTeamInfo();
 
-		game.broadcastEvent(Event.playCard(player, card));
-		
 		if (currentTrick.isFinished())
 		{
 			PlayerSeat winner = currentTrick.getWinner();
@@ -57,7 +55,6 @@ class Gameplay extends Phase
 			currentTrick = game.areAllTricksPassed() ? null : new Trick(winner);
 			if (currentTrick != null)
 				game.addTrick(currentTrick);
-			game.broadcastEvent(Event.cardsTaken(winner));
 		}
 
 		if (currentTrick != null)

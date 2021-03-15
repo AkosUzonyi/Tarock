@@ -32,7 +32,7 @@ class Bidding extends Phase
 	public void onStart()
 	{
 		currentPlayer = PlayerSeat.SEAT0;
-		sendAvailableBids();
+		game.turn(currentPlayer);
 	}
 
 	private boolean canKeep()
@@ -56,7 +56,6 @@ class Bidding extends Phase
 
 		if (waitingForOverrideSelf)
 		{
-			game.broadcastEvent(Event.bid(player, bid));
 			game.setBidResult(player, bid);
 			game.changePhase(new Folding(game));
 			return true;
@@ -91,15 +90,10 @@ class Bidding extends Phase
 			lastBidValue = bid;
 		}
 
-		game.broadcastEvent(Event.bid(player, bid));
-
 		findNextPlayer();
-		
-		if (!isFinished())
-		{
-			sendAvailableBids();
-		}
-		else
+		game.turn(currentPlayer);
+
+		if (isFinished())
 		{
 			if (lastBidPlayer == null)
 			{
@@ -109,7 +103,7 @@ class Bidding extends Phase
 			{
 				waitingForOverrideSelf = true;
 				currentPlayer = lastBidPlayer;
-				sendAvailableBids();
+				game.turn(currentPlayer);
 			}
 			else
 			{
@@ -186,12 +180,6 @@ class Bidding extends Phase
 
 		result.sort(Collections.reverseOrder());
 		return result;
-	}
-	
-	private void sendAvailableBids()
-	{
-		game.sendEvent(currentPlayer, Event.availableBids(getAvailableBids()));
-		game.turn(currentPlayer);
 	}
 
 	@Override

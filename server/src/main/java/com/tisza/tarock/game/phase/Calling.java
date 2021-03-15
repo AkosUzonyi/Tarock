@@ -40,7 +40,7 @@ class Calling extends Phase
 					canCallAnyTarock = true;
 		}
 
-		sendAvailableCalls();
+		game.turn(callerPlayer);
 	}
 
 	@Override
@@ -94,16 +94,9 @@ class Calling extends Phase
 		if (game.getSkart(callerPlayer).contains(card))
 			game.revealAllTeamInfo();
 
-		game.broadcastEvent(Event.call(player, card));
 		game.changePhase(new Announcing(game));
 
 		return true;
-	}
-
-	private void sendAvailableCalls()
-	{
-		game.sendEvent(callerPlayer, Event.availableCalls(getCallableCards()));
-		game.turn(callerPlayer);
 	}
 
 	@Override

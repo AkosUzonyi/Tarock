@@ -79,7 +79,6 @@ abstract class Phase implements ActionHandler
 		if (!canThrowCards(player))
 			return false;
 
-		game.broadcastEvent(Event.throwCards(player));
 		game.changePhase(new PendingNewGame(game, true));
 		return true;
 	}

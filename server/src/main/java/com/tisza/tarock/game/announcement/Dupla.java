@@ -20,7 +20,7 @@ public class Dupla extends AnnouncementBase
 	@Override
 	protected Result isSuccessful(Game game, Team team)
 	{
-		if (game.calculateGamePoints(team) < 71)
+		if (game.calculateCardPoints(team) < 71)
 			return Result.FAILED;
 
 		boolean canBeSilent = Announcements.volat.calculatePoints(game, team) == 0;

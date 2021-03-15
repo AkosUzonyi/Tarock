@@ -20,7 +20,7 @@ public class Jatek extends AnnouncementBase
 	@Override
 	public Result isSuccessful(Game game, Team team)
 	{
-		Team teamEarningPoints = game.calculateGamePoints(team) >= 48 ? team : team.getOther();
+		Team teamEarningPoints = game.calculateCardPoints(team) >= 48 ? team : team.getOther();
 
 		int pointsForDupla = Announcements.dupla.calculatePoints(game, teamEarningPoints);
 		int pointsForVolat = Announcements.volat.calculatePoints(game, teamEarningPoints);

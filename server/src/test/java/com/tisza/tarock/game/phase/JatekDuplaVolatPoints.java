@@ -17,7 +17,7 @@ import static org.junit.runners.Parameterized.*;
 public class JatekDuplaVolatPoints
 {
 	@Parameter(0)
-	public int callerGamePoints;
+	public int callerCardPoints;
 	@Parameter(1)
 	public int expectedResult;
 	@Parameter(2)
@@ -87,9 +87,9 @@ public class JatekDuplaVolatPoints
 		game = new Game(GameType.PASKIEVICS, new ArrayList<>(Card.getAll()), 1)
 		{
 			@Override
-			public int calculateGamePoints(Team team)
+			public int calculateCardPoints(Team team)
 			{
-				return team == Team.CALLER ? callerGamePoints : 94 - callerGamePoints;
+				return team == Team.CALLER ? callerCardPoints : 94 - callerCardPoints;
 			}
 
 			@Override
@@ -107,10 +107,10 @@ public class JatekDuplaVolatPoints
 			@Override
 			public Collection<Card> getWonCards(PlayerSeat player)
 			{
-				if (callerGamePoints == 0 || callerGamePoints == 94)
+				if (callerCardPoints == 0 || callerCardPoints == 94)
 				{
 					boolean isPlayerInCallerTeam = player.asInt() < 2;
-					boolean isVolatForCaller = callerGamePoints == 94;
+					boolean isVolatForCaller = callerCardPoints == 94;
 					return isPlayerInCallerTeam == isVolatForCaller ? Card.getAll() : Collections.EMPTY_LIST;
 				}
 				else

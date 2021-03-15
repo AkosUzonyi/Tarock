@@ -231,11 +231,11 @@ public class ProtoPlayer extends Player implements MessageHandler
 			sendEvent(EventProto.Event.newBuilder().setCardsTaken(e).build());
 		}
 
-		@Override public void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
+		@Override public void announcementStatistics(int callerCardPoints, int opponentCardPoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
 		{
 			EventProto.Event.Statistics.Builder e = EventProto.Event.Statistics.newBuilder()
-					.setCallerGamePoints(callerGamePoints)
-					.setOpponentGamePoints(opponentGamePoints)
+					.setCallerGamePoints(callerCardPoints)
+					.setOpponentGamePoints(opponentCardPoints)
 					.addAllAnnouncementResult(announcementResults.stream().map(Utils::announcementResultToProto).collect(Collectors.toList()))
 					.setSumPoints(sumPoints)
 					.setPointMultiplier(pointMultiplier);

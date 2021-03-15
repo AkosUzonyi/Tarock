@@ -345,7 +345,7 @@ public class Game
 		return teamInfos.contains(new TeamInfo(player, otherPlayer));
 	}
 
-	public int calculateGamePoints(Team team)
+	public int calculateCardPoints(Team team)
 	{
 		boolean countSelfTeamSkart = true;
 		boolean countOpponentTeamSkart = false;
@@ -405,14 +405,14 @@ public class Game
 	{
 		int pointsForCallerTeam = 0;
 		List<AnnouncementResult> announcementResults = new ArrayList<>();
-		int callerGamePoints = 0, opponentGamePoints = 0;
+		int callerCardPoints = 0, opponentCardPoints = 0;
 
 		for (Team team : Team.values())
 		{
 			if (team == Team.CALLER)
-				callerGamePoints = calculateGamePoints(team);
+				callerCardPoints = calculateCardPoints(team);
 			else
-				opponentGamePoints = calculateGamePoints(team);
+				opponentCardPoints = calculateCardPoints(team);
 
 			for (Announcement announcement : Announcements.getAll())
 			{
@@ -451,7 +451,7 @@ public class Game
 		points[playerPairs.getCaller().asInt()] += pointsForCallerTeam * 2;
 		points[playerPairs.getCalled().asInt()] += pointsForCallerTeam * 2;
 
-		broadcastEvent(Event.announcementStatistics(callerGamePoints, opponentGamePoints, announcementResults, pointsForCallerTeam, pointMultiplier));
+		broadcastEvent(Event.announcementStatistics(callerCardPoints, opponentCardPoints, announcementResults, pointsForCallerTeam, pointMultiplier));
 	}
 
 	public int getPoints(PlayerSeat seat)

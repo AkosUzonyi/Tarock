@@ -103,9 +103,9 @@ public interface Event
 		return handler -> handler.cardsTaken(player);
 	}
 
-	static Event announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
+	static Event announcementStatistics(int selfCardPoints, int opponentCardPoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
 	{
-		return handler -> handler.announcementStatistics(selfGamePoints, opponentGamePoints, announcementResults, sumPoints, pointMultiplier);
+		return handler -> handler.announcementStatistics(selfCardPoints, opponentCardPoints, announcementResults, sumPoints, pointMultiplier);
 	}
 
 	static Event playerPoints(List<Integer> points, List<Integer> incrementPoints)

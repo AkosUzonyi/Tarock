@@ -28,7 +28,7 @@ public interface EventHandler
 	default void foldTarock(PlayerSeatMap<Integer> counts) {}
 	default void availableAnnouncements(List<AnnouncementContra> announcements) {}
 	default void cardsTaken(PlayerSeat player) {}
-	default void announcementStatistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier) {}
+	default void announcementStatistics(int callerCardPoints, int opponentCardPoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier) {}
 	default void playerPoints(List<Integer> points, List<Integer> incrementPoints) {}
 	default void pendingNewGame() {}
 	default void historyMode(boolean isHistory) {}

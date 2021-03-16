@@ -168,7 +168,15 @@ public class TestController
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		int userId = 4; //TODO
-		gameSession.players.removeIf(p -> p.userId == userId);
+
+		List<Integer> userIds = gameSession.players.stream().map(p -> p.userId).collect(Collectors.toList());
+		userIds.remove(userId);
+
+		for (int i = 0; i < userIds.size(); i++)
+			gameSession.players.get(i).userId = userIds.get(i);
+
+		while (gameSession.players.size() > userIds.size())
+			gameSession.players.remove(userIds.size());
 
 		if (gameSession.players.isEmpty())
 			gameSession.state = "deleted";

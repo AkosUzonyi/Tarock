@@ -40,6 +40,8 @@ public class TestController
 	private ListDeferredResultService<ChatDB> chatDeferredResultService;
 	@Autowired
 	private ListDeferredResultService<ActionDB> actionDeferredResultService;
+	@Autowired
+	private GameService gameService;
 
 	@GetMapping("/idp")
 	public ResponseEntity<IdpUserDB> idp() throws InterruptedException
@@ -214,7 +216,7 @@ public class TestController
 			gameSession.players.get(i).user = users.get(i);
 
 		gameSession.state = "game";
-		startNewGame(gameSession, 0);
+		gameService.startNewGame(gameSession, 0);
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
@@ -226,35 +228,6 @@ public class TestController
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
 
 		return gameDB.get();
-	}
-
-	private void startNewGame(GameSessionDB gameSession, int beginnerPlayer)
-	{
-		if (!gameSession.state.equals("game"))
-			throw new IllegalStateException();
-
-		GameDB gameDB = new GameDB();
-		gameDB.gameSessionId = gameSession.id;
-		gameDB.actions = new ArrayList<>();
-		gameDB.beginnerPlayer = beginnerPlayer;
-		gameDB.createTime = System.currentTimeMillis();
-		gameDB = gameRepository.save(gameDB);
-
-		gameSession.currentGameId = gameDB.id;
-
-		List<Card> deck = new ArrayList<>(Card.getAll());
-		Collections.shuffle(deck);
-		List<DeckCardDB> deckDB = new ArrayList<>();
-		for (Card card : deck)
-		{
-			DeckCardDB deckCardDB = new DeckCardDB();
-			deckCardDB.card = card.getID();
-			deckCardDB.gameId = gameDB.id;
-			deckCardDB.ordinal = deckDB.size();
-			deckDB.add(deckCardDB);
-		}
-
-		gameDB.deckCards = deckDB;
 	}
 
 	@GetMapping("/games/{gameID}")
@@ -277,19 +250,6 @@ public class TestController
 		return new ResponseEntity<>(sublist, HttpStatus.OK);
 	}
 
-	private Game loadGame(GameDB gameDB)
-	{
-		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameDB.id).orElseThrow();
-		List<Card> deck = gameDB.deckCards.stream().map(deckCardDB -> Card.fromId(deckCardDB.card)).collect(Collectors.toList());
-		Game game = new Game(GameType.fromID(gameSessionDB.type), deck, 1); //TODO: point multiplier
-		game.start();
-		for (ActionDB a : gameDB.actions)
-			game.processAction(PlayerSeat.fromInt(a.seat), new Action(a.action));
-
-		return game;
-	}
-
-	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@PostMapping("/games/{gameID}/actions")
 	public ResponseEntity<Void> postAction(@PathVariable int gameID, @RequestBody ActionPostDTO actionPostDTO)
 	{
@@ -304,7 +264,6 @@ public class TestController
 		if (player.isEmpty())
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-		Game game = loadGame(gameDB);
 		int playerCount = gameSessionDB.players.size();
 		int seat = (player.get().ordinal - gameDB.beginnerPlayer + playerCount) % playerCount;
 
@@ -312,7 +271,7 @@ public class TestController
 		try
 		{
 			Action action = new Action(actionPostDTO.action);
-			success = game.processAction(PlayerSeat.fromInt(seat), action);
+			success = gameService.executeAction(gameDB, PlayerSeat.fromInt(seat), action);
 		}
 		catch (IllegalArgumentException e) //TODO: cleaner way?
 		{
@@ -322,33 +281,6 @@ public class TestController
 		if (!success)
 			return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
 
-		ActionDB actionDB = new ActionDB();
-		actionDB.gameId = gameID;
-		actionDB.ordinal = gameDB.actions.size();
-		actionDB.seat = seat;
-		actionDB.action = actionPostDTO.action;
-		actionDB.time = System.currentTimeMillis();
-		gameDB.actions.add(actionDB);
-
-		if (game.isFinished())
-		{
-			for (PlayerSeat s : PlayerSeat.getAll())
-			{
-				PlayerDB p = gameSessionDB.players.get((gameDB.beginnerPlayer + s.asInt()) % playerCount);
-				p.points += game.getPoints(s);
-			}
-
-			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameSessionDB.doubleRoundType));
-			doubleRoundTracker.setData(gameSessionDB.doubleRoundData);
-			if (game.isNormalFinish())
-				doubleRoundTracker.gameFinished();
-			else
-				doubleRoundTracker.gameInterrupted();
-			gameSessionDB.doubleRoundData = doubleRoundTracker.getData();
-
-			startNewGame(gameSessionDB, (gameDB.beginnerPlayer + 1) % gameSessionDB.players.size());
-		}
-
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
@@ -356,7 +288,7 @@ public class TestController
 	public ResponseEntity<GameStateDTO> getGameState(@PathVariable int gameID)
 	{
 		GameDB gameDB = findGameOrThrow(gameID);
-		Game game = loadGame(gameDB);
+		Game game = gameService.loadGame(gameDB);
 		PlayerSeat me = null; //TODO
 
 		GameStateDTO gameStateDTO = new GameStateDTO();

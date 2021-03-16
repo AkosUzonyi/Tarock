@@ -122,7 +122,7 @@ public class TestController
 		if (gameSessionOptional.isEmpty() || gameSessionOptional.get().state.equals("deleted"))
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionID);
+		GameSessionDB gameSession = gameSessionOptional.get();
 
 		int userId = 4; //TODO
 		boolean containsUser = gameSession.players.stream().anyMatch(p -> p.user.id == userId);
@@ -257,7 +257,7 @@ public class TestController
 			return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
 
 		GameDB gameDB = findGameOrThrow(gameID);
-		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameDB.id).orElseThrow();
+		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameDB.gameSessionId).orElseThrow();
 
 		int userId = 4; //TODO
 		Optional<PlayerDB> player = gameSessionDB.players.stream().filter(p -> p.user.id == userId).findFirst();

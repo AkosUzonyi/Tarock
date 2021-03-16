@@ -103,7 +103,7 @@ public class TestController
 		PlayerDB creatorPlayer = new PlayerDB();
 		creatorPlayer.gameSessionId = gameSession.id;
 		creatorPlayer.ordinal = 0;
-		creatorPlayer.userId = 4; //TODO
+		creatorPlayer.user = userRepository.findById(4).orElseThrow(); //TODO
 		creatorPlayer.points = 0;
 		gameSession.players.add(creatorPlayer);
 
@@ -123,7 +123,7 @@ public class TestController
 		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionID);
 
 		int userId = 4; //TODO
-		boolean containsUser = gameSession.players.stream().anyMatch(p -> p.userId == userId);
+		boolean containsUser = gameSession.players.stream().anyMatch(p -> p.user.id == userId);
 		if (!containsUser)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
@@ -145,7 +145,7 @@ public class TestController
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		int userId = 4; //TODO
-		boolean containsUser = gameSession.players.stream().anyMatch(p -> p.userId == userId);
+		boolean containsUser = gameSession.players.stream().anyMatch(p -> p.user.id == userId);
 		if (containsUser)
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
@@ -153,7 +153,7 @@ public class TestController
 		player.gameSessionId = gameSessionID;
 		player.ordinal = gameSession.players.size();
 		player.points = 0;
-		player.userId = userId;
+		player.user = userRepository.findById(userId).orElseThrow();
 		gameSession.players.add(player);
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -169,14 +169,14 @@ public class TestController
 
 		int userId = 4; //TODO
 
-		List<Integer> userIds = gameSession.players.stream().map(p -> p.userId).collect(Collectors.toList());
-		userIds.remove(userId);
+		List<UserDB> users = gameSession.players.stream().map(p -> p.user).collect(Collectors.toList());
+		users.remove(userId);
 
-		for (int i = 0; i < userIds.size(); i++)
-			gameSession.players.get(i).userId = userIds.get(i);
+		for (int i = 0; i < users.size(); i++)
+			gameSession.players.get(i).user = users.get(i);
 
-		while (gameSession.players.size() > userIds.size())
-			gameSession.players.remove(userIds.size());
+		while (gameSession.players.size() > users.size())
+			gameSession.players.remove(users.size());
 
 		if (gameSession.players.isEmpty())
 			gameSession.state = "deleted";
@@ -194,7 +194,7 @@ public class TestController
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
 		int userId = 4; //TODO
-		if (gameSession.players.stream().noneMatch(p -> p.userId == userId))
+		if (gameSession.players.stream().noneMatch(p -> p.user.id == userId))
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		int playerCount = gameSession.players.size();
@@ -203,15 +203,15 @@ public class TestController
 			PlayerDB bot = new PlayerDB();
 			bot.gameSessionId = gameSessionID;
 			bot.ordinal = playerCount++;
-			bot.userId = 4 - playerCount + 1;
+			bot.user = userRepository.findById(4 - playerCount + 1).orElseThrow();
 			bot.points = 0;
 			gameSession.players.add(bot);
 		}
 
-		List<Integer> userIds = gameSession.players.stream().map(p -> p.userId).collect(Collectors.toList());
-		Collections.shuffle(userIds);
+		List<UserDB> users = gameSession.players.stream().map(p -> p.user).collect(Collectors.toList());
+		Collections.shuffle(users);
 		for (int i = 0; i < playerCount; i++)
-			gameSession.players.get(i).userId = userIds.get(i);
+			gameSession.players.get(i).user = users.get(i);
 
 		gameSession.state = "game";
 		startNewGame(gameSession, 0);
@@ -300,7 +300,7 @@ public class TestController
 		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameDB.id).orElseThrow();
 
 		int userId = 4; //TODO
-		Optional<PlayerDB> player = gameSessionDB.players.stream().filter(p -> p.userId == userId).findFirst();
+		Optional<PlayerDB> player = gameSessionDB.players.stream().filter(p -> p.user.id == userId).findFirst();
 		if (player.isEmpty())
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 

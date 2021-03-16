@@ -25,6 +25,6 @@ public enum DoubleRoundType
 			case "stacking": return STACKING;
 			case "multiplying": return MULTIPLYING;
 		}
-		return null;
+		throw new IllegalArgumentException("invalid double round type: " + id);
 	}
 }

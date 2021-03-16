@@ -2,7 +2,7 @@ package com.tisza.tarock.game;
 
 public enum PhaseEnum
 {
-	BIDDING, CHANGING, CALLING, ANNOUNCING, GAMEPLAY, END, INTERRUPTED;
+	BIDDING, FOLDING, CALLING, ANNOUNCING, GAMEPLAY, END, INTERRUPTED;
 	
 	public boolean isAfter(PhaseEnum phase)
 	{
@@ -17,7 +17,7 @@ public enum PhaseEnum
 		switch (this)
 		{
 			case BIDDING: return "bidding";
-			case CHANGING: return "folding";
+			case FOLDING: return "folding";
 			case CALLING: return "calling";
 			case ANNOUNCING: return "announcing";
 			case GAMEPLAY: return "gameplay";
@@ -32,7 +32,7 @@ public enum PhaseEnum
 		switch (id)
 		{
 			case "bidding": return BIDDING;
-			case "folding": return CHANGING;
+			case "folding": return FOLDING;
 			case "calling": return CALLING;
 			case "announcing": return ANNOUNCING;
 			case "gameplay": return GAMEPLAY;

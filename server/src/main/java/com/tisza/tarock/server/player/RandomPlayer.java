@@ -114,7 +114,7 @@ public class RandomPlayer extends Player
 			if (!isMyTurn)
 				return;
 
-			if (phase == PhaseEnum.CHANGING)
+			if (phase == PhaseEnum.FOLDING)
 			{
 				List<Card> cardsToSkart = myCards.filter(new SkartableCardFilter(gameType)).subList(0, myCards.size() - 9);
 				enqueueActionDelayed(Action.fold(cardsToSkart), 0);

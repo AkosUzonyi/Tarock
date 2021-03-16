@@ -24,7 +24,7 @@ class Folding extends Phase
 	@Override
 	public PhaseEnum asEnum()
 	{
-		return PhaseEnum.CHANGING;
+		return PhaseEnum.FOLDING;
 	}
 	
 	@Override

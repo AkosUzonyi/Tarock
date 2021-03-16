@@ -25,7 +25,7 @@ class Licit1 extends ZebiSound
 	@Override
 	public void phaseChanged(PhaseEnum phase)
 	{
-		if (phase == PhaseEnum.CHANGING && lastBid == 1)
+		if (phase == PhaseEnum.FOLDING && lastBid == 1)
 			activate();
 	}
 }

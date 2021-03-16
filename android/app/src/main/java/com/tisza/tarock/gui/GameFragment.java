@@ -518,7 +518,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			showCenterView(MESSAGES_VIEW_INDEX);
 			displayMessage(R.string.message_bidding);
 		}
-		else if (phase == PhaseEnum.CHANGING)
+		else if (phase == PhaseEnum.FOLDING)
 		{
 			showCenterView(MESSAGES_VIEW_INDEX);
 			higlightAllName();
@@ -550,7 +550,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			displayMessage(R.string.message_press_ok);
 		}
 
-		skartViews[getPositionFromPlayerID(0)].setVisibility(phase.isAfter(PhaseEnum.CHANGING) ? View.VISIBLE : View.GONE);
+		skartViews[getPositionFromPlayerID(0)].setVisibility(phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE);
 	}
 
 	@Override
@@ -765,7 +765,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void turn(int player)
 	{
-		if (gamePhase == PhaseEnum.CHANGING)
+		if (gamePhase == PhaseEnum.FOLDING)
 		{
 			okButton.setVisibility(View.VISIBLE);
 			okButton.setOnClickListener(v -> doAction(Action.fold(cardsToSkart)));

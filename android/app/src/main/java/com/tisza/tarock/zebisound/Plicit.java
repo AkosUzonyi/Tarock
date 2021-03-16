@@ -52,7 +52,7 @@ class Plicit extends ZebiSound
 	@Override
 	public void phaseChanged(PhaseEnum phase)
 	{
-		if (phase == PhaseEnum.CHANGING && state == 4)
+		if (phase == PhaseEnum.FOLDING && state == 4)
 			activate();
 	}
 }

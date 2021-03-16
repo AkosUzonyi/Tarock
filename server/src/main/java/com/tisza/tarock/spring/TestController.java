@@ -7,12 +7,9 @@ import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.spring.dto.*;
 import com.tisza.tarock.spring.model.*;
-import com.tisza.tarock.spring.model.UserDB;
 import com.tisza.tarock.spring.repository.*;
 import com.tisza.tarock.spring.service.*;
-import org.slf4j.*;
 import org.springframework.beans.factory.annotation.*;
-import org.springframework.context.annotation.*;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.*;
 import org.springframework.validation.annotation.*;
@@ -25,7 +22,6 @@ import java.util.*;
 import java.util.stream.*;
 
 @RestController
-@Scope("session")
 public class TestController
 {
 	@Autowired
@@ -44,8 +40,6 @@ public class TestController
 	private ListDeferredResultService<ChatDB> chatDeferredResultService;
 	@Autowired
 	private ListDeferredResultService<ActionDB> actionDeferredResultService;
-
-	Logger logger = LoggerFactory.getLogger(TestController.class);
 
 	@GetMapping("/idp")
 	public ResponseEntity<IdpUserDB> idp() throws InterruptedException
@@ -360,7 +354,6 @@ public class TestController
 		gameStateDTO.canThrowCards = me != null && game.canThrowCards(me);
 		if (me != null && game.getTurn(me))
 			gameStateDTO.availableActions = game.getAvailableActions().stream().map(Action::getId).collect(Collectors.toList());
-		//TODO: caller tarock fold
 
 		gameStateDTO.statistics.callerCardPoints = game.getCallerCardPoints();
 		gameStateDTO.statistics.opponentCardPoints = game.getOpponentCardPoints();

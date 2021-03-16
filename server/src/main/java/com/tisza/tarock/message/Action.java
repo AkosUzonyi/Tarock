@@ -92,4 +92,21 @@ public class Action
 				throw new IllegalArgumentException("invalid action: " + actionType);
 		}
 	}
+
+	@Override
+	public boolean equals(Object o)
+	{
+		if (this == o)
+			return true;
+		if (!(o instanceof Action))
+			return false;
+
+		return id.equals(((Action)o).id);
+	}
+
+	@Override
+	public int hashCode()
+	{
+		return id.hashCode();
+	}
 }

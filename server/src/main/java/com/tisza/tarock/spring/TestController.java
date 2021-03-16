@@ -230,7 +230,7 @@ public class TestController
 			throw new IllegalStateException();
 
 		GameDB gameDB = new GameDB();
-		gameDB.gameSession = gameSession;
+		gameDB.gameSessionId = gameSession.id;
 		gameDB.actions = new ArrayList<>();
 		gameDB.beginnerPlayer = beginnerPlayer;
 		gameDB.createTime = System.currentTimeMillis();
@@ -275,8 +275,9 @@ public class TestController
 
 	private Game loadGame(GameDB gameDB)
 	{
+		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameDB.id).orElseThrow();
 		List<Card> deck = gameDB.deckCards.stream().map(deckCardDB -> Card.fromId(deckCardDB.card)).collect(Collectors.toList());
-		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, 1); //TODO: point multiplier
+		Game game = new Game(GameType.fromID(gameSessionDB.type), deck, 1); //TODO: point multiplier
 		game.start();
 		for (ActionDB a : gameDB.actions)
 			game.processAction(PlayerSeat.fromInt(a.seat), new Action(a.action));
@@ -292,14 +293,15 @@ public class TestController
 			return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
 
 		GameDB gameDB = findGameOrThrow(gameID);
+		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameDB.id).orElseThrow();
 
 		int userId = 4; //TODO
-		Optional<PlayerDB> player = gameDB.gameSession.players.stream().filter(p -> p.userId == userId).findFirst();
+		Optional<PlayerDB> player = gameSessionDB.players.stream().filter(p -> p.userId == userId).findFirst();
 		if (player.isEmpty())
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		Game game = loadGame(gameDB);
-		int playerCount = gameDB.gameSession.players.size();
+		int playerCount = gameSessionDB.players.size();
 		int seat = (player.get().ordinal - gameDB.beginnerPlayer + playerCount) % playerCount;
 
 		boolean success;
@@ -328,19 +330,19 @@ public class TestController
 		{
 			for (PlayerSeat s : PlayerSeat.getAll())
 			{
-				PlayerDB p = gameDB.gameSession.players.get((gameDB.beginnerPlayer + s.asInt()) % playerCount);
+				PlayerDB p = gameSessionDB.players.get((gameDB.beginnerPlayer + s.asInt()) % playerCount);
 				p.points += game.getPoints(s);
 			}
 
-			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
-			doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
+			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameSessionDB.doubleRoundType));
+			doubleRoundTracker.setData(gameSessionDB.doubleRoundData);
 			if (game.isNormalFinish())
 				doubleRoundTracker.gameFinished();
 			else
 				doubleRoundTracker.gameInterrupted();
-			gameDB.gameSession.doubleRoundData = doubleRoundTracker.getData();
+			gameSessionDB.doubleRoundData = doubleRoundTracker.getData();
 
-			startNewGame(gameDB.gameSession, (gameDB.beginnerPlayer + 1) % gameDB.gameSession.players.size());
+			startNewGame(gameSessionDB, (gameDB.beginnerPlayer + 1) % gameSessionDB.players.size());
 		}
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);

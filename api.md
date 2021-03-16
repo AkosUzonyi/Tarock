@@ -318,7 +318,7 @@ Response:
 {
         "id": Int,
         "type": "paskievics"|"illusztralt"|"magas"|"zebi",
-        "gameSession": GameSession,
+        "gameSessionId": Int,
         "beginnerPlayer": Int,
         "createTime": Long,
 }

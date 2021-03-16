@@ -13,9 +13,7 @@ public class GameDB
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int id;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	//@JoinColumn(name = "game_session_id", referencedColumnName = "id")
-	public GameSessionDB gameSession;
+	public int gameSessionId;
 
 	public int beginnerPlayer;
 

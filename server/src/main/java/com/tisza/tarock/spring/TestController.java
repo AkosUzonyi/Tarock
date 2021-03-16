@@ -185,6 +185,7 @@ public class TestController
 	}
 
 	@PostMapping("/gameSessions/{gameSessionID}/start")
+	@Transactional
 	public ResponseEntity<Void> startGameSession(@PathVariable int gameSessionID)
 	{
 		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionID);
@@ -207,9 +208,10 @@ public class TestController
 			gameSession.players.add(bot);
 		}
 
-		Collections.shuffle(gameSession.players);
+		List<Integer> userIds = gameSession.players.stream().map(p -> p.userId).collect(Collectors.toList());
+		Collections.shuffle(userIds);
 		for (int i = 0; i < playerCount; i++)
-			gameSession.players.get(i).ordinal = i;
+			gameSession.players.get(i).userId = userIds.get(i);
 
 		gameSession.state = "game";
 		startNewGame(gameSession, 0);

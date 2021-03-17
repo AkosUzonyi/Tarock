@@ -28,16 +28,15 @@ public class GameService
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public Game loadGame(GameDB gameDB)
 	{
-		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameDB.gameSessionId).orElseThrow();
 		List<Card> deck = gameDB.deckCards.stream().map(deckCardDB -> Card.fromId(deckCardDB.card)).collect(Collectors.toList());
-		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameSessionDB.doubleRoundType));
-		doubleRoundTracker.setData(gameSessionDB.doubleRoundData);
-		Game game = new Game(GameType.fromID(gameSessionDB.type), deck, doubleRoundTracker.getCurrentMultiplier());
+		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
+		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
+		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
 		game.start();
 		for (ActionDB a : gameDB.actions)
 			game.processAction(PlayerSeat.fromInt(a.seat), new Action(a.action));
 
-		executeBotActions(gameSessionDB, gameDB, game);
+		executeBotActions(gameDB, game);
 
 		return game;
 	}
@@ -49,13 +48,13 @@ public class GameService
 			throw new IllegalStateException();
 
 		GameDB gameDB = new GameDB();
-		gameDB.gameSessionId = gameSessionDB.id;
+		gameDB.gameSession = gameSessionDB;
 		gameDB.actions = new ArrayList<>();
 		gameDB.beginnerPlayer = beginnerPlayer;
 		gameDB.createTime = System.currentTimeMillis();
 		gameDB = gameRepository.save(gameDB);
 
-		gameSessionDB.currentGameId = gameDB.id;
+		gameDB.gameSession.currentGameId = gameDB.id;
 
 		List<Card> deck = new ArrayList<>(Card.getAll());
 		Collections.shuffle(deck);
@@ -71,28 +70,27 @@ public class GameService
 
 		gameDB.deckCards = deckDB;
 
-		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameSessionDB.doubleRoundType));
-		doubleRoundTracker.setData(gameSessionDB.doubleRoundData);
-		Game game = new Game(GameType.fromID(gameSessionDB.type), deck, doubleRoundTracker.getCurrentMultiplier());
+		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
+		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
+		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
 		game.start();
 
-		executeBotActions(gameSessionDB, gameDB, game);
+		executeBotActions(gameDB, game);
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public boolean executeAction(GameDB gameDB, PlayerSeat seat, Action action)
 	{
-		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameDB.gameSessionId).orElseThrow();
 		Game game = loadGame(gameDB);
 
-		if (!doExecuteAction(gameSessionDB, gameDB, game, seat, action))
+		if (!doExecuteAction(gameDB, game, seat, action))
 			return false;
 
-		executeBotActions(gameSessionDB, gameDB, game);
+		executeBotActions(gameDB, game);
 		return true;
 	}
 
-	private boolean doExecuteAction(GameSessionDB gameSessionDB, GameDB gameDB, Game game, PlayerSeat seat, Action action)
+	private boolean doExecuteAction(GameDB gameDB, Game game, PlayerSeat seat, Action action)
 	{
 		boolean success = game.processAction(seat, action);
 		if (!success)
@@ -110,25 +108,25 @@ public class GameService
 		{
 			for (PlayerSeat s : PlayerSeat.getAll())
 			{
-				PlayerDB p = gameSessionDB.players.get((gameDB.beginnerPlayer + s.asInt()) % gameSessionDB.players.size());
+				PlayerDB p = gameDB.gameSession.players.get((gameDB.beginnerPlayer + s.asInt()) % gameDB.gameSession.players.size());
 				p.points += game.getPoints(s);
 			}
 
-			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameSessionDB.doubleRoundType));
-			doubleRoundTracker.setData(gameSessionDB.doubleRoundData);
+			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
+			doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
 			if (game.isNormalFinish())
 				doubleRoundTracker.gameFinished();
 			else
 				doubleRoundTracker.gameInterrupted();
-			gameSessionDB.doubleRoundData = doubleRoundTracker.getData();
+			gameDB.gameSession.doubleRoundData = doubleRoundTracker.getData();
 
-			startNewGame(gameSessionDB, (gameDB.beginnerPlayer + 1) % gameSessionDB.players.size());
+			startNewGame(gameDB.gameSession, (gameDB.beginnerPlayer + 1) % gameDB.gameSession.players.size());
 		}
 
 		return true;
 	}
 
-	private void executeBotActions(GameSessionDB gameSessionDB, GameDB gameDB, Game game)
+	private void executeBotActions(GameDB gameDB, Game game)
 	{
 		boolean executed;
 		do
@@ -139,12 +137,12 @@ public class GameService
 				if (!game.getTurn(player))
 					continue;
 
-				PlayerDB playerDB = gameSessionDB.players.get((gameDB.beginnerPlayer + player.asInt()) % gameSessionDB.players.size());
+				PlayerDB playerDB = gameDB.gameSession.players.get((gameDB.beginnerPlayer + player.asInt()) % gameDB.gameSession.players.size());
 				if (playerDB.user.id >= 4)
 					continue;
 
 				//TODO: delay
-				doExecuteAction(gameSessionDB, gameDB, game, player, getBotAction(game, player));
+				doExecuteAction(gameDB, game, player, getBotAction(game, player));
 				executed = true;
 			}
 		}

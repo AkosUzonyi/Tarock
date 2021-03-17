@@ -257,14 +257,13 @@ public class TestController
 			return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
 
 		GameDB gameDB = findGameOrThrow(gameID);
-		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameDB.gameSessionId).orElseThrow();
 
 		int userId = 4; //TODO
-		Optional<PlayerDB> player = gameSessionDB.players.stream().filter(p -> p.user.id == userId).findFirst();
+		Optional<PlayerDB> player = gameDB.gameSession.players.stream().filter(p -> p.user.id == userId).findFirst();
 		if (player.isEmpty())
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-		int playerCount = gameSessionDB.players.size();
+		int playerCount = gameDB.gameSession.players.size();
 		int seat = (player.get().ordinal - gameDB.beginnerPlayer + playerCount) % playerCount;
 
 		boolean success;

@@ -13,7 +13,8 @@ public class GameDB
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int id;
 
-	public int gameSessionId;
+	@ManyToOne
+	public GameSessionDB gameSession;
 
 	public int beginnerPlayer;
 

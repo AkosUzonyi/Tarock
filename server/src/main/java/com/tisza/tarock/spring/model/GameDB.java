@@ -1,7 +1,5 @@
 package com.tisza.tarock.spring.model;
 
-import com.fasterxml.jackson.annotation.*;
-
 import javax.persistence.*;
 import java.util.*;
 
@@ -23,12 +21,10 @@ public class GameDB
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name="gameId")
 	@OrderBy("ordinal")
-	@JsonIgnore
 	public List<DeckCardDB> deckCards;
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name="gameId")
 	@OrderBy("ordinal")
-	@JsonIgnore
 	public List<ActionDB> actions;
 }

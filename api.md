@@ -319,7 +319,10 @@ Response:
         "id": Int,
         "type": "paskievics"|"illusztralt"|"magas"|"zebi",
         "gameSessionId": Int,
-        "beginnerPlayer": Int,
+        "players": [{
+                "user": User,
+                "points": Int
+        }],
         "createTime": Long,
 }
 ```

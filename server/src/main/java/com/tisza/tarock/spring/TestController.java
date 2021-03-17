@@ -231,9 +231,19 @@ public class TestController
 	}
 
 	@GetMapping("/games/{gameID}")
-	public ResponseEntity<GameDB> game(@PathVariable int gameID)
+	public ResponseEntity<GameDTO> game(@PathVariable int gameID)
 	{
-		return new ResponseEntity<>(findGameOrThrow(gameID), HttpStatus.OK);
+		GameDB gameDB = findGameOrThrow(gameID);
+
+		GameDTO gameDTO = new GameDTO();
+		gameDTO.id = gameDB.id;
+		gameDTO.type = gameDB.gameSession.type;
+		gameDTO.gameSessionId = gameDB.gameSession.id;
+		for (PlayerSeat seat : PlayerSeat.getAll())
+			gameDTO.players.add(gameService.getPlayerFromSeat(gameDB, seat));
+		gameDTO.createTime = gameDB.createTime;
+
+		return new ResponseEntity<>(gameDTO, HttpStatus.OK);
 	}
 
 	@GetMapping("/games/{gameID}/actions")

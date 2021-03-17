@@ -247,16 +247,19 @@ public class TestController
 	}
 
 	@GetMapping("/games/{gameID}/actions")
-	public Object getActions(@PathVariable int gameID, @RequestParam(defaultValue = "0") int from)
+	public Object getActions(@PathVariable int gameID, @RequestParam(defaultValue = "-1") int from)
 	{
 		GameDB game = findGameOrThrow(gameID);
 
 		//TODO: hide fold actions
 		List<ActionDB> actions = game.actions;
-		List<ActionDB> sublist = actions.subList(from, actions.size());
-		if (sublist.isEmpty()) //TODO: longpoll boolean parameter?
+		if (from < 0)
+			return new ResponseEntity<>(actions, HttpStatus.OK);
+
+		if (from >= actions.size())
 			return actionDeferredResultService.getDeferredResult(gameID);
 
+		List<ActionDB> sublist = actions.subList(from, actions.size());
 		return new ResponseEntity<>(sublist, HttpStatus.OK);
 	}
 

@@ -334,7 +334,7 @@ Return the actions that were executed in this game. Each action has an ordinal n
 The fold actions are always sent as `fold:`, omitting the folded cards, as they should not be visible to the users.
 
 Parameters:
-- from: Return the actions only from this ordinal number. If no such action exists yet, the connection if kept alive until at least one action is available (long polling). Usually clients should set this parameter to the last action they received previously plus one (to query the new actions the client hasn't received yet).
+- from: Return the actions only from this ordinal number. If no such action exists yet, the connection if kept alive until at least one action is available (long polling). Usually clients should set this parameter to the last action they received previously plus one (to query the new actions the client hasn't received yet). If missing, return all actions (no long polling).
 
 Response:
 - 200: Success

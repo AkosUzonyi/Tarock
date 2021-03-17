@@ -25,6 +25,17 @@ public class GameService
 
 	private final Random rnd = new Random();
 
+	public PlayerDB getPlayerFromSeat(GameDB gameDB, PlayerSeat seat)
+	{
+		return gameDB.gameSession.players.get((gameDB.beginnerPlayer + seat.asInt()) % gameDB.gameSession.players.size());
+	}
+
+	public PlayerSeat getSeatFromPlayer(GameDB gameDB, PlayerDB playerDB)
+	{
+		int playerCount = gameDB.gameSession.players.size();
+		return PlayerSeat.fromInt((playerDB.ordinal - gameDB.beginnerPlayer + playerCount) % playerCount);
+	}
+
 	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public Game loadGame(GameDB gameDB)
 	{
@@ -108,7 +119,7 @@ public class GameService
 		{
 			for (PlayerSeat s : PlayerSeat.getAll())
 			{
-				PlayerDB p = gameDB.gameSession.players.get((gameDB.beginnerPlayer + s.asInt()) % gameDB.gameSession.players.size());
+				PlayerDB p = getPlayerFromSeat(gameDB, s);
 				p.points += game.getPoints(s);
 			}
 
@@ -132,17 +143,17 @@ public class GameService
 		do
 		{
 			executed = false;
-			for (PlayerSeat player : PlayerSeat.getAll())
+			for (PlayerSeat seat : PlayerSeat.getAll())
 			{
-				if (!game.getTurn(player))
+				if (!game.getTurn(seat))
 					continue;
 
-				PlayerDB playerDB = gameDB.gameSession.players.get((gameDB.beginnerPlayer + player.asInt()) % gameDB.gameSession.players.size());
+				PlayerDB playerDB = getPlayerFromSeat(gameDB, seat);
 				if (playerDB.user.id >= 4)
 					continue;
 
 				//TODO: delay
-				doExecuteAction(gameDB, game, player, getBotAction(game, player));
+				doExecuteAction(gameDB, game, seat, getBotAction(game, seat));
 				executed = true;
 			}
 		}

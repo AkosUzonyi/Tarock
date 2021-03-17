@@ -263,14 +263,12 @@ public class TestController
 		if (player.isEmpty())
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-		int playerCount = gameDB.gameSession.players.size();
-		int seat = (player.get().ordinal - gameDB.beginnerPlayer + playerCount) % playerCount;
-
 		boolean success;
 		try
 		{
 			Action action = new Action(actionPostDTO.action);
-			success = gameService.executeAction(gameDB, PlayerSeat.fromInt(seat), action);
+			PlayerSeat seat = gameService.getSeatFromPlayer(gameDB, player.get());
+			success = gameService.executeAction(gameDB, seat, action);
 		}
 		catch (IllegalArgumentException e) //TODO: cleaner way?
 		{

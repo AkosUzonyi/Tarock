@@ -51,6 +51,16 @@ public class TestController
 		return new ResponseEntity<>(idpusers.iterator().next(), HttpStatus.OK);
 	}
 
+	private int getLoggedInUserId()
+	{
+		return 4;
+	}
+
+	private PlayerDB getPlayerFromUser(GameSessionDB gameSessionDB, int userId)
+	{
+		return gameSessionDB.players.stream().filter(p -> p.user.id == userId).findFirst().orElse(null);
+	}
+
 	private GameSessionDB findGameSessionOrThrow(int gameSessionId)
 	{
 		Optional<GameSessionDB> gameSessionDB = gameSessionRepository.findById(gameSessionId);
@@ -105,7 +115,7 @@ public class TestController
 		PlayerDB creatorPlayer = new PlayerDB();
 		creatorPlayer.gameSessionId = gameSession.id;
 		creatorPlayer.ordinal = 0;
-		creatorPlayer.user = userRepository.findById(4).orElseThrow(); //TODO
+		creatorPlayer.user = userRepository.findById(getLoggedInUserId()).orElseThrow();
 		creatorPlayer.points = 0;
 		gameSession.players.add(creatorPlayer);
 
@@ -124,9 +134,7 @@ public class TestController
 
 		GameSessionDB gameSession = gameSessionOptional.get();
 
-		int userId = 4; //TODO
-		boolean containsUser = gameSession.players.stream().anyMatch(p -> p.user.id == userId);
-		if (!containsUser)
+		if (getPlayerFromUser(gameSession, getLoggedInUserId()) == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		if (gameSession.state.equals("lobby"))
@@ -146,16 +154,14 @@ public class TestController
 		if (!gameSession.state.equals("lobby"))
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-		int userId = 4; //TODO
-		boolean containsUser = gameSession.players.stream().anyMatch(p -> p.user.id == userId);
-		if (containsUser)
+		if (getPlayerFromUser(gameSession, getLoggedInUserId()) == null)
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
 		PlayerDB player = new PlayerDB();
 		player.gameSessionId = gameSessionID;
 		player.ordinal = gameSession.players.size();
 		player.points = 0;
-		player.user = userRepository.findById(userId).orElseThrow();
+		player.user = userRepository.findById(getLoggedInUserId()).orElseThrow();
 		gameSession.players.add(player);
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -169,10 +175,8 @@ public class TestController
 		if (!gameSession.state.equals("lobby"))
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-		int userId = 4; //TODO
-
 		List<UserDB> users = gameSession.players.stream().map(p -> p.user).collect(Collectors.toList());
-		users.remove(userId);
+		users.remove(getLoggedInUserId());
 
 		for (int i = 0; i < users.size(); i++)
 			gameSession.players.get(i).user = users.get(i);
@@ -195,8 +199,7 @@ public class TestController
 		if (!gameSession.state.equals("lobby"))
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		int userId = 4; //TODO
-		if (gameSession.players.stream().noneMatch(p -> p.user.id == userId))
+		if (getPlayerFromUser(gameSession, getLoggedInUserId()) == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		int playerCount = gameSession.players.size();
@@ -271,16 +274,15 @@ public class TestController
 
 		GameDB gameDB = findGameOrThrow(gameID);
 
-		int userId = 4; //TODO
-		Optional<PlayerDB> player = gameDB.gameSession.players.stream().filter(p -> p.user.id == userId).findFirst();
-		if (player.isEmpty())
+		PlayerDB player = getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
+		if (player == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		boolean success;
 		try
 		{
 			Action action = new Action(actionPostDTO.action);
-			PlayerSeat seat = gameService.getSeatFromPlayer(gameDB, player.get());
+			PlayerSeat seat = gameService.getSeatFromPlayer(gameDB, player);
 			success = gameService.executeAction(gameDB, seat, action);
 		}
 		catch (IllegalArgumentException e) //TODO: cleaner way?
@@ -299,7 +301,8 @@ public class TestController
 	{
 		GameDB gameDB = findGameOrThrow(gameID);
 		Game game = gameService.loadGame(gameDB);
-		PlayerSeat me = null; //TODO
+		PlayerDB playerDB = getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
+		PlayerSeat me = gameService.getSeatFromPlayer(gameDB, playerDB);
 
 		GameStateDTO gameStateDTO = new GameStateDTO();
 		gameStateDTO.phase = game.getCurrentPhaseEnum().getID();
@@ -407,13 +410,11 @@ public class TestController
 
 		findGameSessionOrThrow(gameSessionID);
 
-		int userID = 4; //TODO
-
 		ChatDB chatDB = new ChatDB();
 		chatDB.gameSessionId = gameSessionID;
 		chatDB.message = chatPostDTO.message;
 		chatDB.time = System.currentTimeMillis();
-		chatDB.userId = userID;
+		chatDB.userId = getLoggedInUserId();
 
 		chatDB = chatRepository.save(chatDB);
 		chatDeferredResultService.notifyNewResult(gameSessionID, chatDB);

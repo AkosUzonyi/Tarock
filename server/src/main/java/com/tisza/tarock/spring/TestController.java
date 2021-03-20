@@ -151,11 +151,11 @@ public class TestController
 	{
 		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionID);
 
-		if (!gameSession.state.equals("lobby"))
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-
 		if (getPlayerFromUser(gameSession, getLoggedInUserId()) == null)
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+
+		if (!gameSession.state.equals("lobby"))
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		PlayerDB player = new PlayerDB();
 		player.gameSessionId = gameSessionID;

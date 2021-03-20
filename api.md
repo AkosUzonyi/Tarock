@@ -400,7 +400,6 @@ Response:
 
 ```
 {
-        #"seat": Int?,
         "cards": [
                 null,
                 [Card, Card, Card, Card, Card, Card, Card, Card, Card],

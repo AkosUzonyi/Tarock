@@ -4,8 +4,6 @@
   flex-wrap: wrap;
   width: 100%;
   height: 50%;
-  /*background-color: #E0B080;*/
-  background-image: url("/assets/images/wood_texture.png");
 }
 
 .game-session {
@@ -64,7 +62,7 @@
 }
 
 .button-red {
-  background-color: #EE0000;
+  background-color: #F11;
   border: 2px solid;
   border-radius: 5px;
 }

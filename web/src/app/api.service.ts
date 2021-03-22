@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { GameSession } from './game-objects';
 
@@ -8,11 +8,11 @@ import { GameSession } from './game-objects';
 })
 
 export class ApiService {
-  private baseUrl = 'api';
+  private baseUrl = 'http://localhost:8000';
 
   constructor(private http: HttpClient) { }
 
   getGameSessions(): Observable<GameSession[]> {
-    return this.http.get<GameSession[]>('localhost:8000/gameSessions');
+    return this.http.get<GameSession[]>(`${this.baseUrl}/gameSessions`);
   }
 }

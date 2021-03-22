@@ -1,1 +1,13 @@
 <p>game-session-list works!</p>
+<div id=game-session-list>
+  <div *ngFor="let gameSession of gameSessions" class="game-session">
+    <p class="game-session-type">{{gameSession.type}}</p>
+    <div class="game-session-name-container">
+      <p *ngFor="let player of gameSession.players">{{player.user.name}}</p>
+    </div>
+    <div class="game-session-button-container">
+      <a routerLink="/gameSessions/{{gameSession.id}}"><button class="button-normal">Belépés</button></a>
+      <a routerLink="/gameSessions/{{gameSession.id}}"><button class="button-normal button-red">Törlés</button></a>
+    </div>
+  </div>
+</div>

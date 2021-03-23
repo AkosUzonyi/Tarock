@@ -181,7 +181,7 @@ public class GameService
 				return Action.fold(cardsToSkart);
 			case GAMEPLAY:
 				Trick currentTrick = game.getTrick(game.getTrickCount() - 1);
-				Action.play(chooseRandom(cards.getPlayableCards(currentTrick.getFirstCard())));
+				return Action.play(chooseRandom(cards.getPlayableCards(currentTrick.getFirstCard())));
 			case END:
 			case INTERRUPTED:
 				return Action.readyForNewGame();

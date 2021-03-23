@@ -55,7 +55,8 @@ class Gameplay extends Phase
 			PlayerSeat winner = currentTrick.getWinner();
 			game.addWonCards(winner, currentTrick.getCards());
 			currentTrick = game.areAllTricksPassed() ? null : new Trick(winner);
-			game.addTrick(currentTrick);
+			if (currentTrick != null)
+				game.addTrick(currentTrick);
 			game.broadcastEvent(Event.cardsTaken(winner));
 		}
 

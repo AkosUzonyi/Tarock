@@ -22,6 +22,8 @@ public class GameService
 	private GameRepository gameRepository;
 	@Autowired
 	private GameSessionRepository gameSessionRepository;
+	@Autowired
+	private ListDeferredResultService<ActionDB> actionDeferredResultService;
 
 	private final Random rnd = new Random();
 
@@ -114,6 +116,7 @@ public class GameService
 		actionDB.action = action.getId();
 		actionDB.time = System.currentTimeMillis();
 		gameDB.actions.add(actionDB);
+		actionDeferredResultService.notifyNewResult(gameDB.id, actionDB);
 
 		if (game.isFinished())
 		{

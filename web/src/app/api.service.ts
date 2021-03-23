@@ -8,7 +8,7 @@ import { GameSession } from './game-objects';
 })
 
 export class ApiService {
-  private baseUrl = 'http://localhost:8000';
+  private baseUrl = '/api';
 
   constructor(private http: HttpClient) { }
 

@@ -38,6 +38,8 @@ class Folding extends Phase
 		List<Card> remainingCards = new LinkedList<>(game.getTalon());
 		PlayerSeat player = game.getBidWinnerPlayer();
 
+		game.setAllTurn();
+
 		for (int i = 0; i < 4; i++)
 		{
 			int cardCount;
@@ -61,8 +63,6 @@ class Folding extends Phase
 
 			player = player.nextPlayer();
 		}
-
-		game.setAllTurn();
 
 		if (game.getPlayerCards(game.getBidWinnerPlayer()).getCards().stream().noneMatch(Card::isHonor))
 		{

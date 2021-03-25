@@ -219,7 +219,7 @@ public class TestController
 			gameSession.players.get(i).user = users.get(i);
 
 		gameSession.state = "game";
-		gameService.startNewGame(gameSession, 0);
+		gameService.startNewGame(gameSessionId, 0);
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
@@ -274,7 +274,7 @@ public class TestController
 		{
 			Action action = new Action(actionPostDTO.action);
 			PlayerSeat seat = gameService.getSeatFromPlayer(gameDB, player);
-			success = gameService.executeAction(gameDB, seat, action);
+			success = gameService.executeAction(gameId, seat, action);
 		}
 		catch (IllegalArgumentException e) //TODO: cleaner way?
 		{
@@ -291,7 +291,7 @@ public class TestController
 	public ResponseEntity<GameStateDTO> getGameState(@PathVariable int gameId)
 	{
 		GameDB gameDB = gameService.findGame(gameId);
-		Game game = gameService.loadGame(gameDB);
+		Game game = gameService.loadGame(gameId);
 		PlayerDB playerDB = getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
 		PlayerSeat me = gameService.getSeatFromPlayer(gameDB, playerDB);
 

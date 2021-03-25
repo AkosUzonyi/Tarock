@@ -45,8 +45,10 @@ public class GameService
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public Game loadGame(GameDB gameDB)
+	public Game loadGame(int gameId)
 	{
+		GameDB gameDB = findGame(gameId);
+
 		List<Card> deck = gameDB.deckCards.stream().map(deckCardDB -> Card.fromId(deckCardDB.card)).collect(Collectors.toList());
 		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
 		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
@@ -61,8 +63,10 @@ public class GameService
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public void startNewGame(GameSessionDB gameSessionDB, int beginnerPlayer)
+	public void startNewGame(int gameSessionId, int beginnerPlayer)
 	{
+		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameSessionId).orElseThrow(NotFoundException::new);
+
 		if (!gameSessionDB.state.equals("game"))
 			throw new IllegalStateException();
 
@@ -98,9 +102,10 @@ public class GameService
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public boolean executeAction(GameDB gameDB, PlayerSeat seat, Action action)
+	public boolean executeAction(int gameId, PlayerSeat seat, Action action)
 	{
-		Game game = loadGame(gameDB);
+		GameDB gameDB = findGame(gameId);
+		Game game = loadGame(gameId);
 
 		if (!doExecuteAction(gameDB, game, seat, action))
 			return false;
@@ -140,7 +145,7 @@ public class GameService
 				doubleRoundTracker.gameInterrupted();
 			gameDB.gameSession.doubleRoundData = doubleRoundTracker.getData();
 
-			startNewGame(gameDB.gameSession, (gameDB.beginnerPlayer + 1) % gameDB.gameSession.players.size());
+			startNewGame(gameDB.gameSession.id, (gameDB.beginnerPlayer + 1) % gameDB.gameSession.players.size());
 		}
 
 		return true;

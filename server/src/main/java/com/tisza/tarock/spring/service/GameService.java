@@ -6,6 +6,7 @@ import com.tisza.tarock.game.card.filter.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
+import com.tisza.tarock.spring.*;
 import com.tisza.tarock.spring.model.*;
 import com.tisza.tarock.spring.repository.*;
 import org.springframework.beans.factory.annotation.*;
@@ -36,6 +37,11 @@ public class GameService
 	{
 		int playerCount = gameDB.gameSession.players.size();
 		return PlayerSeat.fromInt((playerDB.ordinal - gameDB.beginnerPlayer + playerCount) % playerCount);
+	}
+
+	public GameDB findGame(int gameId)
+	{
+		return gameRepository.findById(gameId).orElseThrow(NotFoundException::new);
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)

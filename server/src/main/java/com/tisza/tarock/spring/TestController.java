@@ -224,19 +224,10 @@ public class TestController
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	private GameDB findGameOrThrow(int gameId)
-	{
-		Optional<GameDB> gameDB = gameRepository.findById(gameId);
-		if (gameDB.isEmpty())
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
-		return gameDB.get();
-	}
-
 	@GetMapping("/games/{gameID}")
 	public ResponseEntity<GameDTO> game(@PathVariable int gameID)
 	{
-		GameDB gameDB = findGameOrThrow(gameID);
+		GameDB gameDB = gameService.findGame(gameID);
 
 		GameDTO gameDTO = new GameDTO();
 		gameDTO.id = gameDB.id;
@@ -252,7 +243,7 @@ public class TestController
 	@GetMapping("/games/{gameID}/actions")
 	public Object getActions(@PathVariable int gameID, @RequestParam(defaultValue = "-1") int from)
 	{
-		GameDB game = findGameOrThrow(gameID);
+		GameDB game = gameService.findGame(gameID);
 
 		//TODO: hide fold actions
 		List<ActionDB> actions = game.actions;
@@ -272,7 +263,7 @@ public class TestController
 		if (actionPostDTO.action.length() >= 256)
 			return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
 
-		GameDB gameDB = findGameOrThrow(gameID);
+		GameDB gameDB = gameService.findGame(gameID);
 
 		PlayerDB player = getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
 		if (player == null)
@@ -299,7 +290,7 @@ public class TestController
 	@GetMapping("/games/{gameID}/state")
 	public ResponseEntity<GameStateDTO> getGameState(@PathVariable int gameID)
 	{
-		GameDB gameDB = findGameOrThrow(gameID);
+		GameDB gameDB = gameService.findGame(gameID);
 		Game game = gameService.loadGame(gameDB);
 		PlayerDB playerDB = getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
 		PlayerSeat me = gameService.getSeatFromPlayer(gameDB, playerDB);

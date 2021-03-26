@@ -14,3 +14,30 @@ html, body {
 *, *:before, *:after {
   box-sizing: inherit;
 }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 8px 0;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  background-color: #DD8000;
+  border: 2px solid;
+  border-radius: 5px;
+  padding: 5px;
+  font-size: 20px;
+}
+
+.button-red {
+  background-color: #F11;
+  border: 2px solid;
+  border-radius: 5px;
+}

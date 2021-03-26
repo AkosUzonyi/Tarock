@@ -27,6 +27,10 @@ p {
   font-size: 24px;
 }
 
+.toolbar img {
+  margin: 0 16px;
+}
+
 .content {
   padding-top: 0px;
   width: 100%;

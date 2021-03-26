@@ -13,7 +13,15 @@ export class GameSessionListComponent implements OnInit {
   constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.updateList();
+  }
+
+  private updateList() {
     this.apiService.getGameSessions()
       .subscribe(g => this.gameSessions = g);
+  }
+
+  deleteGameSession(id: number) {
+    this.apiService.deleteGameSession(id).subscribe(() => this.updateList());
   }
 }

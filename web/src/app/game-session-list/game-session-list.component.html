@@ -7,7 +7,7 @@
     </div>
     <div class="game-session-button-container">
       <a routerLink="/gameSessions/{{gameSession.id}}"><button class="button-normal">Belépés</button></a>
-      <a routerLink="/gameSessions/{{gameSession.id}}"><button class="button-normal button-red">Törlés</button></a>
+      <div><button class="button-normal button-red" (click)="deleteGameSession(gameSession.id)">Törlés</button></div>
     </div>
   </div>
 </div>

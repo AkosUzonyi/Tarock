@@ -14,7 +14,6 @@ import org.springframework.http.*;
 import org.springframework.transaction.annotation.*;
 import org.springframework.validation.annotation.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.*;
 import org.springframework.web.util.*;
 
 import java.net.*;
@@ -42,6 +41,8 @@ public class TestController
 	private ListDeferredResultService<ActionDB> actionDeferredResultService;
 	@Autowired
 	private GameService gameService;
+	@Autowired
+	private GameSessionService gameSessionService;
 
 	@GetMapping("/idp")
 	public ResponseEntity<IdpUserDB> idp() throws InterruptedException
@@ -54,20 +55,6 @@ public class TestController
 	private int getLoggedInUserId()
 	{
 		return 4;
-	}
-
-	private PlayerDB getPlayerFromUser(GameSessionDB gameSessionDB, int userId)
-	{
-		return gameSessionDB.players.stream().filter(p -> p.user.id == userId).findFirst().orElse(null);
-	}
-
-	private GameSessionDB findGameSessionOrThrow(int gameSessionId)
-	{
-		Optional<GameSessionDB> gameSessionDB = gameSessionRepository.findById(gameSessionId);
-		if (gameSessionDB.isEmpty() || gameSessionDB.get().state.equals("deleted"))
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-
-		return gameSessionDB.get();
 	}
 
 	@GetMapping("/users/{userId}")
@@ -90,103 +77,69 @@ public class TestController
 	public ResponseEntity<GameSessionDB> gameSession(@PathVariable int gameSessionId)
 	{
 		//TODO: return in deleted state or 404?
-		return new ResponseEntity<>(findGameSessionOrThrow(gameSessionId), HttpStatus.OK);
+		return new ResponseEntity<>(gameSessionService.findGameSession(gameSessionId), HttpStatus.OK);
 	}
 
 	@PostMapping("/gameSessions")
 	public ResponseEntity<Void> createGameSession(@Validated @RequestBody CreateGameSessionDTO createGameSessionDTO, UriComponentsBuilder uriComponentsBuilder)
 	{
-		//TODO: request parameters not null
-
-		GameSessionDB gameSession = new GameSessionDB();
-		gameSession.type = createGameSessionDTO.type; //TODO: validate type
-		gameSession.state = "lobby";
-		gameSession.players = new ArrayList<>();
-		gameSession.doubleRoundType = createGameSessionDTO.doubleRoundType; //TODO: validate type
-		gameSession.doubleRoundData = 0;
-		gameSession.currentGameId = null;
-		gameSession.createTime = System.currentTimeMillis();
-
-		if (gameSession.type == null || gameSession.doubleRoundType == null)
+		GameType type;
+		DoubleRoundType doubleRoundType;
+		try
+		{
+			type = GameType.fromID(createGameSessionDTO.type);
+			doubleRoundType = DoubleRoundType.fromID(createGameSessionDTO.doubleRoundType);
+		}
+		catch (IllegalArgumentException e)
+		{
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 
-		gameSession = gameSessionRepository.save(gameSession);
+		int gameSessionId = gameSessionService.createGameSession(type, doubleRoundType, getLoggedInUserId());
 
-		PlayerDB creatorPlayer = new PlayerDB();
-		creatorPlayer.gameSessionId = gameSession.id;
-		creatorPlayer.ordinal = 0;
-		creatorPlayer.user = userRepository.findById(getLoggedInUserId()).orElseThrow();
-		creatorPlayer.points = 0;
-		gameSession.players.add(creatorPlayer);
-
-		gameSession = gameSessionRepository.save(gameSession);
-
-		URI uri = uriComponentsBuilder.path("/gameSessions/{gameSessionId}").buildAndExpand(gameSession.id).toUri();
+		URI uri = uriComponentsBuilder.path("/gameSessions/{gameSessionId}").buildAndExpand(gameSessionId).toUri();
 		return ResponseEntity.created(uri).build();
 	}
 
+	@Transactional
 	@DeleteMapping("/gameSessions/{gameSessionId}")
 	public ResponseEntity<Void> deleteGameSession(@PathVariable int gameSessionId)
 	{
-		Optional<GameSessionDB> gameSessionOptional = gameSessionRepository.findById(gameSessionId);
-		if (gameSessionOptional.isEmpty() || gameSessionOptional.get().state.equals("deleted"))
+		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameSessionId).orElse(null);
+		if (gameSessionDB == null || gameSessionDB.state.equals("deleted"))
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		GameSessionDB gameSession = gameSessionOptional.get();
-
-		if (getPlayerFromUser(gameSession, getLoggedInUserId()) == null)
+		if (gameSessionService.getPlayerFromUser(gameSessionDB, getLoggedInUserId()) == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-		if (gameSession.state.equals("lobby"))
-			gameSession.players.clear();
-
-		gameSession.state = "deleted";
-
+		gameSessionService.deleteGameSession(gameSessionId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	@Transactional(isolation = Isolation.SERIALIZABLE)
 	@PostMapping("/gameSessions/{gameSessionId}/join")
 	public ResponseEntity<Void> joinGameSession(@PathVariable int gameSessionId)
 	{
-		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionId);
+		GameSessionDB gameSessionDB = gameSessionService.findGameSession(gameSessionId);
 
-		if (getPlayerFromUser(gameSession, getLoggedInUserId()) == null)
+		if (gameSessionService.getPlayerFromUser(gameSessionDB, getLoggedInUserId()) == null)
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		if (!gameSession.state.equals("lobby"))
+		if (!gameSessionDB.state.equals("lobby"))
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-		PlayerDB player = new PlayerDB();
-		player.gameSessionId = gameSessionId;
-		player.ordinal = gameSession.players.size();
-		player.points = 0;
-		player.user = userRepository.findById(getLoggedInUserId()).orElseThrow();
-		gameSession.players.add(player);
-
+		gameSessionService.joinGameSession(gameSessionId, getLoggedInUserId());
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
 	@PostMapping("/gameSessions/{gameSessionId}/leave")
 	public ResponseEntity<Void> leaveGameSession(@PathVariable int gameSessionId)
 	{
-		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionId);
+		GameSessionDB gameSessionDB = gameSessionService.findGameSession(gameSessionId);
 
-		if (!gameSession.state.equals("lobby"))
+		if (!gameSessionDB.state.equals("lobby"))
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-		List<UserDB> users = gameSession.players.stream().map(p -> p.user).collect(Collectors.toList());
-		users.remove(getLoggedInUserId());
-
-		for (int i = 0; i < users.size(); i++)
-			gameSession.players.get(i).user = users.get(i);
-
-		while (gameSession.players.size() > users.size())
-			gameSession.players.remove(users.size());
-
-		if (gameSession.players.isEmpty())
-			gameSession.state = "deleted";
-
+		gameSessionService.leaveGameSession(gameSessionId, getLoggedInUserId());
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
@@ -194,33 +147,15 @@ public class TestController
 	@Transactional
 	public ResponseEntity<Void> startGameSession(@PathVariable int gameSessionId)
 	{
-		GameSessionDB gameSession = findGameSessionOrThrow(gameSessionId);
+		GameSessionDB gameSessionDB = gameSessionService.findGameSession(gameSessionId);
 
-		if (!gameSession.state.equals("lobby"))
+		if (!gameSessionDB.state.equals("lobby"))
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		if (getPlayerFromUser(gameSession, getLoggedInUserId()) == null)
+		if (gameSessionService.getPlayerFromUser(gameSessionDB, getLoggedInUserId()) == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
-		int playerCount = gameSession.players.size();
-		while (playerCount < 4)
-		{
-			PlayerDB bot = new PlayerDB();
-			bot.gameSessionId = gameSessionId;
-			bot.ordinal = playerCount++;
-			bot.user = userRepository.findById(4 - playerCount + 1).orElseThrow();
-			bot.points = 0;
-			gameSession.players.add(bot);
-		}
-
-		List<UserDB> users = gameSession.players.stream().map(p -> p.user).collect(Collectors.toList());
-		Collections.shuffle(users);
-		for (int i = 0; i < playerCount; i++)
-			gameSession.players.get(i).user = users.get(i);
-
-		gameSession.state = "game";
-		gameService.startNewGame(gameSessionId, 0);
-
+		gameSessionService.startGameSession(gameSessionId);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
@@ -265,7 +200,7 @@ public class TestController
 
 		GameDB gameDB = gameService.findGame(gameId);
 
-		PlayerDB player = getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
+		PlayerDB player = gameSessionService.getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
 		if (player == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
@@ -292,7 +227,7 @@ public class TestController
 	{
 		GameDB gameDB = gameService.findGame(gameId);
 		Game game = gameService.loadGame(gameId);
-		PlayerDB playerDB = getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
+		PlayerDB playerDB = gameSessionService.getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
 		PlayerSeat me = gameService.getSeatFromPlayer(gameDB, playerDB);
 
 		GameStateDTO gameStateDTO = new GameStateDTO();
@@ -384,7 +319,7 @@ public class TestController
 	@GetMapping("/gameSessions/{gameSessionId}/chat")
 	public Object chatGet(@PathVariable int gameSessionId, @RequestParam(defaultValue = "0") long from)
 	{
-		findGameSessionOrThrow(gameSessionId);
+		gameSessionService.findGameSession(gameSessionId);
 
 		List<ChatDB> chats = chatRepository.findTop100ByGameSessionIdAndTimeGreaterThanEqual(gameSessionId, from);
 		if (chats.isEmpty())
@@ -399,7 +334,7 @@ public class TestController
 		if (chatPostDTO.message.length() >= 256)
 			return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
 
-		findGameSessionOrThrow(gameSessionId);
+		gameSessionService.findGameSession(gameSessionId);
 
 		ChatDB chatDB = new ChatDB();
 		chatDB.gameSessionId = gameSessionId;

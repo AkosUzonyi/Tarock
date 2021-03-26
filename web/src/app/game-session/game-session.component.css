@@ -1,0 +1,61 @@
+#game-session {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+}
+
+#upper-half {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+#action-list {
+  width: 250px;
+  background-color: #BBB;
+  font-size: 24px;
+  text-align: center;
+  max-height: 500px;
+  overflow: auto;
+}
+
+#card-table {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+#card-table img {
+  width: 80px;
+}
+
+#action-button-list {
+  width: 350px;
+  overflow: auto;
+}
+
+#action-button-list button {
+  width: 100%;
+}
+
+#card-list {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 20px;
+  /*max-height: 10%;*/
+}
+
+#card-list img {
+  padding: 0 5px;
+  max-width: 8%;
+  transition: all 0.2s linear 0s;
+}
+
+.card-selected {
+  transform: translate(0, -30px);
+}

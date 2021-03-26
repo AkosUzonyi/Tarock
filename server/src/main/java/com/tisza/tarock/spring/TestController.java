@@ -44,14 +44,6 @@ public class TestController
 	@Autowired
 	private GameSessionService gameSessionService;
 
-	@GetMapping("/idp")
-	public ResponseEntity<IdpUserDB> idp() throws InterruptedException
-	{
-		Thread.sleep(1000);
-		Iterable<IdpUserDB> idpusers = idpUserRepository.findAll();
-		return new ResponseEntity<>(idpusers.iterator().next(), HttpStatus.OK);
-	}
-
 	private int getLoggedInUserId()
 	{
 		return 4;

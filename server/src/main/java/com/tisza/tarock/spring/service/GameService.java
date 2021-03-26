@@ -2,7 +2,6 @@ package com.tisza.tarock.spring.service;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.game.card.filter.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
@@ -22,11 +21,11 @@ public class GameService
 	@Autowired
 	private GameRepository gameRepository;
 	@Autowired
+	private BotService botService;
+	@Autowired
 	private GameSessionRepository gameSessionRepository;
 	@Autowired
 	private ListDeferredResultService<ActionDB> actionDeferredResultService;
-
-	private final Random rnd = new Random();
 
 	public PlayerDB getPlayerFromSeat(GameDB gameDB, PlayerSeat seat)
 	{
@@ -56,7 +55,7 @@ public class GameService
 		for (ActionDB a : gameDB.actions)
 			game.processAction(PlayerSeat.fromInt(a.seat), new Action(a.action));
 
-		executeBotActions(gameDB, game);
+		botService.executeBotActions(gameDB, game);
 
 		return game;
 	}
@@ -97,7 +96,7 @@ public class GameService
 		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
 		game.start();
 
-		executeBotActions(gameDB, game);
+		botService.executeBotActions(gameDB, game);
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
@@ -106,15 +105,6 @@ public class GameService
 		GameDB gameDB = findGame(gameId);
 		Game game = loadGame(gameId);
 
-		if (!doExecuteAction(gameDB, game, seat, action))
-			return false;
-
-		executeBotActions(gameDB, game);
-		return true;
-	}
-
-	private boolean doExecuteAction(GameDB gameDB, Game game, PlayerSeat seat, Action action)
-	{
 		boolean success = game.processAction(seat, action);
 		if (!success)
 			return false;
@@ -127,6 +117,8 @@ public class GameService
 		actionDB.time = System.currentTimeMillis();
 		gameDB.actions.add(actionDB);
 		actionDeferredResultService.notifyNewResult(gameDB.id, actionDB);
+
+		botService.executeBotActions(gameDB, game);
 
 		if (game.isFinished())
 		{
@@ -148,65 +140,5 @@ public class GameService
 		}
 
 		return true;
-	}
-
-	private void executeBotActions(GameDB gameDB, Game game)
-	{
-		boolean executed;
-		do
-		{
-			executed = false;
-			for (PlayerSeat seat : PlayerSeat.getAll())
-			{
-				if (!game.getTurn(seat))
-					continue;
-
-				PlayerDB playerDB = getPlayerFromSeat(gameDB, seat);
-				if (playerDB.user.id >= 4)
-					continue;
-
-				//TODO: delay
-				doExecuteAction(gameDB, game, seat, getBotAction(game, seat));
-				executed = true;
-			}
-		}
-		while (executed);
-	}
-
-	private Action getBotAction(Game game, PlayerSeat bot)
-	{
-		PlayerCards cards = game.getPlayerCards(bot);
-		switch (game.getCurrentPhaseEnum())
-		{
-			case BIDDING:
-			case CALLING:
-				return chooseRandom(game.getAvailableActions());
-			case ANNOUNCING:
-				if (!game.getAvailableActions().isEmpty() && rnd.nextFloat() < 0.3)
-					return chooseRandom(game.getAvailableActions());
-				else
-					return Action.announcePassz();
-			case FOLDING:
-				List<Card> cardsToSkart = cards.filter(new SkartableCardFilter(game.getGameType())).subList(0, cards.size() - 9);
-				return Action.fold(cardsToSkart);
-			case GAMEPLAY:
-				Trick currentTrick = game.getTrick(game.getTrickCount() - 1);
-				return Action.play(chooseRandom(cards.getPlayableCards(currentTrick.getFirstCard())));
-			case END:
-			case INTERRUPTED:
-				return Action.readyForNewGame();
-		}
-		throw new RuntimeException();
-	}
-
-	private <T> T chooseRandom(Collection<T> from)
-	{
-		int n = rnd.nextInt(from.size());
-		Iterator<T> it = from.iterator();
-		for (int i = 0; i < n; i++)
-		{
-			it.next();
-		}
-		return it.next();
 	}
 }

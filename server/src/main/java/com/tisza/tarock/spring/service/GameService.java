@@ -44,7 +44,6 @@ public class GameService
 		return gameRepository.findById(gameId).orElseThrow(NotFoundException::new);
 	}
 
-	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public Game loadGame(int gameId)
 	{
 		GameDB gameDB = findGame(gameId);
@@ -62,7 +61,7 @@ public class GameService
 		return game;
 	}
 
-	@Transactional(isolation = Isolation.SERIALIZABLE)
+	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public void startNewGame(int gameSessionId, int beginnerPlayer)
 	{
 		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameSessionId).orElseThrow(NotFoundException::new);

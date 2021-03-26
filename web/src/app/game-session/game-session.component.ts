@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ApiService } from '../api.service';
 import { Action, GameSession, GameState } from '../game-objects';
 
@@ -8,7 +9,7 @@ import { Action, GameSession, GameState } from '../game-objects';
   templateUrl: './game-session.component.html',
   styleUrls: ['./game-session.component.css'],
 })
-export class GameSessionComponent implements OnInit {
+export class GameSessionComponent implements OnInit, OnDestroy {
   gameSessionId: number;
   gameSession: GameSession | null = null;
 
@@ -21,12 +22,18 @@ export class GameSessionComponent implements OnInit {
 
   cardsToFold: string[] = []
 
+  actionSubscription: Subscription | null = null;
+
   constructor(private apiService: ApiService, route: ActivatedRoute) {
     this.gameSessionId = Number(route.snapshot.paramMap.get('id'));
   }
 
   ngOnInit() {
     this.updateGameSession();
+  }
+
+  ngOnDestroy() {
+    this.actionSubscription?.unsubscribe();
   }
 
   private getCurrentGameId() {
@@ -99,7 +106,10 @@ export class GameSessionComponent implements OnInit {
   }
 
   private pollActions() {
-    this.apiService.getActions(this.getCurrentGameId(), this.nextActionOrdinal).subscribe(newActions => {
+    this.actionSubscription?.unsubscribe();
+    this.actionSubscription =
+    this.apiService.getActions(this.getCurrentGameId(), this.nextActionOrdinal)
+    .subscribe(newActions => {
       this.actions = this.actions.concat(newActions);
       if (this.actions.length >= 1)
         this.nextActionOrdinal = this.actions[this.actions.length - 1].ordinal + 1;

@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { GameSessionListComponent } from './game-session-list/game-session-list.component';
 import { HttpClientModule } from '@angular/common/http';
 import { GameSessionComponent } from './game-session/game-session.component';
+import { httpInterceptorProviders } from './http-interceptors';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,9 @@ import { GameSessionComponent } from './game-session/game-session.component';
     AppRoutingModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [
+    httpInterceptorProviders,
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

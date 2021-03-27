@@ -2,6 +2,7 @@ package com.tisza.tarock.spring;
 
 import com.tisza.tarock.spring.model.*;
 import com.tisza.tarock.spring.repository.*;
+import com.tisza.tarock.spring.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.scheduling.annotation.*;
 import org.springframework.stereotype.*;
@@ -18,23 +19,31 @@ public class GameSessionCleanup
 	private GameSessionRepository gameSessionRepository;
 	@Autowired
 	private GameRepository gameRepository;
+	@Autowired
+	private GameSessionService gameSessionService;
 
 	@Scheduled(fixedRate = 10 * 60 * 1000)
-	@Transactional
+	@Transactional(isolation = Isolation.REPEATABLE_READ)
 	public void deleteOldGameSessions()
 	{
 		for (GameSessionDB gameSession : gameSessionRepository.findActive())
 		{
-			if (!gameSession.state.equals("game"))
-				return;
-
-			Optional<GameDB> game = gameRepository.findById(gameSession.currentGameId);
-			if (game.isEmpty())
+			if (gameSession.state.equals("deleted"))
 				continue;
 
-			long lastActionTime = game.get().actions.get(game.get().actions.size() - 1).time;
-			if (System.currentTimeMillis() - lastActionTime > MAX_GAME_IDLE_TIME)
-				gameSession.state = "deleted";
+			long lastModified = gameSession.createTime;
+			if (gameSession.currentGameId != null)
+			{
+				Optional<GameDB> game = gameRepository.findById(gameSession.currentGameId);
+				if (game.isPresent()) {
+					List<ActionDB> actions = game.get().actions;
+					if (!actions.isEmpty())
+						lastModified = actions.get(actions.size() - 1).time;
+				}
+			}
+
+			if (System.currentTimeMillis() - lastModified > MAX_GAME_IDLE_TIME)
+				gameSessionService.deleteGameSession(gameSession.id);
 		}
 	}
 }

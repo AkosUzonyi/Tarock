@@ -21,6 +21,8 @@ public class GameSessionService
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
+	private PlayerRepository playerRepository;
+	@Autowired
 	private GameService gameService;
 
 	public PlayerDB getPlayerFromUser(GameSessionDB gameSessionDB, int userId)
@@ -71,8 +73,9 @@ public class GameSessionService
 			return;
 
 		if (gameSessionDB.state.equals("lobby"))
-			gameSessionDB.players.clear();
+			playerRepository.deleteAll(gameSessionDB.players);
 
+		gameSessionDB.currentGameId = null;
 		gameSessionDB.state = "deleted";
 	}
 
@@ -107,7 +110,7 @@ public class GameSessionService
 			gameSessionDB.players.get(i).user = users.get(i);
 
 		while (gameSessionDB.players.size() > users.size())
-			gameSessionDB.players.remove(users.size());
+			playerRepository.delete(gameSessionDB.players.remove(users.size()));
 
 		if (gameSessionDB.players.isEmpty())
 			gameSessionDB.state = "deleted";

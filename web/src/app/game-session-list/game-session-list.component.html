@@ -2,8 +2,11 @@
 <div id=game-session-list>
   <div *ngFor="let gameSession of gameSessions" class="game-session">
     <p class="game-session-type">{{gameSession.type}}</p>
-    <div class="game-session-name-container">
-      <p *ngFor="let player of gameSession.players">{{player.user.name}}</p>
+    <div class="game-session-player-list">
+      <div *ngFor="let player of gameSession.players" class="game-session-player">
+        <img [src]="'assets/images/' + (player.user.isOnline ? 'online' : 'offline') + '.png'"/>
+        <p>{{player.user.name}}</p>
+      </div>
     </div>
     <div class="game-session-button-container">
       <a routerLink="/gameSessions/{{gameSession.id}}"><button class="button-normal">Belépés</button></a>

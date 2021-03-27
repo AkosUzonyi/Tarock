@@ -22,24 +22,6 @@ public class Main
 
 	public static void main(String[] args)
 	{
-		Server server = new Server(8128);
-		server.start();
-
 		SpringApplication.run(Main.class, args);
-
-		Runtime.getRuntime().addShutdownHook(new Thread(() ->
-		{
-			GAME_EXECUTOR_SERVICE.shutdownNow();
-			server.stop();
-			try
-			{
-				GAME_EXECUTOR_SERVICE.awaitTermination(1, TimeUnit.SECONDS);
-				server.awaitTermination(1000);
-			}
-			catch (InterruptedException e)
-			{
-				log.warn("Shutdown hook interrupted");
-			}
-		}));
 	}
 }

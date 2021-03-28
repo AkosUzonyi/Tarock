@@ -36,6 +36,11 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     this.actionSubscription?.unsubscribe();
   }
 
+  start() {
+    if (this.gameSession !== null)
+      this.apiService.startGameSession(this.gameSession.id).subscribe(() => this.updateGameSession());
+  }
+
   private getCurrentGameId() {
     let gameId = this.gameSession?.currentGameId ?? null;
     if (gameId === null)

@@ -1,3 +1,4 @@
+<button *ngIf="gameSession?.state === 'lobby'" (click)="start()">Start</button>
 <div *ngIf="gameState" id=game-session>
   <button (click)="pressOK()">OK</button>
   <div id=upper-half>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Action, Chat, DoubleRoundType, Game, GameSession, GameState, GameType } from './game-objects';
 import { map } from 'rxjs/operators';
@@ -23,7 +23,7 @@ export class ApiService {
 
   createGameSession(type: GameType, doubleRoundType: DoubleRoundType): Observable<number> {
     let body = {'type': type, 'doubleRoundType': doubleRoundType};
-    return this.http.post<Response>(`${this.baseUrl}/gameSessions`, body).pipe(
+    return this.http.post<HttpResponse<any>>(`${this.baseUrl}/gameSessions`, body, { observe: 'response' }).pipe(
       map((response) => {
         let arr = response.headers.get('Location')!.split('/');
         return Number(arr[arr.length - 1]);

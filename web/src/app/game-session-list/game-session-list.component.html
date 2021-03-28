@@ -1,4 +1,5 @@
 <p>game-session-list works!</p>
+<button (click)="createGame()">Új játék</button>
 <div id=game-session-list>
   <div *ngFor="let gameSession of gameSessions" class="game-session">
     <p class="game-session-type">{{gameSession.type}}</p>

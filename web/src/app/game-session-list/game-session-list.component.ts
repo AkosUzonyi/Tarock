@@ -21,6 +21,13 @@ export class GameSessionListComponent implements OnInit {
       .subscribe(g => this.gameSessions = g);
   }
 
+  createGame() {
+    this.apiService.createGameSession('paskievics', 'none').subscribe(id => {
+      this.updateList();
+      console.log(id);
+    });
+  }
+
   deleteGameSession(id: number) {
     this.apiService.deleteGameSession(id).subscribe(() => this.updateList());
   }

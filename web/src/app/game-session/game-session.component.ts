@@ -16,11 +16,11 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   userId = 4;
   seat: number | null = null;
 
-  actions: Action[] = []
+  actions: Action[] = [];
   nextActionOrdinal = 0;
   gameState: GameState | null = null;
 
-  cardsToFold: string[] = []
+  cardsToFold: string[] = [];
   cardTable: (string | null)[] = new Array(4);
 
   actionSubscription: Subscription | null = null;

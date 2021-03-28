@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Új játék létrehozása</h2>
+
+<mat-dialog-content>
+  <mat-form-field>
+    <mat-select placeholder="Játék típus" [(ngModel)]="gameType">
+      <mat-option value="paskievics">Paskievics</mat-option>
+      <mat-option value="illusztralt">Illusztrált</mat-option>
+      <mat-option value="magas">Magas</mat-option>
+      <mat-option value="zebi">Zebi</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <mat-select placeholder="Duplakör" [(ngModel)]="doubleRoundType">
+      <mat-option value="none">Nincs</mat-option>
+      <mat-option value="peculating">Sikkasztó</mat-option>
+      <mat-option value="stacking">Halmozódó</mat-option>
+      <mat-option value="multiplying">Szorzódó</mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button class="mat-raised-button" mat-dialog-close>Mégse</button>
+  <button class="mat-raised-button" (click)="create()">Létrehoz</button>
+</mat-dialog-actions>

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ApiService } from '../api.service';
+import { CreateGameSessionDialogComponent } from '../create-game-session-dialog/create-game-session-dialog.component';
 import { GameSession } from '../game-objects';
 
 @Component({
@@ -10,7 +12,7 @@ import { GameSession } from '../game-objects';
 export class GameSessionListComponent implements OnInit {
   gameSessions: GameSession[] = [];
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService, private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.updateList();
@@ -22,10 +24,8 @@ export class GameSessionListComponent implements OnInit {
   }
 
   createGame() {
-    this.apiService.createGameSession('paskievics', 'none').subscribe(id => {
-      this.updateList();
-      console.log(id);
-    });
+    let dialogRef = this.dialog.open(CreateGameSessionDialogComponent);
+    dialogRef.afterClosed().subscribe(() => this.updateList());
   }
 
   deleteGameSession(id: number) {

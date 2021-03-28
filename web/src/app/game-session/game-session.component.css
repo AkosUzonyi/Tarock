@@ -50,10 +50,33 @@
   /*max-height: 10%;*/
 }
 
+#card-table img {
+  position: absolute;
+  height: auto;
+  width: 8vw;
+  top: 50%;
+  left: 50%;
+}
+
+#card-table img:nth-child(1) {
+  transform: translate(-50%, -50%) rotate(0deg) translate(0%, 70%);
+}
+
+#card-table img:nth-child(2) {
+  transform: translate(-50%, -50%) rotate(-90deg) translate(0%, 70%);
+}
+
+#card-table img:nth-child(3) {
+  transform: translate(-50%, -50%) rotate(-180deg) translate(0%, 70%);
+}
+
+#card-table img:nth-child(4) {
+  transform: translate(-50%, -50%) rotate(-270deg) translate(0%, 70%);
+}
+
 #card-list img {
   padding: 0 5px;
   max-width: 8%;
-  transition: all 0.2s linear 0s;
 }
 
 .card-selected {

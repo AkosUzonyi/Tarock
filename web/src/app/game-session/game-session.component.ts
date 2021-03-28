@@ -21,6 +21,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   gameState: GameState | null = null;
 
   cardsToFold: string[] = []
+  cardTable: (string | null)[] = new Array(4);
 
   actionSubscription: Subscription | null = null;
 
@@ -124,8 +125,18 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     });
   }
 
+  private rotateLeft(list: any[], n: number) {
+    for (let i = 0; i < n; i++)
+      list.push(list.shift());
+  }
+
   private updateGameState() {
     this.apiService.getGameState(this.getCurrentGameId())
-      .subscribe(s => this.gameState = s);
+      .subscribe(s => {
+        this.gameState = s;
+        this.cardTable = this.gameState.currentTrick;
+        if (this.seat !== null)
+          this.rotateLeft(this.cardTable, this.seat);
+      });
   }
 }

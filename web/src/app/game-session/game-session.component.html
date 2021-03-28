@@ -6,7 +6,7 @@
       <p *ngFor="let action of actions">{{action.action}}</p>
     </div>
     <div id="card-table">
-      <img *ngFor="let card of gameState.currentTrick" src="/assets/images/cards/{{card}}.png"/>
+      <img *ngFor="let card of cardTable" src="/assets/images/cards/{{card}}.png"/>
     </div>
     <div *ngIf="seat !== null" id="action-button-list">
       <button *ngFor="let action of gameState.availableActions" (click)="executeAction(action)">{{action}}</button>

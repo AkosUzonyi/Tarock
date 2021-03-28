@@ -29,7 +29,7 @@ public class BotService
 				continue;
 
 			PlayerDB playerDB = gameService.getPlayerFromSeat(gameDB, seat);
-			if (playerDB.user.id >= 4)
+			if (!playerDB.user.getIsBot())
 				continue;
 
 			Action botAction = getAction(game, seat);

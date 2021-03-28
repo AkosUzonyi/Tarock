@@ -19,5 +19,10 @@ public class UserDB
 
 	public String imgUrl;
 
+	public boolean getIsBot()
+	{
+		return id < 4;
+	}
+
 	public long registrationTime;
 }

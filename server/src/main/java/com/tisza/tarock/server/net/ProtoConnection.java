@@ -16,7 +16,7 @@ public class ProtoConnection implements Closeable
 	private static final Logger log = Logger.getLogger(ProtoConnection.class);
 
 	private static final String HELLO_STRING = "Tarokk";
-	private static final int VERSION = 7;
+	private static final int VERSION = 8;
 	private static final int KEEP_ALIVE_DELAY = 1;
 	private static final int SOCKET_TIMEOUT = 10;
 

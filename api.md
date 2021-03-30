@@ -246,8 +246,8 @@ Joins the game session (it must be in lobby state).
 Response:
 - 204: Join successful
 - 401: Authentication is required (using /auth/login)
-- 403: The game session is not in lobby state
 - 404: Game session does not exists
+- 409: The game session is not in lobby state
 
 ### POST /gameSessions/{gameSessionID}/leave
 
@@ -256,18 +256,19 @@ Leaves the game session (it must be in lobby state).
 Response:
 - 204: Leave successful
 - 401: Authentication is required (using /auth/login)
-- 403: The game session is not in lobby state
 - 404: Game session does not exists
+- 409: The game session is not in lobby state
 
 ### POST /gameSessions/{gameSessionID}/start
 
 Starts the game session (if it is in lobby state). If the lobby does not contain enough players, bots are added automatically.
 
 Response:
-- 204: Game session successfully started (or was started already)
+- 204: Game session successfully started
 - 401: Authentication is required (using /auth/login)
 - 403: The authenticated user is not in the lobby
 - 404: Game session does not exists
+- 409: The game session is not in lobby state
 
 ### GET /gameSessions/{gameSessionID}/chat
 

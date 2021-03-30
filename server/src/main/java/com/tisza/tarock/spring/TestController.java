@@ -113,11 +113,8 @@ public class TestController
 	{
 		GameSessionDB gameSessionDB = gameSessionService.findGameSession(gameSessionId);
 
-		if (gameSessionService.getPlayerFromUser(gameSessionDB, getLoggedInUserId()) == null)
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-
 		if (!gameSessionDB.state.equals("lobby"))
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
 
 		gameSessionService.joinGameSession(gameSessionId, getLoggedInUserId());
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -129,7 +126,7 @@ public class TestController
 		GameSessionDB gameSessionDB = gameSessionService.findGameSession(gameSessionId);
 
 		if (!gameSessionDB.state.equals("lobby"))
-			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
 
 		gameSessionService.leaveGameSession(gameSessionId, getLoggedInUserId());
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -142,7 +139,7 @@ public class TestController
 		GameSessionDB gameSessionDB = gameSessionService.findGameSession(gameSessionId);
 
 		if (!gameSessionDB.state.equals("lobby"))
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(HttpStatus.CONFLICT);
 
 		if (gameSessionService.getPlayerFromUser(gameSessionDB, getLoggedInUserId()) == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);

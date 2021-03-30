@@ -15,7 +15,7 @@
     <SwitchPreferenceCompat
         app:key="sounds"
         app:title="@string/settings_sounds"
-        app:defaultValue="true"
+        app:defaultValue="false"
         app:iconSpaceReserved="false"
         app:allowDividerAbove="true"
         app:allowDividerBelow="true"

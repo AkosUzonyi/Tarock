@@ -370,7 +370,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				break;
 		}
 
-		boolean soundsEnabled = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("sounds", true);
+		boolean soundsEnabled = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("sounds", false);
 		zebiSounds.setEnabled(soundsEnabled && gameInfo.getType() == GameType.ZEBI && gameInfo.containsUser(121));
 	}
 

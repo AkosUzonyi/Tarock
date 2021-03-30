@@ -232,7 +232,7 @@ Response:
 
 ### DELETE /gameSessions/{gameSessionID}
 
-Deletes the game session. Further GET requests to this game session doesn't return 404 as it could be expected, but returns the game session in "deleted" state.
+Deletes the game session.
 
 Response:
 - 204: Game session deleted (or didn't even exist)
@@ -254,7 +254,7 @@ Response:
 Leaves the game session (it must be in lobby state).
 
 Response:
-- 204: Join successful
+- 204: Leave successful
 - 401: Authentication is required (using /auth/login)
 - 403: The game session is not in lobby state
 - 404: Game session does not exists

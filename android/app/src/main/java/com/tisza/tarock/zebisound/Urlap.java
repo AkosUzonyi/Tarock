@@ -10,7 +10,7 @@ import java.util.*;
 class Urlap extends ZebiSound
 {
 	private boolean newTrick;
-	private boolean[] tarocksPlayed = new boolean[23];
+	private boolean[] tarocksPlayed = new boolean[24];
 
 	public Urlap(Context context)
 	{

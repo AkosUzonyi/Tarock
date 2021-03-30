@@ -38,6 +38,7 @@ public class GameSession
 
 	private long lastModified;
 	private boolean historyView = false;
+	private boolean firstGame;
 
 	private GameSession(int id, GameType gameType, DoubleRoundTracker doubleRoundTracker, TarockDatabase database)
 	{
@@ -303,7 +304,7 @@ public class GameSession
 		for (int i = 0; i < players.size(); i++)
 			database.addPlayer(id, i, players.get(i).getUser());
 
-		startNewGame();
+		startNewGame(true);
 	}
 
 	public State getState()
@@ -398,7 +399,7 @@ public class GameSession
 		return gameType;
 	}
 
-	private void startNewGame()
+	private void startNewGame(boolean first)
 	{
 		checkGameStarted();
 
@@ -409,7 +410,7 @@ public class GameSession
 		for (PlayerSeat seat : PlayerSeat.getAll())
 			getPlayerBySeat(seat).setGame(this, seat);
 
-		List<Card> deck = new ArrayList<>(Card.getAll());
+		List<Card> deck = new ArrayList<>(Card.getAll(first));
 		Collections.shuffle(deck);
 
 		currentGameID = database.createGame(id, currentBeginnerPlayer).cache();
@@ -471,7 +472,7 @@ public class GameSession
 				doubleRoundTracker.gameInterrupted();
 			}
 
-			startNewGame();
+			startNewGame(false);
 		}
 	}
 

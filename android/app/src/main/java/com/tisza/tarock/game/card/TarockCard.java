@@ -6,7 +6,7 @@ public class TarockCard extends Card
 
 	TarockCard(int v)
 	{
-		if (v < 1 || v >= 23)
+		if (v < 1 || v >= 24)
 			throw new IllegalArgumentException("invalid tarock value: " + v);
 		value = v;
 	}
@@ -25,7 +25,7 @@ public class TarockCard extends Card
 	@Override
 	public boolean isHonor()
 	{
-		return value == 1 || value == 21 || value == 22;
+		return value == 1 || value == 21 || value == 22 || value == 23;
 	}
 
 	@Override

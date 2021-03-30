@@ -216,4 +216,8 @@
     <string name="donation">Támogatás</string>
     <string name="donation_title">Tarokk alkalmazás fejlesztés támogatása</string>
     <string name="donation_description">Nagyon örülök, hogy egyre népszerűbb a Tarokk alkalmazásom, és sokan örömmel játszanak vele. Az alkalmazást szabadidőmben fejlesztem hobbyként. Ha úgy érzed, hogy anyagilag is szívesen hozzájárulnál a munkámhoz, akkor a lenti gombbal ezt megteheted :).\nMinden támogatást nagyon köszönök!</string>
+
+    <string name="discord_description">A tarokkos közösség számrára létrejött egy új discord szerver, ezen linken csatlakozhatsz:\n
+        <a href="https://discord.gg/Z966RtBv7F">https://discord.gg/Z966RtBv7F</a>
+    </string>
 </resources>

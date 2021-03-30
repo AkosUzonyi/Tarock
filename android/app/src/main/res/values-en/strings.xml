@@ -205,4 +205,8 @@
     <string name="donation">Donation</string>
     <string name="donation_title">Tarokk application development donation</string>
     <string name="donation_description">Thank you for downloading and using my app, it feels good that my product is useful even for non hungarian people :). I\'m actively developing the application in my free time as a hobby. If you feel you could support my work with any amount, then press this button ;).\nThank you for your support!</string>
+
+    <string name="discord_description">Join to the new discord server created for the tarokk community:\n
+        <a href="https://discord.gg/Z966RtBv7F">https://discord.gg/Z966RtBv7F</a>
+    </string>
 </resources>

@@ -1,6 +1,7 @@
 package com.tisza.tarock.gui;
 
 import android.os.*;
+import android.text.method.*;
 import android.view.*;
 import android.widget.*;
 import androidx.lifecycle.*;
@@ -18,6 +19,9 @@ public class GameListFragment extends MainActivityFragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View view = inflater.inflate(R.layout.game_list, container, false);
+
+		TextView discordDescriptionView = view.findViewById(R.id.discord_description);
+		discordDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
 
 		gameListAdapter = new GameListAdapter(getActivity(), getMainActivity());
 		RecyclerView gameRecyclerView = view.findViewById(R.id.game_list);

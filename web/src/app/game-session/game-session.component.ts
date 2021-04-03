@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../api.service';
-import { Action, GameSession, GameState } from '../game-objects';
+import { Action, Chat, GameSession, GameState } from '../game-objects';
 
 @Component({
   selector: 'app-game-session',
@@ -24,6 +24,11 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   cardTable: (string | null)[] = new Array(4);
 
   actionSubscription: Subscription | null = null;
+  chatSubscription: Subscription | null = null;
+
+  chats: Chat[] = [];
+  lastChatTime: number = 0;
+  chatInputContent: string = "";
 
   constructor(private apiService: ApiService, route: ActivatedRoute) {
     this.gameSessionId = Number(route.snapshot.paramMap.get('id'));
@@ -35,6 +40,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.actionSubscription?.unsubscribe();
+    this.chatSubscription?.unsubscribe();
   }
 
   start() {
@@ -51,6 +57,27 @@ export class GameSessionComponent implements OnInit, OnDestroy {
 
   executeAction(action: string) {
     this.apiService.postAction(this.getCurrentGameId(), action).subscribe();
+  }
+
+  sendChat() {
+    if (this.gameSession === null)
+      return;
+    this.apiService.postChat(this.gameSession.id, this.chatInputContent).subscribe();
+    this.chatInputContent = "";
+  }
+
+  pollChats() {
+    if (this.gameSession === null)
+      return;
+    this.chatSubscription?.unsubscribe();
+    this.chatSubscription =
+    this.apiService.getChat(this.gameSession.id, this.lastChatTime)
+    .subscribe(newChats => {
+      this.chats = this.chats.concat(newChats);
+      if (this.chats.length >= 1)
+        this.lastChatTime = this.chats[this.chats.length - 1].time + 1;
+      this.pollChats();
+    });
   }
 
   clickCard(event : Event) {
@@ -90,6 +117,9 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     this.apiService.getGameSession(this.gameSessionId).subscribe(gameSession => {
       let updateGame = this.gameSession?.currentGameId !== gameSession.currentGameId;
       this.gameSession = gameSession;
+      this.chats = [];
+      this.lastChatTime = this.gameSession.createTime;
+      this.pollChats();
       if (updateGame) {
         this.actions = [];
         this.nextActionOrdinal = 0;
@@ -119,7 +149,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
       this.actions = this.actions.concat(newActions);
       if (this.actions.length >= 1)
         this.nextActionOrdinal = this.actions[this.actions.length - 1].ordinal + 1;
-      this.updateGameSession(); //TODO
+      //this.updateGameSession(); //TODO
       this.updateGameState();
       this.pollActions();
     });

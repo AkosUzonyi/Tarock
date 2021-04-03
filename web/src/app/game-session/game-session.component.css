@@ -20,6 +20,30 @@
   overflow: auto;
 }
 
+#chat {
+  width: 200px;
+  margin: 15px;
+  background-color: rgba(200, 100, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+}
+
+#chat-messages {
+  overflow: auto;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+#chat-messages > *:first-child {
+  margin-top: auto;
+}
+
+#chat-messages p {
+  word-wrap: break-word;
+}
+
 #card-table {
   flex-grow: 1;
   position: relative;

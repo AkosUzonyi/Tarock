@@ -60,7 +60,7 @@ export class ApiService {
 
   postChat(gameSessionId: number, message: string): Observable<{}> {
     let body = {'message': message};
-    return this.http.post(`${this.baseUrl}/games/${gameSessionId}/chat`, body);
+    return this.http.post(`${this.baseUrl}/gameSessions/${gameSessionId}/chat`, body);
   }
 
   getActions(gameId: number, from?: number): Observable<Action[]> {

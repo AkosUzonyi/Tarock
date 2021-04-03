@@ -5,6 +5,12 @@
     <div id="action-list">
       <p *ngFor="let action of actions">{{action.action}}</p>
     </div>
+    <div id="chat">
+      <div id="chat-messages">
+        <p *ngFor="let chat of chats">{{chat.message}}</p>
+      </div>
+      <input placeholder="chat" [(ngModel)]="chatInputContent" (keyup.enter)="sendChat()"/>
+    </div>
     <div id="card-table">
       <img *ngFor="let card of cardTable" src="/assets/images/cards/{{card}}.png"/>
     </div>

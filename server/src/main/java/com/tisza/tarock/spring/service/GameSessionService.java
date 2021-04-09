@@ -2,13 +2,12 @@ package com.tisza.tarock.spring.service;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.doubleround.*;
-import com.tisza.tarock.spring.*;
+import com.tisza.tarock.spring.exception.*;
 import com.tisza.tarock.spring.model.*;
 import com.tisza.tarock.spring.repository.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 import org.springframework.transaction.annotation.*;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.*;

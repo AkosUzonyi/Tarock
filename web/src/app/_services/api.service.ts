@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Action, Chat, DoubleRoundType, Game, GameSession, GameState, GameType } from './game-objects';
+import { Action, Chat, DoubleRoundType, Game, GameSession, GameState, GameType } from '../_models/game-objects';
 import { map } from 'rxjs/operators';
 
 @Injectable({

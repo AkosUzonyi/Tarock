@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ApiService } from '../api.service';
-import { Action, Chat, GameSession, GameState } from '../game-objects';
+import { ApiService } from '../_services/api.service';
+import { Action, Chat, GameSession, GameState } from '../_models/game-objects';
 
 @Component({
   selector: 'app-game-session',

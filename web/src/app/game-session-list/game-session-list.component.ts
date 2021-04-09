@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ApiService } from '../api.service';
+import { ApiService } from '../_services/api.service';
 import { CreateGameSessionDialogComponent } from '../create-game-session-dialog/create-game-session-dialog.component';
-import { GameSession } from '../game-objects';
+import { GameSession } from '../_models/game-objects';
 
 @Component({
   selector: 'app-game-session-list',

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { ApiService } from '../api.service';
-import { DoubleRoundType, GameType } from '../game-objects';
+import { ApiService } from '../_services/api.service';
+import { DoubleRoundType, GameType } from '../_models/game-objects';
 
 @Component({
   selector: 'app-create-game-session-dialog',

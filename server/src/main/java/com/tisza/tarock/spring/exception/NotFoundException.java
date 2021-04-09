@@ -1,4 +1,4 @@
-package com.tisza.tarock.spring;
+package com.tisza.tarock.spring.exception;
 
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;

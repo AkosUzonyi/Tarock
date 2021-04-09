@@ -41,3 +41,18 @@ button {
   border: 2px solid;
   border-radius: 5px;
 }
+
+.space {
+  flex-grow: 1;
+}
+
+.clickable-span {
+  padding: 5px;
+}
+
+.clickable-span:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  padding: 5px;
+  cursor: pointer;
+}

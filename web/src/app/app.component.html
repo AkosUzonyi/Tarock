@@ -5,7 +5,14 @@
       alt="Tarokk Logo"
       src="assets/images/icon.png"
     />
-    <span>Tarokk</span>
+    <span class="heavy-font">Tarokk</span>
+    <div class="space"></div>
+    <span *ngIf="!(user$ | async)" class="clickable-span" (click)="login()">Bejelentkezés</span>
+    <ng-container *ngIf="(user$ | async) as user">
+      <span>{{user.name}}</span>
+      <img width="40" src={{user.imgUrl}}/>
+      <span class="clickable-span" (click)="logout()">Kijelentkezés</span>
+    </ng-container>
   </div>
   <div class="content">
     <router-outlet></router-outlet>

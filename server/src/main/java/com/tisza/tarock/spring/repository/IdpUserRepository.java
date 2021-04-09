@@ -5,5 +5,5 @@ import org.springframework.data.repository.*;
 
 public interface IdpUserRepository extends CrudRepository<IdpUserDB, Integer>
 {
-
+	IdpUserDB findByIdpServiceIdAndIdpUserId(String idpServiceId, String idpUserId);
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Action, Chat, DoubleRoundType, Game, GameSession, GameState, GameType } from '../_models/game-objects';
+import { Action, Chat, DoubleRoundType, Game, GameSession, GameState, GameType, User, LoginResult } from '../_models/game-objects';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -12,6 +12,11 @@ export class ApiService {
   private baseUrl = '/api';
 
   constructor(private http: HttpClient) { }
+
+  login(provider: string, token: string): Observable<LoginResult> {
+    let body = { 'provider': provider, 'token': token };
+    return this.http.post<LoginResult>(`${this.baseUrl}/auth/login`, body);
+  }
 
   getGameSessions(): Observable<GameSession[]> {
     return this.http.get<GameSession[]>(`${this.baseUrl}/gameSessions`);

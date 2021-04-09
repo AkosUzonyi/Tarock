@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../_services/api.service';
-import { Action, Chat, GameSession, GameState } from '../_models/game-objects';
+import { Action, Chat, Game, GameSession, GameState } from '../_models/game-objects';
+import { AuthService } from '../_services/auth.service';
 
 @Component({
   selector: 'app-game-session',
@@ -13,11 +14,11 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   gameSessionId: number;
   gameSession: GameSession | null = null;
 
-  userId = 4;
   seat: number | null = null;
 
   actions: Action[] = [];
   nextActionOrdinal = 0;
+  game: Game | null = null;
   gameState: GameState | null = null;
 
   cardsToFold: string[] = [];
@@ -25,22 +26,29 @@ export class GameSessionComponent implements OnInit, OnDestroy {
 
   actionSubscription: Subscription | null = null;
   chatSubscription: Subscription | null = null;
+  userSubscription: Subscription | null = null;
 
   chats: Chat[] = [];
   lastChatTime: number = 0;
   chatInputContent: string = "";
 
-  constructor(private apiService: ApiService, route: ActivatedRoute) {
+  constructor(
+    private apiService: ApiService,
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) {
     this.gameSessionId = Number(route.snapshot.paramMap.get('id'));
   }
 
   ngOnInit() {
     this.updateGameSession();
+    this.userSubscription = this.authService.getUserObservable().subscribe(user => this.calculateSeat());
   }
 
   ngOnDestroy() {
     this.actionSubscription?.unsubscribe();
     this.chatSubscription?.unsubscribe();
+    this.userSubscription?.unsubscribe();
   }
 
   start() {
@@ -66,7 +74,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     this.chatInputContent = "";
   }
 
-  pollChats() {
+  private pollChats() {
     if (this.gameSession === null)
       return;
     this.chatSubscription?.unsubscribe();
@@ -120,24 +128,32 @@ export class GameSessionComponent implements OnInit, OnDestroy {
       this.chats = [];
       this.lastChatTime = this.gameSession.createTime;
       this.pollChats();
-      if (updateGame) {
-        this.actions = [];
-        this.nextActionOrdinal = 0;
-        this.updateSeat();
-        this.updateGameState();
-        this.pollActions();
-      }
+      if (updateGame)
+        this.updateGame();
     });
   }
 
-  private updateSeat() {
+  private updateGame() {
     this.apiService.getGame(this.getCurrentGameId()).subscribe(game => {
-      this.seat = null;
-      game.players.forEach((player, i) => {
-        if (player.user.id == this.userId)
-          this.seat = i;
-        console.log(this.seat);
-      });
+      this.game = game;
+      this.actions = [];
+      this.nextActionOrdinal = 0;
+      this.calculateSeat();
+      this.updateGameState();
+      this.pollActions();
+    });
+  }
+
+  private calculateSeat() {
+    this.seat = null;
+
+    const user = this.authService.getUser();
+    if (this.game === null || user === null)
+      return;
+
+    this.game.players.forEach((player, i) => {
+      if (player.user.id === user.id)
+        this.seat = i;
     });
   }
 

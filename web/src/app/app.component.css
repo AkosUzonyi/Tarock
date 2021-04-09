@@ -10,8 +10,11 @@
   align-items: center;
   background-color: #083;
   color: #DDD;
-  font-weight: 450;
   font-size: 24px;
+}
+
+.heavy-font {
+  font-weight: 450;
 }
 
 .toolbar img {

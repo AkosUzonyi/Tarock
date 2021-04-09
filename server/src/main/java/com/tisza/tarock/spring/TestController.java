@@ -6,11 +6,15 @@ import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.spring.dto.*;
+import com.tisza.tarock.spring.exception.*;
 import com.tisza.tarock.spring.model.*;
 import com.tisza.tarock.spring.repository.*;
 import com.tisza.tarock.spring.service.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
+import org.springframework.security.authentication.*;
+import org.springframework.security.core.*;
+import org.springframework.security.core.context.*;
 import org.springframework.transaction.annotation.*;
 import org.springframework.validation.annotation.*;
 import org.springframework.web.bind.annotation.*;
@@ -43,10 +47,46 @@ public class TestController
 	private GameService gameService;
 	@Autowired
 	private GameSessionService gameSessionService;
+	@Autowired
+	private AuthService authService;
 
 	private int getLoggedInUserId()
 	{
-		return 4;
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || authentication instanceof AnonymousAuthenticationToken)
+			return -1;
+
+		return (Integer) authentication.getPrincipal();
+	}
+
+	private int requireLoggedInUserId()
+	{
+		int userId = getLoggedInUserId();
+		if (userId < 0)
+			throw new UnauthenticatedException();
+
+		return userId;
+	}
+
+	@PostMapping("/auth/login")
+	public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequestDTO)
+	{
+		LoginResponseDTO response;
+
+		try
+		{
+			response = authService.auth(loginRequestDTO.provider, loginRequestDTO.token);
+		}
+		catch (IllegalArgumentException e)
+		{
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		catch (Exception e)
+		{
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
 	@GetMapping("/users/{userId}")
@@ -87,7 +127,7 @@ public class TestController
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
-		int gameSessionId = gameSessionService.createGameSession(type, doubleRoundType, getLoggedInUserId());
+		int gameSessionId = gameSessionService.createGameSession(type, doubleRoundType, requireLoggedInUserId());
 
 		URI uri = uriComponentsBuilder.path("/gameSessions/{gameSessionId}").buildAndExpand(gameSessionId).toUri();
 		return ResponseEntity.created(uri).build();
@@ -101,7 +141,7 @@ public class TestController
 		if (gameSessionDB == null || gameSessionDB.state.equals("deleted"))
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
-		if (gameSessionService.getPlayerFromUser(gameSessionDB, getLoggedInUserId()) == null)
+		if (gameSessionService.getPlayerFromUser(gameSessionDB, requireLoggedInUserId()) == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		gameSessionService.deleteGameSession(gameSessionId);
@@ -116,7 +156,7 @@ public class TestController
 		if (!gameSessionDB.state.equals("lobby"))
 			return new ResponseEntity<>(HttpStatus.CONFLICT);
 
-		gameSessionService.joinGameSession(gameSessionId, getLoggedInUserId());
+		gameSessionService.joinGameSession(gameSessionId, requireLoggedInUserId());
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
@@ -128,7 +168,7 @@ public class TestController
 		if (!gameSessionDB.state.equals("lobby"))
 			return new ResponseEntity<>(HttpStatus.CONFLICT);
 
-		gameSessionService.leaveGameSession(gameSessionId, getLoggedInUserId());
+		gameSessionService.leaveGameSession(gameSessionId, requireLoggedInUserId());
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
@@ -141,7 +181,7 @@ public class TestController
 		if (!gameSessionDB.state.equals("lobby"))
 			return new ResponseEntity<>(HttpStatus.CONFLICT);
 
-		if (gameSessionService.getPlayerFromUser(gameSessionDB, getLoggedInUserId()) == null)
+		if (gameSessionService.getPlayerFromUser(gameSessionDB, requireLoggedInUserId()) == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
 		gameSessionService.startGameSession(gameSessionId);
@@ -189,7 +229,7 @@ public class TestController
 
 		GameDB gameDB = gameService.findGame(gameId);
 
-		PlayerDB player = gameSessionService.getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
+		PlayerDB player = gameSessionService.getPlayerFromUser(gameDB.gameSession, requireLoggedInUserId());
 		if (player == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
@@ -216,8 +256,18 @@ public class TestController
 	{
 		GameDB gameDB = gameService.findGame(gameId);
 		Game game = gameService.loadGame(gameId);
-		PlayerDB playerDB = gameSessionService.getPlayerFromUser(gameDB.gameSession, getLoggedInUserId());
-		PlayerSeat me = gameService.getSeatFromPlayer(gameDB, playerDB);
+
+		PlayerSeat me;
+		int userId = getLoggedInUserId();
+		if (userId < 0)
+		{
+			me = null;
+		}
+		else
+		{
+			PlayerDB playerDB = gameSessionService.getPlayerFromUser(gameDB.gameSession, userId);
+			me = gameService.getSeatFromPlayer(gameDB, playerDB);
+		}
 
 		GameStateDTO gameStateDTO = new GameStateDTO();
 		gameStateDTO.phase = game.getCurrentPhaseEnum().getID();
@@ -329,7 +379,7 @@ public class TestController
 		chatDB.gameSessionId = gameSessionId;
 		chatDB.message = chatPostDTO.message;
 		chatDB.time = System.currentTimeMillis();
-		chatDB.userId = getLoggedInUserId();
+		chatDB.userId = requireLoggedInUserId();
 
 		chatDB = chatRepository.save(chatDB);
 		chatDeferredResultService.notifyNewResult(gameSessionId, chatDB);

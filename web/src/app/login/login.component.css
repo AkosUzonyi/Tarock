@@ -1,0 +1,33 @@
+#login-frame-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+#login-frame {
+  max-width: 500px;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+  margin: auto;
+}
+
+#login-frame button {
+  border: none;
+  border-radius: 2px;
+  height: 50px;
+  width: 100%;
+  margin: 10px 0;
+}
+
+.button-facebook {
+  background-color: #33B;
+  color: #EEE
+}
+
+.button-google {
+  background-color: #EEE;
+}

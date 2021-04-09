@@ -12,6 +12,11 @@ export interface User {
   isBot: boolean,
 }
 
+export interface LoginResult {
+  token: string;
+  user: User;
+}
+
 export interface Player {
   user: User,
   points: number,

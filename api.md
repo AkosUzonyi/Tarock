@@ -141,15 +141,22 @@ Logs in the user using an access token from facebook or google.
 Request body:
 ```
 {
-        "type": "facebook"|"google",
+        "provider": "facebook"|"google",
         "token": String
 }
 ```
 
 Response:
-- 303: Login successful, redirecting to the logged in user's URL
-- 400: Type is not valid
+- 200: Login successful
+- 400: Provider is not valid
 - 401: The login failed due to invalid or expired access token
+
+```
+{
+        "token": String,
+        "user": User
+}
+```
 
 ### GET /users/{userID}
 
@@ -168,14 +175,6 @@ Response:
         "isBot": Bool
 }
 ```
-
-### GET /users/me
-
-Redirects to the logged in user profile.
-
-Response:
-- 303: Redirect to the user profile
-- 401: Authentication is required (using /auth/login)
 
 ### POST /keepAlive
 

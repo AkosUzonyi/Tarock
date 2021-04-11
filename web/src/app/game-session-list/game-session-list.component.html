@@ -1,5 +1,5 @@
 <p>game-session-list works!</p>
-<button (click)="createGame()">Új játék</button>
+<button (click)="createGame()">{{'new_game' | translate}}</button>
 <div id=game-session-list>
   <div *ngFor="let gameSession of gameSessions" class="game-session">
     <p class="game-session-type">{{gameSession.type}}</p>
@@ -10,8 +10,8 @@
       </div>
     </div>
     <div class="game-session-button-container">
-      <a routerLink="/gameSessions/{{gameSession.id}}"><button class="button-normal">Belépés</button></a>
-      <div><button class="button-normal button-red" (click)="deleteGameSession(gameSession.id)">Törlés</button></div>
+      <a routerLink="/gameSessions/{{gameSession.id}}"><button class="button-normal">{{'join_game' | translate}}</button></a>
+      <div><button class="button-normal button-red" (click)="deleteGameSession(gameSession.id)">{{'delete_game' | translate}}</button></div>
     </div>
   </div>
 </div>

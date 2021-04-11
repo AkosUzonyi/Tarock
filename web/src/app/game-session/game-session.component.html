@@ -1,4 +1,4 @@
-<button *ngIf="gameSession?.state === 'lobby'" (click)="start()">Start</button>
+<button *ngIf="gameSession?.state === 'lobby'" (click)="start()">{{'lobby_start' | translate}}</button>
 <div *ngIf="gameState" id=game-session>
   <button (click)="pressOK()">OK</button>
   <div id=upper-half>

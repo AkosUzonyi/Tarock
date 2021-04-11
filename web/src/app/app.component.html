@@ -7,11 +7,11 @@
     />
     <span class="heavy-font">Tarokk</span>
     <div class="space"></div>
-    <span *ngIf="!(user$ | async)" class="clickable-span" (click)="login()">Bejelentkezés</span>
+    <span *ngIf="!(user$ | async)" class="clickable-span" (click)="login()">{{'login' | translate}}</span>
     <ng-container *ngIf="(user$ | async) as user">
       <span>{{user.name}}</span>
       <img width="40" src={{user.imgUrl}}/>
-      <span class="clickable-span" (click)="logout()">Kijelentkezés</span>
+      <span class="clickable-span" (click)="logout()">{{'logout' | translate}}</span>
     </ng-container>
   </div>
   <div class="content">

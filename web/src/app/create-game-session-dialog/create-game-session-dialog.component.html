@@ -1,25 +1,25 @@
-<h2 mat-dialog-title>Új játék létrehozása</h2>
+<h2 mat-dialog-title>{{'new_game' | translate}}</h2>
 
 <mat-dialog-content>
   <mat-form-field>
     <mat-select placeholder="Játék típus" [(ngModel)]="gameType">
-      <mat-option value="paskievics">Paskievics</mat-option>
-      <mat-option value="illusztralt">Illusztrált</mat-option>
-      <mat-option value="magas">Magas</mat-option>
-      <mat-option value="zebi">Zebi</mat-option>
+      <mat-option value="paskievics">{{'game_types.paskievics' | translate}}</mat-option>
+      <mat-option value="illusztralt">{{'game_types.illusztralt' | translate}}</mat-option>
+      <mat-option value="magas">{{'game_types.magas' | translate}}</mat-option>
+      <mat-option value="zebi">{{'game_types.zebi' | translate}}</mat-option>
     </mat-select>
   </mat-form-field>
   <mat-form-field>
     <mat-select placeholder="Duplakör" [(ngModel)]="doubleRoundType">
-      <mat-option value="none">Nincs</mat-option>
-      <mat-option value="peculating">Sikkasztó</mat-option>
-      <mat-option value="stacking">Halmozódó</mat-option>
-      <mat-option value="multiplying">Szorzódó</mat-option>
+      <mat-option value="none">{{'double_round_types.none' | translate}}</mat-option>
+      <mat-option value="peculating">{{'double_round_types.peculating' | translate}}</mat-option>
+      <mat-option value="stacking">{{'double_round_types.stacking' | translate}}</mat-option>
+      <mat-option value="multiplying">{{'double_round_types.multiplying' | translate}}</mat-option>
     </mat-select>
   </mat-form-field>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button class="mat-raised-button" mat-dialog-close>Mégse</button>
-  <button class="mat-raised-button" (click)="create()">Létrehoz</button>
+  <button class="mat-raised-button" mat-dialog-close>{{'cancel' | translate}}</button>
+  <button class="mat-raised-button" (click)="create()">{{'create_game' | translate}}</button>
 </mat-dialog-actions>

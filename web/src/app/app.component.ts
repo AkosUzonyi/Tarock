@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
   title = 'tarock-web';
 
   user$: Observable<User | null>;
+  language: string;
 
   constructor(
     private authService: AuthService,
@@ -23,10 +24,17 @@ export class AppComponent implements OnInit {
     this.user$ = authService.getUserObservable();
     this.translate.addLangs(['hu', 'en']);
     this.translate.setDefaultLang('hu');
+    this.language = localStorage.getItem('language') || 'hu';
+    this.updateLanguage();
   }
 
   ngOnInit() {
     this.authService.init();
+  }
+
+  updateLanguage() {
+    this.translate.use(this.language);
+    localStorage.setItem('language', this.language);
   }
 
   login() {

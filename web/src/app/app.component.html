@@ -13,6 +13,10 @@
       <img width="40" src={{user.imgUrl}}/>
       <span class="clickable-span" (click)="logout()">{{'logout' | translate}}</span>
     </ng-container>
+    <mat-select [(ngModel)]="language" (ngModelChange)="updateLanguage()">
+      <mat-option value="hu">HU</mat-option>
+      <mat-option value="en">EN</mat-option>
+    </mat-select>
   </div>
   <div class="content">
     <router-outlet></router-outlet>

@@ -13,12 +13,17 @@
   font-size: 24px;
 }
 
-.heavy-font {
-  font-weight: 450;
+.toolbar > * {
+  margin: 0 10px;
 }
 
-.toolbar img {
-  margin: 0 16px;
+.toolbar mat-select {
+  max-width: 50px;
+  font-size: 18px;
+}
+
+.heavy-font {
+  font-weight: 450;
 }
 
 .content {

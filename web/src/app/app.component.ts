@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { User } from './_models/game-objects';
 import { AuthService } from './_services/auth.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -17,8 +18,11 @@ export class AppComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
+    private translate: TranslateService,
   ) {
     this.user$ = authService.getUserObservable();
+    this.translate.addLangs(['hu', 'en']);
+    this.translate.setDefaultLang('hu');
   }
 
   ngOnInit() {

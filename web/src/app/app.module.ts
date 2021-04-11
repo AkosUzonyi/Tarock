@@ -7,16 +7,22 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SocialLoginModule, SocialAuthServiceConfig, FacebookLoginProvider, GoogleLoginProvider } from 'angularx-social-login';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GameSessionListComponent } from './game-session-list/game-session-list.component';
-import { HttpClientModule } from '@angular/common/http';
 import { GameSessionComponent } from './game-session/game-session.component';
 import { httpInterceptorProviders } from './http-interceptors';
 import { CreateGameSessionDialogComponent } from './create-game-session-dialog/create-game-session-dialog.component';
 import { environment } from '../environments/environment';
 import { LoginComponent } from './login/login.component';
+
+export function httpTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 
 @NgModule({
   declarations: [
@@ -38,6 +44,13 @@ import { LoginComponent } from './login/login.component';
     ReactiveFormsModule,
     MatButtonModule,
     SocialLoginModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: httpTranslateLoader,
+        deps: [HttpClient]
+      }
+    }),
   ],
   providers: [
     {

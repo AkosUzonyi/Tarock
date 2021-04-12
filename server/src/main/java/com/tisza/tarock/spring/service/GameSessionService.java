@@ -103,13 +103,13 @@ public class GameSessionService
 			return;
 
 		List<UserDB> users = gameSessionDB.players.stream().map(p -> p.user).collect(Collectors.toList());
-		users.remove(userId);
+		users.removeIf(user -> user.id == userId);
 
 		for (int i = 0; i < users.size(); i++)
 			gameSessionDB.players.get(i).user = users.get(i);
 
 		while (gameSessionDB.players.size() > users.size())
-			playerRepository.delete(gameSessionDB.players.remove(users.size()));
+			gameSessionDB.players.remove(users.size());
 
 		if (gameSessionDB.players.isEmpty())
 			gameSessionDB.state = "deleted";

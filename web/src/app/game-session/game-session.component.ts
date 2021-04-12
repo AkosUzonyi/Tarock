@@ -46,6 +46,8 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.gameSession?.state === 'lobby')
+      this.apiService.leaveGameSession(this.gameSessionId).subscribe();
     this.actionSubscription?.unsubscribe();
     this.chatSubscription?.unsubscribe();
     this.userSubscription?.unsubscribe();
@@ -125,6 +127,8 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     this.apiService.getGameSession(this.gameSessionId).subscribe(gameSession => {
       let updateGame = this.gameSession?.currentGameId !== gameSession.currentGameId;
       this.gameSession = gameSession;
+      if (this.gameSession?.state === 'lobby')
+        this.apiService.joinGameSession(this.gameSessionId).subscribe();
       this.chats = [];
       this.lastChatTime = this.gameSession.createTime;
       this.pollChats();

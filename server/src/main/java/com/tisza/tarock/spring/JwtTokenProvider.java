@@ -13,7 +13,7 @@ public class JwtTokenProvider
 	//@Value("${security.jwt.token.secret-key:secret}")
 	private String secretKey = "secret"; //TODO: key
 	//@Value("${security.jwt.token.expire-length:3600000}")
-	private long validityInMilliseconds = 10000; // TODO: time
+	private long validityInMilliseconds = 3600 * 1000; // TODO: time
 
 	@PostConstruct
 	protected void init()

@@ -10,7 +10,7 @@ import java.util.concurrent.*;
 @Service
 public class ListDeferredResultService<T>
 {
-	private final long TIMEOUT = 10000;
+	private final long TIMEOUT = 30 * 1000;
 	private final Map<Integer, Collection<DeferredResult<List<T>>>> deferredResultsById = new ConcurrentHashMap<>();
 
 	private Collection<DeferredResult<List<T>>> getDeferredResultList(int id)

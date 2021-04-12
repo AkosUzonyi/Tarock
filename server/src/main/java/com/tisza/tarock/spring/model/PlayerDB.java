@@ -11,7 +11,9 @@ public class PlayerDB
 {
 	@Id
 	@JsonIgnore
-	public int gameSessionId;
+	@ManyToOne
+	@JoinColumn(name = "game_session_id")
+	public GameSessionDB gameSession;
 
 	@Id
 	@JsonIgnore

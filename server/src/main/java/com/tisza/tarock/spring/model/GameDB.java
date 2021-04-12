@@ -18,13 +18,11 @@ public class GameDB
 
 	public long createTime;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name="gameId")
+	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("ordinal")
 	public List<DeckCardDB> deckCards;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JoinColumn(name="gameId")
+	@OneToMany(mappedBy = "game", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("ordinal")
 	public List<ActionDB> actions;
 }

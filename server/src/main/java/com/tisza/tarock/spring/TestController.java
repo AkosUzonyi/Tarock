@@ -373,10 +373,10 @@ public class TestController
 		if (chatPostDTO.message.length() >= 256)
 			return new ResponseEntity<>(HttpStatus.PAYLOAD_TOO_LARGE);
 
-		gameSessionService.findGameSession(gameSessionId);
+		GameSessionDB gameSession = gameSessionService.findGameSession(gameSessionId);
 
 		ChatDB chatDB = new ChatDB();
-		chatDB.gameSessionId = gameSessionId;
+		chatDB.gameSession = gameSession;
 		chatDB.message = chatPostDTO.message;
 		chatDB.time = System.currentTimeMillis();
 		chatDB.userId = requireLoggedInUserId();

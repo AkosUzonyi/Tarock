@@ -1,7 +1,5 @@
 package com.tisza.tarock.spring.model;
 
-import com.fasterxml.jackson.annotation.*;
-
 import javax.persistence.*;
 
 @Entity
@@ -10,7 +8,9 @@ import javax.persistence.*;
 public class DeckCardDB
 {
 	@Id
-	public int gameId;
+	@ManyToOne
+	@JoinColumn(name = "game_id")
+	public GameDB game;
 
 	@Id
 	public int ordinal;

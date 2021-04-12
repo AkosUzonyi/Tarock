@@ -26,8 +26,7 @@ public class GameSessionDB
 	@JsonIgnore
 	public int doubleRoundData;
 
-	@OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinColumn(name="gameSessionId")
+	@OneToMany(mappedBy = "gameSession", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("ordinal")
 	public List<PlayerDB> players;
 

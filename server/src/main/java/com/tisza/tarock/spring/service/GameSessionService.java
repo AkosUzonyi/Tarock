@@ -53,7 +53,7 @@ public class GameSessionService
 		gameSessionDB = gameSessionRepository.save(gameSessionDB);
 
 		PlayerDB creatorPlayer = new PlayerDB();
-		creatorPlayer.gameSessionId = gameSessionDB.id;
+		creatorPlayer.gameSession = gameSessionDB;
 		creatorPlayer.ordinal = 0;
 		creatorPlayer.user = userRepository.findById(creatorUserId).orElseThrow();
 		creatorPlayer.points = 0;
@@ -87,7 +87,7 @@ public class GameSessionService
 			return;
 
 		PlayerDB player = new PlayerDB();
-		player.gameSessionId = gameSessionId;
+		player.gameSession = gameSessionDB;
 		player.ordinal = gameSessionDB.players.size();
 		player.points = 0;
 		player.user = userRepository.findById(userId).orElseThrow();
@@ -124,7 +124,7 @@ public class GameSessionService
 		while (playerCount < 4)
 		{
 			PlayerDB bot = new PlayerDB();
-			bot.gameSessionId = gameSessionId;
+			bot.gameSession = gameSessionDB;
 			bot.ordinal = playerCount++;
 			bot.user = userRepository.findById(4 - playerCount + 1).orElseThrow();
 			bot.points = 0;

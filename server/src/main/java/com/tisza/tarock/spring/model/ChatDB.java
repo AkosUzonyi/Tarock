@@ -14,7 +14,9 @@ public class ChatDB
 	public int id;
 
 	@JsonIgnore
-	public int gameSessionId;
+	@ManyToOne
+	@JoinColumn(name = "game_session_id")
+	public GameSessionDB gameSession;
 
 	public int userId;
 

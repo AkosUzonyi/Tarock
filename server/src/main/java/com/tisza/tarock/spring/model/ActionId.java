@@ -4,7 +4,7 @@ import java.io.*;
 
 public class ActionId implements Serializable
 {
-	public int gameId;
+	public GameDB game;
 	public int ordinal;
 
 	@Override
@@ -17,7 +17,7 @@ public class ActionId implements Serializable
 
 		ActionId that = (ActionId)o;
 
-		if (gameId != that.gameId)
+		if (game.id != that.game.id)
 			return false;
 		return ordinal == that.ordinal;
 	}
@@ -25,7 +25,7 @@ public class ActionId implements Serializable
 	@Override
 	public int hashCode()
 	{
-		int result = gameId;
+		int result = game.id;
 		result = 31 * result + ordinal;
 		return result;
 	}

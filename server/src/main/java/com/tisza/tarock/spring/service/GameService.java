@@ -84,7 +84,7 @@ public class GameService
 		{
 			DeckCardDB deckCardDB = new DeckCardDB();
 			deckCardDB.card = card.getID();
-			deckCardDB.gameId = gameDB.id;
+			deckCardDB.game = gameDB;
 			deckCardDB.ordinal = deckDB.size();
 			deckDB.add(deckCardDB);
 		}
@@ -110,7 +110,7 @@ public class GameService
 			return false;
 
 		ActionDB actionDB = new ActionDB();
-		actionDB.gameId = gameDB.id;
+		actionDB.game = gameDB;
 		actionDB.ordinal = gameDB.actions.size();
 		actionDB.seat = seat.asInt();
 		actionDB.action = action.getId();

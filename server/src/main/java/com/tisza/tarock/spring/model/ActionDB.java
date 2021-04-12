@@ -11,7 +11,9 @@ public class ActionDB
 {
 	@Id
 	@JsonIgnore
-	public int gameId;
+	@ManyToOne
+	@JoinColumn(name = "game_id")
+	public GameDB game;
 
 	@Id
 	public int ordinal;

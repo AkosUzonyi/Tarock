@@ -4,7 +4,7 @@ import java.io.*;
 
 public class PlayerId implements Serializable
 {
-	public int gameSessionId;
+	public GameSessionDB gameSession;
 	public int ordinal;
 
 	@Override
@@ -17,7 +17,7 @@ public class PlayerId implements Serializable
 
 		PlayerId that = (PlayerId)o;
 
-		if (gameSessionId != that.gameSessionId)
+		if (gameSession.id != that.gameSession.id)
 			return false;
 		return ordinal == that.ordinal;
 	}
@@ -25,7 +25,7 @@ public class PlayerId implements Serializable
 	@Override
 	public int hashCode()
 	{
-		int result = gameSessionId;
+		int result = gameSession.id;
 		result = 31 * result + ordinal;
 		return result;
 	}

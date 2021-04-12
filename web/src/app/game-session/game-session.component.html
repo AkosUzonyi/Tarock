@@ -12,13 +12,25 @@
       <input placeholder="chat" [(ngModel)]="chatInputContent" (keyup.enter)="sendChat()"/>
     </div>
     <div id="card-table">
-      <img *ngFor="let card of cardTable" src="/assets/images/cards/{{card}}.png"/>
+      <ng-template ngFor let-player [ngForOf]="gameState.playerInfos">
+        <img [hidden]="!player.currentTrickCard" src="/assets/images/cards/{{player.currentTrickCard}}.png"/>
+        <p
+          class="player-name"
+          [ngClass]="{
+            'player-name-turn': player.turn,
+            'player-name-caller': player.team === 'caller',
+            'player-name-opponent': player.team === 'opponent'
+          }"
+          >
+          {{player.user.name}}
+        </p>
+      </ng-template>
     </div>
     <div *ngIf="seat !== null" id="action-button-list">
       <button *ngFor="let action of gameState.availableActions" (click)="executeAction(action)">{{action}}</button>
     </div>
   </div>
   <div *ngIf="seat !== null" id="card-list">
-    <img *ngFor="let card of gameState.cards[seat]" [attr.data-card]="card" src="/assets/images/cards/{{card}}.png" (click)="clickCard($event)"/>
+    <img *ngFor="let card of gameState.playerInfos[0].cards" [attr.data-card]="card" src="/assets/images/cards/{{card}}.png" (click)="clickCard($event)"/>
   </div>
 </div>

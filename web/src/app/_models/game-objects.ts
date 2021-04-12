@@ -53,18 +53,23 @@ export interface Chat {
   time: number;
 }
 
+export interface GameStatePlayerInfo {
+  user: User;
+  cards: [string];
+  turn: boolean;
+  team: "caller" | "opponent" | null;
+  tarockFoldCount: number;
+  currentTrickCard: string | null;
+  previousTrickCard: string | null;
+}
+
 export interface GameState {
-  cards: (string[] | null)[];
   phase: Phase;
-  turn: [boolean];
   canThrowCards: boolean;
-  teamInfo: [Team | null];
   availableActions: [string];
-  tarockFoldCount: [number];
   callerTarockFold: [string];
-  currentTrick: [string | null];
-  previousTrick: [string] | null;
   previousTrickWinner: number | null;
+  playerInfos: [GameStatePlayerInfo];
   statistics: {
     callerCardPoints: number;
     opponentCardPoints: number;

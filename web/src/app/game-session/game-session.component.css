@@ -50,7 +50,74 @@
 }
 
 #card-table img {
-  width: 80px;
+  position: absolute;
+  height: auto;
+  width: 8vw;
+  top: 50%;
+  left: 50%;
+}
+
+#card-table img:nth-of-type(1) {
+  transform: translate(-50%, -50%) rotate(0deg) translate(0%, 70%);
+}
+
+#card-table img:nth-of-type(2) {
+  transform: translate(-50%, -50%) rotate(-90deg) translate(0%, 70%);
+}
+
+#card-table img:nth-of-type(3) {
+  transform: translate(-50%, -50%) rotate(-180deg) translate(0%, 70%);
+}
+
+#card-table img:nth-of-type(4) {
+  transform: translate(-50%, -50%) rotate(-270deg) translate(0%, 70%);
+}
+
+.player-name {
+  padding: 10px;
+  position: absolute;
+  font-size: 32px;
+}
+
+.player-name-turn {
+  background-color: rgba(0, 200, 0, 0.6);
+  border-radius: 5px;
+}
+
+.player-name-caller {
+  color: #007;
+}
+
+.player-name-opponent {
+  color: #900;
+}
+
+.player-name:nth-of-type(2n+1) {
+  left: 50%;
+  transform: translate(-50%, 0%);
+}
+
+.player-name:nth-of-type(2n) {
+  top: 50%;
+  transform: translate(0%, -50%);
+}
+
+.player-name:nth-of-type(1) {
+  bottom: 0;
+}
+
+.player-name:nth-of-type(2) {
+  right: 0;
+  writing-mode: vertical-rl;
+}
+
+.player-name:nth-of-type(3) {
+  top: 0;
+}
+
+.player-name:nth-of-type(4) {
+  left: 0;
+  writing-mode: sideways-lr;
 }
 
 #action-button-list {
@@ -69,30 +136,6 @@
   justify-content: center;
   margin: 20px;
   /*max-height: 10%;*/
-}
-
-#card-table img {
-  position: absolute;
-  height: auto;
-  width: 8vw;
-  top: 50%;
-  left: 50%;
-}
-
-#card-table img:nth-child(1) {
-  transform: translate(-50%, -50%) rotate(0deg) translate(0%, 70%);
-}
-
-#card-table img:nth-child(2) {
-  transform: translate(-50%, -50%) rotate(-90deg) translate(0%, 70%);
-}
-
-#card-table img:nth-child(3) {
-  transform: translate(-50%, -50%) rotate(-180deg) translate(0%, 70%);
-}
-
-#card-table img:nth-child(4) {
-  transform: translate(-50%, -50%) rotate(-270deg) translate(0%, 70%);
 }
 
 #card-list img {

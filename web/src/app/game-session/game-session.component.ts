@@ -22,7 +22,6 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   gameState: GameState | null = null;
 
   cardsToFold: string[] = [];
-  cardTable: (string | null)[] = new Array(4);
 
   actionSubscription: Subscription | null = null;
   chatSubscription: Subscription | null = null;
@@ -41,6 +40,14 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.userSubscription = this.authService.getUserObservable().subscribe(user => {
+      if (this.game === null)
+        return;
+
+      this.calculateSeat();
+      this.updateGameState();
+    });
+
     this.updateGameSession();
     this.userSubscription = this.authService.getUserObservable().subscribe(user => this.calculateSeat());
   }
@@ -184,9 +191,8 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     this.apiService.getGameState(this.getCurrentGameId())
       .subscribe(s => {
         this.gameState = s;
-        this.cardTable = this.gameState.currentTrick;
         if (this.seat !== null)
-          this.rotateLeft(this.cardTable, this.seat);
+          this.rotateLeft(this.gameState.playerInfos, this.seat);
       });
   }
 }

@@ -314,42 +314,32 @@ public class TestController
 			currentTrick = game.getTrick(game.getTrickCount() - 1);
 		}
 
-		gameStateDTO.currentTrick = new ArrayList<>();
-		if (previousTrick == null)
-		{
-			gameStateDTO.previousTrick = null;
-			gameStateDTO.previousTrickWinner = null;
-		}
-		else
-		{
-			gameStateDTO.previousTrick = new ArrayList<>();
+		if (previousTrick != null)
 			gameStateDTO.previousTrickWinner = previousTrick.getWinner().asInt();
-		}
 
 		for (PlayerSeat p : PlayerSeat.getAll())
 		{
+			GameStateDTO.PlayerInfo playerInfo = new GameStateDTO.PlayerInfo();
+			gameStateDTO.playerInfos.add(playerInfo);
+
+			playerInfo.user = gameService.getPlayerFromSeat(gameDB, p).user;
+
 			if (p == me)
-				gameStateDTO.cards.add(game.getPlayerCards(p).getCards().stream().map(Card::getID).collect(Collectors.toList()));
-			else
-				gameStateDTO.cards.add(null);
+				playerInfo.cards = game.getPlayerCards(p).getCards().stream().map(Card::getID).collect(Collectors.toList());
 
-			gameStateDTO.turn.add(game.getTurn(p));
+			playerInfo.turn = game.getTurn(p);
 
-			String teamInfo = null;
 			if (game.isTeamInfoGlobalOf(p) || (me != null && game.hasTeamInfo(me, p)))
-				teamInfo = game.getPlayerPairs().getTeam(p) == Team.CALLER ? "caller" : "opponent";
-			gameStateDTO.teamInfo.add(teamInfo);
+				playerInfo.team = game.getPlayerPairs().getTeam(p) == Team.CALLER ? "caller" : "opponent";
 
-			gameStateDTO.currentTrick.add(currentTrick.getCardByPlayer(p) == null ? null : currentTrick.getCardByPlayer(p).getID());
+			playerInfo.currentTrickCard = currentTrick.getCardByPlayer(p) == null ? null : currentTrick.getCardByPlayer(p).getID();
 
 			if (previousTrick != null)
-				gameStateDTO.previousTrick.add(previousTrick.getCardByPlayer(p) == null ? null : previousTrick.getCardByPlayer(p).getID());
+				playerInfo.previousTrickCard = previousTrick.getCardByPlayer(p) == null ? null : previousTrick.getCardByPlayer(p).getID();
 
 			Collection<Card> skart = game.getSkart(p);
-			if (skart == null)
-				gameStateDTO.tarockFoldCount.add(0);
-			else
-				gameStateDTO.tarockFoldCount.add((int) skart.stream().filter(c -> c instanceof TarockCard).count());
+			if (skart != null)
+				playerInfo.tarockFoldCount = (int) skart.stream().filter(c -> c instanceof TarockCard).count();
 		}
 
 		return new ResponseEntity<>(gameStateDTO, HttpStatus.OK);

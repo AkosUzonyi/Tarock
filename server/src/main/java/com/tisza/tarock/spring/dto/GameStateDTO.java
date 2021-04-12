@@ -1,21 +1,29 @@
 package com.tisza.tarock.spring.dto;
 
+import com.tisza.tarock.spring.model.*;
+
 import java.util.*;
 
 public class GameStateDTO
 {
-	public List<List<String>> cards = new ArrayList<>();
 	public String phase;
-	public List<Boolean> turn = new ArrayList<>();
 	public boolean canThrowCards;
-	public List<String> teamInfo = new ArrayList<>();
 	public List<String> availableActions = new ArrayList<>();
 	public List<String> callerTarockFold = new ArrayList<>();
-	public List<Integer> tarockFoldCount = new ArrayList<>();
-	public List<String> currentTrick = new ArrayList<>();
-	public List<String> previousTrick = new ArrayList<>();
 	public Integer previousTrickWinner;
+	public List<PlayerInfo> playerInfos = new ArrayList<>();
 	public Statistics statistics = new Statistics();
+
+	public static class PlayerInfo
+	{
+		public UserDB user;
+		public List<String> cards;
+		public boolean turn;
+		public String team;
+		public int tarockFoldCount;
+		public String currentTrickCard;
+		public String previousTrickCard;
+	}
 
 	public static class Statistics
 	{

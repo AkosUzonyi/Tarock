@@ -44,6 +44,11 @@
   word-wrap: break-word;
 }
 
+.chat-username {
+  border-radius: 5px;
+  background-color: rgba(200, 200, 200, 0.3);
+}
+
 #card-table {
   flex-grow: 1;
   position: relative;

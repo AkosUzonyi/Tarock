@@ -283,7 +283,7 @@ Response:
 
 ```
 [{
-        "userID": Int
+        "user": User
         "message": String,
         "time": Long
 }]

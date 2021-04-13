@@ -369,7 +369,7 @@ public class TestController
 		chatDB.gameSession = gameSession;
 		chatDB.message = chatPostDTO.message;
 		chatDB.time = System.currentTimeMillis();
-		chatDB.userId = requireLoggedInUserId();
+		chatDB.user = userRepository.findById(requireLoggedInUserId()).orElseThrow();
 
 		chatDB = chatRepository.save(chatDB);
 		chatDeferredResultService.notifyNewResult(gameSessionId, chatDB);

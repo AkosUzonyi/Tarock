@@ -48,7 +48,7 @@ export interface Action {
 }
 
 export interface Chat {
-  userID: number;
+  user: User;
   message: string;
   time: number;
 }

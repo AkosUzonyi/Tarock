@@ -18,7 +18,9 @@ public class ChatDB
 	@JoinColumn(name = "game_session_id")
 	public GameSessionDB gameSession;
 
-	public int userId;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	public UserDB user;
 
 	public String message;
 

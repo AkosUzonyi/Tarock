@@ -66,7 +66,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   }
 
   private getCurrentGameId() {
-    let gameId = this.gameSession?.currentGameId ?? null;
+    const gameId = this.gameSession?.currentGameId ?? null;
     if (gameId === null)
       throw 'no game is in progress';
     return gameId;
@@ -98,12 +98,12 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   }
 
   clickCard(event : Event) {
-    let element = event.target as Element;
-    let card = element.getAttribute('data-card')!;
+    const element = event.target as Element;
+    const card = element.getAttribute('data-card')!;
     switch (this.gameState?.phase) {
       case 'folding':
         element.classList.toggle('card-selected');
-        let indexOfCard = this.cardsToFold.indexOf(card);
+        const indexOfCard = this.cardsToFold.indexOf(card);
         if (indexOfCard < 0)
           this.cardsToFold.push(card);
         else
@@ -132,7 +132,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
 
   private updateGameSession() {
     this.apiService.getGameSession(this.gameSessionId).subscribe(gameSession => {
-      let updateGame = this.gameSession?.currentGameId !== gameSession.currentGameId;
+      const updateGame = this.gameSession?.currentGameId !== gameSession.currentGameId;
       this.gameSession = gameSession;
       if (this.gameSession?.state === 'lobby')
         this.apiService.joinGameSession(this.gameSessionId).subscribe();

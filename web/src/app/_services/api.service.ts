@@ -14,7 +14,7 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   login(provider: string, token: string): Observable<LoginResult> {
-    let body = { 'provider': provider, 'token': token };
+    const body = { 'provider': provider, 'token': token };
     return this.http.post<LoginResult>(`${this.baseUrl}/auth/login`, body);
   }
 
@@ -27,10 +27,10 @@ export class ApiService {
   }
 
   createGameSession(type: GameType, doubleRoundType: DoubleRoundType): Observable<number> {
-    let body = {'type': type, 'doubleRoundType': doubleRoundType};
+    const body = {'type': type, 'doubleRoundType': doubleRoundType};
     return this.http.post<HttpResponse<any>>(`${this.baseUrl}/gameSessions`, body, { observe: 'response' }).pipe(
       map((response) => {
-        let arr = response.headers.get('Location')!.split('/');
+        const arr = response.headers.get('Location')!.split('/');
         return Number(arr[arr.length - 1]);
       })
     );
@@ -57,26 +57,26 @@ export class ApiService {
   }
 
   getChat(gameSessionId: number, from?: number): Observable<Chat[]> {
-    let params: any = {}
+    const params: any = {}
     if (from !== undefined)
       params.from = String(from);
     return this.http.get<Chat[]>(`${this.baseUrl}/gameSessions/${gameSessionId}/chat`, {params: params});
   }
 
   postChat(gameSessionId: number, message: string): Observable<{}> {
-    let body = {'message': message};
+    const body = {'message': message};
     return this.http.post(`${this.baseUrl}/gameSessions/${gameSessionId}/chat`, body);
   }
 
   getActions(gameId: number, from?: number): Observable<Action[]> {
-    let params: any = {}
+    const params: any = {}
     if (from !== undefined)
       params.from = String(from);
     return this.http.get<Action[]>(`${this.baseUrl}/games/${gameId}/actions`, {params: params});
   }
 
   postAction(gameId: number, action: string): Observable<{}> {
-    let body = {'action': action};
+    const body = {'action': action};
     return this.http.post(`${this.baseUrl}/games/${gameId}/actions`, body);
   }
 

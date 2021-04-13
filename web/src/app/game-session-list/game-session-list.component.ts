@@ -24,7 +24,7 @@ export class GameSessionListComponent implements OnInit {
   }
 
   createGame() {
-    let dialogRef = this.dialog.open(CreateGameSessionDialogComponent);
+    const dialogRef = this.dialog.open(CreateGameSessionDialogComponent);
     dialogRef.afterClosed().subscribe(() => this.updateList());
   }
 

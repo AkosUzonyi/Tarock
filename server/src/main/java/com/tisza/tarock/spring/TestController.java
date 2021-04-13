@@ -207,18 +207,17 @@ public class TestController
 	@GetMapping("/games/{gameId}/actions")
 	public Object getActions(@PathVariable int gameId, @RequestParam(defaultValue = "-1") int from)
 	{
-		GameDB game = gameService.findGame(gameId);
-
-		//TODO: hide fold actions
-		List<ActionDB> actions = game.actions;
 		if (from < 0)
-			return new ResponseEntity<>(actions, HttpStatus.OK);
+			return new ResponseEntity<>(gameService.findGame(gameId).actions, HttpStatus.OK);
 
-		if (from >= actions.size())
-			return actionDeferredResultService.getDeferredResult(gameId);
+		return actionDeferredResultService.getDeferredResult(gameId, () -> {
+			GameDB game = gameService.findGame(gameId);
 
-		List<ActionDB> sublist = actions.subList(from, actions.size());
-		return new ResponseEntity<>(sublist, HttpStatus.OK);
+			if (from >= game.actions.size())
+				return Collections.emptyList();
+
+			return game.actions.subList(from, game.actions.size());
+		});
 	}
 
 	@PostMapping("/games/{gameId}/actions")
@@ -348,13 +347,10 @@ public class TestController
 	@GetMapping("/gameSessions/{gameSessionId}/chat")
 	public Object chatGet(@PathVariable int gameSessionId, @RequestParam(defaultValue = "0") long from)
 	{
-		gameSessionService.findGameSession(gameSessionId);
-
-		List<ChatDB> chats = chatRepository.findTop100ByGameSessionIdAndTimeGreaterThanEqual(gameSessionId, from);
-		if (chats.isEmpty())
-			return chatDeferredResultService.getDeferredResult(gameSessionId);
-
-		return new ResponseEntity<>(chats, HttpStatus.OK);
+		return chatDeferredResultService.getDeferredResult(gameSessionId, () -> {
+			gameSessionService.findGameSession(gameSessionId);
+			return chatRepository.findTop100ByGameSessionIdAndTimeGreaterThanEqual(gameSessionId, from);
+		});
 	}
 
 	@PostMapping("/gameSessions/{gameSessionId}/chat")
@@ -372,7 +368,7 @@ public class TestController
 		chatDB.user = userRepository.findById(requireLoggedInUserId()).orElseThrow();
 
 		chatDB = chatRepository.save(chatDB);
-		chatDeferredResultService.notifyNewResult(gameSessionId, chatDB);
+		chatDeferredResultService.notifyNewResult(gameSessionId);
 
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}

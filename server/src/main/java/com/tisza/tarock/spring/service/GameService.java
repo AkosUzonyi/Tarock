@@ -116,7 +116,7 @@ public class GameService
 		actionDB.action = action.getId();
 		actionDB.time = System.currentTimeMillis();
 		gameDB.actions.add(actionDB);
-		actionDeferredResultService.notifyNewResult(gameDB.id, actionDB);
+		actionDeferredResultService.notifyNewResult(gameDB.id);
 
 		botService.executeBotActions(gameDB, game);
 

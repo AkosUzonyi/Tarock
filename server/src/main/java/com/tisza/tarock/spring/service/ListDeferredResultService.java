@@ -6,34 +6,63 @@ import org.springframework.web.context.request.async.*;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.*;
 
 @Service
 public class ListDeferredResultService<T>
 {
 	private final long TIMEOUT = 30 * 1000;
-	private final Map<Integer, Collection<DeferredResult<List<T>>>> deferredResultsById = new ConcurrentHashMap<>();
+	private final Map<Integer, Collection<Request<T>>> requestsById = new ConcurrentHashMap<>();
 
-	private Collection<DeferredResult<List<T>>> getDeferredResultList(int id)
+	private Collection<Request<T>> getRequestList(int id)
 	{
-		return deferredResultsById.computeIfAbsent(id, i -> Collections.synchronizedCollection(new ArrayList<>()));
+		return requestsById.computeIfAbsent(id, i -> Collections.synchronizedCollection(new ArrayList<>()));
 	}
 
-	public void notifyNewResult(int id, T result)
+	public void notifyNewResult(int id)
 	{
-		Collection<DeferredResult<List<T>>> deferredResults = getDeferredResultList(id);
-		synchronized (deferredResults)
+		Collection<Request<T>> requests = getRequestList(id);
+		synchronized (requests)
 		{
-			for (DeferredResult<List<T>> deferredResult : deferredResults)
-				deferredResult.setResult(Collections.singletonList(result));
-
-			deferredResults.clear();
+			Iterator<Request<T>> it = requests.iterator();
+			while (it.hasNext())
+			{
+				Request<T> request = it.next();
+				try
+				{
+					List<T> result = request.listSupplier.get();
+					if (!result.isEmpty())
+					{
+						request.deferredResult.setResult(result);
+						it.remove();
+					}
+				}
+				catch (Exception e)
+				{
+					request.deferredResult.setErrorResult(e);
+					it.remove();
+				}
+			}
 		}
 	}
 
-	public DeferredResult<List<T>> getDeferredResult(int id)
+	public Object getDeferredResult(int id, Supplier<List<T>> listSupplier)
 	{
-		DeferredResult<List<T>> deferredResult = new DeferredResult<>(TIMEOUT, new ResponseEntity<Void>(HttpStatus.REQUEST_TIMEOUT));
-		getDeferredResultList(id).add(deferredResult);
-		return deferredResult;
+		List<T> result = listSupplier.get();
+		if (!result.isEmpty())
+			return new ResponseEntity<>(result, HttpStatus.OK);
+
+		Request<T> request = new Request<>();
+		request.deferredResult = new DeferredResult<>(TIMEOUT, new ResponseEntity<Void>(HttpStatus.REQUEST_TIMEOUT));
+		request.listSupplier = listSupplier;
+		getRequestList(id).add(request);
+
+		return request.deferredResult;
+	}
+
+	private static class Request<T>
+	{
+		private DeferredResult<List<T>> deferredResult;
+		private Supplier<List<T>> listSupplier;
 	}
 }

@@ -1,6 +1,9 @@
 {
   "login": "Login",
   "logout": "Logout",
+  "toolbar": {
+    "gameSessions": "GAMES"
+  },
   "error_no_network_title": "No Connection",
   "error_no_network_message": "The game requires an internet connection",
   "error_server_down_title": "Server down",

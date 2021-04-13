@@ -1,6 +1,9 @@
 {
   "login": "Bejelentkezés",
   "logout": "Kijelentkezés",
+  "toolbar": {
+    "gameSessions": "JÁTÉKOK"
+  },
   "error_no_network_title": "Nincs internetkapcsolat",
   "error_no_network_message": "A játékhoz internetkapcsolat szükséges",
   "error_server_down_title": "Szerver leállt",

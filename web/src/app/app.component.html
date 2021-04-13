@@ -6,6 +6,7 @@
       src="assets/images/icon.png"
     />
     <span class="heavy-font">Tarokk</span>
+    <span routerLink="/gameSessions" class="clickable-span">{{'toolbar.gameSessions' | translate}}</span>
     <div class="space"></div>
     <span *ngIf="!(user$ | async)" class="clickable-span" (click)="login()">{{'login' | translate}}</span>
     <ng-container *ngIf="(user$ | async) as user">

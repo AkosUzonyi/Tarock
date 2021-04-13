@@ -59,6 +59,7 @@ export interface GameStatePlayerInfo {
   turn: boolean;
   team: "caller" | "opponent" | null;
   tarockFoldCount: number;
+  visibleFoldedCards: [string];
   currentTrickCard: string | null;
   previousTrickCard: string | null;
 }
@@ -67,7 +68,6 @@ export interface GameState {
   phase: Phase;
   canThrowCards: boolean;
   availableActions: [string];
-  callerTarockFold: [string];
   previousTrickWinner: number | null;
   playerInfos: [GameStatePlayerInfo];
   statistics: {

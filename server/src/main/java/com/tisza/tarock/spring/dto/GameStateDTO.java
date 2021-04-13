@@ -9,7 +9,6 @@ public class GameStateDTO
 	public String phase;
 	public boolean canThrowCards;
 	public List<String> availableActions = new ArrayList<>();
-	public List<String> callerTarockFold = new ArrayList<>();
 	public Integer previousTrickWinner;
 	public List<PlayerInfo> playerInfos = new ArrayList<>();
 	public Statistics statistics = new Statistics();
@@ -21,6 +20,7 @@ public class GameStateDTO
 		public boolean turn;
 		public String team;
 		public int tarockFoldCount;
+		public List<String> visibleFoldedCards = new ArrayList<>();
 		public String currentTrickCard;
 		public String previousTrickCard;
 	}

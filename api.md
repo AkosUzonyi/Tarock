@@ -376,7 +376,6 @@ The fields in the response:
 - phase: The current phase of the game
 - canThrowCards: Whether throw button should be shown
 - availableActions: A list of actions that are executable at this by the player (if it's an other player's turn, the list is empty). Only bid, call, and announce actions are listed this way. Used for displaying action buttons.
-- callerTarockFold: The list of tarock cards folded by the caller player. Empty before folding.
 - previousTrickWinner: The seat number of the player, who won the last trick. Used for the taking animation, and positioning the taken cards.
 - playerInfos: A four element list containing information about the players in seat order.
 - playerInfos.user: The user of the player.
@@ -384,6 +383,7 @@ The fields in the response:
 - playerInfos.turn: Whether the player name should be highlighted, indicating that it's their turn. Most of the time exactly one player has a true value here (except a few cases, for example folding).
 - playerInfos.team: Used for coloring the name of the player, indicating which team they are in. Null means the authenticated player doesn't know which team the other player is in.
 - playerInfos.tarockFoldCount: Count of folded tarocks of the player. 0 before folding.
+- playerInfos.visibleFoldedCards: The list folded cards by the player visible to anybody. In case the caller player folds tarocks, those appear here.
 - playerInfos.currentTrickCard: The cards played in the current trick by the player.
 - playerInfos.previousTrickCard: The cards played in the previous trick by each player.
 - statistics.callerCardPoints: The sum of the values of the card won by the caller team.
@@ -403,7 +403,6 @@ Response:
         "phase": "bidding"|"folding"|"calling"|"announcing"|"gameplay"|"end"|"interrupted",
         "canThrowCards": Bool,
         "availableActions": [String],
-        "callerTarockFold": [Card],
         "previousTrickWinner": Int?,
         "playerInfos": [{
                 "user": User,
@@ -411,6 +410,7 @@ Response:
                 "turn": Bool,
                 "team": "caller"|"opponent"|null,
                 "tarockFoldCount": Int,
+                "visibleFoldedCards": [Card],
                 "currentTrickCard": Card?,
                 "previousTrickCard": Card?,
         }],

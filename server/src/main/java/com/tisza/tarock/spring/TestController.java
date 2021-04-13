@@ -287,15 +287,6 @@ public class TestController
 		gameStateDTO.statistics.sumPoints = game.getSumPoints();
 		gameStateDTO.statistics.pointMultiplier = game.getPointMultiplier();
 
-		Collection<Card> callerSkart = game.getSkart(game.getBidWinnerPlayer());
-		if (callerSkart == null)
-			gameStateDTO.callerTarockFold = Collections.emptyList();
-		else
-			gameStateDTO.callerTarockFold = callerSkart.stream()
-					.filter(c -> c instanceof TarockCard)
-					.map(Card::getID)
-					.collect(Collectors.toList());
-
 		Trick currentTrick, previousTrick;
 		if (game.getTrickCount() == 0)
 		{
@@ -338,7 +329,12 @@ public class TestController
 
 			Collection<Card> skart = game.getSkart(p);
 			if (skart != null)
+			{
 				playerInfo.tarockFoldCount = (int) skart.stream().filter(c -> c instanceof TarockCard).count();
+
+				if (p == game.getBidWinnerPlayer())
+					playerInfo.visibleFoldedCards = skart.stream().filter(c -> c instanceof TarockCard).map(Card::getID).collect(Collectors.toList());
+			}
 		}
 
 		return new ResponseEntity<>(gameStateDTO, HttpStatus.OK);

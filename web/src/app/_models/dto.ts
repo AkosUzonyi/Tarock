@@ -27,7 +27,7 @@ export interface GameSession {
   type: GameType;
   doubleRoundType: DoubleRoundType;
   state: GameSessionState;
-  players: [Player];
+  players: Player[];
   currentGameId: number | null;
   createTime: number;
 }
@@ -35,7 +35,7 @@ export interface GameSession {
 export interface Game {
   id: number;
   type: GameType;
-  players: [Player];
+  players: Player[];
   gameSessionId: number;
   createTime: number;
 }
@@ -55,11 +55,11 @@ export interface Chat {
 
 export interface GameStatePlayerInfo {
   user: User;
-  cards: [string];
+  cards: string[];
   turn: boolean;
   team: "caller" | "opponent" | null;
   tarockFoldCount: number;
-  visibleFoldedCards: [string];
+  visibleFoldedCards: string[];
   currentTrickCard: string | null;
   previousTrickCard: string | null;
 }
@@ -67,17 +67,17 @@ export interface GameStatePlayerInfo {
 export interface GameState {
   phase: Phase;
   canThrowCards: boolean;
-  availableActions: [string];
+  availableActions: string[];
   previousTrickWinner: number | null;
-  playerInfos: [GameStatePlayerInfo];
+  playerInfos: GameStatePlayerInfo[];
   statistics: {
     callerCardPoints: number;
     opponentCardPoints: number;
-    announcementResults: [{
+    announcementResults: {
       'announcement': string;
       'points': number;
       'team': Team;
-    }],
+    }[],
     sumPoints: number;
     pointMultiplier: number;
   }

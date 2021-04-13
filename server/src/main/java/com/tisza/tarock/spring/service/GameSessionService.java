@@ -72,7 +72,7 @@ public class GameSessionService
 			return;
 
 		if (gameSessionDB.state.equals("lobby"))
-			playerRepository.deleteAll(gameSessionDB.players);
+			gameSessionDB.players.clear();
 
 		gameSessionDB.currentGameId = null;
 		gameSessionDB.state = "deleted";

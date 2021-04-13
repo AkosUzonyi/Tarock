@@ -208,15 +208,15 @@ public class TestController
 	public Object getActions(@PathVariable int gameId, @RequestParam(defaultValue = "-1") int from)
 	{
 		if (from < 0)
-			return new ResponseEntity<>(gameService.findGame(gameId).actions, HttpStatus.OK);
+			return new ResponseEntity<>(gameService.getActionsFiltered(gameId), HttpStatus.OK);
 
 		return actionDeferredResultService.getDeferredResult(gameId, () -> {
-			GameDB game = gameService.findGame(gameId);
+			List<ActionDB> actions = gameService.getActionsFiltered(gameId);
 
-			if (from >= game.actions.size())
+			if (from >= actions.size())
 				return Collections.emptyList();
 
-			return game.actions.subList(from, game.actions.size());
+			return actions.subList(from, actions.size());
 		});
 	}
 

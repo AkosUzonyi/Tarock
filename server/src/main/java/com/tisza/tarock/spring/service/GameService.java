@@ -60,6 +60,23 @@ public class GameService
 		return game;
 	}
 
+	public List<ActionDB> getActionsFiltered(int gameId)
+	{
+		GameDB gameDB = findGame(gameId);
+		List<ActionDB> filteredActions= new ArrayList<>();
+		for (ActionDB actionDB : gameDB.actions)
+		{
+			ActionDB newActionDB = new ActionDB();
+			newActionDB.game = actionDB.game;
+			newActionDB.ordinal = actionDB.ordinal;
+			newActionDB.seat = actionDB.seat;
+			newActionDB.action = actionDB.action.startsWith("fold:") ? "fold:" : actionDB.action;
+			newActionDB.time = actionDB.time;
+			filteredActions.add(newActionDB);
+		}
+		return filteredActions;
+	}
+
 	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public void startNewGame(int gameSessionId, int beginnerPlayer)
 	{

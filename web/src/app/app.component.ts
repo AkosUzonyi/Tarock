@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { User } from './_models/game-objects';
+import { User } from './_models/dto';
 import { AuthService } from './_services/auth.service';
 import { TranslateService } from '@ngx-translate/core';
 

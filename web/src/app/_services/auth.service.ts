@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, from, Observable, throwError } from 'rxjs';
 
 import { ApiService } from '../_services/api.service';
-import { LoginResult, User } from '../_models/game-objects';
+import { LoginResult, User } from '../_models/dto';
 import { SocialAuthService, FacebookLoginProvider, GoogleLoginProvider, SocialUser } from 'angularx-social-login';
 import { map, switchMap } from 'rxjs/operators';
 

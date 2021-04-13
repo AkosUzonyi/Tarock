@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../_services/api.service';
-import { Action, Chat, Game, GameSession, GameState } from '../_models/game-objects';
+import { Action, Chat, Game, GameSession, GameState } from '../_models/dto';
 import { AuthService } from '../_services/auth.service';
 
 @Component({

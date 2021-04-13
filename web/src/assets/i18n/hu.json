@@ -52,14 +52,14 @@
     "2": "2",
     "1": "1",
     "0": "Szóló",
-    "passz": "Passz",
+    "p": "Passz",
     "keep": "Tartom"
   },
   "game_type": "Játék típus",
   "double_round_type": "Duplakör",
   "silent": "Csendes",
   "passz": "Passz",
-  "announcment": {
+  "announcement": {
     "jatek": "játék",
     "hkp": "hivatalból kontra parti",
     "trull": "trull",

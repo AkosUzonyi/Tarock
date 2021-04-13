@@ -3,7 +3,9 @@
   <button (click)="pressOK()">OK</button>
   <div id=upper-half>
     <div id="action-list">
-      <p *ngFor="let action of actions">{{game.players[action.seat].user.name}}: {{action.action}}</p>
+      <ng-template ngFor let-action [ngForOf]="actions">
+        <p *ngIf="gameTranslateService.translateAction(action.action) as translated">{{game.players[action.seat].user.name}}: {{translated}}</p>
+      </ng-template>
     </div>
     <div id="chat">
       <div id="chat-messages">
@@ -27,7 +29,7 @@
       </ng-template>
     </div>
     <div *ngIf="seat !== null" id="action-button-list">
-      <button *ngFor="let action of gameState.availableActions" (click)="executeAction(action)">{{action}}</button>
+      <button *ngFor="let action of gameState.availableActions" (click)="executeAction(action)">{{gameTranslateService.translateAction(action)}}</button>
     </div>
   </div>
   <div *ngIf="seat !== null" id="card-list">

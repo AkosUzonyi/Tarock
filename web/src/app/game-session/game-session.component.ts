@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { ApiService } from '../_services/api.service';
 import { Action, Chat, Game, GameSession, GameState } from '../_models/dto';
 import { AuthService } from '../_services/auth.service';
+import { GameTranslateService } from '../_services/game-translate.service';
 
 @Component({
   selector: 'app-game-session',
@@ -34,7 +35,8 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
-    private authService: AuthService
+    private authService: AuthService,
+    public gameTranslateService: GameTranslateService,
   ) {
     this.gameSessionId = Number(route.snapshot.paramMap.get('id'));
   }

@@ -48,16 +48,24 @@ public class ListDeferredResultService<T>
 
 	public Object getDeferredResult(int id, Supplier<List<T>> listSupplier)
 	{
-		List<T> result = listSupplier.get();
-		if (!result.isEmpty())
-			return new ResponseEntity<>(result, HttpStatus.OK);
+		DeferredResult<List<T>> deferredResult = new DeferredResult<>(TIMEOUT, new ResponseEntity<Void>(HttpStatus.REQUEST_TIMEOUT));
 
-		Request<T> request = new Request<>();
-		request.deferredResult = new DeferredResult<>(TIMEOUT, new ResponseEntity<Void>(HttpStatus.REQUEST_TIMEOUT));
-		request.listSupplier = listSupplier;
-		getRequestList(id).add(request);
+		CompletableFuture.runAsync(() -> {
+			List<T> result = listSupplier.get();
+			if (!result.isEmpty())
+			{
+				deferredResult.setResult(result);
+			}
+			else
+			{
+				Request<T> request = new Request<>();
+				request.deferredResult = deferredResult;
+				request.listSupplier = listSupplier;
+				getRequestList(id).add(request);
+			}
+		});
 
-		return request.deferredResult;
+		return deferredResult;
 	}
 
 	private static class Request<T>

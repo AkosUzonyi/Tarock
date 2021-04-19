@@ -50,8 +50,19 @@ public class ListDeferredResultService<T>
 	{
 		DeferredResult<List<T>> deferredResult = new DeferredResult<>(TIMEOUT, new ResponseEntity<Void>(HttpStatus.REQUEST_TIMEOUT));
 
-		CompletableFuture.runAsync(() -> {
-			List<T> result = listSupplier.get();
+		CompletableFuture.runAsync(() ->
+		{
+			List<T> result;
+			try
+			{
+				result = listSupplier.get();
+			}
+			catch (Exception e)
+			{
+				deferredResult.setErrorResult(e);
+				return;
+			}
+
 			if (!result.isEmpty())
 			{
 				deferredResult.setResult(result);

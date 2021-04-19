@@ -417,10 +417,13 @@ Response:
         "statistics": {
                 "callerCardPoints": Int,
                 "opponentCardPoints": Int,
-                "announcementResults": [{
+                "callerAnnouncementResults": [{
                         "announcement": Announcement,
-                        "points": Int,
-                        "team": "caller"|"opponent"
+                        "points": Int
+                }],
+                "opponentAnnouncementResults": [{
+                        "announcement": Announcement,
+                        "points": Int
                 }],
                 "sumPoints": Int,
                 "pointMultiplier": Int,

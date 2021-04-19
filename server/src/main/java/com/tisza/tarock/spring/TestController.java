@@ -281,8 +281,7 @@ public class TestController
 			GameStateDTO.AnnouncementResult arDTO = new GameStateDTO.AnnouncementResult();
 			arDTO.announcement = ar.getAnnouncementContra().getID();
 			arDTO.points = ar.getPoints();
-			arDTO.team = ar.getTeam() == Team.CALLER ? "caller" : "opponent";
-			gameStateDTO.statistics.announcementResults.add(arDTO);
+			(ar.getTeam() == Team.CALLER ? gameStateDTO.statistics.callerAnnouncementResults : gameStateDTO.statistics.opponentAnnouncementResults).add(arDTO);
 		}
 		gameStateDTO.statistics.sumPoints = game.getSumPoints();
 		gameStateDTO.statistics.pointMultiplier = game.getPointMultiplier();

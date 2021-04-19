@@ -73,12 +73,14 @@ export interface GameState {
   statistics: {
     callerCardPoints: number;
     opponentCardPoints: number;
-    announcementResults: {
-      'announcement': string;
-      'points': number;
-      'team': Team;
-    }[],
+    callerAnnouncementResults: AnnouncementResult[];
+    opponentAnnouncementResults: AnnouncementResult[];
     sumPoints: number;
     pointMultiplier: number;
   }
+}
+
+export interface AnnouncementResult {
+  announcement: string;
+  points: number;
 }

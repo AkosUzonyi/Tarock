@@ -29,7 +29,8 @@ public class GameStateDTO
 	{
 		public int callerCardPoints;
 		public int opponentCardPoints;
-		public List<AnnouncementResult> announcementResults = new ArrayList<>();
+		public List<AnnouncementResult> callerAnnouncementResults = new ArrayList<>();
+		public List<AnnouncementResult> opponentAnnouncementResults = new ArrayList<>();
 		public int sumPoints;
 		public int pointMultiplier;
 	}
@@ -38,6 +39,5 @@ public class GameStateDTO
 	{
 		public String announcement;
 		public int points;
-		public String team;
 	}
 }

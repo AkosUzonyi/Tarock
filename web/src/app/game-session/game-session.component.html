@@ -27,6 +27,26 @@
           {{player.user.name}}
         </p>
       </ng-template>
+      <table *ngIf="gameState.phase === 'end'">
+        <tr class="statistics-table-team">
+          <td colspan="2">{{'statistics.caller' | translate}}</td>
+        </tr>
+        <tr class="statistics-table-announcement" *ngFor="let announcementResult of gameState.statistics.callerAnnouncementResults" [ngClass]="{'statistics-announcement-failed': announcementResult.points < 0}">
+          <td>{{gameTranslateService.translateAnnouncement(announcementResult.announcement)}}</td>
+          <td>{{announcementResult.points * (seat === null || gameState.playerInfos[0].team === 'caller' ? 1 : -1)}}</td>
+        </tr>
+        <tr class="statistics-table-team">
+          <td colspan="2">{{'statistics.opponent' | translate}}</td>
+        </tr>
+        <tr class="statistics-table-announcement" *ngFor="let announcementResult of gameState.statistics.opponentAnnouncementResults" [ngClass]="{'statistics-announcement-failed': announcementResult.points < 0}">
+          <td>{{gameTranslateService.translateAnnouncement(announcementResult.announcement)}}</td>
+          <td>{{announcementResult.points * (seat === null || gameState.playerInfos[0].team === 'caller' ? -1 : 1)}}</td>
+        </tr>
+        <tr class="statistics-table-sum">
+          <td>{{'statistics.sum' | translate}}</td>
+          <td>{{gameState.statistics.sumPoints}}</td>
+        </tr>
+      </table>
     </div>
     <div *ngIf="seat !== null" id="action-button-list">
       <button *ngFor="let action of gameState.availableActions" (click)="executeAction(action)">{{gameTranslateService.translateAction(action)}}</button>

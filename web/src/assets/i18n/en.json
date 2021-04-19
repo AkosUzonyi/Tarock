@@ -85,9 +85,9 @@
     "nyolctarokk": "eight tarokks",
     "kilenctarokk": "nine tarokks"
   },
-  "statictics": {
+  "statistics": {
     "point_multiplier": "Double round multiplier: %1$d",
-    "self": "Declarer bonuses",
+    "caller": "Declarer bonuses",
     "opponent": "Opposition bonuses",
     "points": "point",
     "sum": "Total:"

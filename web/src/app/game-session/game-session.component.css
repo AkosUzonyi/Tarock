@@ -134,6 +134,34 @@
   width: 100%;
 }
 
+#card-table table {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  min-width: 400px;
+  transform: translate(-50%, 0);
+  font-size: 24px;
+  border-spacing: 20px;
+}
+
+.statistics-table-team {
+  font-style: italic;
+  font-weight: 200;
+}
+
+.statistics-table-announcement td:nth-child(1) {
+  padding-left: 15px;
+}
+
+.statistics-table-sum {
+  font-style: bold;
+  font-weight: 500;
+}
+
+.statistics-announcement-failed {
+  color: #700;
+}
+
 #card-list {
   width: 100%;
   display: flex;

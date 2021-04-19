@@ -83,9 +83,9 @@
     "nyolctarokk": "nyolc tarokk",
     "kilenctarokk": "kilenc tarokk"
   },
-  "statictics": {
+  "statistics": {
     "point_multiplier": "Duplakör szorzó: %1$d",
-    "self": "Játékosok figurái",
+    "caller": "Játékosok figurái",
     "opponent": "Ellenjátékosok figurái",
     "points": "Pont",
     "sum": "Összesen:"

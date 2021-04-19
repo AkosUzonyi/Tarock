@@ -15,7 +15,7 @@
     </div>
     <div id="card-table">
       <ng-template ngFor let-player [ngForOf]="gameState.playerInfos">
-        <img [hidden]="!player.currentTrickCard" src="/assets/images/cards/{{player.currentTrickCard}}.png"/>
+        <img src="{{player.currentTrickCard ? '/assets/images/cards/' + player.currentTrickCard + '.png' : ''}}"/>
         <p
           class="player-name"
           [ngClass]="{

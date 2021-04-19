@@ -11,7 +11,7 @@
       <div id="chat-messages">
         <p *ngFor="let chat of chats"><span class="chat-username">{{chat.user.name}}:</span> {{chat.message}}</p>
       </div>
-      <input placeholder="chat" [(ngModel)]="chatInputContent" (keyup.enter)="sendChat()"/>
+      <input placeholder="{{'chat_hint' | translate}}" [(ngModel)]="chatInputContent" (keyup.enter)="sendChat()"/>
     </div>
     <div id="card-table">
       <ng-template ngFor let-player [ngForOf]="gameState.playerInfos">

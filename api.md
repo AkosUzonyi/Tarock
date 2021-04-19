@@ -227,7 +227,7 @@ Request body:
 Response:
 - 201: Game session created (Location header is set to /gameSessions/{gameSessionID})
 - 400: Invalid arguments
-- 401: Authentication is required (using /auth/login)
+- 401: Authentication is required
 
 ### DELETE /gameSessions/{gameSessionID}
 
@@ -235,7 +235,7 @@ Deletes the game session.
 
 Response:
 - 204: Game session deleted (or didn't even exist)
-- 401: Authentication is required (using /auth/login)
+- 401: Authentication is required
 - 403: The authenticated user does not play in the game session
 
 ### POST /gameSessions/{gameSessionID}/join
@@ -244,7 +244,7 @@ Joins the game session (it must be in lobby state).
 
 Response:
 - 204: Join successful
-- 401: Authentication is required (using /auth/login)
+- 401: Authentication is required
 - 404: Game session does not exists
 - 409: The game session is not in lobby state
 
@@ -254,7 +254,7 @@ Leaves the game session (it must be in lobby state).
 
 Response:
 - 204: Leave successful
-- 401: Authentication is required (using /auth/login)
+- 401: Authentication is required
 - 404: Game session does not exists
 - 409: The game session is not in lobby state
 
@@ -264,7 +264,7 @@ Starts the game session (if it is in lobby state). If the lobby does not contain
 
 Response:
 - 204: Game session successfully started
-- 401: Authentication is required (using /auth/login)
+- 401: Authentication is required
 - 403: The authenticated user is not in the lobby
 - 404: Game session does not exists
 - 409: The game session is not in lobby state
@@ -302,7 +302,7 @@ Request body:
 
 Response:
 - 204: Message successfully sent
-- 401: Authentication is required (using /auth/login)
+- 401: Authentication is required
 - 404: Game session does not exists
 - 413: The message length exceeds the 255 character limit
 
@@ -362,7 +362,7 @@ Request body:
 Response:
 - 204: Action successful
 - 400: The action string is invalid
-- 401: Authentication is required (using /auth/login)
+- 401: Authentication is required
 - 403: The authenticated user is not playing in this game
 - 404: Game does not exists
 - 413: The length of the action string exceeds the 255 character limit

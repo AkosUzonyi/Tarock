@@ -399,6 +399,8 @@ public class Game
 
 	void calculateInGameStatistics()
 	{
+		announcementResults.clear();
+
 		for (Team team : Team.values())
 		{
 			for (Announcement announcement : Announcements.getAll())
@@ -420,6 +422,10 @@ public class Game
 
 	void calculateStatistics()
 	{
+		announcementResults.clear();
+		Arrays.fill(points, 0);
+		sumPoints = 0;
+
 		for (Team team : Team.values())
 		{
 			if (team == Team.CALLER)

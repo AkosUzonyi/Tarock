@@ -256,16 +256,13 @@ public class TestController
 		GameDB gameDB = gameService.findGame(gameId);
 		Game game = gameService.loadGame(gameId);
 
-		PlayerSeat me;
+		PlayerSeat me = null;
 		int userId = getLoggedInUserId();
-		if (userId < 0)
-		{
-			me = null;
-		}
-		else
+		if (userId >= 0)
 		{
 			PlayerDB playerDB = gameSessionService.getPlayerFromUser(gameDB.gameSession, userId);
-			me = gameService.getSeatFromPlayer(gameDB, playerDB);
+			if (playerDB != null)
+				me = gameService.getSeatFromPlayer(gameDB, playerDB);
 		}
 
 		GameStateDTO gameStateDTO = new GameStateDTO();

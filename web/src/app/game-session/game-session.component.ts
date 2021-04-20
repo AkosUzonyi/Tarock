@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../_services/api.service';
-import { Action, Chat, Game, GameSession, GameState } from '../_models/dto';
+import { Action, Chat, Game, GameSession, GameState, GameStatePlayerInfo } from '../_models/dto';
 import { AuthService } from '../_services/auth.service';
 import { GameTranslateService } from '../_services/game-translate.service';
 
@@ -21,6 +21,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   nextActionOrdinal = 0;
   game: Game | null = null;
   gameState: GameState | null = null;
+  playerInfosRotated: GameStatePlayerInfo[] | null = null;
 
   cardsToFold: string[] = [];
 
@@ -170,16 +171,17 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   }
 
   private rotateLeft(list: any[], n: number) {
-    for (let i = 0; i < n; i++)
-      list.push(list.shift());
+    const result = []
+    for (let i = 0; i < list.length; i++)
+      result.push(list[(i + n) % list.length]);
+    return result;
   }
 
   private updateGameState() {
     this.apiService.getGameState(this.getCurrentGameId())
       .subscribe(s => {
         this.gameState = s;
-        if (this.seat !== null)
-          this.rotateLeft(this.gameState.playerInfos, this.seat);
+        this.playerInfosRotated = this.rotateLeft(this.gameState.playerInfos, this.seat ?? 0);
       });
   }
 }

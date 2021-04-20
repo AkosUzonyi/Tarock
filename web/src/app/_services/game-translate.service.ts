@@ -19,7 +19,7 @@ export class GameTranslateService {
       if (value < 1 || value >= 23)
         throw 'invalid card: ' + card;
 
-      return this.tsi('tarock_array.' + value);
+      return this.tsi('tarock_array.' + (value - 1));
     }
     else {
       const suitIndex = type.charCodeAt(0) - 'a'.charCodeAt(0);
@@ -72,7 +72,7 @@ export class GameTranslateService {
       sentenceBuilder.appendWord(this.tsi('contra_array.' + contraLevel));
 
     if (suit !== null)
-      sentenceBuilder.appendWord(this.tsi('suit_array.' + suit));
+      sentenceBuilder.appendWord(this.tsi('suit_array.' + (suit.charCodeAt(0) - 'a'.charCodeAt(0))));
     if (card !== null)
       sentenceBuilder.appendWord(this.translateCard(card));
     if (trick !== null)

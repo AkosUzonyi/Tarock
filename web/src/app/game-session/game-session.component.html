@@ -3,7 +3,11 @@
   <div id=upper-half>
     <div id="action-list">
       <ng-template ngFor let-action [ngForOf]="actions">
-        <p *ngIf="gameTranslateService.translateAction(action.action) as translated">{{game.players[action.seat].user.name}}: {{translated}}</p>
+        <p
+          *ngIf="gameTranslateService.translateAction(action.action) as translated"
+          >
+          {{game.players[action.seat].user.name}}: {{translated}}
+        </p>
       </ng-template>
     </div>
     <div id="chat">
@@ -30,14 +34,22 @@
         <tr class="statistics-table-team">
           <td colspan="2">{{'statistics.caller' | translate}}</td>
         </tr>
-        <tr class="statistics-table-announcement" *ngFor="let announcementResult of gameState.statistics.callerAnnouncementResults" [ngClass]="{'statistics-announcement-failed': announcementResult.points < 0}">
+        <tr
+          class="statistics-table-announcement"
+          *ngFor="let announcementResult of gameState.statistics.callerAnnouncementResults"
+          [ngClass]="{'statistics-announcement-failed': announcementResult.points < 0}"
+          >
           <td>{{gameTranslateService.translateAnnouncement(announcementResult.announcement)}}</td>
           <td>{{announcementResult.points * (seat === null || gameState.playerInfos[0].team === 'caller' ? 1 : -1)}}</td>
         </tr>
         <tr class="statistics-table-team">
           <td colspan="2">{{'statistics.opponent' | translate}}</td>
         </tr>
-        <tr class="statistics-table-announcement" *ngFor="let announcementResult of gameState.statistics.opponentAnnouncementResults" [ngClass]="{'statistics-announcement-failed': announcementResult.points < 0}">
+        <tr
+          class="statistics-table-announcement"
+          *ngFor="let announcementResult of gameState.statistics.opponentAnnouncementResults"
+          [ngClass]="{'statistics-announcement-failed': announcementResult.points < 0}"
+          >
           <td>{{gameTranslateService.translateAnnouncement(announcementResult.announcement)}}</td>
           <td>{{announcementResult.points * (seat === null || gameState.playerInfos[0].team === 'caller' ? -1 : 1)}}</td>
         </tr>
@@ -62,7 +74,12 @@
         >
         {{'passz' | translate}}
       </button>
-      <button *ngFor="let action of gameState.availableActions" (click)="executeAction(action)">{{gameTranslateService.translateAction(action)}}</button>
+      <button
+        *ngFor="let action of gameState.availableActions"
+        (click)="executeAction(action)"
+        >
+        {{gameTranslateService.translateAction(action)}}
+      </button>
     </div>
   </div>
   <div *ngIf="seat !== null" id="card-list">
@@ -81,6 +98,10 @@
       >
       {{'throw_cards' | translate}}
     </button>
-    <img *ngFor="let card of gameState.playerInfos[0].cards" [attr.data-card]="card" src="/assets/images/cards/{{card}}.png" (click)="clickCard($event)"/>
+    <img
+      *ngFor="let card of gameState.playerInfos[0].cards"
+      [attr.data-card]="card"
+      src="/assets/images/cards/{{card}}.png"
+      (click)="clickCard($event)"/>
   </div>
 </div>

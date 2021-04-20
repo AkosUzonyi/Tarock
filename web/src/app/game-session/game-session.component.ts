@@ -164,7 +164,6 @@ export class GameSessionComponent implements OnInit, OnDestroy {
       this.actions = this.actions.concat(newActions);
       if (this.actions.length >= 1)
         this.nextActionOrdinal = this.actions[this.actions.length - 1].ordinal + 1;
-      //this.updateGameSession(); //TODO
       this.updateGameState();
       this.pollActions();
     });
@@ -178,10 +177,12 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   }
 
   private updateGameState() {
-    this.apiService.getGameState(this.getCurrentGameId())
-      .subscribe(s => {
-        this.gameState = s;
-        this.playerInfosRotated = this.rotateLeft(this.gameState.playerInfos, this.seat ?? 0);
-      });
+    this.apiService.getGameState(this.getCurrentGameId()).subscribe(gameState => {
+      this.gameState = gameState;
+      this.playerInfosRotated = this.rotateLeft(this.gameState.playerInfos, this.seat ?? 0);
+    }, error => {
+      if (error.status == 410)
+        this.updateGameSession();
+    });
   }
 }

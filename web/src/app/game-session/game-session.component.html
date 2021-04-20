@@ -74,6 +74,13 @@
       >
       {{'fold' | translate}}
     </button>
+    <button
+      id="button-throw"
+      *ngIf="gameState.canThrowCards"
+      (click)="executeAction('throw:')"
+      >
+      {{'throw_cards' | translate}}
+    </button>
     <img *ngFor="let card of gameState.playerInfos[0].cards" [attr.data-card]="card" src="/assets/images/cards/{{card}}.png" (click)="clickCard($event)"/>
   </div>
 </div>

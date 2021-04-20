@@ -200,3 +200,11 @@
   min-width: 100px;
   transform: translate(-50%, -100%);
 }
+
+#button-throw {
+  position: absolute;
+  left: 30%;
+  top: -20px;
+  min-width: 100px;
+  transform: translate(-50%, -100%);
+}

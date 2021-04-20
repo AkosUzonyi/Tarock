@@ -17,8 +17,11 @@
       <input placeholder="{{'chat_hint' | translate}}" [(ngModel)]="chatInputContent" (keyup.enter)="sendChat()"/>
     </div>
     <div id="card-table">
-      <ng-template ngFor let-player [ngForOf]="gameState.playerInfos">
-        <img src="{{player.currentTrickCard ? '/assets/images/cards/' + player.currentTrickCard + '.png' : ''}}"/>
+      <ng-template ngFor let-player [ngForOf]="gameState.playerInfos" let-i="index">
+        <img
+          src="{{player.currentTrickCard ? '/assets/images/cards/' + player.currentTrickCard + '.png' : ''}}"
+          [ngStyle]="{'z-index': ((seat || 0) + i - (gameState.previousTrickWinner || 0) + 4) % 4}"
+          />
         <p
           class="player-name"
           [ngClass]="{

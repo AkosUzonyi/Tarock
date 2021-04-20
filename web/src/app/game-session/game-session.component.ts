@@ -117,21 +117,6 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     }
   }
 
-  pressOK() {
-    switch (this.gameState?.phase) {
-      case 'announcing':
-        this.executeAction('announce:passz');
-        break;
-      case 'folding':
-        this.executeAction('fold:' + this.cardsToFold.join(','));
-        break;
-      case 'end':
-      case 'interrupted':
-        this.executeAction('newgame:');
-        break;
-    }
-  }
-
   private updateGameSession() {
     this.apiService.getGameSession(this.gameSessionId).subscribe(gameSession => {
       const updateGame = this.gameSession?.currentGameId !== gameSession.currentGameId;

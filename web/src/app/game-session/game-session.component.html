@@ -1,6 +1,5 @@
 <button *ngIf="gameSession?.state === 'lobby'" (click)="start()">{{'lobby_start' | translate}}</button>
 <div *ngIf="game && gameState" id=game-session>
-  <button (click)="pressOK()">OK</button>
   <div id=upper-half>
     <div id="action-list">
       <ng-template ngFor let-action [ngForOf]="actions">
@@ -47,12 +46,34 @@
           <td>{{gameState.statistics.sumPoints}}</td>
         </tr>
       </table>
+      <button
+        id="button-new-game"
+        *ngIf="['interrupted', 'end'].includes(gameState.phase) && gameState.playerInfos[0].turn"
+        (click)="executeAction('newgame:')"
+        >
+        {{'ready_for_new_game' | translate}}
+      </button>
     </div>
     <div *ngIf="seat !== null" id="action-button-list">
+      <button
+        id="button-announce-passz"
+        *ngIf="gameState.phase === 'announcing' && gameState.playerInfos[0].turn"
+        (click)="executeAction('announce:passz')"
+        >
+        {{'passz' | translate}}
+      </button>
       <button *ngFor="let action of gameState.availableActions" (click)="executeAction(action)">{{gameTranslateService.translateAction(action)}}</button>
     </div>
   </div>
   <div *ngIf="seat !== null" id="card-list">
+    <button
+      id="button-fold"
+      *ngIf="gameState.phase === 'folding'"
+      [disabled]="gameState.playerInfos[0].cards.length - cardsToFold.length !== 9"
+      (click)="executeAction('fold:' + this.cardsToFold.join(','))"
+      >
+      {{'fold' | translate}}
+    </button>
     <img *ngFor="let card of gameState.playerInfos[0].cards" [attr.data-card]="card" src="/assets/images/cards/{{card}}.png" (click)="clickCard($event)"/>
   </div>
 </div>

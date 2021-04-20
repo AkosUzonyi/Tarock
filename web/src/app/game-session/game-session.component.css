@@ -125,6 +125,13 @@
   transform: translate(0%, -50%) rotate(180deg);
 }
 
+#button-new-game {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
 #action-button-list {
   width: 250px;
   overflow: auto;
@@ -132,6 +139,11 @@
 
 #action-button-list button {
   width: 100%;
+  margin-bottom: 3px;
+}
+
+#button-announce-passz {
+  font-weight: bold;
 }
 
 #card-table table {
@@ -163,6 +175,7 @@
 }
 
 #card-list {
+  position: relative;
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -178,4 +191,12 @@
 
 .card-selected {
   transform: translate(0, -30px);
+}
+
+#button-fold {
+  position: absolute;
+  left: 50%;
+  top: -40px;
+  min-width: 100px;
+  transform: translate(-50%, -100%);
 }

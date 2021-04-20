@@ -30,10 +30,16 @@ p {
 
 button {
   background-color: #DD8000;
+  color: black;
   border: 2px solid;
   border-radius: 5px;
   padding: 5px;
   font-size: 20px;
+}
+
+button:disabled {
+  background-color: #A83;
+  color: #666;
 }
 
 .button-red {

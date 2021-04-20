@@ -35,6 +35,8 @@
   "pager_gameplay": "Playout",
   "pager_statistics": "Score",
   "ok": "OK",
+  "fold": "Fold",
+  "ready_for_new_game": "Start new game",
   "throw_cards": "Throw in",
   "back": "back",
   "announce": "Announce",

@@ -64,7 +64,6 @@ public class GameService
 		return game;
 	}
 
-	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public List<ActionDB> getActionsFiltered(int gameId)
 	{
 		GameDB gameDB = findGame(gameId);

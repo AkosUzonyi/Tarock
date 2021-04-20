@@ -1,7 +1,11 @@
 package com.tisza.tarock.spring.service;
 
+import org.springframework.beans.factory.annotation.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.*;
+import org.springframework.transaction.*;
+import org.springframework.transaction.annotation.*;
+import org.springframework.transaction.support.*;
 import org.springframework.web.context.request.async.*;
 
 import java.util.*;
@@ -11,77 +15,92 @@ import java.util.function.*;
 @Service
 public class ListDeferredResultService<T>
 {
-	private final long TIMEOUT = 30 * 1000;
 	private final Map<Integer, Collection<Request<T>>> requestsById = new ConcurrentHashMap<>();
+
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
 	private Collection<Request<T>> getRequestList(int id)
 	{
 		return requestsById.computeIfAbsent(id, i -> Collections.synchronizedCollection(new ArrayList<>()));
 	}
 
+	@Transactional(isolation = Isolation.READ_COMMITTED)
 	public void notifyNewResult(int id)
 	{
-		Collection<Request<T>> requests = getRequestList(id);
-		synchronized (requests)
-		{
-			Iterator<Request<T>> it = requests.iterator();
-			while (it.hasNext())
-			{
-				Request<T> request = it.next();
-				try
-				{
-					List<T> result = request.listSupplier.get();
-					if (!result.isEmpty())
-					{
-						request.deferredResult.setResult(result);
-						it.remove();
-					}
-				}
-				catch (Exception e)
-				{
-					request.deferredResult.setErrorResult(e);
-					it.remove();
-				}
-			}
-		}
+		getRequestList(id).removeIf(Request::checkResult);
 	}
 
 	public Object getDeferredResult(int id, Supplier<List<T>> listSupplier)
 	{
-		DeferredResult<List<T>> deferredResult = new DeferredResult<>(TIMEOUT, new ResponseEntity<Void>(HttpStatus.REQUEST_TIMEOUT));
+		Request<T> request = new Request<>(listSupplier);
 
 		CompletableFuture.runAsync(() ->
 		{
-			List<T> result;
-			try
+			new TransactionTemplate(transactionManager).executeWithoutResult(status ->
 			{
-				result = listSupplier.get();
-			}
-			catch (Exception e)
-			{
-				deferredResult.setErrorResult(e);
-				return;
-			}
-
-			if (!result.isEmpty())
-			{
-				deferredResult.setResult(result);
-			}
-			else
-			{
-				Request<T> request = new Request<>();
-				request.deferredResult = deferredResult;
-				request.listSupplier = listSupplier;
-				getRequestList(id).add(request);
-			}
+				if (!request.checkResult())
+					getRequestList(id).add(request);
+			});
 		});
 
+		return request.getDeferredResult();
+	}
+}
+
+class Request<T>
+{
+	private static final long TIMEOUT = 30 * 1000;
+
+	private final Supplier<List<T>> listSupplier;
+	private final DeferredResult<List<T>> deferredResult;
+
+	public Request(Supplier<List<T>> listSupplier)
+	{
+		this.listSupplier = listSupplier;
+		this.deferredResult = new DeferredResult<>(TIMEOUT, new ResponseEntity<Void>(HttpStatus.REQUEST_TIMEOUT));
+	}
+
+	public DeferredResult<List<T>> getDeferredResult()
+	{
 		return deferredResult;
 	}
 
-	private static class Request<T>
+	public boolean checkResult()
 	{
-		private DeferredResult<List<T>> deferredResult;
-		private Supplier<List<T>> listSupplier;
+		List<T> resultTmp = null;
+		Exception exceptionTmp = null;
+
+		try
+		{
+			resultTmp = listSupplier.get();
+			Objects.requireNonNull(resultTmp);
+		}
+		catch (Exception e)
+		{
+			exceptionTmp = e;
+		}
+
+		Exception exception = exceptionTmp;
+		List<T> result = resultTmp;
+
+		if (result != null && result.isEmpty())
+			return false;
+
+		TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization()
+		{
+			@Override
+			public void afterCompletion(int status)
+			{
+				if (status != TransactionSynchronization.STATUS_COMMITTED)
+					deferredResult.setErrorResult(new ResponseEntity<Void>(HttpStatus.REQUEST_TIMEOUT));
+				else if (exception != null)
+					deferredResult.setErrorResult(exception);
+				else
+					deferredResult.setResult(result);
+			}
+		});
+
+		return true;
 	}
 }

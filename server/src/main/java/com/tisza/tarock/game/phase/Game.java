@@ -293,9 +293,9 @@ public class Game
 		tricks.add(trick);
 	}
 
-	boolean areAllTricksPassed()
+	public boolean areAllTricksPassed()
 	{
-		return tricks.size() >= ROUND_COUNT;
+		return tricks.size() >= ROUND_COUNT && tricks.get(ROUND_COUNT - 1).isFinished();
 	}
 
 	public Trick getTrick(int index)

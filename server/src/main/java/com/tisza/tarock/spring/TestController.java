@@ -287,12 +287,17 @@ public class TestController
 		if (game.getTrickCount() == 0)
 		{
 			previousTrick = null;
-			currentTrick = new Trick(PlayerSeat.SEAT0);
+			currentTrick = null;
 		}
 		else if (game.getTrickCount() == 1)
 		{
 			previousTrick = null;
 			currentTrick = game.getTrick(0);
+		}
+		else if (game.areAllTricksPassed())
+		{
+			previousTrick = game.getTrick(game.getTrickCount() - 1);
+			currentTrick = null;
 		}
 		else
 		{
@@ -318,7 +323,8 @@ public class TestController
 			if (game.isTeamInfoGlobalOf(p) || (me != null && game.hasTeamInfo(me, p)))
 				playerInfo.team = game.getPlayerPairs().getTeam(p) == Team.CALLER ? "caller" : "opponent";
 
-			playerInfo.currentTrickCard = currentTrick.getCardByPlayer(p) == null ? null : currentTrick.getCardByPlayer(p).getID();
+			if (currentTrick != null)
+				playerInfo.currentTrickCard = currentTrick.getCardByPlayer(p) == null ? null : currentTrick.getCardByPlayer(p).getID();
 
 			if (previousTrick != null)
 				playerInfo.previousTrickCard = previousTrick.getCardByPlayer(p) == null ? null : previousTrick.getCardByPlayer(p).getID();

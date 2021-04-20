@@ -40,7 +40,11 @@ public class GameService
 
 	public GameDB findGame(int gameId)
 	{
-		return gameRepository.findById(gameId).orElseThrow(NotFoundException::new);
+		GameDB gameDB = gameRepository.findById(gameId).orElseThrow(NotFoundException::new);
+		if (gameDB.gameSession.state.equals("deleted") || gameDB.gameSession.currentGameId != gameDB.id)
+			throw new GoneException();
+
+		return gameDB;
 	}
 
 	public Game loadGame(int gameId)

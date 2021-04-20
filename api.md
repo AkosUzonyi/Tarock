@@ -189,6 +189,7 @@ Returns data about the given game session.
 Response:
 - 200: Success
 - 404: Game session does not exists
+- 410: Game session is deleted
 
 ```
 {
@@ -247,6 +248,7 @@ Response:
 - 401: Authentication is required
 - 404: Game session does not exists
 - 409: The game session is not in lobby state
+- 410: Game session is deleted
 
 ### POST /gameSessions/{gameSessionID}/leave
 
@@ -257,6 +259,7 @@ Response:
 - 401: Authentication is required
 - 404: Game session does not exists
 - 409: The game session is not in lobby state
+- 410: Game session is deleted
 
 ### POST /gameSessions/{gameSessionID}/start
 
@@ -268,6 +271,7 @@ Response:
 - 403: The authenticated user is not in the lobby
 - 404: Game session does not exists
 - 409: The game session is not in lobby state
+- 410: Game session is deleted
 
 ### GET /gameSessions/{gameSessionID}/chat
 
@@ -280,6 +284,7 @@ Response:
 - 200: Success
 - 404: Game session does not exists
 - 408: Request timed out. Clients should resend the request.
+- 410: Game session is deleted
 
 ```
 [{
@@ -304,6 +309,7 @@ Response:
 - 204: Message successfully sent
 - 401: Authentication is required
 - 404: Game session does not exists
+- 410: Game session is deleted
 - 413: The message length exceeds the 255 character limit
 
 ### GET /games/{gameID}
@@ -313,6 +319,7 @@ Returns some basic data about the given game.
 Response:
 - 200: Success
 - 404: Game does not exists
+- 410: Game has finished
 
 ```
 {
@@ -340,6 +347,7 @@ Response:
 - 200: Success
 - 404: Game does not exists
 - 408: Request timed out. Clients should resend the request.
+- 410: Game has finished
 
 ```
 [{
@@ -365,6 +373,7 @@ Response:
 - 401: Authentication is required
 - 403: The authenticated user is not playing in this game
 - 404: Game does not exists
+- 410: Game has finished
 - 413: The length of the action string exceeds the 255 character limit
 - 422: The action does not comply with the game rules
 
@@ -397,6 +406,7 @@ The fields in the response:
 Response:
 - 200: Success
 - 404: Game does not exists
+- 410: Game has finished
 
 ```
 {

@@ -32,8 +32,10 @@ public class GameSessionService
 	public GameSessionDB findGameSession(int gameSessionId)
 	{
 		GameSessionDB gameSessionDB = gameSessionRepository.findById(gameSessionId).orElse(null);
-		if (gameSessionDB == null || gameSessionDB.state.equals("deleted"))
+		if (gameSessionDB == null)
 			throw new NotFoundException();
+		if (gameSessionDB.state.equals("deleted"))
+			throw new GoneException();
 
 		return gameSessionDB;
 	}

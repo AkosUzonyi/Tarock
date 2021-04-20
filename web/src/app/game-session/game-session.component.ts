@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, timer } from 'rxjs';
 import { ApiService } from '../_services/api.service';
 import { Action, Chat, Game, GameSession, GameState, GameStatePlayerInfo } from '../_models/dto';
 import { AuthService } from '../_services/auth.service';
@@ -24,6 +24,10 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   playerInfosRotated: GameStatePlayerInfo[] | null = null;
 
   cardsToFold: string[] = [];
+
+  trickTaking: boolean = false;
+  trickTaken: boolean = false;
+  takeTrickSubscription: Subscription | null = null;
 
   actionSubscription: Subscription | null = null;
   chatSubscription: Subscription | null = null;
@@ -61,6 +65,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     this.actionSubscription?.unsubscribe();
     this.chatSubscription?.unsubscribe();
     this.userSubscription?.unsubscribe();
+    this.takeTrickSubscription?.unsubscribe();
   }
 
   start() {
@@ -180,6 +185,20 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     this.apiService.getGameState(this.getCurrentGameId()).subscribe(gameState => {
       this.gameState = gameState;
       this.playerInfosRotated = this.rotateLeft(this.gameState.playerInfos, this.seat ?? 0);
+
+      let trickEmpty = this.gameState.playerInfos.every(playerInfo => playerInfo.currentTrickCard === null);
+      if (!trickEmpty) {
+        this.takeTrickSubscription?.unsubscribe();
+        this.trickTaken = false;
+        this.trickTaking = false;
+      }
+      if (trickEmpty && !this.trickTaking && !this.trickTaken) {
+        this.trickTaking = true;
+        this.takeTrickSubscription = timer(2000).subscribe(() => {
+          this.trickTaking = false;
+          this.trickTaken = true;
+        });
+      }
     }, error => {
       if (error.status == 410)
         this.updateGameSession();

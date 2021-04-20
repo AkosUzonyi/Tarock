@@ -19,8 +19,8 @@
     <div id="card-table">
       <ng-template ngFor let-player [ngForOf]="playerInfosRotated" let-i="index">
         <img
-          *ngIf="player.currentTrickCard"
-          src="/assets/images/cards/{{player.currentTrickCard}}.png"
+          *ngIf="trickTaking ? player.previousTrickCard : player.currentTrickCard as card"
+          src="/assets/images/cards/{{card}}.png"
           [ngClass]="'played-card-' + i"
           [ngStyle]="{'z-index': ((seat || 0) + i - (gameState.previousTrickWinner || 0) + 4) % 4}"
           />

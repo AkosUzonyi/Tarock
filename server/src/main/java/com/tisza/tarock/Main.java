@@ -4,6 +4,8 @@ import com.tisza.tarock.server.*;
 import org.apache.log4j.*;
 import org.springframework.boot.*;
 import org.springframework.boot.autoconfigure.*;
+import org.springframework.boot.builder.*;
+import org.springframework.boot.web.servlet.support.*;
 import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.*;
 
@@ -13,7 +15,7 @@ import java.util.concurrent.*;
 @SpringBootApplication
 @Configuration
 @EnableScheduling
-public class Main
+public class Main extends SpringBootServletInitializer
 {
 	private static final Logger log = Logger.getLogger(Main.class);
 

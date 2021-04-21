@@ -35,6 +35,11 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'com.google.protobuf'
 apply plugin: 'idea'
+apply plugin: 'war'
+
+war {
+    enabled = true
+}
 
 mainClassName = "com.tisza.tarock.Main"
 
@@ -66,6 +71,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.modelmapper:modelmapper:2.3.9'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

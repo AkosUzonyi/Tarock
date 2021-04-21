@@ -18,10 +18,9 @@ public class BotService
 	@Autowired
 	private GameService gameService;
 
-	private final ScheduledExecutorService taskScheduler = Executors.newSingleThreadScheduledExecutor();
 	private final Random rnd = new Random();
 
-	public void executeBotActions(GameDB gameDB, Game game)
+	public void executeBotActions(GameDB gameDB, Game game, int extraDelay)
 	{
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{
@@ -33,8 +32,10 @@ public class BotService
 				continue;
 
 			Action botAction = getAction(game, seat);
-			int delay = getDelay(game, seat);
-			taskScheduler.schedule(() -> gameService.executeAction(gameDB.id, seat, botAction), delay, TimeUnit.MILLISECONDS);
+			int delay = getDelay(game, seat) + extraDelay;
+			gameService.executeAction(gameDB.id, seat, botAction, delay);
+
+			break;
 		}
 	}
 

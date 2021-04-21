@@ -13,6 +13,7 @@ import org.springframework.stereotype.*;
 import org.springframework.transaction.annotation.*;
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.stream.*;
 
 @Service
@@ -26,6 +27,8 @@ public class GameService
 	private GameSessionRepository gameSessionRepository;
 	@Autowired
 	private ListDeferredResultService<ActionDB> actionDeferredResultService;
+
+	private final ScheduledExecutorService taskScheduler = Executors.newSingleThreadScheduledExecutor();
 
 	public PlayerDB getPlayerFromSeat(GameDB gameDB, PlayerSeat seat)
 	{
@@ -49,6 +52,11 @@ public class GameService
 
 	public Game loadGame(int gameId)
 	{
+		return loadGame(gameId, false);
+	}
+
+	private Game loadGame(int gameId, boolean future)
+	{
 		GameDB gameDB = findGame(gameId);
 
 		List<Card> deck = gameDB.deckCards.stream().map(deckCardDB -> Card.fromId(deckCardDB.card)).collect(Collectors.toList());
@@ -56,10 +64,11 @@ public class GameService
 		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
 		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
 		game.start();
-		for (ActionDB a : gameDB.actions)
-			game.processAction(PlayerSeat.fromInt(a.seat), new Action(a.action));
 
-		botService.executeBotActions(gameDB, game);
+		long now = System.currentTimeMillis();
+		for (ActionDB actionDB : gameDB.actions)
+			if (future || actionDB.time < now)
+				game.processAction(PlayerSeat.fromInt(actionDB.seat), new Action(actionDB.action));
 
 		return game;
 	}
@@ -68,8 +77,12 @@ public class GameService
 	{
 		GameDB gameDB = findGame(gameId);
 		List<ActionDB> filteredActions = new ArrayList<>();
+		long now = System.currentTimeMillis();
 		for (ActionDB actionDB : gameDB.actions)
 		{
+			if (actionDB.time > now)
+				continue;
+
 			ActionDB newActionDB = new ActionDB();
 			newActionDB.game = actionDB.game;
 			newActionDB.ordinal = actionDB.ordinal;
@@ -117,14 +130,19 @@ public class GameService
 		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
 		game.start();
 
-		botService.executeBotActions(gameDB, game);
+		botService.executeBotActions(gameDB, game, 0);
+	}
+
+	public boolean executeAction(int gameId, PlayerSeat seat, Action action)
+	{
+		return executeAction(gameId, seat, action, 0);
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public boolean executeAction(int gameId, PlayerSeat seat, Action action)
+	public boolean executeAction(int gameId, PlayerSeat seat, Action action, int delay)
 	{
 		GameDB gameDB = findGame(gameId);
-		Game game = loadGame(gameId);
+		Game game = loadGame(gameId, true);
 
 		boolean success = game.processAction(seat, action);
 		if (!success)
@@ -135,11 +153,14 @@ public class GameService
 		actionDB.ordinal = gameDB.actions.size();
 		actionDB.seat = seat.asInt();
 		actionDB.action = action.getId();
-		actionDB.time = System.currentTimeMillis();
+		actionDB.time = System.currentTimeMillis() + delay;
 		gameDB.actions.add(actionDB);
-		actionDeferredResultService.notifyNewResult(gameDB.id);
+		if (delay <= 0)
+			actionDeferredResultService.notifyNewResult(gameDB.id);
+		else
+			taskScheduler.schedule(() -> actionDeferredResultService.notifyNewResult(gameDB.id), delay + 50, TimeUnit.MILLISECONDS);
 
-		botService.executeBotActions(gameDB, game);
+		botService.executeBotActions(gameDB, game, delay);
 
 		if (game.isFinished())
 		{

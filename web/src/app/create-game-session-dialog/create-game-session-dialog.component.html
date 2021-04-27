@@ -2,7 +2,7 @@
 
 <mat-dialog-content>
   <mat-form-field>
-    <mat-select placeholder="Játék típus" [(ngModel)]="gameType">
+    <mat-select placeholder="{{'game_type' | translate}}" [(ngModel)]="gameType">
       <mat-option value="paskievics">{{'game_types.paskievics' | translate}}</mat-option>
       <mat-option value="illusztralt">{{'game_types.illusztralt' | translate}}</mat-option>
       <mat-option value="magas">{{'game_types.magas' | translate}}</mat-option>
@@ -10,7 +10,7 @@
     </mat-select>
   </mat-form-field>
   <mat-form-field>
-    <mat-select placeholder="Duplakör" [(ngModel)]="doubleRoundType">
+    <mat-select placeholder="{{'double_round_type' | translate}}" [(ngModel)]="doubleRoundType">
       <mat-option value="none">{{'double_round_types.none' | translate}}</mat-option>
       <mat-option value="peculating">{{'double_round_types.peculating' | translate}}</mat-option>
       <mat-option value="stacking">{{'double_round_types.stacking' | translate}}</mat-option>

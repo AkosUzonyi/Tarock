@@ -2,13 +2,21 @@
 <div *ngIf="game && gameState && playerInfosRotated" id=game-session>
   <div id=upper-half>
     <div id="action-list">
-      <ng-template ngFor let-action [ngForOf]="actions">
+      <ng-template ngFor let-action [ngForOf]="actions" let-i="index">
+        <h2 *ngIf="!actions[i - 1]?.action?.startsWith('bid:') && action.action.startsWith('bid:')">{{'message_bidding' | translate}}</h2>
+        <h2 *ngIf="!actions[i - 1]?.action?.startsWith('fold:') && action.action.startsWith('fold:')">{{'message_folding' | translate}}</h2>
+        <h2 *ngIf="!actions[i - 1]?.action?.startsWith('call:') && action.action.startsWith('call:')">{{'message_calling' | translate}}</h2>
+        <h2 *ngIf="!actions[i - 1]?.action?.startsWith('announce:') && action.action.startsWith('announce:')">{{'message_announcing' | translate}}</h2>
         <p
           *ngIf="gameTranslateService.translateAction(action.action) as translated"
           >
           {{game.players[action.seat].user.name}}: {{translated}}
         </p>
       </ng-template>
+      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('bid:') && gameState.phase == 'bidding'">{{'message_bidding' | translate}}</h2>
+      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('fold:') && gameState.phase == 'folding'">{{'message_folding' | translate}}</h2>
+      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('call:') && gameState.phase == 'calling'">{{'message_calling' | translate}}</h2>
+      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('announce:') && gameState.phase == 'announcing'">{{'message_announcing' | translate}}</h2>
     </div>
     <div id="chat">
       <div id="chat-messages">

@@ -3,35 +3,48 @@
   flex-direction: column;
   height: 100%;
   padding: 20px;
+  min-width: 1280px;
+  min-height: 720px;
 }
 
 #upper-half {
-  flex-grow: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: row;
+  min-height: 0px;
 }
 
-#action-list {
-  width: 250px;
-  background-color: #BBB;
-  font-size: 18px;
-  text-align: center;
-  max-height: 500px;
+.game-session-vertical-box {
+  width: 15%;
+  height: 90%;
+  background-color: rgba(200, 200, 200, 0.7);
+  padding: 7px;
+  border: 1px solid;
+  border-radius: 7px;
   overflow: auto;
 }
 
+#action-list {
+  font-size: 18px;
+  min-height: 0;
+  text-align: center;
+}
+
 #chat {
-  width: 200px;
-  margin: 15px;
-  background-color: rgba(200, 100, 0, 0.3);
+  margin: 0 15px;
+  font-size: 16px;
   display: flex;
   flex-direction: column;
-  max-height: 500px;
+}
+
+#chat h1 {
+  text-align: center;
 }
 
 #chat-messages {
   overflow: auto;
   flex: 1 1 auto;
+
   display: flex;
   flex-direction: column;
 }
@@ -46,36 +59,38 @@
 
 .chat-username {
   border-radius: 5px;
-  background-color: rgba(200, 200, 200, 0.3);
+  background-color: rgba(200, 100, 0, 0.3);
 }
 
 #card-table {
   flex-grow: 1;
   position: relative;
+  min-width: 40vw;
 }
 
 #card-table img {
   position: absolute;
   height: auto;
-  width: 8vw;
+  max-width: 8vw;
+  max-height: 20vh;
   top: 50%;
   left: 50%;
 }
 
 .played-card-0 {
-  transform: translate(-50%, -50%) rotate(0deg) translate(0%, 70%);
+  transform: translate(-50%, -50%) rotate(0deg) translate(0%, 60%);
 }
 
 .played-card-1 {
-  transform: translate(-50%, -50%) rotate(-90deg) translate(0%, 70%);
+  transform: translate(-50%, -50%) rotate(-90deg) translate(0%, 60%);
 }
 
 .played-card-2 {
-  transform: translate(-50%, -50%) rotate(-180deg) translate(0%, 70%);
+  transform: translate(-50%, -50%) rotate(-180deg) translate(0%, 60%);
 }
 
 .played-card-3 {
-  transform: translate(-50%, -50%) rotate(-270deg) translate(0%, 70%);
+  transform: translate(-50%, -50%) rotate(-270deg) translate(0%, 60%);
 }
 
 .player-name {
@@ -133,7 +148,8 @@
 }
 
 #action-button-list {
-  width: 250px;
+  width: 15%;
+  height: 90%;
   overflow: auto;
 }
 
@@ -181,12 +197,12 @@
   flex-direction: row;
   justify-content: center;
   margin: 20px;
-  /*max-height: 10%;*/
 }
 
 #card-list img {
   padding: 0 5px;
-  max-width: 8%;
+  max-height: 20vh;
+  max-width: 8vw;
 }
 
 .card-selected {

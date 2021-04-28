@@ -1,7 +1,7 @@
 <button *ngIf="gameSession?.state === 'lobby'" (click)="start()">{{'lobby_start' | translate}}</button>
 <div *ngIf="game && gameState && playerInfosRotated" id=game-session>
   <div id=upper-half>
-    <div id="action-list">
+    <div id="action-list" class="game-session-vertical-box">
       <ng-template ngFor let-action [ngForOf]="actions" let-i="index">
         <h2 *ngIf="!actions[i - 1]?.action?.startsWith('bid:') && action.action.startsWith('bid:')">{{'message_bidding' | translate}}</h2>
         <h2 *ngIf="!actions[i - 1]?.action?.startsWith('fold:') && action.action.startsWith('fold:')">{{'message_folding' | translate}}</h2>
@@ -18,7 +18,8 @@
       <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('call:') && gameState.phase == 'calling'">{{'message_calling' | translate}}</h2>
       <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('announce:') && gameState.phase == 'announcing'">{{'message_announcing' | translate}}</h2>
     </div>
-    <div id="chat">
+    <div id="chat" class="game-session-vertical-box">
+      <h1>{{'chat' | translate}}</h1>
       <div id="chat-messages">
         <p *ngFor="let chat of chats"><span class="chat-username">{{chat.user.name}}:</span> {{chat.message}}</p>
       </div>

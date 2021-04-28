@@ -347,33 +347,22 @@ public class Game
 
 	public int calculateGamePoints(Team team)
 	{
-		boolean countSelfTeamSkart = true;
-		boolean countOpponentTeamSkart = false;
-
-		if (playerPairs.isSolo() && !isSoloIntentional)
-		{
-			if (team == Team.CALLER)
-				countOpponentTeamSkart = true;
-
-			if (team == Team.OPPONENT)
-				countSelfTeamSkart = false;
-		}
-
 		int points = 0;
 
 		for (PlayerSeat player : playerPairs.getPlayersInTeam(team))
 			for (Card c : getWonCards(player))
 				points += c.getPoints();
 
-		if (countSelfTeamSkart)
-			for (PlayerSeat player : playerPairs.getPlayersInTeam(team))
-				for (Card c : foldedCards.get(player))
-					points += c.getPoints();
+		boolean isCallerTeam = team == Team.CALLER;
+		boolean callerGetsAllFold = playerPairs.isSolo() && !isSoloIntentional;
+		for (PlayerSeat player : PlayerSeat.getAll())
+		{
+			boolean isCallerPlayer = player == playerPairs.getCaller();
 
-		if (countOpponentTeamSkart)
-			for (PlayerSeat player : playerPairs.getPlayersInTeam(team.getOther()))
+			if (callerGetsAllFold ? isCallerTeam : isCallerPlayer == isCallerTeam)
 				for (Card c : foldedCards.get(player))
 					points += c.getPoints();
+		}
 
 		return points;
 	}

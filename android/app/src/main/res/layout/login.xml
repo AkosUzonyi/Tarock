@@ -127,6 +127,7 @@
         app:layout_constraintRight_toLeftOf="@+id/button_right"
         android:layout_marginTop="@dimen/button_margin"
         android:background="@drawable/player_message_background"
+        android:visibility="gone"
     />
     <Button
         android:text="@string/logout"

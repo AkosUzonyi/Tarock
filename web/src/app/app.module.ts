@@ -19,6 +19,7 @@ import { httpInterceptorProviders } from './http-interceptors';
 import { CreateGameSessionDialogComponent } from './create-game-session-dialog/create-game-session-dialog.component';
 import { environment } from '../environments/environment';
 import { LoginComponent } from './login/login.component';
+import { AutoScrollDirective } from './_directives/auto-scroll.directive';
 
 export function httpTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -31,6 +32,7 @@ export function httpTranslateLoader(http: HttpClient) {
     GameSessionComponent,
     CreateGameSessionDialogComponent,
     LoginComponent,
+    AutoScrollDirective,
   ],
   imports: [
     BrowserModule,

@@ -38,7 +38,11 @@ public class GameService
 	public PlayerSeat getSeatFromPlayer(GameDB gameDB, PlayerDB playerDB)
 	{
 		int playerCount = gameDB.gameSession.players.size();
-		return PlayerSeat.fromInt((playerDB.ordinal - gameDB.beginnerPlayer + playerCount) % playerCount);
+		int seat = (playerDB.ordinal - gameDB.beginnerPlayer + playerCount) % playerCount;
+		if (seat < 0 || seat >= PlayerSeat.getAll().length)
+			return null;
+
+		return PlayerSeat.fromInt(seat);
 	}
 
 	public GameDB findGame(int gameId)

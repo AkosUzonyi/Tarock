@@ -232,11 +232,14 @@ public class TestController
 		if (player == null)
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
+		Action action = new Action(actionPostDTO.action);
+		PlayerSeat seat = gameService.getSeatFromPlayer(gameDB, player);
+		if (seat == null)
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
 		boolean success;
 		try
 		{
-			Action action = new Action(actionPostDTO.action);
-			PlayerSeat seat = gameService.getSeatFromPlayer(gameDB, player);
 			success = gameService.executeAction(gameId, seat, action);
 		}
 		catch (IllegalArgumentException e) //TODO: cleaner way?

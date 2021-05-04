@@ -24,6 +24,7 @@
   "lobby_create": "Lobby létrehozása",
   "lobby_enter": "Belépés a lobbyba",
   "lobby_start": "Lobby indítása",
+  "with_bots": "{{botCount}} robottal",
   "lobby_start_with_bots_confirm_title": "Biztosan elindítod a játékot robotokkal?",
   "lobby_start_with_bots_confirm_body": "A robotok véletlenszerűen döntenek, a játék <strong>nem</strong> élvezhető velük.<br>Hívd meg a barátaidat és játssz velük!",
   "lobby_start_with_bots_confirm_yes": "Indítás",

@@ -1,3 +1,20 @@
+#game-session-lobby {
+  max-width: 30%;
+  margin: 0 auto;
+  margin-top: 200px;
+  font-size: 30px;
+  text-align: center;
+}
+
+#game-session-lobby h1 {
+  font-size: 40px;
+}
+
+#game-session-lobby > * {
+  width: 100%;
+  margin-top: 40px;
+}
+
 #game-session {
   display: flex;
   flex-direction: column;

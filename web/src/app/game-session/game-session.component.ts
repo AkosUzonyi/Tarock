@@ -32,6 +32,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   actionSubscription: Subscription | null = null;
   chatSubscription: Subscription | null = null;
   userSubscription: Subscription | null = null;
+  updateGameSessionTimeout: any = null;
 
   chats: Chat[] = [];
   lastChatTime: number = 0;
@@ -66,6 +67,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     this.chatSubscription?.unsubscribe();
     this.userSubscription?.unsubscribe();
     this.takeTrickSubscription?.unsubscribe();
+    clearTimeout(this.updateGameSessionTimeout);
   }
 
   start() {
@@ -127,8 +129,10 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     this.apiService.getGameSession(this.gameSessionId).subscribe(gameSession => {
       const updateGame = this.gameSession?.currentGameId !== gameSession.currentGameId;
       this.gameSession = gameSession;
-      if (this.gameSession?.state === 'lobby')
+      if (this.gameSession?.state === 'lobby') {
         this.apiService.joinGameSession(this.gameSessionId).subscribe();
+        this.updateGameSessionTimeout = setTimeout(() => this.updateGameSession(), 1000);
+      }
       this.chats = [];
       this.lastChatTime = this.gameSession.createTime;
       this.pollChats();

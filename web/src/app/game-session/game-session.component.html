@@ -1,4 +1,8 @@
-<button *ngIf="gameSession?.state === 'lobby'" (click)="start()">{{'lobby_start' | translate}}</button>
+<div *ngIf="gameSession && gameSession.state === 'lobby'" id="game-session-lobby">
+  <h1>Játékosok</h1>
+  <p *ngFor="let player of gameSession.players">{{player.user.name}}</p>
+  <button *ngIf="gameSession?.state === 'lobby'" (click)="start()">{{'lobby_start' | translate}} <span *ngIf="gameSession.players.length < 4">{{ 'with_bots' | translate: { botCount: 4 - gameSession.players.length } }}</span></button>
+</div>
 <div *ngIf="game && gameState && playerInfosRotated" id=game-session>
   <div id=upper-half>
     <div id="action-list" class="game-session-vertical-box" appAutoScroll>

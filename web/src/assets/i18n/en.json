@@ -26,6 +26,7 @@
   "lobby_create": "Create lobby",
   "lobby_enter": "Enter the Lobby",
   "lobby_start": "Start lobby",
+  "with_bots": "with {{botCount}} bots",
   "lobby_start_with_bots_confirm_title": "Are you sure you want to start a game with robots?",
   "lobby_start_with_bots_confirm_body": "The bots make random decisions, the game is <strong>unenjoyable</strong> with them.",
   "lobby_start_with_bots_confirm_yes": "Start",

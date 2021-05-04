@@ -1,3 +1,2 @@
-ALTER TABLE game_session
-ADD state VARCHAR(255)
-DEFAULT "deleted"
+ALTER TABLE game_session ADD COLUMN state VARCHAR(255) NOT NULL DEFAULT "deleted";
+ALTER TABLE game_session ALTER COLUMN state DROP DEFAULT;

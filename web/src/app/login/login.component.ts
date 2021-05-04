@@ -18,14 +18,18 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.authService.logout();
-
     this.userSubscription = this.authService.getUserObservable().subscribe(user => {
-      if (user !== null) {
-        const returnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl') || '/';
-        this.router.navigateByUrl(returnUrl, { replaceUrl: true });
-      }
+      if (user !== null)
+        this.navigateBack();
     });
+
+    if (this.authService.getUser() !== null)
+      this.navigateBack();
+  }
+
+  navigateBack() {
+    const returnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl') || '/';
+    this.router.navigateByUrl(returnUrl, { replaceUrl: true });
   }
 
   ngOnDestroy() {

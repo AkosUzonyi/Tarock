@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.*;
 
 @RestController
-public class TestController
+public class MainController
 {
 	@Autowired
 	private UserRepository userRepository;

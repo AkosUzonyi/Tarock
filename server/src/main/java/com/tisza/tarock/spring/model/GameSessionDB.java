@@ -15,12 +15,10 @@ public class GameSessionDB
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public int id;
 
-	//@Enumerated(EnumType.STRING) //TODO: lowercase
 	public String type;
 
 	public String state;
 
-	//@Enumerated(EnumType.STRING)  //TODO: lowercase
 	public String doubleRoundType;
 
 	@JsonIgnore

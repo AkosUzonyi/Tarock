@@ -108,7 +108,6 @@ public class TestController
 	@GetMapping("/gameSessions/{gameSessionId}")
 	public ResponseEntity<GameSessionDB> gameSession(@PathVariable int gameSessionId)
 	{
-		//TODO: return in deleted state or 404?
 		return new ResponseEntity<>(gameSessionService.findGameSession(gameSessionId), HttpStatus.OK);
 	}
 
@@ -242,7 +241,7 @@ public class TestController
 		{
 			success = gameService.executeAction(gameId, seat, action);
 		}
-		catch (IllegalArgumentException e) //TODO: cleaner way?
+		catch (IllegalArgumentException e)
 		{
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}

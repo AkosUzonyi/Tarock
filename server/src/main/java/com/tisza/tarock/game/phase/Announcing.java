@@ -145,6 +145,7 @@ class Announcing extends Phase implements IAnnouncing
 		if (shouldHkpBeAnnounced())
 			list.remove(new AnnouncementContra(Announcements.jatek, 1));
 
+		Collections.sort(list);
 		return list;
 	}
 

@@ -66,44 +66,26 @@ public class Announcements
 	{
 		add(jatek);
 		add(hkp);
+		add(nyolctarokk);
+		add(kilenctarokk);
 		add(trull);
+		add(negykiraly);
 		for (int s = 0; s < 4; s++)
 		{
 			bandak[s] = new Banda(s);
 			add(bandak[s]);
 		}
-		add(negykiraly);
-		add(nyolctarokk);
-		add(kilenctarokk);
 		add(dupla);
 		add(hosszuDupla);
 		add(centrum);
 		add(kismadar);
 		add(nagymadar);
-		kings[0] = new Kings(1);
-		add(kings[0]);
+		add(kings[0] = new Kings(1));
 		add(zaroparos);
 		add(szinesites);
 		add(volat);
-		kings[1] = new Kings(2);
-		add(kings[1]);
-		kings[2] = new Kings(3);
-		add(kings[2]);
-		
-		for (int s = 0; s < 4; s++)
-		{
-			Szincsalad kisszincsalad = new Szincsalad(s, true);
-			kisszincsaladok[s] = kisszincsalad;
-			add(kisszincsalad);
-		}
-		
-		for (int s = 0; s < 4; s++)
-		{
-			Szincsalad nagyszincsalad = new Szincsalad(s, false);
-			nagyszincsaladok[s] = nagyszincsalad;
-			add(nagyszincsalad);
-		}
-		
+		add(kings[1] = new Kings(2));
+		add(kings[2] = new Kings(3));
 		add(parosfacan);
 		add(xxiFogas);
 		
@@ -147,6 +129,20 @@ public class Announcements
 				ultimok.get(card).put(trickIndex, announcement);
 				add(announcement);
 			}
+		}
+
+		for (int s = 0; s < 4; s++)
+		{
+			Szincsalad kisszincsalad = new Szincsalad(s, true);
+			kisszincsaladok[s] = kisszincsalad;
+			add(kisszincsalad);
+		}
+
+		for (int s = 0; s < 4; s++)
+		{
+			Szincsalad nagyszincsalad = new Szincsalad(s, false);
+			nagyszincsaladok[s] = nagyszincsalad;
+			add(nagyszincsalad);
 		}
 	}
 }

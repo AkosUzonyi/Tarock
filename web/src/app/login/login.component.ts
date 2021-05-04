@@ -21,8 +21,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authService.logout();
 
     this.userSubscription = this.authService.getUserObservable().subscribe(user => {
-      if (user !== null)
-       this.router.navigateByUrl(this.activatedRoute.snapshot.queryParamMap.get('returnUrl') || '/');
+      if (user !== null) {
+        const returnUrl = this.activatedRoute.snapshot.queryParamMap.get('returnUrl') || '/';
+        this.router.navigateByUrl(returnUrl, { replaceUrl: true });
+      }
     });
   }
 

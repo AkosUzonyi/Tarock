@@ -19,11 +19,13 @@ public class PlayerCards
 	public void addCard(Card c)
 	{
 		cards.add(c);
+		Collections.sort(cards);
 	}
 
 	public void addCards(List<? extends Card> c)
 	{
 		cards.addAll(c);
+		Collections.sort(cards);
 	}
 
 	public boolean removeCard(Card c)

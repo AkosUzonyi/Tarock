@@ -54,6 +54,23 @@ public class SuitCard extends Card
 	}
 
 	@Override
+	public int compareTo(Card otherCard)
+	{
+		if (otherCard instanceof TarockCard)
+			return -1;
+
+		SuitCard otherSuitCard = (SuitCard)otherCard;
+
+		if (suit != otherSuitCard.suit)
+			return suit - otherSuitCard.suit;
+
+		if (value != otherSuitCard.value)
+			return value - otherSuitCard.value;
+
+		return 0;
+	}
+
+	@Override
 	public String getID()
 	{
 		return suitToString(suit) + value;

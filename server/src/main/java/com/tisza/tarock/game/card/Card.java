@@ -2,7 +2,7 @@ package com.tisza.tarock.game.card;
 
 import java.util.*;
 
-public abstract class Card
+public abstract class Card implements Comparable<Card>
 {
 	private static final Map<String, Card> idToCard = new LinkedHashMap<>();
 	private static final TarockCard[] tarockCards = new TarockCard[22];

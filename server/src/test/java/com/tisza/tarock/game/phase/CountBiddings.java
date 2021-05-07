@@ -82,7 +82,6 @@ public class CountBiddings
 	private Game createNewGame()
 	{
 		Game game = new Game(GameType.PASKIEVICS, new ArrayList<>(Card.getAll()), 1);
-		game.start();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{

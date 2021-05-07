@@ -3,7 +3,6 @@ package com.tisza.tarock.game.phase;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.message.*;
 
 import java.util.*;
 
@@ -16,8 +15,6 @@ public class Game
 
 	private Set<TeamInfo> teamInfos = new HashSet<>();
 	private PlayerSeatMap<Boolean> turns = new PlayerSeatMap<>();
-
-	private List<EventInstance> newEvents = new ArrayList<>();
 
 	private Phase currentPhase;
 
@@ -65,10 +62,7 @@ public class Game
 		this.gameType = gameType;
 		this.deck = deck;
 		this.pointMultiplier = pointMultiplier;
-	}
 
-	public void start()
-	{
 		List<Card> cardsToDeal = new ArrayList<>(deck);
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
@@ -79,20 +73,12 @@ public class Game
 		}
 		talon = cardsToDeal;
 
-		for (PlayerSeat player : PlayerSeat.getAll())
-			sendEvent(player, Event.playerCards(playersCards.get(player).clone(), playersCards.get(player).canBeThrown(gameType)));
-
 		changePhase(new Bidding(this));
 	}
 
 	public boolean processAction(PlayerSeat player, Action action)
 	{
 		return action.handle(player, currentPhase);
-	}
-
-	public EventInstance popNextEvent()
-	{
-		return newEvents.isEmpty() ? null : newEvents.remove(0);
 	}
 
 	void finish()
@@ -136,20 +122,9 @@ public class Game
 		return talon;
 	}
 
-	public void broadcastEvent(Event event)
-	{
-		newEvents.add(EventInstance.broadcast(event));
-	}
-
-	public void sendEvent(PlayerSeat player, Event event)
-	{
-		newEvents.add(new EventInstance(player, event));
-	}
-
 	void changePhase(Phase phase)
 	{
 		currentPhase = phase;
-		broadcastEvent(Event.phaseChanged(currentPhase.asEnum()));
 		currentPhase.onStart();
 	}
 
@@ -177,7 +152,6 @@ public class Game
 	{
 		turns.fill(false);
 		turns.put(player, true);
-		broadcastEvent(Event.turn(player));
 	}
 
 	void setTurnOf(PlayerSeat player, boolean turn)
@@ -320,33 +294,25 @@ public class Game
 
 	void addNewTeamInfo(PlayerSeat player, PlayerSeat otherPlayer)
 	{
-		if (teamInfos.add(new TeamInfo(player, otherPlayer)))
-			sendEvent(player, Event.playerTeamInfo(otherPlayer, getPlayerPairs().getTeam(otherPlayer)));
+		teamInfos.add(new TeamInfo(player, otherPlayer));
 	}
 
 	void revealAllTeamInfoOf(PlayerSeat player)
 	{
 		for (PlayerSeat p : PlayerSeat.getAll())
-		{
 			addNewTeamInfo(p, player);
-		}
-		broadcastEvent(Event.playerTeamInfo(player, getPlayerPairs().getTeam(player)));
 	}
 
 	void revealAllTeamInfoFor(PlayerSeat player)
 	{
 		for (PlayerSeat p : PlayerSeat.getAll())
-		{
 			addNewTeamInfo(player, p);
-		}
 	}
 
 	void revealAllTeamInfo()
 	{
 		for (PlayerSeat player : PlayerSeat.getAll())
-		{
 			revealAllTeamInfoOf(player);
-		}
 	}
 
 	public boolean isTeamInfoGlobalOf(PlayerSeat player)
@@ -416,8 +382,6 @@ public class Game
 				announcementResults.add(new AnnouncementResult(ac, 0, team));
 			}
 		}
-
-		broadcastEvent(Event.announcementStatistics(0, 0, announcementResults, 0, pointMultiplier));
 	}
 
 	void calculateStatistics()
@@ -469,8 +433,6 @@ public class Game
 		}
 		points[playerPairs.getCaller().asInt()] += sumPoints * 2;
 		points[playerPairs.getCalled().asInt()] += sumPoints * 2;
-
-		broadcastEvent(Event.announcementStatistics(callerCardPoints, opponentCardPoints, announcementResults, sumPoints, pointMultiplier));
 	}
 
 	public int getCallerCardPoints()

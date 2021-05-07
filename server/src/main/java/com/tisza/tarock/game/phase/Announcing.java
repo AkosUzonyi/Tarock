@@ -1,10 +1,8 @@
 package com.tisza.tarock.game.phase;
 
-
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.message.*;
 
 import java.util.*;
 import java.util.stream.*;
@@ -64,9 +62,6 @@ class Announcing extends Phase implements IAnnouncing
 				game.revealAllTeamInfoOf(player);
 		}
 
-		game.broadcastEvent(Event.announce(player, ac));
-		sendAvailableAnnouncements();
-
 		return true;
 	}
 	
@@ -89,11 +84,9 @@ class Announcing extends Phase implements IAnnouncing
 		currentPlayer = currentPlayer.nextPlayer();
 		currentPlayerAnnounced = false;
 
-		game.broadcastEvent(Event.announcePassz(player));
-
 		if (!isFinished())
 		{
-			sendAvailableAnnouncements();
+			game.turn(currentPlayer);
 		}
 		else
 		{
@@ -111,10 +104,10 @@ class Announcing extends Phase implements IAnnouncing
 	private List<AnnouncementContra> getAvailableAnnouncements()
 	{
 		List<AnnouncementContra> list = new ArrayList<>();
-		
+
 		Team currentPlayerTeam = getCurrentTeam();
 		boolean needsIdentification = needsIdentification();
-		
+
 		for (Team origAnnouncer : Team.values())
 		{
 			for (Announcement a : Announcements.getAll())
@@ -136,23 +129,17 @@ class Announcing extends Phase implements IAnnouncing
 							origAnnouncer == currentPlayerTeam &&
 							a.canBeAnnounced(this) &&
 							game.getGameType().hasParent(a.getGameType())
-						)
+					)
 						list.add(new AnnouncementContra(a, 0));
 				}
 			}
 		}
-		
+
 		if (shouldHkpBeAnnounced())
 			list.remove(new AnnouncementContra(Announcements.jatek, 1));
 
 		Collections.sort(list);
 		return list;
-	}
-
-	private void sendAvailableAnnouncements()
-	{
-		game.sendEvent(currentPlayer, Event.availableAnnouncements(getAvailableAnnouncements()));
-		game.turn(currentPlayer);
 	}
 
 	@Override

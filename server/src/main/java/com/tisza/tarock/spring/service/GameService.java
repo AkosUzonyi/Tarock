@@ -4,7 +4,6 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
-import com.tisza.tarock.message.*;
 import com.tisza.tarock.spring.exception.*;
 import com.tisza.tarock.spring.model.*;
 import com.tisza.tarock.spring.repository.*;
@@ -67,7 +66,6 @@ public class GameService
 		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
 		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
 		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
-		game.start();
 
 		long now = System.currentTimeMillis();
 		for (ActionDB actionDB : gameDB.actions)
@@ -132,7 +130,6 @@ public class GameService
 		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
 		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
 		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
-		game.start();
 
 		botService.executeBotActions(gameDB, game, 0);
 	}

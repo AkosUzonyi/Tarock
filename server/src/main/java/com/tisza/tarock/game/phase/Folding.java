@@ -3,10 +3,8 @@ package com.tisza.tarock.game.phase;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
-import com.tisza.tarock.message.*;
 
 import java.util.*;
-import java.util.stream.*;
 
 class Folding extends Phase
 {
@@ -55,8 +53,6 @@ class Folding extends Phase
 			List<Card> cardsFromTalon = remainingCards.subList(0, cardCount);
 			PlayerCards playerCards = game.getPlayerCards(player);
 			playerCards.addCards(cardsFromTalon);
-			game.sendEvent(player, Event.playerCards(playerCards.clone(), canThrowCards(player)));
-			game.sendEvent(player, Event.turn(player));
 			if (cardsFromTalon.isEmpty())
 				fold(player, Collections.emptyList());
 			cardsFromTalon.clear();
@@ -65,10 +61,7 @@ class Folding extends Phase
 		}
 
 		if (game.getPlayerCards(game.getBidWinnerPlayer()).getCards().stream().noneMatch(Card::isHonor))
-		{
-			game.broadcastEvent(Event.throwCards(player));
 			game.changePhase(new PendingNewGame(game, true));
-		}
 	}
 	
 	@Override
@@ -112,19 +105,9 @@ class Folding extends Phase
 		foldingPlayerCards.removeCards(cardsToSkart);
 		donePlayer.put(player, true);
 		game.setTurnOf(player, false);
-		game.sendEvent(player, Event.playerCards(foldingPlayerCards.clone(), false));
-		game.broadcastEvent(Event.foldDone(player));
 
 		if (isFinished())
-		{
-			game.broadcastEvent(Event.foldTarock(tarockCounts));
-
-			List<Card> callerSkartedTarocks = game.getSkart(game.getBidWinnerPlayer()).stream().filter(c -> c instanceof TarockCard).collect(Collectors.toList());
-			if (!callerSkartedTarocks.isEmpty())
-				game.broadcastEvent(Event.fold(game.getBidWinnerPlayer(), callerSkartedTarocks));
-
 			game.changePhase(new Calling(game));
-		}
 
 		return true;
 	}

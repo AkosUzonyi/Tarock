@@ -2,7 +2,6 @@ package com.tisza.tarock.game.phase;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.message.*;
 import org.apache.log4j.*;
 
 import java.util.*;
@@ -79,7 +78,6 @@ abstract class Phase implements ActionHandler
 		if (!canThrowCards(player))
 			return false;
 
-		game.broadcastEvent(Event.throwCards(player));
 		game.changePhase(new PendingNewGame(game, true));
 		return true;
 	}

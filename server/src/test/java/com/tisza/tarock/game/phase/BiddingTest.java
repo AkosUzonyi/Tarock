@@ -2,7 +2,6 @@ package com.tisza.tarock.game.phase;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.message.*;
 import org.junit.*;
 import org.junit.runner.*;
 import org.junit.runners.*;
@@ -97,7 +96,6 @@ public class BiddingTest
 	public void test()
 	{
 		Game game = new Game(GameType.PASKIEVICS, new ArrayList<>(Card.getAll()), 1);
-		game.start();
 
 		for (PlayerSeat seat : PlayerSeat.getAll())
 		{

@@ -3,7 +3,6 @@ package com.tisza.tarock.game.phase;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
-import com.tisza.tarock.message.*;
 
 import java.util.*;
 import java.util.stream.*;
@@ -40,7 +39,7 @@ class Calling extends Phase
 					canCallAnyTarock = true;
 		}
 
-		sendAvailableCalls();
+		game.turn(callerPlayer);
 	}
 
 	@Override
@@ -94,16 +93,9 @@ class Calling extends Phase
 		if (game.getSkart(callerPlayer).contains(card))
 			game.revealAllTeamInfo();
 
-		game.broadcastEvent(Event.call(player, card));
 		game.changePhase(new Announcing(game));
 
 		return true;
-	}
-
-	private void sendAvailableCalls()
-	{
-		game.sendEvent(callerPlayer, Event.availableCalls(getCallableCards()));
-		game.turn(callerPlayer);
 	}
 
 	@Override

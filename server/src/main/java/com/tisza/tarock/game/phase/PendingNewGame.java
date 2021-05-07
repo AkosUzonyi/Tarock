@@ -1,7 +1,6 @@
 package com.tisza.tarock.game.phase;
 
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.message.*;
 
 class PendingNewGame extends Phase
 {
@@ -30,7 +29,6 @@ class PendingNewGame extends Phase
 		}
 
 		game.setAllTurn();
-		game.broadcastEvent(Event.pendingNewGame());
 	}
 
 	@Override
@@ -42,7 +40,6 @@ class PendingNewGame extends Phase
 			return false;
 
 		game.setTurnOf(player, false);
-		game.broadcastEvent(Event.readyForNewGame(player));
 
 		if (allReady())
 			game.finish();

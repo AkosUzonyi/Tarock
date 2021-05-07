@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
+import { animate, style, transition, trigger } from '@angular/animations';
 import { ApiService } from '../_services/api.service';
 import { Action, Chat, Game, GameSession, GameState, GameStatePlayerInfo } from '../_models/dto';
 import { AuthService } from '../_services/auth.service';
@@ -10,6 +11,14 @@ import { GameTranslateService } from '../_services/game-translate.service';
   selector: 'app-game-session',
   templateUrl: './game-session.component.html',
   styleUrls: ['./game-session.component.css'],
+  animations: [
+    trigger('actionBubbleAnimation', [
+      transition(':leave', [
+        style({ opacity: '1' }),
+        animate('0.5s linear', style({ opacity: '0' })),
+      ]),
+    ]),
+  ],
 })
 export class GameSessionComponent implements OnInit, OnDestroy {
   gameSessionId: number;
@@ -22,6 +31,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   game: Game | null = null;
   gameState: GameState | null = null;
   playerInfosRotated: GameStatePlayerInfo[] | null = null;
+  actionBubbleContent: (string | null)[] = Array(4).fill(null);
 
   cardsToFold: string[] = [];
 
@@ -148,7 +158,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
       this.nextActionOrdinal = 0;
       this.calculateSeat();
       this.updateGameState();
-      this.pollActions();
+      this.pollActions(true);
     });
   }
 
@@ -165,17 +175,33 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     });
   }
 
-  private pollActions() {
+  private pollActions(init: boolean) {
     this.actionSubscription?.unsubscribe();
     this.actionSubscription =
     this.apiService.getActions(this.getCurrentGameId(), this.nextActionOrdinal)
     .subscribe(newActions => {
       this.actions = this.actions.concat(newActions);
+
+      if (!init) {
+        for (let action of newActions) {
+          const pos = this.getPositionFromSeat(action.seat);
+          this.actionBubbleContent[pos] = action.action;
+          setTimeout(() => {
+            if (this.actionBubbleContent[pos] === action.action)
+              this.actionBubbleContent[pos] = null;
+          }, 2500);
+        }
+      }
+
       if (this.actions.length >= 1)
         this.nextActionOrdinal = this.actions[this.actions.length - 1].ordinal + 1;
       this.updateGameState();
-      this.pollActions();
+      this.pollActions(false);
     });
+  }
+
+  private getPositionFromSeat(seat: number): number {
+    return (seat - (this.seat ?? 0) + 4) % 4;
   }
 
   private rotateLeft(list: any[], n: number) {

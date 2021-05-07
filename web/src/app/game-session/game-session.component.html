@@ -51,6 +51,13 @@
           >
           {{player.user.name}}
         </p>
+        <p
+          *ngIf="actionBubbleContent[i] as content"
+          [ngClass]="'action-bubble action-bubble-' + i"
+          @actionBubbleAnimation
+          >
+          {{gameTranslateService.translateAction(content)}}
+        </p>
       </ng-template>
       <table *ngIf="gameState.phase === 'end'">
         <tr class="statistics-table-team">

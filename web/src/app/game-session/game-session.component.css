@@ -155,6 +155,38 @@
   writing-mode: vertical-rl;
 }
 
+.action-bubble {
+  padding: 10px;
+  position: absolute;
+  font-size: 20px;
+  background-color: rgba(50, 160, 160, 0.8);
+  border-radius: 5px;
+}
+
+.action-bubble-0 {
+  bottom: 70px;
+  left: 50%;
+  transform: translate(-50%, 0%);
+}
+
+.action-bubble-1 {
+  right: 70px;
+  top: 50%;
+  transform: translate(0%, -50%);
+}
+
+.action-bubble-2 {
+  top: 70px;
+  left: 50%;
+  transform: translate(-50%, 0%);
+}
+
+.action-bubble-3 {
+  left: 70px;
+  top: 50%;
+  transform: translate(0%, -50%);
+}
+
 #button-new-game {
   position: absolute;
   bottom: 60px;

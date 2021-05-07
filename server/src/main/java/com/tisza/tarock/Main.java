@@ -19,9 +19,6 @@ public class Main extends SpringBootServletInitializer
 {
 	private static final Logger log = Logger.getLogger(Main.class);
 
-	public static final File STATIC_DIR = new File("/usr/share/tarock");
-	public static final ScheduledExecutorService GAME_EXECUTOR_SERVICE = new GameExecutorService();
-
 	public static void main(String[] args)
 	{
 		SpringApplication.run(Main.class, args);

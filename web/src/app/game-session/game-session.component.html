@@ -34,12 +34,16 @@
         <img
           *ngIf="trickTaking ? player.previousTrickCard : player.currentTrickCard as card"
           src="/assets/images/cards/{{card}}.png"
-          [ngClass]="'played-card-' + i"
+          [ngClass]="'played-card played-card-' + i"
           [ngStyle]="{'z-index': ((seat || 0) + i - (gameState.previousTrickWinner || 0) + 4) % 4}"
           />
         <p
-          class="player-name"
           [ngClass]="{
+            'player-name': true,
+            'player-name-0': i === 0,
+            'player-name-1': i === 1,
+            'player-name-2': i === 2,
+            'player-name-3': i === 3,
             'player-name-turn': player.turn,
             'player-name-caller': player.team === 'caller',
             'player-name-opponent': player.team === 'opponent'

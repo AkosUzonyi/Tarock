@@ -1,7 +1,6 @@
 package com.tisza.tarock.game.phase;
 
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.message.*;
 
 class PendingNewGame extends Phase
 {

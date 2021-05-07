@@ -4,7 +4,6 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
 import com.tisza.tarock.game.phase.*;
-import com.tisza.tarock.message.*;
 import com.tisza.tarock.spring.exception.*;
 import com.tisza.tarock.spring.model.*;
 import com.tisza.tarock.spring.repository.*;

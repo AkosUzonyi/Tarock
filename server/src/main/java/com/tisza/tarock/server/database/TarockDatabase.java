@@ -4,14 +4,12 @@ import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.doubleround.*;
-import com.tisza.tarock.message.*;
 import io.reactivex.*;
 import io.reactivex.schedulers.*;
 import org.apache.log4j.*;
 import org.davidmoten.rx.jdbc.*;
 import org.davidmoten.rx.jdbc.tuple.*;
 
-import java.io.*;
 import java.util.*;
 
 public class TarockDatabase

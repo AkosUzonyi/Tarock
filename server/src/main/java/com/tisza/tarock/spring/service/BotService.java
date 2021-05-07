@@ -4,13 +4,11 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
 import com.tisza.tarock.game.phase.*;
-import com.tisza.tarock.message.*;
 import com.tisza.tarock.spring.model.*;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.*;
 
 import java.util.*;
-import java.util.concurrent.*;
 
 @Service
 public class BotService

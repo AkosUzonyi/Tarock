@@ -1,7 +1,6 @@
 package com.tisza.tarock.server.net;
 
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.message.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.server.*;
 

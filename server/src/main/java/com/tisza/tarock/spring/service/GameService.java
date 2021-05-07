@@ -66,7 +66,6 @@ public class GameService
 		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
 		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
 		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
-		game.start();
 
 		long now = System.currentTimeMillis();
 		for (ActionDB actionDB : gameDB.actions)
@@ -131,7 +130,6 @@ public class GameService
 		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
 		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
 		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
-		game.start();
 
 		botService.executeBotActions(gameDB, game, 0);
 	}

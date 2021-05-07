@@ -9,12 +9,6 @@ import java.util.*;
 
 public class Game
 {
-	public EventInstance popNextEvent()
-	{
-		return null;
-	}
-	public void start() {}
-
 	public static final int ROUND_COUNT = 9;
 
 	private final GameType gameType;

@@ -261,6 +261,9 @@ class Announcing extends Phase implements IAnnouncing
 	@Override
 	public boolean shouldHkpBeAnnounced()
 	{
+		if (currentPlayer == game.getPlayerPairs().getCaller())
+			return false;
+
 		if (isAnnounced(getCurrentTeam(), Announcements.hkp))
 			return false;
 

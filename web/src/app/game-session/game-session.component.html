@@ -52,11 +52,11 @@
           {{player.user.name}}
         </p>
         <p
-          *ngIf="actionBubbleContent[i] as content"
+          *ngIf="gameTranslateService.translateAction(actionBubbleContent[i] || '') as text"
           [ngClass]="'action-bubble action-bubble-' + i"
           @actionBubbleAnimation
           >
-          {{gameTranslateService.translateAction(content)}}
+          {{text}}
         </p>
       </ng-template>
       <table *ngIf="gameState.phase === 'end'">

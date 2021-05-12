@@ -96,6 +96,11 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     this.apiService.postAction(this.getCurrentGameId(), action).subscribe();
   }
 
+  foldCards() {
+    this.executeAction('fold:' + this.cardsToFold.join(','));
+    this.cardsToFold = [];
+  }
+
   sendChat() {
     if (this.gameSession === null)
       return;
@@ -156,6 +161,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
       this.game = game;
       this.actions = [];
       this.nextActionOrdinal = 0;
+      this.cardsToFold = [];
       this.calculateSeat();
       this.updateGameState();
       this.pollActions(true);

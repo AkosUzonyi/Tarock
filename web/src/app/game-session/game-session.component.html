@@ -116,7 +116,7 @@
       id="button-fold"
       *ngIf="gameState.phase === 'folding'"
       [disabled]="gameState.playerInfos[seat].cards.length - cardsToFold.length !== 9"
-      (click)="executeAction('fold:' + this.cardsToFold.join(','))"
+      (click)="foldCards()"
       >
       {{'fold' | translate}}
     </button>

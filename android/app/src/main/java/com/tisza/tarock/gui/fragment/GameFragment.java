@@ -24,7 +24,6 @@ import com.tisza.tarock.gui.adapter.*;
 import com.tisza.tarock.gui.misc.*;
 import com.tisza.tarock.gui.view.*;
 import com.tisza.tarock.gui.viewmodel.*;
-import com.tisza.tarock.proto.*;
 import com.tisza.tarock.zebisound.*;
 
 import java.util.*;
@@ -236,8 +235,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		lobbyStartButton = messagesFrame.findViewById(R.id.lobby_start_button);
 		lobbyStartButton.setOnClickListener(v ->
 		{
-			MainProto.Message startMessage = MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build();
-
 			if (gameViewModel.getGameSession().getValue().getPlayers().size() >= 4)
 				gameViewModel.startGameSession();
 			else

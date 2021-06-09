@@ -5,6 +5,7 @@ import { GameSessionComponent } from './game-session/game-session.component';
 import { LoginComponent } from './login/login.component';
 
 const routes: Routes = [
+  { path: '', redirectTo: '/gameSessions', pathMatch: 'full' },
   { path: 'gameSessions', component: GameSessionListComponent },
   { path: 'gameSessions/:id', component: GameSessionComponent },
   { path: 'login', component: LoginComponent },

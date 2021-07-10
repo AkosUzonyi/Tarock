@@ -183,7 +183,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		{
 			MainProto.Message startMessage = MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build();
 
-			if (gameInfo.getUsers().size() >= 4)
+			if (gameSession.getUsers().size() >= 4)
 				connectionViewModel.sendMessage(startMessage);
 			else
 				new AlertDialog.Builder(getContext())
@@ -262,7 +262,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				.build())
 				.build());
 
-		connectionViewModel.getGameSessionByID(gameSessionID).observe(this, this::onGameInfoUpdate);
+		connectionViewModel.getGameSessionByID(gameSessionID).observe(this, this::onGameSessionUpdate);
 		connectionViewModel.getUsers().observe(this, u -> users = u);
 
 		return contentView;
@@ -314,11 +314,11 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			skartView.setVisibility(View.GONE);
 	}
 
-	private void onGameInfoUpdate(GameInfo gameInfo)
+	private void onGameSessionUpdate(GameSession gameSession)
 	{
-		this.gameInfo = gameInfo;
+		this.gameSession = gameSession;
 
-		if (gameInfo == null)
+		if (gameSession == null)
 		{
 			getActivity().getSupportFragmentManager().popBackStack();
 			return;
@@ -326,18 +326,18 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		updateSeat();
 
-		usersAdapter.setUsers(gameInfo.getUsers());
+		usersAdapter.setUsers(gameSession.getUsers());
 
 		Set<String> firstNames = new HashSet<>();
 		Set<String> duplicateFirstNames = new HashSet<>();
-		for (User user : gameInfo.getUsers())
+		for (User user : gameSession.getUsers())
 		{
 			String firstName = getFirstName(user.getName());
 			if (!firstNames.add(firstName))
 				duplicateFirstNames.add(firstName);
 		}
 		shortUserNames = new ArrayList<>();
-		for (User user : gameInfo.getUsers())
+		for (User user : gameSession.getUsers())
 		{
 			String firstName = getFirstName(user.getName());
 			if (!duplicateFirstNames.contains(firstName))
@@ -347,13 +347,13 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 		statisticsPointsAdapter.setNames(shortUserNames);
 
-		int userCount = gameInfo.getUsers().size();
+		int userCount = gameSession.getUsers().size();
 		if (userCount >= 4)
 			lobbyStartButton.setText(R.string.lobby_start);
 		else
 			lobbyStartButton.setText(getResources().getQuantityString(R.plurals.lobby_start_with_bots, 4 - userCount, 4 - userCount));
 
-		switch (gameInfo.getState())
+		switch (gameSession.getState())
 		{
 			case LOBBY:
 				lobbyStartButton.setVisibility(View.VISIBLE);
@@ -371,15 +371,15 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 
 		boolean soundsEnabled = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("sounds", true);
-		zebiSounds.setEnabled(soundsEnabled && gameInfo.getType() == GameType.ZEBI && gameInfo.containsUser(121));
+		zebiSounds.setEnabled(soundsEnabled && gameSession.getType() == GameType.ZEBI && gameSession.containsUser(121));
 	}
 
 	private User getUserOfPlayer(int player)
 	{
-		if (gameInfo == null || gameInfo.getState() != GameSessionState.GAME)
+		if (gameSession == null || gameSession.getState() != GameSessionState.GAME)
 			return null;
 
-		return gameInfo.getUsers().get((beginnerPlayerIndex + player) % gameInfo.getUsers().size());
+		return gameSession.getUsers().get((beginnerPlayerIndex + player) % gameSession.getUsers().size());
 	}
 
 	private int getPlayerOfUser(int userID)
@@ -402,7 +402,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (user == null)
 			return getString(R.string.empty_seat);
 
-		return shortUserNames.get(gameInfo.getUsers().indexOf(user));
+		return shortUserNames.get(gameSession.getUsers().indexOf(user));
 	}
 
 	private void updateSeat()
@@ -427,7 +427,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private List<User> users;
 	private List<String> shortUserNames;
-	private GameInfo gameInfo;
+	private GameSession gameSession;
 	private int myUserID;
 	private List<Card> myCards;
 	private int seat = -1;

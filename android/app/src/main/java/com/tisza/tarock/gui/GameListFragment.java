@@ -45,7 +45,7 @@ public class GameListFragment extends MainActivityFragment
 		});
 
 		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
-		connectionViewModel.getGames().observe(this, v -> updateList());
+		connectionViewModel.getGameSessions().observe(this, v -> updateList());
 		connectionViewModel.getUserID().observe(this, v -> updateList());
 
 		View downloadCsvButton = view.findViewById(R.id.download_csv_button);
@@ -59,6 +59,6 @@ public class GameListFragment extends MainActivityFragment
 
 	private void updateList()
 	{
-		gameListAdapter.setData(connectionViewModel.getGames().getValue(), connectionViewModel.getUserID().getValue());
+		gameListAdapter.setData(connectionViewModel.getGameSessions().getValue(), connectionViewModel.getUserID().getValue());
 	}
 }

@@ -60,7 +60,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		for (GameInfo gi : list)
 			if (gi.getId() >= 0)
 				filteredSortedList.add(gi);
-		Collections.sort(filteredSortedList, this::compareGames);
+		Collections.sort(filteredSortedList, this::compareGameSessions);
 		submitList(filteredSortedList);
 	}
 
@@ -70,7 +70,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		return super.getItem(position);
 	}
 
-	private int compareGames(GameInfo g0, GameInfo g1)
+	private int compareGameSessions(GameInfo g0, GameInfo g1)
 	{
 		if (userID != null && g0.containsUser(userID) != g1.containsUser(userID))
 			return g0.containsUser(userID) ? -1 : 1;
@@ -151,7 +151,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		holder.gameTypeTextView.setText(context.getResources().getStringArray(R.array.game_type_array)[gameInfo.getType().ordinal()]);
 		holder.joinGameButton.setText(joinButtonText);
 		holder.joinGameButton.setTypeface(null, isInteresting ? Typeface.BOLD : Typeface.NORMAL);
-		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGame(gameInfo.getId()));
+		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGameSession(gameInfo.getId()));
 		holder.deleteGameButton.setVisibility(deleteButtonVisible ? View.VISIBLE : View.GONE);
 		holder.deleteGameButton.setOnClickListener(v -> gameAdapterListener.deleteGame(gameInfo.getId()));
 	}
@@ -172,7 +172,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 
 	public interface GameAdapterListener
 	{
-		void joinGame(int gameID);
-		void deleteGame(int gameID);
+		void joinGameSession(int gameSessionID);
+		void deleteGame(int gameSessionID);
 	}
 }

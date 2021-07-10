@@ -28,7 +28,7 @@ import java.util.*;
 public class GameFragment extends MainActivityFragment implements EventHandler, TextView.OnEditorActionListener
 {
 	public static final String TAG = "game";
-	public static final String KEY_GAME_ID = "game_id";
+	public static final String KEY_GAME_SESSION_ID = "game_id";
 	public static final String KEY_HISTORY_GAME_ID = "history_game_id";
 	public static final String LOG_TAG = "Tarokk";
 
@@ -253,16 +253,16 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 		connectionViewModel.addEventHandler(this);
 
-		if (!getArguments().containsKey(KEY_GAME_ID))
+		if (!getArguments().containsKey(KEY_GAME_SESSION_ID))
 			throw new IllegalArgumentException("no game id given");
 
-		int gameID = getArguments().getInt(KEY_GAME_ID);
+		int gameSessionID = getArguments().getInt(KEY_GAME_SESSION_ID);
 		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
-				.setGameSessionId(gameID)
+				.setGameSessionId(gameSessionID)
 				.build())
 				.build());
 
-		connectionViewModel.getGameByID(gameID).observe(this, this::onGameInfoUpdate);
+		connectionViewModel.getGameSessionByID(gameSessionID).observe(this, this::onGameInfoUpdate);
 		connectionViewModel.getUsers().observe(this, u -> users = u);
 
 		return contentView;

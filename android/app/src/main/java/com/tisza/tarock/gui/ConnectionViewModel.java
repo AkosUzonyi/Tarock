@@ -19,7 +19,6 @@ import com.tisza.tarock.proto.*;
 import javax.net.ssl.*;
 import java.io.*;
 import java.net.*;
-import java.security.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -34,7 +33,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 
 	private MutableLiveData<ConnectionState> connectionState = new MutableLiveData<>(ConnectionState.DISCONNECTED);
 	private MutableLiveData<ErrorState> errorState = new MutableLiveData<>(null);
-	private MutableLiveData<List<GameInfo>> games = new MutableLiveData<>(new ArrayList<>());
+	private MutableLiveData<List<GameSession>> games = new MutableLiveData<>(new ArrayList<>());
 	private MutableLiveData<List<User>> users = new MutableLiveData<>(new ArrayList<>());
 	private MutableLiveData<Integer> userID = new MutableLiveData<>(null);
 
@@ -64,22 +63,22 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		errorState.setValue(null);
 	}
 
-	public LiveData<List<GameInfo>> getGameSessions()
+	public LiveData<List<GameSession>> getGameSessions()
 	{
 		return games;
 	}
 
-	public LiveData<GameInfo> getGameSessionByID(int gameSessionId)
+	public LiveData<GameSession> getGameSessionByID(int gameSessionId)
 	{
-		MediatorLiveData<GameInfo> mediatorLiveData = new MediatorLiveData<>();
-		mediatorLiveData.addSource(games, gameInfoList ->
+		MediatorLiveData<GameSession> mediatorLiveData = new MediatorLiveData<>();
+		mediatorLiveData.addSource(games, gameSessionList ->
 		{
-			GameInfo gameInfo = null;
-			for (GameInfo g : gameInfoList)
+			GameSession gameSession = null;
+			for (GameSession g : gameSessionList)
 				if (g.getId() == gameSessionId)
-					gameInfo = g;
+					gameSession = g;
 
-			mediatorLiveData.setValue(gameInfo);
+			mediatorLiveData.setValue(gameSession);
 		});
 
 		return mediatorLiveData;
@@ -234,7 +233,7 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 							if (user.getId() == userID)
 								gameUserList.add(user);
 
-					games.getValue().add(new GameInfo(gameProto.getId(), GameType.fromID(gameProto.getType()), gameUserList, Utils.gameSessionStateFromProto(gameProto.getState())));
+					games.getValue().add(new GameSession(gameProto.getId(), GameType.fromID(gameProto.getType()), gameUserList, Utils.gameSessionStateFromProto(gameProto.getState())));
 				}
 				games.setValue(games.getValue());
 

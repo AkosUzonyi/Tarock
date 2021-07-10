@@ -2,14 +2,14 @@ package com.tisza.tarock.game;
 
 import java.util.*;
 
-public class GameInfo
+public class GameSession
 {
 	private final int id;
 	private final GameType type;
 	private final List<User> users;
 	private final GameSessionState state;
 
-	public GameInfo(int id, GameType type, List<User> users, GameSessionState state)
+	public GameSession(int id, GameType type, List<User> users, GameSessionState state)
 	{
 		this.id = id;
 		this.type = type;
@@ -55,9 +55,9 @@ public class GameInfo
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (!(obj instanceof GameInfo))
+		if (!(obj instanceof GameSession))
 			return false;
 
-		return id == ((GameInfo)obj).id;
+		return id == ((GameSession)obj).id;
 	}
 }

@@ -57,19 +57,19 @@ public class CreateGameFragment extends MainActivityFragment
 		return view;
 	}
 
-	private void onGameSessionUpdate(List<GameInfo> gameSessions)
+	private void onGameSessionUpdate(List<GameSession> gameSessions)
 	{
 		Integer myUserID = connectionViewModel.getUserID().getValue();
 		if (myUserID == null)
 			return;
 
-		for (GameInfo gameInfo : gameSessions)
+		for (GameSession gameSession : gameSessions)
 		{
-			if (gameInfo.getState() == GameSessionState.LOBBY && gameInfo.containsUser(myUserID))
+			if (gameSession.getState() == GameSessionState.LOBBY && gameSession.containsUser(myUserID))
 			{
 				progressDialog.dismiss();
 				getMainActivity().getSupportFragmentManager().popBackStack();
-				getMainActivity().joinGameSession(gameInfo.getId());
+				getMainActivity().joinGameSession(gameSession.getId());
 				break;
 			}
 		}

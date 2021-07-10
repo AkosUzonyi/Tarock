@@ -48,7 +48,7 @@ public class CreateGameFragment extends MainActivityFragment
 		progressDialog.setMessage(getString(R.string.lobby_create));
 		progressDialog.setCancelable(false);
 
-		connectionViewModel.getGames().observe(this, this::onGameInfoUpdate);
+		connectionViewModel.getGameSessions().observe(this, this::onGameSessionUpdate);
 
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
 		gameTypeSpinner.setSelection(sharedPreferences.getInt(GAME_TYPE_KEY, 0));
@@ -57,19 +57,19 @@ public class CreateGameFragment extends MainActivityFragment
 		return view;
 	}
 
-	private void onGameInfoUpdate(List<GameInfo> games)
+	private void onGameSessionUpdate(List<GameInfo> gameSessions)
 	{
 		Integer myUserID = connectionViewModel.getUserID().getValue();
 		if (myUserID == null)
 			return;
 
-		for (GameInfo gameInfo : games)
+		for (GameInfo gameInfo : gameSessions)
 		{
 			if (gameInfo.getState() == GameSessionState.LOBBY && gameInfo.containsUser(myUserID))
 			{
 				progressDialog.dismiss();
 				getMainActivity().getSupportFragmentManager().popBackStack();
-				getMainActivity().joinGame(gameInfo.getId());
+				getMainActivity().joinGameSession(gameInfo.getId());
 				break;
 			}
 		}

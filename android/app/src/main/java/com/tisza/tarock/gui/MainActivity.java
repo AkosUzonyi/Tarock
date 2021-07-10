@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.*;
 import com.tisza.tarock.R;
-import com.tisza.tarock.*;
 import com.tisza.tarock.proto.*;
 
 public class MainActivity extends AppCompatActivity implements GameListAdapter.GameAdapterListener
@@ -48,13 +47,13 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.add(R.id.fragment_container, loginFragment, LoginFragment.TAG)
 				.commit();
 
-		if (getIntent().hasExtra(GameFragment.KEY_GAME_ID))
+		if (getIntent().hasExtra(GameFragment.KEY_GAME_SESSION_ID))
 			connectionViewModel.login();
 
 		connectionViewModel.getHistoryGameSessionID().observe(this, gameSessionID ->
 		{
 			if (gameSessionID < 0)
-				joinGame(gameSessionID);
+				joinGameSession(gameSessionID);
 		});
 	}
 
@@ -152,11 +151,11 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.addToBackStack(null)
 				.commit();
 
-		String gameID = getIntent().getStringExtra(GameFragment.KEY_GAME_ID);
-		if (gameID != null)
+		String gameSessionID = getIntent().getStringExtra(GameFragment.KEY_GAME_SESSION_ID);
+		if (gameSessionID != null)
 		{
-			getIntent().removeExtra(GameFragment.KEY_GAME_ID);
-			joinGame(Integer.parseInt(gameID));
+			getIntent().removeExtra(GameFragment.KEY_GAME_SESSION_ID);
+			joinGameSession(Integer.parseInt(gameSessionID));
 		}
 
 		String historyGameID = getIntent().getStringExtra("hgid");
@@ -178,12 +177,12 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.commit();
 	}
 
-	public void joinGame(int gameID)
+	public void joinGameSession(int gameSessionID)
 	{
 		GameFragment gameFragment = new GameFragment();
 
 		Bundle args = new Bundle();
-		args.putInt(GameFragment.KEY_GAME_ID, gameID);
+		args.putInt(GameFragment.KEY_GAME_SESSION_ID, gameSessionID);
 		gameFragment.setArguments(args);
 
 		getSupportFragmentManager().beginTransaction()
@@ -193,15 +192,15 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.commit();
 	}
 
-	public void viewHistoryGame(int gameID)
+	public void viewHistoryGame(int gameSessionID)
 	{
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinHistoryGame(MainProto.JoinHistoryGame.newBuilder().setGameId(gameID)).build());
+		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinHistoryGame(MainProto.JoinHistoryGame.newBuilder().setGameId(gameSessionID)).build());
 	}
 
 	@Override
-	public void deleteGame(int gameID)
+	public void deleteGame(int gameSessionID)
 	{
-		MainProto.Message deleteMessage = MainProto.Message.newBuilder().setDeleteGameSession(MainProto.DeleteGameSession.newBuilder().setGameSessionId(gameID)).build();
+		MainProto.Message deleteMessage = MainProto.Message.newBuilder().setDeleteGameSession(MainProto.DeleteGameSession.newBuilder().setGameSessionId(gameSessionID)).build();
 
 		new AlertDialog.Builder(this)
 				.setTitle(R.string.delete_game_confirm)

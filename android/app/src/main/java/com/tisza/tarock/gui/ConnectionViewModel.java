@@ -64,19 +64,19 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		errorState.setValue(null);
 	}
 
-	public LiveData<List<GameInfo>> getGames()
+	public LiveData<List<GameInfo>> getGameSessions()
 	{
 		return games;
 	}
 
-	public LiveData<GameInfo> getGameByID(int gameID)
+	public LiveData<GameInfo> getGameSessionByID(int gameSessionId)
 	{
 		MediatorLiveData<GameInfo> mediatorLiveData = new MediatorLiveData<>();
 		mediatorLiveData.addSource(games, gameInfoList ->
 		{
 			GameInfo gameInfo = null;
 			for (GameInfo g : gameInfoList)
-				if (g.getId() == gameID)
+				if (g.getId() == gameSessionId)
 					gameInfo = g;
 
 			mediatorLiveData.setValue(gameInfo);

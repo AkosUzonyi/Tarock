@@ -7,13 +7,14 @@ import android.widget.*;
 import androidx.recyclerview.widget.*;
 import com.squareup.picasso.*;
 import com.tisza.tarock.*;
+import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
 
 import java.util.*;
 
 public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 {
-	private static final User USER_ANYBODY = new User(0, "", null, false, false, false);
+	private static final User USER_ANYBODY = new User(0, "", null, false, false, 0);
 
 	private int minimumLength;
 	private boolean imageVisible = true;
@@ -101,8 +102,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder>
 			holder.profilePictureView.setImageResource(R.drawable.bot);
 		else
 			picasso.load(user.getImageURL()).error(R.drawable.fb_unknown_image).into(holder.profilePictureView);
-
-		holder.isFriendView.setVisibility(user.isFriend() ? View.VISIBLE : View.GONE);
 
 		holder.isOnlineView.setVisibility(user.isBot() ? View.GONE : View.VISIBLE);
 		holder.isOnlineView.setImageResource(user.isOnline() ? R.drawable.online : R.drawable.offline);

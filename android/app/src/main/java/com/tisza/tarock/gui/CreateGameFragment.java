@@ -7,6 +7,7 @@ import android.view.*;
 import android.widget.*;
 import androidx.lifecycle.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.proto.*;
 

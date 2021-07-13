@@ -17,9 +17,11 @@ import androidx.preference.*;
 import androidx.recyclerview.widget.*;
 import androidx.viewpager.widget.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.message.*;
+import com.tisza.tarock.message.Action;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.zebisound.*;
 
@@ -183,7 +185,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		{
 			MainProto.Message startMessage = MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build();
 
-			if (gameSession.getUsers().size() >= 4)
+			if (gameSession.getPlayers().size() >= 4)
 				connectionViewModel.sendMessage(startMessage);
 			else
 				new AlertDialog.Builder(getContext())
@@ -326,28 +328,31 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		updateSeat();
 
-		usersAdapter.setUsers(gameSession.getUsers());
+		List<User> users = new ArrayList<>();
+		for (Player player : gameSession.getPlayers())
+			users.add(player.user);
+		usersAdapter.setUsers(users);
 
 		Set<String> firstNames = new HashSet<>();
 		Set<String> duplicateFirstNames = new HashSet<>();
-		for (User user : gameSession.getUsers())
+		for (Player player : gameSession.getPlayers())
 		{
-			String firstName = getFirstName(user.getName());
+			String firstName = getFirstName(player.user.getName());
 			if (!firstNames.add(firstName))
 				duplicateFirstNames.add(firstName);
 		}
 		shortUserNames = new ArrayList<>();
-		for (User user : gameSession.getUsers())
+		for (Player player : gameSession.getPlayers())
 		{
-			String firstName = getFirstName(user.getName());
+			String firstName = getFirstName(player.user.getName());
 			if (!duplicateFirstNames.contains(firstName))
 				shortUserNames.add(firstName);
 			else
-				shortUserNames.add(user.getName());
+				shortUserNames.add(player.user.getName());
 		}
 		statisticsPointsAdapter.setNames(shortUserNames);
 
-		int userCount = gameSession.getUsers().size();
+		int userCount = gameSession.getPlayers().size();
 		if (userCount >= 4)
 			lobbyStartButton.setText(R.string.lobby_start);
 		else
@@ -379,7 +384,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (gameSession == null || gameSession.getState() != GameSessionState.GAME)
 			return null;
 
-		return gameSession.getUsers().get((beginnerPlayerIndex + player) % gameSession.getUsers().size());
+		return gameSession.getPlayers().get((beginnerPlayerIndex + player) % gameSession.getPlayers().size()).user;
 	}
 
 	private int getPlayerOfUser(int userID)
@@ -402,7 +407,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (user == null)
 			return getString(R.string.empty_seat);
 
-		return shortUserNames.get(gameSession.getUsers().indexOf(user));
+		return shortUserNames.get(gameSession.getPlayers().indexOf(user));
 	}
 
 	private void updateSeat()

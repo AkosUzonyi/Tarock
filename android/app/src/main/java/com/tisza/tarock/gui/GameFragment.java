@@ -24,6 +24,7 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.message.Action;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.zebisound.*;
+import retrofit2.http.*;
 
 import java.util.*;
 
@@ -264,7 +265,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				.build());
 
 		connectionViewModel.getGameSessionByID(gameSessionID).observe(this, this::onGameSessionUpdate);
-		connectionViewModel.getUsers().observe(this, u -> users = u);
 
 		return contentView;
 	}
@@ -429,7 +429,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
 	}
 
-	private List<User> users;
+	private int gameSessionId;
 	private List<String> shortUserNames;
 	private GameSession gameSession;
 	private int myUserID;
@@ -480,9 +480,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}
 		else
 		{
-			for (User kibicUser : users)
-				if (kibicUser.getId() == userID)
-					displayMessage(getString(R.string.message_chat, kibicUser.getName(), message));
+			//TODO
 		}
 	}
 

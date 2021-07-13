@@ -38,8 +38,6 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 	private MutableLiveData<List<User>> users = new MutableLiveData<>(new ArrayList<>());
 	private MutableLiveData<Integer> userID = new MutableLiveData<>(null);
 
-	private MutableLiveData<Integer> historyGameSessionID = new MutableLiveData<>(0);
-
 	public ConnectionViewModel(Application application)
 	{
 		super(application);
@@ -109,11 +107,6 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 	public LiveData<Integer> getUserID()
 	{
 		return userID;
-	}
-
-	public LiveData<Integer> getHistoryGameSessionID()
-	{
-		return historyGameSessionID;
 	}
 
 	public void addEventHandler(EventHandler eventHandler)
@@ -210,10 +203,6 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 				for (EventHandler eventHandler : eventHandlers)
 					new ProtoEvent(message.getEvent()).handle(eventHandler);
 
-				break;
-
-			case JOIN_HISTORY_GAME_RESULT:
-					historyGameSessionID.setValue(message.getJoinHistoryGameResult().getGameSessionId());
 				break;
 
 			case SERVER_STATUS:

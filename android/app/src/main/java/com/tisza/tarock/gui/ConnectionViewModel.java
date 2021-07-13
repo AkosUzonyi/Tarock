@@ -9,13 +9,13 @@ import androidx.preference.*;
 import com.facebook.*;
 import com.google.android.gms.auth.api.signin.*;
 import com.google.firebase.iid.*;
-import com.tisza.tarock.*;
 import com.tisza.tarock.BuildConfig;
+import com.tisza.tarock.api.*;
 import com.tisza.tarock.api.model.*;
-import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
 import com.tisza.tarock.proto.*;
+import io.reactivex.Observable;
 
 import javax.net.ssl.*;
 import java.io.*;
@@ -38,10 +38,14 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 	private MutableLiveData<List<User>> users = new MutableLiveData<>(new ArrayList<>());
 	private MutableLiveData<Integer> userID = new MutableLiveData<>(null);
 
+	private APIInterface apiInterface;
+
+
 	public ConnectionViewModel(Application application)
 	{
 		super(application);
 
+		apiInterface = APIClient.getClient().create(APIInterface.class);
 		connectivityManager = (ConnectivityManager)application.getSystemService(Context.CONNECTIVITY_SERVICE);
 		socketFactory = SSLCertificateSocketFactory.getDefault(0, new SSLSessionCache(application));
 	}
@@ -121,6 +125,13 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 
 	public void login()
 	{
+		connectionState.setValue(ConnectionState.LOGGED_IN);
+		userID.setValue(4);
+		Observable.interval(2, TimeUnit.SECONDS)
+				.flatMapSingle(i -> apiInterface.getGameSessions())
+				.subscribe(gameSessions -> games.postValue(gameSessions));
+
+		if(true) return;
 		switch (connectionState.getValue())
 		{
 			case DISCONNECTED:
@@ -171,6 +182,11 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 	{
 		if (connectionState.getValue() == ConnectionState.LOGGED_IN)
 			connection.sendMessage(message);
+	}
+
+	public APIInterface getApiInterface()
+	{
+		return apiInterface;
 	}
 
 	@Override

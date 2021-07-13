@@ -14,7 +14,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.api.*;
 import com.tisza.tarock.proto.*;
+import io.reactivex.android.schedulers.*;
+import retrofit2.http.*;
 
 public class MainActivity extends AppCompatActivity implements GameListAdapter.GameAdapterListener
 {
@@ -27,10 +30,18 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	private Handler handler;
 	private Runnable disconnectRunnable;
 
+	private APIInterface apiInterface;
+
+	public APIInterface getApiInterface()
+	{
+		return apiInterface;
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(null);
+		apiInterface = APIClient.getClient().create(APIInterface.class);
 
 		LocaleManager.updateLocale(this);
 		setContentView(R.layout.main);
@@ -182,11 +193,9 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	@Override
 	public void deleteGame(int gameSessionID)
 	{
-		MainProto.Message deleteMessage = MainProto.Message.newBuilder().setDeleteGameSession(MainProto.DeleteGameSession.newBuilder().setGameSessionId(gameSessionID)).build();
-
 		new AlertDialog.Builder(this)
 				.setTitle(R.string.delete_game_confirm)
-				.setPositiveButton(R.string.delete_game, (dialog, which) -> connectionViewModel.sendMessage(deleteMessage))
+				.setPositiveButton(R.string.delete_game, (dialog, which) -> connectionViewModel.getApiInterface().deleteGameSession(gameSessionID).subscribe())
 				.setNegativeButton(R.string.cancel, null)
 				.show();
 	}

@@ -10,6 +10,7 @@ import com.tisza.tarock.R;
 import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.proto.*;
+import retrofit2.http.*;
 
 import java.util.*;
 
@@ -84,12 +85,10 @@ public class CreateGameFragment extends MainActivityFragment
 				.putInt(DOUBLE_ROUND_TYPE_KEY, doubleRoundTypeSpinner.getSelectedItemPosition())
 				.apply();
 
-		MainProto.CreateGameSession.Builder builder = MainProto.CreateGameSession.newBuilder();
+		String gameType = GameType.values()[gameTypeSpinner.getSelectedItemPosition()].getID();
+		String doubleRoundType = DoubleRoundType.values()[doubleRoundTypeSpinner.getSelectedItemPosition()].getID();
 
-		builder.setType(GameType.values()[gameTypeSpinner.getSelectedItemPosition()].getID());
-		builder.setDoubleRoundType(DoubleRoundType.values()[doubleRoundTypeSpinner.getSelectedItemPosition()].getID());
-
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setCreateGameSession(builder).build());
+		connectionViewModel.getApiInterface().createGameSession(new CreateGameSessionDTO(gameType, doubleRoundType)).subscribe();
 
 		progressDialog.show();
 	}

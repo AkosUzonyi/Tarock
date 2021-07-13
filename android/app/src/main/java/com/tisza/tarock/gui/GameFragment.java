@@ -44,6 +44,8 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private static final int GAMEPLAY_VIEW_INDEX = 1;
 	private static final int STATISTICS_VIEW_INDEX = 2;
 
+	private int gameSessionId;
+
 	public int cardWidth;
 
 	private ZebiSounds zebiSounds;
@@ -191,7 +193,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				new AlertDialog.Builder(getContext())
 						.setTitle(Html.fromHtml(getString(R.string.lobby_start_with_bots_confirm_title)))
 						.setMessage(Html.fromHtml(getString(R.string.lobby_start_with_bots_confirm_body)))
-						.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> connectionViewModel.sendMessage(startMessage))
+						.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> connectionViewModel.getApiInterface().startGameSession(gameSessionId).subscribe())
 						.setNegativeButton(R.string.cancel, null)
 						.show();
 
@@ -258,13 +260,13 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		if (!getArguments().containsKey(KEY_GAME_SESSION_ID))
 			throw new IllegalArgumentException("no game id given");
 
-		int gameSessionID = getArguments().getInt(KEY_GAME_SESSION_ID);
+		gameSessionId = getArguments().getInt(KEY_GAME_SESSION_ID);
 		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
-				.setGameSessionId(gameSessionID)
+				.setGameSessionId(gameSessionId)
 				.build())
 				.build());
 
-		connectionViewModel.getGameSessionByID(gameSessionID).observe(this, this::onGameSessionUpdate);
+		connectionViewModel.getGameSessionByID(gameSessionId).observe(this, this::onGameSessionUpdate);
 
 		return contentView;
 	}
@@ -279,9 +281,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			connectionViewModel.removeEventHandler(zebiSound);
 		}
 		connectionViewModel.removeEventHandler(this);
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
-				.build())
-				.build());
+		connectionViewModel.getApiInterface().leaveGameSession(gameSessionId).subscribe();
 	}
 
 	private void resetGameViews()
@@ -432,6 +432,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private int gameSessionId;
 	private List<String> shortUserNames;
 	private GameSession gameSession;
+	private GameDTO currentGame;
 	private int myUserID;
 	private List<Card> myCards;
 	private int seat = -1;
@@ -466,7 +467,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 	private void doAction(Action action)
 	{
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setAction(action.getId()).build());
+		connectionViewModel.getApiInterface().postAction(currentGame.id, new ActionPostDTO(action.getId())).subscribe();
 	}
 
 	@Override
@@ -492,7 +493,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			Editable text = ((EditText)view).getText();
 			if (text.length() == 0)
 				return false;
-			connectionViewModel.sendMessage(MainProto.Message.newBuilder().setChat(MainProto.Chat.newBuilder().setMessage(text.toString())).build());
+			connectionViewModel.getApiInterface().postChat(gameSessionId, new ChatPostDTO(text.toString())).subscribe();
 			text.clear();
 			InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);

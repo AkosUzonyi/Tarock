@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
+import retrofit2.http.*;
 
 import java.util.*;
 

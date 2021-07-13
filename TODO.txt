@@ -20,6 +20,7 @@ okhttp cache size
 configuration file
 do not log socket exceptions
 gamefragment naming
+android: game -> gameSession
 
 features:
 error messages
@@ -39,6 +40,7 @@ override bid game option
 lobby paramters (eg. XX skart)
 ultikassza
 download points: more details
+player names in statistics
 
 refactorizations:
 android package structure

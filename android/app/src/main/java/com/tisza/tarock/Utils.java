@@ -24,13 +24,6 @@ public class Utils
 		return map(announcementIDList, Announcement::fromID);
 	}
 
-	public static User userFromProto(MainProto.User userProto)
-	{
-		String imgURL = userProto.hasImageUrl() ? userProto.getImageUrl() : null;
-
-		return new User(userProto.getId(), userProto.getName(), imgURL, userProto.getIsFriend(), userProto.getOnline(), userProto.getBot());
-	}
-
 	public static <T0, T1> List<T1> map(List<T0> list, Function<T0, T1> f)
 	{
 		List<T1> result = new ArrayList<>();

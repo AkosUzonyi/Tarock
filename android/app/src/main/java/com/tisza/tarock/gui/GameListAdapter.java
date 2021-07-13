@@ -8,6 +8,7 @@ import androidx.annotation.*;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.*;
 import com.tisza.tarock.*;
+import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
 
 import java.util.*;
@@ -30,13 +31,13 @@ public class GameListAdapter extends ListAdapter<GameSession, GameListAdapter.Vi
 		@Override
 		public boolean areContentsTheSame(GameSession oldItem, GameSession newItem)
 		{
-			if (oldItem.getId() != newItem.getId() || oldItem.getType() != newItem.getType() || oldItem.getUsers().size() != newItem.getUsers().size())
+			if (oldItem.getId() != newItem.getId() || oldItem.getType() != newItem.getType() || oldItem.getPlayers().size() != newItem.getPlayers().size())
 				return false;
 
-			for (int i = 0; i < oldItem.getUsers().size(); i++)
+			for (int i = 0; i < oldItem.getPlayers().size(); i++)
 			{
-				User oldUser = oldItem.getUsers().get(i);
-				User newUser = newItem.getUsers().get(i);
+				User oldUser = oldItem.getPlayers().get(i).user;
+				User newUser = newItem.getPlayers().get(i).user;
 				if (!oldUser.areContentsTheSame(newUser))
 					return false;
 			}
@@ -82,18 +83,18 @@ public class GameListAdapter extends ListAdapter<GameSession, GameListAdapter.Vi
 		int onlineCount1 = 0;
 		int realPlayerCount0 = 0;
 		int realPlayerCount1 = 0;
-		for (User u : g0.getUsers())
+		for (Player p : g0.getPlayers())
 		{
-			if (u.isOnline() && !u.isBot())
+			if (p.user.isOnline() && !p.user.isBot())
 				onlineCount0++;
-			if (!u.isBot())
+			if (!p.user.isBot())
 				realPlayerCount0++;
 		}
-		for (User u : g1.getUsers())
+		for (Player p : g1.getPlayers())
 		{
-			if (u.isOnline() && !u.isBot())
+			if (p.user.isOnline() && !p.user.isBot())
 				onlineCount1++;
-			if (!u.isBot())
+			if (!p.user.isBot())
 				realPlayerCount1++;
 		}
 
@@ -130,7 +131,10 @@ public class GameListAdapter extends ListAdapter<GameSession, GameListAdapter.Vi
 	{
 		GameSession gameSession = getItem(position);
 
-		holder.usersAdapter.setUsers(gameSession.getUsers());
+		List<User> users = new ArrayList<>();
+		for (Player player : gameSession.getPlayers())
+			users.add(player.user);
+		holder.usersAdapter.setUsers(users);
 
 		int joinButtonText;
 		if (gameSession.getState() == GameSessionState.LOBBY)
@@ -142,7 +146,7 @@ public class GameListAdapter extends ListAdapter<GameSession, GameListAdapter.Vi
 
 		boolean deleteButtonVisible;
 		if (gameSession.getState() == GameSessionState.LOBBY)
-			deleteButtonVisible = gameSession.getUsers().size() > 0 && gameSession.getUsers().get(0).getId() == userID;
+			deleteButtonVisible = gameSession.getPlayers().size() > 0 && gameSession.getPlayers().get(0).user.id == userID;
 		else
 			deleteButtonVisible = gameSession.containsUser(userID);
 

@@ -11,6 +11,7 @@ import com.google.android.gms.auth.api.signin.*;
 import com.google.firebase.iid.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.BuildConfig;
+import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.net.*;
@@ -216,27 +217,6 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 				break;
 
 			case SERVER_STATUS:
-
-				users.getValue().clear();
-				for (MainProto.User userProto : message.getServerStatus().getAvailableUserList())
-				{
-					users.getValue().add(Utils.userFromProto(userProto));
-				}
-				users.setValue(users.getValue());
-
-				games.getValue().clear();
-				for (MainProto.GameSession gameProto : message.getServerStatus().getAvailableGameSessionList())
-				{
-					List<User> gameUserList = new ArrayList<>();
-					for (int userID : gameProto.getUserIdList())
-						for (User user : users.getValue())
-							if (user.getId() == userID)
-								gameUserList.add(user);
-
-					games.getValue().add(new GameSession(gameProto.getId(), GameType.fromID(gameProto.getType()), gameUserList, Utils.gameSessionStateFromProto(gameProto.getState())));
-				}
-				games.setValue(games.getValue());
-
 				break;
 
 			default:

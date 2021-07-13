@@ -49,12 +49,6 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 
 		if (getIntent().hasExtra(GameFragment.KEY_GAME_SESSION_ID))
 			connectionViewModel.login();
-
-		connectionViewModel.getHistoryGameSessionID().observe(this, gameSessionID ->
-		{
-			if (gameSessionID < 0)
-				joinGameSession(gameSessionID);
-		});
 	}
 
 	public void openSettings()
@@ -157,13 +151,6 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			getIntent().removeExtra(GameFragment.KEY_GAME_SESSION_ID);
 			joinGameSession(Integer.parseInt(gameSessionID));
 		}
-
-		String historyGameID = getIntent().getStringExtra("hgid");
-		if (historyGameID != null)
-		{
-			getIntent().removeExtra("hgid");
-			viewHistoryGame(Integer.parseInt(historyGameID));
-		}
 	}
 
 	public void createNewGame()
@@ -190,11 +177,6 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
-	}
-
-	public void viewHistoryGame(int gameSessionID)
-	{
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinHistoryGame(MainProto.JoinHistoryGame.newBuilder().setGameId(gameSessionID)).build());
 	}
 
 	@Override

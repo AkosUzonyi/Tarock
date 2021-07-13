@@ -31,7 +31,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 {
 	public static final String TAG = "game";
 	public static final String KEY_GAME_SESSION_ID = "game_id";
-	public static final String KEY_HISTORY_GAME_ID = "history_game_id";
 	public static final String LOG_TAG = "Tarokk";
 
 	public static final float PLAYED_CARD_DISTANCE = 1F;

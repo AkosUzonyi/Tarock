@@ -155,6 +155,16 @@ public class PlayedCardView extends ImageView
 		currentAnimator = animSet;
 	}
 
+	public Card getCurrentCard()
+	{
+		return currentCard;
+	}
+
+	public Card getTakenCard()
+	{
+		return takenCard;
+	}
+
 	public boolean isTaking()
 	{
 		return isTaking;

@@ -5,17 +5,20 @@ import android.content.*;
 import android.graphics.*;
 import android.os.*;
 import android.text.*;
+import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
 import android.view.animation.Animation.*;
 import android.view.inputmethod.*;
 import android.widget.*;
+import androidx.annotation.*;
 import androidx.appcompat.app.*;
 import androidx.lifecycle.*;
 import androidx.preference.*;
 import androidx.recyclerview.widget.*;
 import androidx.viewpager.widget.*;
+import com.tisza.tarock.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
@@ -24,11 +27,14 @@ import com.tisza.tarock.message.*;
 import com.tisza.tarock.message.Action;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.zebisound.*;
-import retrofit2.http.*;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.*;
+import io.reactivex.disposables.*;
+import retrofit2.*;
 
 import java.util.*;
 
-public class GameFragment extends MainActivityFragment implements EventHandler, TextView.OnEditorActionListener
+public class GameFragment extends MainActivityFragment implements TextView.OnEditorActionListener
 {
 	public static final String TAG = "game";
 	public static final String KEY_GAME_SESSION_ID = "game_id";
@@ -43,8 +49,6 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	private static final int MESSAGES_VIEW_INDEX = 0;
 	private static final int GAMEPLAY_VIEW_INDEX = 1;
 	private static final int STATISTICS_VIEW_INDEX = 2;
-
-	private int gameSessionId;
 
 	public int cardWidth;
 
@@ -146,6 +150,22 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		cardsHighlightView = contentView.findViewById(R.id.cards_highlight);
 
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
+		okButton.setOnClickListener(v ->
+		{
+			switch (PhaseEnum.fromID(gameStateDTO.phase))
+			{
+				case FOLDING:
+					doAction(Action.fold(cardsToFold));
+					break;
+				case ANNOUNCING:
+					if (ultimoView.getVisibility() == View.GONE)
+						doAction(Action.announcePassz());
+					break;
+				case END:
+					doAction(Action.readyForNewGame());
+					break;
+			}
+		});
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v -> doAction(Action.throwCards()));
 
@@ -188,7 +208,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			MainProto.Message startMessage = MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build();
 
 			if (gameSession.getPlayers().size() >= 4)
-				connectionViewModel.sendMessage(startMessage);
+				connectionViewModel.getApiInterface().startGameSession(gameSessionId).subscribe();
 			else
 				new AlertDialog.Builder(getContext())
 						.setTitle(Html.fromHtml(getString(R.string.lobby_start_with_bots_confirm_title)))
@@ -213,6 +233,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 				throw new RuntimeException();
 
 			doAction(Action.announce(announcement));
+			setUltimoViewVisible(false);
 		}));
 
 		gameplayView = (RelativeLayout)layoutInflater.inflate(R.layout.gameplay, centerSpace, false);
@@ -249,24 +270,18 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		int[] centerViewTitles = {R.string.pager_announcing, R.string.pager_gameplay, R.string.pager_statistics};
 		centerSpace.setAdapter(new CenterViewPagerAdapter(getActivity(), centerViews, centerViewTitles));
 
-		myUserID = connectionViewModel.getUserID().getValue();
-
-		for (ZebiSound zebiSound : zebiSounds.getZebiSounds())
-		{
-			connectionViewModel.addEventHandler(zebiSound);
-		}
-		connectionViewModel.addEventHandler(this);
-
 		if (!getArguments().containsKey(KEY_GAME_SESSION_ID))
 			throw new IllegalArgumentException("no game id given");
 
 		gameSessionId = getArguments().getInt(KEY_GAME_SESSION_ID);
-		connectionViewModel.sendMessage(MainProto.Message.newBuilder().setJoinGameSession(MainProto.JoinGameSession.newBuilder()
-				.setGameSessionId(gameSessionId)
-				.build())
-				.build());
 
-		connectionViewModel.getGameSessionByID(gameSessionId).observe(this, this::onGameSessionUpdate);
+		updateGameSession();
+		connectionViewModel.getLoggedInUser().observe(this, user ->
+		{
+			loggedInUser = user;
+			updateSeat();
+			updateGameState();
+		});
 
 		return contentView;
 	}
@@ -276,12 +291,13 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	{
 		super.onDestroy();
 
-		for (ZebiSound zebiSound : zebiSounds.getZebiSounds())
-		{
-			connectionViewModel.removeEventHandler(zebiSound);
-		}
-		connectionViewModel.removeEventHandler(this);
-		connectionViewModel.getApiInterface().leaveGameSession(gameSessionId).subscribe();
+		if (gameSession != null && GameSessionState.fromId(gameSession.state) == GameSessionState.LOBBY)
+			connectionViewModel.getApiInterface().leaveGameSession(gameSessionId).subscribe();
+
+		if (actionDisposable != null)
+			actionDisposable.dispose();
+		if (chatDisposable != null)
+			chatDisposable.dispose();
 	}
 
 	private void resetGameViews()
@@ -315,41 +331,155 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			skartView.setVisibility(View.GONE);
 	}
 
+	private int getSeatOfUser(int userID)
+	{
+		if (gameDTO == null)
+			return -1;
+
+		for (int i = 0; i < gameDTO.players.size(); i++)
+			if (gameDTO.players.get(i).user.id == userID)
+				return i;
+
+		return -1;
+	}
+
+	public static String getFirstName(String name)
+	{
+		return name.substring(name.lastIndexOf(' ') + 1);
+	}
+
+	private String getPlayerName(int seat)
+	{
+		if (seat >= shortUserNames.size())
+			return getString(R.string.empty_seat);
+
+		return shortUserNames.get(seat);
+	}
+
+	private void updateSeat()
+	{
+		if (gameDTO == null)
+			return;
+
+		mySeat = getSeatOfUser(loggedInUser.id);
+	}
+
+	private int getPhaseStringRes(PhaseEnum phase)
+	{
+		int phaseStringRes = 0;
+		switch (phase)
+		{
+			case BIDDING: phaseStringRes = R.string.message_bidding; break;
+			case FOLDING: phaseStringRes = R.string.message_folding; break;
+			case CALLING: phaseStringRes = R.string.message_calling; break;
+			case ANNOUNCING: phaseStringRes = R.string.message_announcing; break;
+			case INTERRUPTED: phaseStringRes = R.string.message_press_ok; break;
+		}
+		return phaseStringRes;
+	}
+
+	private void updatePlayerNameViews()
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			TextView playerNameView = playerNameViews[getPositionFromSeat(i)];
+			playerNameView.setText(R.string.empty_seat);
+			User user = gameDTO.players.get(i).user;
+			if (user != null)
+			{
+				playerNameView.setText(user.getName());
+				playerNameView.setAlpha(user.isOnline() ? 1F : 0.5F);
+			}
+		}
+	}
+
+	private int gameSessionId;
+	private GameSession gameSession;
+
+	private GameDTO gameDTO;
+	private GameStateDTO gameStateDTO;
+	private List<String> shortUserNames;
+
+	private User loggedInUser;
+	private int mySeat = -1;
+
+	private List<ActionDTO> actions = new ArrayList<>();
+	private int nextActionOrdinal = 0;
+	private List<Chat> chats = new ArrayList<>();
+	private long lastChatTime = 0;
+
+	private Map<Card, View> cardToViewMapping = new HashMap<>();
+	private OnClickListener cardClickListener;
+
+	private List<Card> cardsToFold = new ArrayList<>();
+	private int prevBid;
+
+	private Disposable chatDisposable = null;
+	private Disposable actionDisposable = null;
+
+	private void doAction(Action action)
+	{
+		if (gameDTO == null)
+			Log.w(TAG,"doAction: no game is in progress");
+
+		connectionViewModel.getApiInterface().postAction(gameDTO.id, new ActionPostDTO(action.getId())).subscribe(responseBody -> {}, throwable ->
+		{
+			if (throwable instanceof HttpException)
+			{
+				HttpException httpException = (HttpException) throwable;
+				switch (httpException.code())
+				{
+					case 422:
+						System.err.println("wrong action");
+						break;
+				}
+			}
+		});
+	}
+
+	@Override
+	public boolean onEditorAction(TextView view, int actionId, KeyEvent event)
+	{
+		if ((view == messagesChatEditText || view == statisticsChatEditText) && actionId == EditorInfo.IME_ACTION_SEND)
+		{
+			Editable text = ((EditText)view).getText();
+			if (text.length() == 0)
+				return false;
+			connectionViewModel.getApiInterface().postChat(gameSessionId, new ChatPostDTO(text.toString())).subscribe();
+			text.clear();
+			InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+			return true;
+		}
+
+		return false;
+	}
+
 	private void onGameSessionUpdate(GameSession gameSession)
 	{
-		this.gameSession = gameSession;
-
 		if (gameSession == null)
 		{
 			getActivity().getSupportFragmentManager().popBackStack();
 			return;
 		}
 
+		boolean updateGame = this.gameSession == null || this.gameSession.currentGameId != gameSession.currentGameId;
+
+		this.gameSession = gameSession;
+
+		if (GameSessionState.fromId(gameSession.state) == GameSessionState.LOBBY)
+			connectionViewModel.getApiInterface().joinGameSession(gameSessionId).subscribe();
+
 		updateSeat();
+		lastChatTime = gameSession.createTime;
+		pollChats();
+		if (updateGame)
+			updateGame();
 
 		List<User> users = new ArrayList<>();
 		for (Player player : gameSession.getPlayers())
 			users.add(player.user);
 		usersAdapter.setUsers(users);
-
-		Set<String> firstNames = new HashSet<>();
-		Set<String> duplicateFirstNames = new HashSet<>();
-		for (Player player : gameSession.getPlayers())
-		{
-			String firstName = getFirstName(player.user.getName());
-			if (!firstNames.add(firstName))
-				duplicateFirstNames.add(firstName);
-		}
-		shortUserNames = new ArrayList<>();
-		for (Player player : gameSession.getPlayers())
-		{
-			String firstName = getFirstName(player.user.getName());
-			if (!duplicateFirstNames.contains(firstName))
-				shortUserNames.add(firstName);
-			else
-				shortUserNames.add(player.user.getName());
-		}
-		statisticsPointsAdapter.setNames(shortUserNames);
 
 		int userCount = gameSession.getPlayers().size();
 		if (userCount >= 4)
@@ -378,191 +508,372 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		zebiSounds.setEnabled(soundsEnabled && gameSession.getType() == GameType.ZEBI && gameSession.containsUser(121));
 	}
 
-	private User getUserOfPlayer(int player)
+	private void updateGame()
 	{
-		if (gameSession == null || gameSession.getState() != GameSessionState.GAME)
-			return null;
+		if (gameSession == null || gameSession.currentGameId == null)
+			return;
 
-		return gameSession.getPlayers().get((beginnerPlayerIndex + player) % gameSession.getPlayers().size()).user;
-	}
-
-	private int getPlayerOfUser(int userID)
-	{
-		for (int i = 0; i < 4; i++)
-			if (getUserOfPlayer(i) != null && getUserOfPlayer(i).getId() == userID)
-				return i;
-
-		return -1;
-	}
-
-	public static String getFirstName(String name)
-	{
-		return name.substring(name.lastIndexOf(' ') + 1);
-	}
-
-	private String getPlayerName(int player)
-	{
-		User user = getUserOfPlayer(player);
-		if (user == null)
-			return getString(R.string.empty_seat);
-
-		return shortUserNames.get(gameSession.getPlayers().indexOf(user));
-	}
-
-	private void updateSeat()
-	{
-		seat = getPlayerOfUser(myUserID);
-
-		for (int i = 0; i < 4; i++)
+		connectionViewModel.getApiInterface().getGame(gameSession.currentGameId).observeOn(AndroidSchedulers.mainThread()).subscribe(gameDTO ->
 		{
-			TextView playerNameView = playerNameViews[getPositionFromPlayerID(i)];
-			playerNameView.setText(R.string.empty_seat);
-			User user = getUserOfPlayer(i);
-			if (user != null)
-			{
-				playerNameView.setText(user.getName());
-				playerNameView.setAlpha(user.isOnline() ? 1F : 0.5F);
-			}
+			this.gameDTO = gameDTO;
+			actions.clear();
+			nextActionOrdinal = 0;
+			cardsToFold.clear();
+			updateSeat();
+			updateShortNames();
+			updateGameState();
+			pollActions(true);
+			statisticsPointsAdapter.setPoints(Utils.map(gameDTO.players, p -> p.points));
+			//TODO: incrementpoints, update points at and of game
+		});
+	}
+
+	private void updateShortNames()
+	{
+		Set<String> firstNames = new HashSet<>();
+		Set<String> duplicateFirstNames = new HashSet<>();
+		for (Player player : gameDTO.getPlayers())
+		{
+			String firstName = getFirstName(player.user.getName());
+			if (!firstNames.add(firstName))
+				duplicateFirstNames.add(firstName);
 		}
+		shortUserNames = new ArrayList<>();
+		for (Player player : gameDTO.getPlayers())
+		{
+			String firstName = getFirstName(player.user.getName());
+			if (!duplicateFirstNames.contains(firstName))
+				shortUserNames.add(firstName);
+			else
+				shortUserNames.add(player.user.getName());
+		}
+		statisticsPointsAdapter.setNames(shortUserNames);
+	}
+
+	private void pollChats()
+	{
+		if (chatDisposable != null)
+			chatDisposable.dispose();
+
+		chatDisposable = connectionViewModel.getApiInterface().getChat(gameSessionId, lastChatTime).observeOn(AndroidSchedulers.mainThread()).subscribe(newChats ->
+		{
+			chats.addAll(newChats);
+			for (Chat chat : newChats)
+			{
+				int seat = getSeatOfUser(chat.user.id);
+				if (seat >= 0)
+					showPlayerMessageView(seat, chat.message, R.drawable.player_message_background_chat);
+			}
+
+			if (!chats.isEmpty())
+				lastChatTime = chats.get(chats.size() - 1).time + 1;
+			updateMessagesView();
+			pollChats();
+		});
+	}
+
+	private void pollActions(boolean init)
+	{
+		if (actionDisposable != null)
+			actionDisposable.dispose();
+
+		if (gameDTO == null)
+			return;
+
+		actionDisposable = connectionViewModel.getApiInterface().getActions(gameDTO.id, nextActionOrdinal).observeOn(AndroidSchedulers.mainThread()).subscribe(newActions ->
+		{
+			actions.addAll(newActions);
+			if (!init)
+			{
+				System.out.println(newActions);
+				for (ActionDTO actionDTO : newActions)
+				{
+					String message = new Action(actionDTO.action).translate(getResources());
+					if (message != null)
+						showPlayerMessageView(actionDTO.seat, message, R.drawable.player_message_background);
+				}
+			}
+
+			if (!actions.isEmpty())
+				nextActionOrdinal = actions.get(actions.size() - 1).ordinal + 1;
+			updateGameState();
+			pollActions(false);
+		});
+	}
+
+	private void updateGameState()
+	{
+		if (gameSession == null || gameSession.currentGameId == null)
+			return;
+
+		connectionViewModel.getApiInterface().getGameState(gameSession.currentGameId).observeOn(AndroidSchedulers.mainThread()).subscribe(newGameState ->
+		{
+			boolean phaseChange = gameStateDTO == null || !newGameState.phase.equals(gameStateDTO.phase);
+
+			gameStateDTO = newGameState;
+
+			if (phaseChange)
+				phaseChanged();
+
+			updateView();
+		});
+	}
+
+	private void updateView()
+	{
+		updateMyCardsView();
+		updateOkButtonVisibility();
+		updateTurnHighlight();
+		updatePlayerNameViews();
+		updateTeamColors();
+		updateMessagesView();
+		updatePlayedCards();
+		updateStatistics();
+		updateAvailableActions();
+
+		throwButton.setVisibility(gameStateDTO.canThrowCards ? View.VISIBLE : View.GONE);
 
 		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
 		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
 	}
 
-	private int gameSessionId;
-	private List<String> shortUserNames;
-	private GameSession gameSession;
-	private GameDTO currentGame;
-	private int myUserID;
-	private List<Card> myCards;
-	private int seat = -1;
-	private Team myTeam;
-	private GameType gameType;
-	private int beginnerPlayerIndex;
-
-	private Map<Card, View> cardToViewMapping = new HashMap<>();
-	
-	private PhaseEnum gamePhase;
-	
-	private String messagesHtml = "";
-
-	private OnClickListener cardClickListener;
-	private List<Card> cardsToSkart = new ArrayList<>();
-	private int prevBid;
-
-	@Override
-	public void startGame(GameType gameType, int beginnerPlayer)
+	private void updateAvailableActions()
 	{
-		resetGameViews();
-
-		this.gameType = gameType;
-		this.beginnerPlayerIndex = beginnerPlayer;
-		myTeam = null;
-
-		updateSeat();
-
-		messagesHtml = "";
-		prevBid = 4;
-	}
-
-	private void doAction(Action action)
-	{
-		connectionViewModel.getApiInterface().postAction(currentGame.id, new ActionPostDTO(action.getId())).subscribe();
-	}
-
-	@Override
-	public void chat(int userID, String message)
-	{
-		int player = getPlayerOfUser(userID);
-		if (player >= 0)
+		availableActionsAdapter.clear();
+		for (String actionId : gameStateDTO.availableActions)
 		{
-			showPlayerMessageView(player, message, R.drawable.player_message_background_chat);
-			displayMessage(getString(R.string.message_chat, getPlayerName(player), message));
-		}
-		else
-		{
-			//TODO
+			Action action = new Action(actionId);
+			availableActionsAdapter.add(new ActionButtonItem()
+			{
+				@Override
+				public Action getAction()
+				{
+					return action;
+				}
+
+				@Override
+				public void onClicked()
+				{
+					doAction(new Action(actionId));
+				}
+
+				@NonNull
+				@Override
+				public String toString()
+				{
+					return action.translate(getResources());
+				}
+			});
 		}
 	}
 
-	@Override
-	public boolean onEditorAction(TextView view, int actionId, KeyEvent event)
+	private void updateMessagesView()
 	{
-		if ((view == messagesChatEditText || view == statisticsChatEditText) && actionId == EditorInfo.IME_ACTION_SEND)
+		StringBuilder messagesHtml = new StringBuilder();
+		messagesHtml.append(getString(R.string.message_phase, getString(R.string.message_bidding)));
+
+		int actionIndex = 0;
+		int chatIndex = 0;
+		while (true)
 		{
-			Editable text = ((EditText)view).getText();
-			if (text.length() == 0)
-				return false;
-			connectionViewModel.getApiInterface().postChat(gameSessionId, new ChatPostDTO(text.toString())).subscribe();
-			text.clear();
-			InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-			return true;
+			ActionDTO actionDTO = actionIndex >= actions.size() ? null : actions.get(actionIndex);
+			Chat chat = chatIndex >= chats.size() ? null : chats.get(chatIndex);
+			if (actionDTO == null && chat == null)
+				break;
+
+			boolean selectAction = chat == null || actionDTO != null && actionDTO.time < chat.time;
+
+			int phaseStringRes = 0;
+			int stringTemplateRes;
+			String userName;
+			String message;
+			if (selectAction)
+			{
+				stringTemplateRes = R.string.message_action;
+				userName = getPlayerName(actionDTO.seat);
+				Action action = new Action(actionDTO.action);
+				message = action.translate(getResources());
+				actionIndex++;
+
+				PhaseEnum nextActionPhase;
+				if (actionIndex < actions.size())
+					nextActionPhase = new Action(actions.get(actionIndex).action).getPhase();
+				else
+					nextActionPhase = PhaseEnum.fromID(gameStateDTO.phase);
+
+				if (action.getPhase() != nextActionPhase)
+				{
+					phaseStringRes = getPhaseStringRes(nextActionPhase);
+					if (action.getPhase() == PhaseEnum.FOLDING)
+					{
+						for (int seat = 0; seat < 4; seat++)
+						{
+							int count = gameStateDTO.playerInfos.get(seat).tarockFoldCount;
+							if (count > 0)
+							{
+								String tarockFoldMessage = getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
+								messagesHtml.append(getString(stringTemplateRes, userName, tarockFoldMessage));
+								messagesHtml.append("<br>");
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				stringTemplateRes = R.string.message_chat;
+
+				int seat = getSeatOfUser(chat.user.id);
+				if (seat < 0)
+					userName = chat.user.name;
+				else
+					userName = getPlayerName(seat);
+
+				message = chat.message;
+				chatIndex++;
+			}
+
+			if (message != null)
+			{
+				messagesHtml.append(getString(stringTemplateRes, userName, message));
+				messagesHtml.append("<br>");
+			}
+
+			if (phaseStringRes > 0)
+			{
+				messagesHtml.append("<br>");
+				messagesHtml.append(getString(R.string.message_phase, getString(phaseStringRes)));
+			}
 		}
 
-		return false;
+		messagesTextView.setText(Html.fromHtml(messagesHtml.toString()));
 	}
 
-	@Override
-	public void cardsChanged(List<Card> cards, boolean canBeThrown)
+	private void updateOkButtonVisibility()
 	{
-		myCards = cards;
-		arrangeCards();
-		throwButton.setVisibility(canBeThrown ? View.VISIBLE : View.GONE);
+		PhaseEnum phaseEnum = PhaseEnum.fromID(gameStateDTO.phase);
+		boolean okVisible = false;
+		switch (phaseEnum)
+		{
+			case FOLDING:
+			case ANNOUNCING:
+			case END:
+				if (gameStateDTO.playerInfos.get(mySeat).turn)
+					okVisible = true;
+				break;
+		}
+		okButton.setVisibility(okVisible ? View.VISIBLE : View.GONE);
 	}
 
-	@Override
-	public void phaseChanged(PhaseEnum phase)
+	private void updateMyCardsView()
 	{
-		gamePhase = phase;
-
-		if (phase == PhaseEnum.BIDDING)
+		Set<Card> removedCards = new HashSet<>(cardToViewMapping.keySet());
+		for (String cardId : gameStateDTO.playerInfos.get(mySeat).cards)
 		{
-			showCenterView(MESSAGES_VIEW_INDEX);
-			displayMessage(R.string.message_bidding);
+			Card card = Card.fromId(cardId);
+			removedCards.remove(card);
+			if (!cardToViewMapping.containsKey(card))
+			{
+				arrangeCards();
+				return;
+			}
 		}
-		else if (phase == PhaseEnum.FOLDING)
-		{
-			showCenterView(MESSAGES_VIEW_INDEX);
-			higlightAllName();
-			displayMessage(R.string.message_folding);
-			setSkartCardClickListener();
-		}
-		else if (phase == PhaseEnum.CALLING)
-		{
-			showCenterView(MESSAGES_VIEW_INDEX);
-			displayMessage(R.string.message_calling);
-		}
-		else if (phase == PhaseEnum.ANNOUNCING)
-		{
-			showCenterView(MESSAGES_VIEW_INDEX);
-			displayMessage(R.string.message_announcing);
-		}
-		else if (phase == PhaseEnum.GAMEPLAY)
-		{
-			showCenterViewDelayed(GAMEPLAY_VIEW_INDEX);
-			setPlayCardClickListener();
-		}
-		else if (phase == PhaseEnum.END)
-		{
-			showCenterViewDelayed(STATISTICS_VIEW_INDEX);
-		}
-		else if (phase == PhaseEnum.INTERRUPTED)
-		{
-			availableActionsAdapter.clear();
-			displayMessage(R.string.message_press_ok);
-		}
-
-		skartViews[getPositionFromPlayerID(0)].setVisibility(phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE);
+		for (Card card : removedCards)
+			animateCardShrink(card);
 	}
 
-	@Override
-	public void throwCards(int player)
+	private void animateCardShrink(Card card)
 	{
-		displayPlayerActionMessage(player, getString(R.string.message_cards_thrown));
+		View myCardView = cardToViewMapping.remove(card);
+		if (myCardView == null)
+			return;
+
+		ValueAnimator shrinkAnimator = ValueAnimator.ofInt(myCardView.getWidth(), 0);
+		shrinkAnimator.addUpdateListener(animation ->
+		{
+			myCardView.getLayoutParams().width = (Integer)animation.getAnimatedValue();
+			myCardView.requestLayout();
+		});
+		shrinkAnimator.setDuration(PLAY_DURATION);
+		boolean shouldArrange = gameStateDTO.playerInfos.get(mySeat).cards.size() == CARDS_PER_ROW;
+		shrinkAnimator.addListener(new AnimatorListenerAdapter()
+		{
+			@Override
+			public void onAnimationEnd(Animator animation)
+			{
+				myCardsView0.removeView(myCardView);
+				myCardsView1.removeView(myCardView);
+
+				if (shouldArrange)
+					arrangeCards();
+			}
+		});
+		shrinkAnimator.start();
 	}
 
-	@Override
+	private void updatePlayedCards()
+	{
+		for (int seat = 0; seat < 4; seat++)
+		{
+			PlayedCardView playedCardView = playedCardViews[getPositionFromSeat(seat)];
+
+			GameStateDTO.PlayerInfo playerInfo = gameStateDTO.playerInfos.get(seat);
+			Card previousCard = Card.fromId(playerInfo.previousTrickCard);
+			Card currentCard = Card.fromId(playerInfo.currentTrickCard);
+			int dir = getPositionFromSeat(gameStateDTO.previousTrickWinner == null ? 0 : gameStateDTO.previousTrickWinner);
+
+			if (previousCard != playedCardView.getTakenCard())
+			{
+				playedCardView.play(previousCard);
+				playedCardView.take(dir);
+				playedCardView.play(currentCard);
+			}
+			else if (currentCard != playedCardView.getCurrentCard())
+			{
+				playedCardView.play(currentCard);
+			}
+		}
+	}
+
+	public void phaseChanged()
+	{
+		PhaseEnum phase = PhaseEnum.fromID(gameStateDTO.phase);
+
+		switch (phase)
+		{
+			case BIDDING:
+				showCenterView(MESSAGES_VIEW_INDEX);
+				break;
+			case FOLDING:
+				cardsToFold.clear();
+				setSkartCardClickListener();
+
+				for (int seat = 0; seat < 4; seat++)
+				{
+					int count = gameStateDTO.playerInfos.get(seat).tarockFoldCount;
+					if (count > 0)
+					{
+						String tarockFoldMessage = getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
+						showPlayerMessageView(seat, tarockFoldMessage, R.drawable.player_message_background);
+					}
+				}
+				break;
+			case GAMEPLAY:
+				showCenterViewDelayed(GAMEPLAY_VIEW_INDEX);
+				setPlayCardClickListener();
+				break;
+			case END:
+				showCenterViewDelayed(STATISTICS_VIEW_INDEX);
+				break;
+			case INTERRUPTED:
+				showCenterView(MESSAGES_VIEW_INDEX);
+				break;
+		}
+
+		skartViews[getPositionFromSeat(0)].setVisibility(phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE);
+	}
+
+	/*@Override
 	public void availableBids(List<Integer> bids)
 	{
 		availableActionsAdapter.clear();
@@ -573,7 +884,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	@Override
 	public void bid(int player, int bid)
 	{
-		if (player == seat)
+		if (player == mySeat)
 			availableActionsAdapter.clear();
 
 		String msg = ResourceMappings.bidToName.get(bid == prevBid ? -2 : bid);
@@ -584,67 +895,12 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 	}
 
 	@Override
-	public void foldDone(int player)
-	{
-		setHiglighted(player, false);
-		if (player == seat)
-		{
-			okButton.setVisibility(View.GONE);
-			throwButton.setVisibility(View.GONE);
-			cardsToSkart.clear();
-			cardClickListener = null;
-		}
-	}
-
-	@Override
-	public void fold(int player, List<Card> cards)
-	{
-		StringBuilder msg = null;
-		for (Card card : cards)
-		{
-			String cardName = ResourceMappings.uppercaseCardName(card);
-			if (msg == null)
-				msg = new StringBuilder(cardName);
-			else
-				msg.append(", ").append(cardName);
-		}
-
-		if (msg == null)
-			return;
-
-		displayPlayerActionMessage(player, getString(R.string.message_fold, msg.toString()));
-	}
-
-	@Override
-	public void foldTarock(int[] counts)
-	{
-		for (int p = 0; p < 4; p++)
-		{
-			int count = counts[p];
-			if (count > 0)
-			{
-				String msg = getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
-				displayPlayerActionMessage(p, msg);
-			}
-		}
-	}
-
-	@Override
 	public void availableCalls(List<Card> calls)
 	{
 		availableActionsAdapter.clear();
 		availableActionsAdapter.addAll(calls);
 	}
-	
-	@Override
-	public void call(int player, Card card)
-	{
-		if (player == seat)
-			availableActionsAdapter.clear();
 
-		displayPlayerActionMessage(player, ResourceMappings.uppercaseCardName(card));
-	}
-	
 	@Override
 	public void availableAnnouncements(List<Announcement> announcements)
 	{
@@ -652,7 +908,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 
 		Collections.sort(announcements);
 
-		if (gameType != GameType.PASKIEVICS)
+		if (gameDTO.getType() != GameType.PASKIEVICS)
 			ultimoViewManager.takeAnnouncements(announcements);
 
 		if (ultimoViewManager.hasAnyUltimo())
@@ -682,194 +938,81 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		availableActionsAdapter.addAll(announcements);
 
 		okButton.setVisibility(View.VISIBLE);
-		okButton.setOnClickListener(v ->
+	}*/
+
+	public void updateTeamColors()
+	{
+		for (int seat = 0; seat < 4; seat++)
 		{
-			if (ultimoView.getVisibility() == View.GONE)
-				doAction(Action.announcePassz());
-		});
+			int pos = getPositionFromSeat(seat);
+			String team = gameStateDTO.playerInfos.get(seat).team;
+			int color = getResources().getColor(team == null ? R.color.unknown_team : team.equals("caller") ? R.color.caller_team : R.color.opponent_team);
+
+			if (seat == mySeat)
+				cardsBackgroundColorView.setBackgroundColor(color);
+
+			playerNameViews[pos].setTextColor(color);
+		}
 	}
 
-	@Override
-	public void announce(int player, Announcement announcement)
+	private void updateStatistics()
 	{
-		if (announcement.getName().equals("jatek") && announcement.getContraLevel() == 0)
+		GameStateDTO.Statistics statistics = gameStateDTO.statistics;
+		if (statistics == null)
+		{
+			statisticsGamepointsCaller.setText("");
+			statisticsGamepointsOpponent.setText("");
+			statisticsPointMultiplierView.setVisibility(View.GONE);
+			statisticsCallerEntriesView.removeAllViews();
+			statisticsOpponentEntriesView.removeAllViews();
+			statisticsSumPointsView.setText("0");
 			return;
-
-		if (player == seat)
-		{
-			okButton.setVisibility(View.GONE);
-			availableActionsAdapter.clear();
 		}
 
-		setUltimoViewVisible(false);
+		Team selfTeam = mySeat < 0 ? null : "caller".equals(gameStateDTO.playerInfos.get(mySeat).team) ? Team.CALLER : Team.OPPONENT;
 
-		String msg = announcement.toString();
-		displayPlayerActionMessage(player, msg);
-	}
+		statisticsGamepointsCaller.setText(String.valueOf(statistics.callerCardPoints));
+		statisticsGamepointsOpponent.setText(String.valueOf(statistics.opponentCardPoints));
 
-	@Override
-	public void announcePassz(int player)
-	{
-		if (player == seat)
-		{
-			okButton.setVisibility(View.GONE);
-			availableActionsAdapter.clear();
-		}
-
-		showPlayerMessageView(player, getString(R.string.passz), R.drawable.player_message_background);
-	}
-
-	@Override
-	public void playCard(int player, Card card)
-	{
-		PlayedCardView playedCardView = playedCardViews[getPositionFromPlayerID(player)];
-		playedCardView.play(card);
-
-		if (myCards == null || player != seat)
-			return;
-
-		myCards.remove(card);
-		View myCardView = cardToViewMapping.remove(card);
-		if (myCardView == null)
-			return;
-
-		ValueAnimator shrinkAnimator = ValueAnimator.ofInt(myCardView.getWidth(), 0);
-		shrinkAnimator.addUpdateListener(animation ->
-		{
-			myCardView.getLayoutParams().width = (Integer)animation.getAnimatedValue();
-			myCardView.requestLayout();
-		});
-		shrinkAnimator.setDuration(PLAY_DURATION);
-		boolean shouldArrange = myCards.size() == CARDS_PER_ROW;
-		shrinkAnimator.addListener(new AnimatorListenerAdapter()
-		{
-			@Override
-			public void onAnimationEnd(Animator animation)
-			{
-				myCardsView0.removeView(myCardView);
-				myCardsView1.removeView(myCardView);
-
-				if (shouldArrange)
-					arrangeCards();
-			}
-		});
-		shrinkAnimator.start();
-	}
-	
-	@Override
-	public void cardsTaken(final int winnerPlayer)
-	{
-		for (PlayedCardView playedCardView : playedCardViews)
-		{
-			playedCardView.take(getPositionFromPlayerID(winnerPlayer));
-		}
-	}
-	
-	@Override
-	public void turn(int player)
-	{
-		if (gamePhase == PhaseEnum.FOLDING)
-		{
-			okButton.setVisibility(View.VISIBLE);
-			okButton.setOnClickListener(v -> doAction(Action.fold(cardsToSkart)));
-		}
-		else
-		{
-			highlightName(player);
-		}
-	}
-
-	@Override
-	public void playerTeamInfo(int player, Team team)
-	{
-		int pos = getPositionFromPlayerID(player);
-		int color = getResources().getColor(team == Team.CALLER ? R.color.caller_team : R.color.opponent_team);
-
-		if (player == seat)
-		{
-			myTeam = team;
-			cardsBackgroundColorView.setBackgroundColor(color);
-		}
-
-		playerNameViews[pos].setTextColor(color);
-	}
-
-	@Override
-	public void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
-	{
-		Team selfTeam = myTeam == null ? Team.CALLER : myTeam;
-
-		statisticsGamepointsCaller.setText(String.valueOf(callerGamePoints));
-		statisticsGamepointsOpponent.setText(String.valueOf(opponentGamePoints));
-
-		statisticsPointMultiplierView.setVisibility(pointMultiplier == 1 ? View.GONE : View.VISIBLE);
-		statisticsPointMultiplierView.setText(getString(R.string.statictics_point_multiplier, pointMultiplier));
+		statisticsPointMultiplierView.setVisibility(statistics.pointMultiplier == 1 ? View.GONE : View.VISIBLE);
+		statisticsPointMultiplierView.setText(getString(R.string.statictics_point_multiplier, statistics.pointMultiplier));
 
 		statisticsCallerEntriesView.removeAllViews();
 		statisticsOpponentEntriesView.removeAllViews();
-		for (AnnouncementResult announcementResult : announcementResults)
+		for (Team team : Team.values())
 		{
-			ViewGroup viewToAppend = announcementResult.getTeam() == Team.CALLER ? statisticsCallerEntriesView : statisticsOpponentEntriesView;
+			List<GameStateDTO.AnnouncementResult> announcementResults = team == Team.CALLER ? statistics.callerAnnouncementResults : statistics.opponentAnnouncementResults;
+			ViewGroup viewToAppend = team == Team.CALLER ? statisticsCallerEntriesView : statisticsOpponentEntriesView;
 
-			View entryView = layoutInflater.inflate(R.layout.statistics_entry, viewToAppend, false);
-			TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
-			TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
+			for (GameStateDTO.AnnouncementResult announcementResult : announcementResults)
+			{
+				View entryView = layoutInflater.inflate(R.layout.statistics_entry, viewToAppend, false);
+				TextView nameView = (TextView)entryView.findViewById(R.id.statistics_announcement_name);
+				TextView pointsView = (TextView)entryView.findViewById(R.id.statistics_sum_points);
 
-			nameView.setText(announcementResult.getAnnouncement().toString());
-			int announcerPoints = announcementResult.getPoints();
-			if (announcerPoints < 0)
-				nameView.setTextColor(getResources().getColor(R.color.announcement_failed));
-			int myPoints = announcerPoints * (announcementResult.getTeam() == selfTeam ? 1 : -1);
-			pointsView.setText(String.valueOf(myPoints));
-			pointsView.setVisibility(myPoints == 0 ? View.GONE : View.VISIBLE);
+				nameView.setText(Announcement.fromID(announcementResult.announcement).translate(getResources()));
+				int announcerPoints = announcementResult.points;
+				if (announcerPoints < 0)
+					nameView.setTextColor(getResources().getColor(R.color.announcement_failed));
+				int myPoints = announcerPoints * (team == selfTeam ? 1 : -1);
+				pointsView.setText(String.valueOf(myPoints));
+				pointsView.setVisibility(myPoints == 0 ? View.GONE : View.VISIBLE);
 
-			viewToAppend.addView(entryView);
+				viewToAppend.addView(entryView);
+			}
 		}
 
-		int selfSumPoints = sumPoints * (selfTeam == Team.CALLER ? 1 : -1);
+		int selfSumPoints = statistics.sumPoints * (selfTeam == Team.CALLER ? 1 : -1);
 		statisticsSumPointsView.setText(String.valueOf(selfSumPoints));
-	}
-
-	@Override
-	public void playerPoints(List<Integer> points, List<Integer> incrementPoints)
-	{
-		statisticsPointsAdapter.setPoints(points);
-		statisticsPointsAdapter.setIncrementPoints(incrementPoints);
-	}
-
-	@Override
-	public void pendingNewGame()
-	{
-		if (!isKibic())
-		{
-			okButton.setVisibility(View.VISIBLE);
-			okButton.setOnClickListener(v -> doAction(Action.readyForNewGame()));
-		}
-
-		higlightAllName();
-	}
-
-	@Override
-	public void readyForNewGame(int player)
-	{
-		if (player == seat)
-			okButton.setVisibility(View.GONE);
-
-		setHiglighted(player, false);
-	}
-
-	@Override
-	public void wrongAction()
-	{
-		displayMessage("error");
 	}
 
 	private void arrangeCards()
 	{
-		removeAllMyCardsView();
+		List<Card> myCards = new ArrayList<>();
+		for (String cardId : gameStateDTO.playerInfos.get(mySeat).cards)
+			myCards.add(Card.fromId(cardId));
 
-		if (myCards == null)
-			return;
+		removeAllMyCardsView();
 		
 		Collections.sort(myCards);
 		
@@ -895,7 +1038,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			cardView.setTag(card);
 			cardView.setOnClickListener(view ->
 			{
-				if (cardClickListener != null)
+				if (cardClickListener != null && mySeat >= 0 && gameStateDTO.playerInfos.get(mySeat).turn)
 					cardClickListener.onClick(view);
 			});
 		}
@@ -906,9 +1049,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		cardClickListener = v ->
 		{
 			Card card = (Card)v.getTag();
-			if (!cardsToSkart.contains(card))
+			if (!cardsToFold.contains(card))
 			{
-				cardsToSkart.add(card);
+				cardsToFold.add(card);
 				Animation a = new TranslateAnimation(0, 0, 0, -v.getHeight() / 5);
 				a.setDuration(300);
 				a.setFillAfter(true);
@@ -916,7 +1059,7 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 			}
 			else
 			{
-				cardsToSkart.remove(card);
+				cardsToFold.remove(card);
 				Animation a = new TranslateAnimation(0, 0, -v.getHeight() / 5, 0);
 				a.setDuration(300);
 				a.setFillAfter(true);
@@ -975,27 +1118,9 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		}, DELAY);
 	}
 
-	private void displayMessage(int msgRes, Object ... formatArgs)
-	{
-		displayMessage(getString(msgRes, formatArgs));
-	}
-
-	private void displayMessage(String msg)
-	{
-		messagesHtml += msg;
-		messagesTextView.setText(Html.fromHtml(messagesHtml));
-		messagesHtml += "<br>";
-	}
-
-	private void displayPlayerActionMessage(int player, String msg)
-	{
-		displayMessage(getPlayerName(player) + ": " + msg);
-		showPlayerMessageView(player, msg, R.drawable.player_message_background);
-	}
-	
 	private void showPlayerMessageView(int player, String msg, int backgroundRes)
 	{
-		final TextView view = playerMessageViews[getPositionFromPlayerID(player)];
+		final TextView view = playerMessageViews[getPositionFromSeat(player)];
 		view.setText(Html.fromHtml(msg));
 		view.setBackgroundResource(backgroundRes);
 		view.setVisibility(View.VISIBLE);
@@ -1022,50 +1147,34 @@ public class GameFragment extends MainActivityFragment implements EventHandler, 
 		});
 		view.setAnimation(fadeAnimation);
 	}
-	
-	private void highlightName(int player)
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			setHiglighted(i, player == i);
-		}
-	}
-	
-	private void higlightAllName()
-	{
-		for (int i = 0; i < 4; i++)
-		{
-			setHiglighted(i, true);
-		}
-	}
-	
-	private void setHiglighted(int player, boolean val)
-	{
-		int pos = getPositionFromPlayerID(player);
-		
-		if (pos == 0)
-		{
-			cardsHighlightView.setVisibility(val ? View.VISIBLE : View.GONE);
-		}
 
-		if (val)
+	private void updateTurnHighlight()
+	{
+		for (int seat = 0; seat < 4; seat++)
 		{
-			playerNameViews[pos].setBackgroundResource(R.drawable.name_highlight);
-		}
-		else
-		{
-			playerNameViews[pos].setBackgroundColor(Color.TRANSPARENT);
+			int pos = getPositionFromSeat(seat);
+			boolean val = gameStateDTO.playerInfos.get(seat).turn;
+
+			if (pos == 0)
+			{
+				cardsHighlightView.setVisibility(val ? View.VISIBLE : View.GONE);
+			}
+
+			if (val)
+				playerNameViews[pos].setBackgroundResource(R.drawable.name_highlight);
+			else
+				playerNameViews[pos].setBackgroundColor(Color.TRANSPARENT);
 		}
 	}
 
 	private boolean isKibic()
 	{
-		return seat < 0;
+		return mySeat < 0;
 	}
 	
-	private int getPositionFromPlayerID(int id)
+	private int getPositionFromSeat(int id)
 	{
-		int viewID = isKibic() ? 0 : seat;
+		int viewID = isKibic() ? 0 : mySeat;
 		return (id - viewID + 4) % 4;
 	}
 }

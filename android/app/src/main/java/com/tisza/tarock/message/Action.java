@@ -1,10 +1,12 @@
 package com.tisza.tarock.message;
 
+import android.content.res.*;
 import android.text.*;
 import android.util.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
+import com.tisza.tarock.gui.*;
 
 import java.util.*;
 
@@ -103,6 +105,67 @@ public class Action
 				break;
 			default:
 				Log.w("Action", "invalid action: " + actionType);
+		}
+	}
+
+	public String translate(Resources resources)
+	{
+		int colonIndex = id.indexOf(":");
+		String actionType = id.substring(0, colonIndex);
+		String actionParams = id.substring(colonIndex + 1);
+		switch (actionType)
+		{
+			case "bid":
+				int bid = actionParams.equals("p") ? -1 : Integer.parseInt(actionParams);
+				return ResourceMappings.bidToName.get(bid);
+			case "fold":
+				StringBuilder msg = null;
+				for (String cardID : actionParams.split(","))
+				{
+					if (cardID.isEmpty())
+						continue;
+
+					Card card = Card.fromId(cardID);
+					String cardName = ResourceMappings.uppercaseCardName(card);
+					if (msg == null)
+						msg = new StringBuilder(cardName);
+					else
+						msg.append(", ").append(cardName);
+				}
+
+				if (msg == null)
+					return null;
+
+				return resources.getString(R.string.message_fold, msg.toString());
+			case "call":
+				return ResourceMappings.uppercaseCardName(Card.fromId(actionParams));
+			case "announce":
+				if (actionParams.equals("passz"))
+					return resources.getString(R.string.passz);
+				else
+					return Announcement.fromID(actionParams).translate(resources);
+			case "throw":
+				return resources.getString(R.string.message_cards_thrown);
+		}
+		return null;
+	}
+
+	public PhaseEnum getPhase()
+	{
+		int colonIndex = id.indexOf(":");
+		String actionType = id.substring(0, colonIndex);
+		switch (actionType)
+		{
+			case "bid": return PhaseEnum.BIDDING;
+			case "fold": return PhaseEnum.FOLDING;
+			case "call": return PhaseEnum.CALLING;
+			case "announce": return PhaseEnum.ANNOUNCING;
+			case "play": return PhaseEnum.GAMEPLAY;
+			case "newgame": return PhaseEnum.END;
+			case "throw": return PhaseEnum.INTERRUPTED;
+			default:
+				Log.w("Action", "invalid action: " + actionType);
+				return null;
 		}
 	}
 }

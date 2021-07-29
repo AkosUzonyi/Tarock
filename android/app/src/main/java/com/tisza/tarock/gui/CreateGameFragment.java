@@ -9,8 +9,6 @@ import androidx.lifecycle.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.proto.*;
-import retrofit2.http.*;
 
 import java.util.*;
 
@@ -50,31 +48,11 @@ public class CreateGameFragment extends MainActivityFragment
 		progressDialog.setMessage(getString(R.string.lobby_create));
 		progressDialog.setCancelable(false);
 
-		connectionViewModel.getGameSessions().observe(this, this::onGameSessionUpdate);
-
 		SharedPreferences sharedPreferences = getActivity().getSharedPreferences(SHARED_PREF, Context.MODE_PRIVATE);
 		gameTypeSpinner.setSelection(sharedPreferences.getInt(GAME_TYPE_KEY, 0));
 		doubleRoundTypeSpinner.setSelection(sharedPreferences.getInt(DOUBLE_ROUND_TYPE_KEY, 1));
 
 		return view;
-	}
-
-	private void onGameSessionUpdate(List<GameSession> gameSessions)
-	{
-		Integer myUserID = connectionViewModel.getUserID().getValue();
-		if (myUserID == null)
-			return;
-
-		for (GameSession gameSession : gameSessions)
-		{
-			if (gameSession.getState() == GameSessionState.LOBBY && gameSession.containsUser(myUserID))
-			{
-				progressDialog.dismiss();
-				getMainActivity().getSupportFragmentManager().popBackStack();
-				getMainActivity().joinGameSession(gameSession.getId());
-				break;
-			}
-		}
 	}
 
 	private void createButtonClicked()
@@ -88,7 +66,15 @@ public class CreateGameFragment extends MainActivityFragment
 		String gameType = GameType.values()[gameTypeSpinner.getSelectedItemPosition()].getID();
 		String doubleRoundType = DoubleRoundType.values()[doubleRoundTypeSpinner.getSelectedItemPosition()].getID();
 
-		connectionViewModel.getApiInterface().createGameSession(new CreateGameSessionDTO(gameType, doubleRoundType)).subscribe();
+		connectionViewModel.getApiInterface().createGameSession(new CreateGameSessionDTO(gameType, doubleRoundType)).subscribe(response ->
+		{
+			progressDialog.dismiss();
+			getMainActivity().getSupportFragmentManager().popBackStack();
+
+			//TODO: get location
+			//String location = response.header("Location");
+			//getMainActivity().joinGameSession(Integer.parseInt(location.substring(location.lastIndexOf('/') + 1)));
+		});
 
 		progressDialog.show();
 	}

@@ -15,9 +15,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.api.*;
-import com.tisza.tarock.proto.*;
-import io.reactivex.android.schedulers.*;
-import retrofit2.http.*;
 
 public class MainActivity extends AppCompatActivity implements GameListAdapter.GameAdapterListener
 {
@@ -51,7 +48,8 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		connectionViewModel.getErrorState().observe(this, this::error);
 		progressDialog = new ProgressDialog(this);
 		handler = new Handler();
-		disconnectRunnable = connectionViewModel::disconnect;
+		//TODO: finish timeout
+		//disconnectRunnable = connectionViewModel::disconnect;
 
 		LoginFragment loginFragment = new LoginFragment();
 		getSupportFragmentManager().beginTransaction()
@@ -92,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				break;
 			case CONNECTING:
 				progressDialog.setMessage(getResources().getString(R.string.connecting));
-				progressDialog.setOnDismissListener(x -> connectionViewModel.disconnect());
+				//progressDialog.setOnDismissListener(x -> connectionViewModel.disconnect());
 				progressDialog.show();
 				break;
 			case LOGGING_IN:
@@ -209,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			return;
 		}
 
-		DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse("https://tarokk.net/cgi-bin/tarock/tarokk_pontok.csv?user_id=" + connectionViewModel.getUserID().getValue()));
+		DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse("https://tarokk.net/cgi-bin/tarock/tarokk_pontok.csv?user_id=" + connectionViewModel.getLoggedInUser().getValue()));
 		downloadRequest.allowScanningByMediaScanner();
 		downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 		downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "tarokk_pontok.csv");

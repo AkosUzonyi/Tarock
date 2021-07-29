@@ -6,6 +6,9 @@ import android.widget.*;
 import androidx.lifecycle.*;
 import androidx.recyclerview.widget.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.api.model.*;
+
+import java.util.*;
 
 public class GameListFragment extends MainActivityFragment
 {
@@ -30,12 +33,16 @@ public class GameListFragment extends MainActivityFragment
 			@Override
 			public void onItemRangeInserted(int positionStart, int itemCount)
 			{
+				User loggedInUser = connectionViewModel.getLoggedInUser().getValue();
+				if (loggedInUser == null)
+					return;
+
 				for (int i = positionStart; i < positionStart + itemCount; i++)
 				{
 					if (i >= gameListAdapter.getItemCount())
 						break;
 
-					if (gameListAdapter.getItem(i).containsUser(connectionViewModel.getUserID().getValue()))
+					if (gameListAdapter.getItem(i).containsUser(loggedInUser.id))
 					{
 						gameRecyclerView.smoothScrollToPosition(i);
 						break;
@@ -46,7 +53,7 @@ public class GameListFragment extends MainActivityFragment
 
 		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
 		connectionViewModel.getGameSessions().observe(this, v -> updateList());
-		connectionViewModel.getUserID().observe(this, v -> updateList());
+		connectionViewModel.getLoggedInUser().observe(this, v -> updateList());
 
 		View downloadCsvButton = view.findViewById(R.id.download_csv_button);
 		downloadCsvButton.setOnClickListener(v -> getMainActivity().downloadCsv());
@@ -59,6 +66,12 @@ public class GameListFragment extends MainActivityFragment
 
 	private void updateList()
 	{
-		gameListAdapter.setData(connectionViewModel.getGameSessions().getValue(), connectionViewModel.getUserID().getValue());
+		List<GameSession> gameSessions = connectionViewModel.getGameSessions().getValue();
+		User loggedInUser = connectionViewModel.getLoggedInUser().getValue();
+
+		if (gameSessions == null)
+			return;
+
+		gameListAdapter.setData(gameSessions, loggedInUser == null ? 0 : loggedInUser.id);
 	}
 }

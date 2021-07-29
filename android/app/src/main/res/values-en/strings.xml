@@ -71,11 +71,13 @@
     <string name="empty_seat">---</string>
 
     <string name="message_chat"><![CDATA[<font color=\'#FFC0C0\'>%1$s: %2$s</font>]]></string>
+    <string name="message_action">%1$s: %2$s</string>
     <string name="message_fold">laid: %1$s</string>
-    <string name="message_bidding"><![CDATA[<big><b>BIDDING</b></big>\n]]></string>
-    <string name="message_folding"><![CDATA[<br><big><b>DISCARDING</b></big>\n]]></string>
-    <string name="message_calling"><![CDATA[<br><big><b>CALLING</b></big>\n]]></string>
-    <string name="message_announcing"><![CDATA[<br><big><b>ANNOUNCING</b></big>\n]]></string>
+    <string name="message_phase"><![CDATA[<big><b>%1$s</b></big><br>]]></string>
+    <string name="message_bidding">BIDDING</string>
+    <string name="message_folding">DISCARDING</string>
+    <string name="message_calling">CALLING</string>
+    <string name="message_announcing">ANNOUNCING</string>
     <string name="message_cards_thrown">threw in their cards</string>
     <string name="message_press_ok">Press OK to continue</string>
     <plurals name="message_fold_tarock">

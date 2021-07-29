@@ -66,7 +66,7 @@ public class LoginFragment extends MainActivityFragment
 			logoutButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
 
 			if (!loggedIn)
-				connectionViewModel.disconnect();
+				connectionViewModel.logout();
 		});
 
 		return view;

@@ -3,47 +3,36 @@ package com.tisza.tarock.gui;
 import android.app.*;
 import android.content.*;
 import android.net.*;
-import android.os.*;
 import androidx.lifecycle.*;
-import androidx.preference.*;
 import com.facebook.*;
 import com.google.android.gms.auth.api.signin.*;
-import com.google.firebase.iid.*;
-import com.tisza.tarock.*;
-import com.tisza.tarock.BuildConfig;
+import com.tisza.tarock.api.*;
 import com.tisza.tarock.api.model.*;
-import com.tisza.tarock.game.*;
-import com.tisza.tarock.message.*;
-import com.tisza.tarock.net.*;
-import com.tisza.tarock.proto.*;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.*;
+import io.reactivex.plugins.*;
+import retrofit2.*;
 
-import javax.net.ssl.*;
-import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class ConnectionViewModel extends AndroidViewModel implements MessageHandler
+public class ConnectionViewModel extends AndroidViewModel
 {
-	private SSLSocketFactory socketFactory;
-	private ProtoConnection connection;
-	private ConnectAsyncTask connectAsyncTask = null;
-	private Collection<EventHandler> eventHandlers = new ArrayList<>();
-	private Executor uiThreadExecutor = new UIThreadExecutor();
+	private MutableLiveData<List<GameSession>> games = new MutableLiveData<>(null);
 	private ConnectivityManager connectivityManager;
 
-	private MutableLiveData<ConnectionState> connectionState = new MutableLiveData<>(ConnectionState.DISCONNECTED);
-	private MutableLiveData<ErrorState> errorState = new MutableLiveData<>(null);
-	private MutableLiveData<List<GameSession>> games = new MutableLiveData<>(new ArrayList<>());
-	private MutableLiveData<List<User>> users = new MutableLiveData<>(new ArrayList<>());
-	private MutableLiveData<Integer> userID = new MutableLiveData<>(null);
+	private MutableLiveData<ConnectionState> connectionState = new MutableLiveData<>(ConnectionState.CONNECTED);
+	private MutableLiveData<User> user = new MutableLiveData<>(null);
+
+	private APIInterface apiInterface;
 
 	public ConnectionViewModel(Application application)
 	{
 		super(application);
 
+		apiInterface = APIClient.getClient().create(APIInterface.class);
 		connectivityManager = (ConnectivityManager)application.getSystemService(Context.CONNECTIVITY_SERVICE);
-		socketFactory = SSLCertificateSocketFactory.getDefault(0, new SSLSessionCache(application));
 	}
 
 	public LiveData<ConnectionState> getConnectionState()
@@ -51,84 +40,22 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 		return connectionState;
 	}
 
-	public LiveData<ErrorState> getErrorState()
+	public LiveData<User> getLoggedInUser()
 	{
-		return errorState;
-	}
-
-	private void error(ErrorState error)
-	{
-		errorState.setValue(error);
-		errorState.setValue(null);
-	}
-
-	public LiveData<List<GameSession>> getGameSessions()
-	{
-		return games;
-	}
-
-	public LiveData<GameSession> getGameSessionByID(int gameSessionId)
-	{
-		MediatorLiveData<GameSession> mediatorLiveData = new MediatorLiveData<>();
-		mediatorLiveData.addSource(games, gameSessionList ->
-		{
-			GameSession gameSession = null;
-			for (GameSession g : gameSessionList)
-				if (g.getId() == gameSessionId)
-					gameSession = g;
-
-			mediatorLiveData.setValue(gameSession);
-		});
-
-		return mediatorLiveData;
-	}
-
-	public LiveData<List<User>> getUsers()
-	{
-		return users;
-	}
-
-	public LiveData<User> getUserByID(int userID)
-	{
-		MediatorLiveData<User> mediatorLiveData = new MediatorLiveData<>();
-		mediatorLiveData.addSource(users, userList ->
-		{
-			User user = null;
-			for (User u : userList)
-				if (u.getId() == userID)
-					user = u;
-
-			mediatorLiveData.setValue(user);
-		});
-
-		return mediatorLiveData;
-	}
-
-	public LiveData<Integer> getUserID()
-	{
-		return userID;
-	}
-
-	public void addEventHandler(EventHandler eventHandler)
-	{
-		eventHandlers.add(eventHandler);
-	}
-
-	public void removeEventHandler(EventHandler eventHandler)
-	{
-		eventHandlers.remove(eventHandler);
+		return user;
 	}
 
 	public void login()
 	{
+
 		switch (connectionState.getValue())
 		{
 			case DISCONNECTED:
-				NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+				/*NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
 				if (activeNetworkInfo == null || !activeNetworkInfo.isConnected())
 					error(ErrorState.NO_NETWORK);
 				else
-					new ConnectAsyncTask().execute();
+					new ConnectAsyncTask().execute();*/
 				break;
 			case CONNECTING:
 			case LOGGING_IN:
@@ -140,189 +67,38 @@ public class ConnectionViewModel extends AndroidViewModel implements MessageHand
 				connectionState.setValue(ConnectionState.LOGGING_IN);
 				AccessToken facebookToken = AccessToken.getCurrentAccessToken();
 				GoogleSignInAccount googleAccount = GoogleSignIn.getLastSignedInAccount(getApplication());
-				MainProto.Login.Builder loginMessageBuilder = MainProto.Login.newBuilder();
+				LoginRequestDTO loginRequestDTO = new LoginRequestDTO();
 				if (facebookToken != null)
-					loginMessageBuilder.setFacebookToken(facebookToken.getToken());
-				if (googleAccount != null)
-					loginMessageBuilder.setGoogleToken(googleAccount.getIdToken());
-				connection.sendMessage(MainProto.Message.newBuilder().setLogin(loginMessageBuilder).build());
-				break;
-		}
-	}
-
-	public void disconnect()
-	{
-		switch (connectionState.getValue())
-		{
-			case DISCONNECTED:
-				break;
-			case CONNECTING:
-				connectAsyncTask.cancel(true);
-				break;
-			case LOGGING_IN:
-			case LOGGED_IN:
-			case CONNECTED:
-				new DisconnectAsyncTask().execute(connection);
-				break;
-		}
-	}
-
-	public void sendMessage(MainProto.Message message)
-	{
-		if (connectionState.getValue() == ConnectionState.LOGGED_IN)
-			connection.sendMessage(message);
-	}
-
-	@Override
-	public void handleMessage(MainProto.Message message)
-	{
-		switch (message.getMessageTypeCase())
-		{
-			case LOGIN_RESULT:
-				boolean loggedIn = message.getLoginResult().hasUserId();
-
-				if (connectionState.getValue() == ConnectionState.LOGGING_IN && !loggedIn)
-					error(ErrorState.LOGIN_UNSUCCESSFUL);
-
-				connectionState.setValue(loggedIn ? ConnectionState.LOGGED_IN : ConnectionState.CONNECTED);
-				userID.setValue(loggedIn ? message.getLoginResult().getUserId() : null);
-
-				boolean notifications = PreferenceManager.getDefaultSharedPreferences(getApplication()).getBoolean("notifications", true);
-				if (loggedIn && notifications)
-					FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(instanceIdResult ->
-					{
-						sendMessage(MainProto.Message.newBuilder().setFcmToken(MainProto.FCMToken.newBuilder()
-								.setFcmToken(instanceIdResult.getToken())
-								.setActive(true)
-								.build()).build());
-					});
-
-				break;
-
-			case EVENT:
-				for (EventHandler eventHandler : eventHandlers)
-					new ProtoEvent(message.getEvent()).handle(eventHandler);
-
-				break;
-
-			case SERVER_STATUS:
-				break;
-
-			default:
-				System.err.println("unhandled message type: " + message.getMessageTypeCase());
-				break;
-		}
-	}
-
-	@Override
-	public void connectionError(MessageHandler.ErrorType errorType)
-	{
-		switch (errorType)
-		{
-			case INVALID_HELLO:
-				error(ErrorState.SERVER_ERROR);
-				break;
-			case VERSION_MISMATCH:
-				error(ErrorState.OUTDATED);
-				break;
-		}
-
-		connectionState.setValue(ConnectionState.DISCONNECTED);
-		connection = null;
-	}
-
-	@Override
-	public void connectionClosed()
-	{
-		connection = null;
-		connectionState.setValue(ConnectionState.DISCONNECTED);
-	}
-
-	@Override
-	protected void onCleared()
-	{
-		disconnect();
-	}
-
-	private static class DisconnectAsyncTask extends AsyncTask<ProtoConnection, Void, Void>
-	{
-		@Override
-		protected Void doInBackground(ProtoConnection... protoConnections)
-		{
-			for (ProtoConnection connection : protoConnections)
-			{
-				if (connection != null)
 				{
-					try
-					{
-						connection.close();
-					}
-					catch (IOException e)
-					{
-						e.printStackTrace();
-					}
+					loginRequestDTO.provider = "facebook";
+					loginRequestDTO.token = facebookToken.getToken();
 				}
-			}
+				if (googleAccount != null)
+				{
+					loginRequestDTO.provider = "google";
+					loginRequestDTO.token = googleAccount.getIdToken();
+				}
 
-			return null;
+				apiInterface.login(loginRequestDTO).observeOn(AndroidSchedulers.mainThread()).subscribe(loginResponseDTO ->
+				{
+					user.setValue(loginResponseDTO.user);
+					AuthInterceptor.authToken = loginResponseDTO.token;
+					connectionState.setValue(ConnectionState.LOGGED_IN);
+				});
+				break;
 		}
 	}
 
-	private class ConnectAsyncTask extends AsyncTask<Void, Void, ProtoConnection>
+	public APIInterface getApiInterface()
 	{
-		@Override
-		protected void onPreExecute()
-		{
-			connectAsyncTask = this;
-			connectionState.setValue(ConnectionState.CONNECTING);
-		}
+		return apiInterface;
+	}
 
-		protected ProtoConnection doInBackground(Void... voids)
-		{
-			try
-			{
-				SSLSocket socket = (SSLSocket)socketFactory.createSocket();
-				socket.connect(new InetSocketAddress(BuildConfig.SERVER_HOSTNAME, BuildConfig.SERVER_PORT), 1000);
-
-				boolean verified = HttpsURLConnection.getDefaultHostnameVerifier().verify("tarokk.net", socket.getSession());
-				if (!verified)
-					return null;
-
-				ProtoConnection protoConnection = new ProtoConnection(socket, uiThreadExecutor);
-				return protoConnection;
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-				return null;
-			}
-		}
-
-		protected void onPostExecute(ProtoConnection resultProtoConnection)
-		{
-			connectAsyncTask = null;
-
-			if (resultProtoConnection == null)
-			{
-				error(ErrorState.SERVER_DOWN);
-				connectionState.setValue(ConnectionState.DISCONNECTED);
-				return;
-			}
-
-			connection = resultProtoConnection;
-			connection.addMessageHandler(ConnectionViewModel.this);
-			connection.start();
-			connectionState.setValue(ConnectionState.CONNECTED);
-			login();
-		}
-
-		@Override
-		protected void onCancelled(ProtoConnection resultProtoConnection)
-		{
-			new DisconnectAsyncTask().execute(resultProtoConnection);
-			connectAsyncTask = null;
-			connectionState.setValue(ConnectionState.DISCONNECTED);
-		}
+	public void logout()
+	{
+		user.setValue(null);
+		AuthInterceptor.authToken = null;
+		connectionState.setValue(ConnectionState.CONNECTED);
 	}
 
 	public static enum ConnectionState

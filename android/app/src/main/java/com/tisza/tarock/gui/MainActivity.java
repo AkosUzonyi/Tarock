@@ -14,7 +14,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.*;
 import com.tisza.tarock.R;
-import com.tisza.tarock.proto.*;
+import com.tisza.tarock.api.*;
+import io.reactivex.plugins.*;
+import okhttp3.*;
+import retrofit2.*;
+
+import java.io.*;
+import java.net.*;
 
 public class MainActivity extends AppCompatActivity implements GameListAdapter.GameAdapterListener
 {
@@ -37,10 +43,19 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 
 		connectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
 		connectionViewModel.getConnectionState().observe(this, this::connectionStateChanged);
-		connectionViewModel.getErrorState().observe(this, this::error);
 		progressDialog = new ProgressDialog(this);
 		handler = new Handler();
-		disconnectRunnable = connectionViewModel::disconnect;
+		//TODO: finish timeout
+		//disconnectRunnable = connectionViewModel::disconnect;
+
+		RxJavaPlugins.setErrorHandler(throwable ->
+		{
+			if (throwable instanceof Error)
+				throw (Error) throwable;
+
+			Exception exception = (Exception) throwable;
+			handler.post(() -> handleError(exception));
+		});
 
 		LoginFragment loginFragment = new LoginFragment();
 		getSupportFragmentManager().beginTransaction()
@@ -49,6 +64,58 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 
 		if (getIntent().hasExtra(GameFragment.KEY_GAME_SESSION_ID))
 			connectionViewModel.login();
+	}
+
+	private void handleError(Exception exception)
+	{
+		if (exception instanceof HttpException)
+		{
+			HttpException httpException = (HttpException) exception;
+			String errorBodyString = "";
+			ResponseBody errorBody = httpException.response().errorBody();
+			if (errorBody != null)
+			{
+				try
+				{
+					errorBodyString = errorBody.string();
+				}
+				catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			switch (httpException.code())
+			{
+				case 503:
+					showErrorDialog(R.string.error_server_down_title, getString(R.string.error_server_down_message) + " (" + errorBodyString + ")");
+					break;
+				case 410:
+					break;
+				default:
+					showErrorDialog(R.string.error_server_error_title, errorBodyString);
+					break;
+			}
+			/*case NO_NETWORK:
+				showErrorDialog(R.string.error_no_network_title, R.string.error_no_network_message);
+				break;
+			case OUTDATED:
+				requireUpdate();
+				break;
+			case LOGIN_UNSUCCESSFUL:
+				showErrorDialog(R.string.error_login_unsuccessful_title, R.string.error_login_unsuccessful_message);
+				break;*/
+
+			return;
+		}
+		else if (exception instanceof ConnectException)
+		{
+			connectionViewModel.logout();
+			showErrorDialog(R.string.error_server_down_title, getString(R.string.error_server_down_message) + " (" + exception.getMessage() + ")");
+		}
+		else
+		{
+			Thread.currentThread().getUncaughtExceptionHandler().uncaughtException(Thread.currentThread(), exception);
+		}
 	}
 
 	public void openSettings()
@@ -81,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				break;
 			case CONNECTING:
 				progressDialog.setMessage(getResources().getString(R.string.connecting));
-				progressDialog.setOnDismissListener(x -> connectionViewModel.disconnect());
+				//progressDialog.setOnDismissListener(x -> connectionViewModel.disconnect());
 				progressDialog.show();
 				break;
 			case LOGGING_IN:
@@ -94,32 +161,12 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		}
 	}
 
-	private void error(ConnectionViewModel.ErrorState errorState)
+	private void showErrorDialog(int title, int message)
 	{
-		if (errorState == null)
-			return;
-
-		switch (errorState)
-		{
-			case OUTDATED:
-				requireUpdate();
-				break;
-			case NO_NETWORK:
-				showErrorDialog(R.string.error_no_network_title, R.string.error_no_network_message);
-				break;
-			case SERVER_DOWN:
-				showErrorDialog(R.string.error_server_down_title, R.string.error_server_down_message);
-				break;
-			case SERVER_ERROR:
-				showErrorDialog(R.string.error_server_error_title, R.string.error_server_error_message);
-				break;
-			case LOGIN_UNSUCCESSFUL:
-				showErrorDialog(R.string.error_login_unsuccessful_title, R.string.error_login_unsuccessful_message);
-				break;
-		}
+		showErrorDialog(title, getString(message));
 	}
 
-	private void showErrorDialog(int title, int message)
+	private void showErrorDialog(int title, String message)
 	{
 		new AlertDialog.Builder(this)
 				.setTitle(title)
@@ -182,11 +229,9 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	@Override
 	public void deleteGame(int gameSessionID)
 	{
-		MainProto.Message deleteMessage = MainProto.Message.newBuilder().setDeleteGameSession(MainProto.DeleteGameSession.newBuilder().setGameSessionId(gameSessionID)).build();
-
 		new AlertDialog.Builder(this)
 				.setTitle(R.string.delete_game_confirm)
-				.setPositiveButton(R.string.delete_game, (dialog, which) -> connectionViewModel.sendMessage(deleteMessage))
+				.setPositiveButton(R.string.delete_game, (dialog, which) -> connectionViewModel.getApiInterface().deleteGameSession(gameSessionID).subscribe())
 				.setNegativeButton(R.string.cancel, null)
 				.show();
 	}
@@ -200,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			return;
 		}
 
-		DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse("https://tarokk.net/cgi-bin/tarock/tarokk_pontok.csv?user_id=" + connectionViewModel.getUserID().getValue()));
+		DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse("https://tarokk.net/cgi-bin/tarock/tarokk_pontok.csv?user_id=" + connectionViewModel.getLoggedInUser().getValue()));
 		downloadRequest.allowScanningByMediaScanner();
 		downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 		downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "tarokk_pontok.csv");

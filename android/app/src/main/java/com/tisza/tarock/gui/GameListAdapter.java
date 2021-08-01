@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
+import retrofit2.http.*;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class GameListAdapter extends ListAdapter<GameSession, GameListAdapter.Vi
 	private final Context context;
 	private final LayoutInflater inflater;
 	private GameAdapterListener gameAdapterListener;
-	private Integer userID;
+	private User loggedInUser;
 
 	private static final DiffUtil.ItemCallback<GameSession> gameSessionItemCallback = new DiffUtil.ItemCallback<GameSession>()
 	{
@@ -54,11 +55,15 @@ public class GameListAdapter extends ListAdapter<GameSession, GameListAdapter.Vi
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	public void setData(List<GameSession> list, Integer userID)
+	public void setUser(User loggedInUser)
 	{
-		this.userID = userID;
+		this.loggedInUser = loggedInUser;
+	}
+
+	public void setGameSessions(List<GameSession> gameSessions)
+	{
 		List<GameSession> filteredSortedList = new ArrayList<>();
-		for (GameSession gameSession : list)
+		for (GameSession gameSession : gameSessions)
 			if (gameSession.getId() >= 0)
 				filteredSortedList.add(gameSession);
 		Collections.sort(filteredSortedList, this::compareGameSessions);
@@ -73,8 +78,8 @@ public class GameListAdapter extends ListAdapter<GameSession, GameListAdapter.Vi
 
 	private int compareGameSessions(GameSession g0, GameSession g1)
 	{
-		if (userID != null && g0.containsUser(userID) != g1.containsUser(userID))
-			return g0.containsUser(userID) ? -1 : 1;
+		if (loggedInUser != null && g0.containsUser(loggedInUser) != g1.containsUser(loggedInUser))
+			return g0.containsUser(loggedInUser) ? -1 : 1;
 
 		if (g0.getState() != g1.getState())
 			return g0.getState().ordinal() - g1.getState().ordinal();
@@ -139,18 +144,18 @@ public class GameListAdapter extends ListAdapter<GameSession, GameListAdapter.Vi
 		int joinButtonText;
 		if (gameSession.getState() == GameSessionState.LOBBY)
 			joinButtonText = R.string.lobby_enter;
-		else if (gameSession.containsUser(userID))
+		else if (gameSession.containsUser(loggedInUser))
 			joinButtonText = R.string.join_game;
 		else
 			joinButtonText = R.string.join_game_kibic;
 
 		boolean deleteButtonVisible;
 		if (gameSession.getState() == GameSessionState.LOBBY)
-			deleteButtonVisible = gameSession.getPlayers().size() > 0 && gameSession.getPlayers().get(0).user.id == userID;
+			deleteButtonVisible = gameSession.getPlayers().size() > 0 && gameSession.getPlayers().get(0).user.id == loggedInUser.id;
 		else
-			deleteButtonVisible = gameSession.containsUser(userID);
+			deleteButtonVisible = gameSession.containsUser(loggedInUser);
 
-		boolean isInteresting = gameSession.containsUser(userID) || gameSession.getState() == GameSessionState.LOBBY;
+		boolean isInteresting = gameSession.containsUser(loggedInUser) || gameSession.getState() == GameSessionState.LOBBY;
 
 		holder.gameTypeTextView.setText(context.getResources().getStringArray(R.array.game_type_array)[gameSession.getType().ordinal()]);
 		holder.joinGameButton.setText(joinButtonText);

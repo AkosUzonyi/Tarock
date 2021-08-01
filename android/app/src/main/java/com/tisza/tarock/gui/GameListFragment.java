@@ -6,6 +6,13 @@ import android.widget.*;
 import androidx.lifecycle.*;
 import androidx.recyclerview.widget.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.api.model.*;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.*;
+import io.reactivex.disposables.*;
+
+import java.util.*;
+import java.util.concurrent.*;
 
 public class GameListFragment extends MainActivityFragment
 {
@@ -13,6 +20,7 @@ public class GameListFragment extends MainActivityFragment
 
 	private ConnectionViewModel connectionViewModel;
 	private GameListAdapter gameListAdapter;
+	private Disposable gameSessionListUpdateDisposable;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -30,12 +38,16 @@ public class GameListFragment extends MainActivityFragment
 			@Override
 			public void onItemRangeInserted(int positionStart, int itemCount)
 			{
+				User loggedInUser = connectionViewModel.getLoggedInUser().getValue();
+				if (loggedInUser == null)
+					return;
+
 				for (int i = positionStart; i < positionStart + itemCount; i++)
 				{
 					if (i >= gameListAdapter.getItemCount())
 						break;
 
-					if (gameListAdapter.getItem(i).containsUser(connectionViewModel.getUserID().getValue()))
+					if (gameListAdapter.getItem(i).containsUser(loggedInUser))
 					{
 						gameRecyclerView.smoothScrollToPosition(i);
 						break;
@@ -45,8 +57,7 @@ public class GameListFragment extends MainActivityFragment
 		});
 
 		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
-		connectionViewModel.getGameSessions().observe(this, v -> updateList());
-		connectionViewModel.getUserID().observe(this, v -> updateList());
+		connectionViewModel.getLoggedInUser().observe(this, gameListAdapter::setUser);
 
 		View downloadCsvButton = view.findViewById(R.id.download_csv_button);
 		downloadCsvButton.setOnClickListener(v -> getMainActivity().downloadCsv());
@@ -57,8 +68,21 @@ public class GameListFragment extends MainActivityFragment
 		return view;
 	}
 
-	private void updateList()
+	@Override
+	public void onStart()
 	{
-		gameListAdapter.setData(connectionViewModel.getGameSessions().getValue(), connectionViewModel.getUserID().getValue());
+		super.onStart();
+		gameSessionListUpdateDisposable = Observable.interval(0, 2, TimeUnit.SECONDS)
+				.flatMap(i -> connectionViewModel.getApiInterface().getGameSessions())
+				.observeOn(AndroidSchedulers.mainThread())
+				.subscribe(gameListAdapter::setGameSessions);
+	}
+
+	@Override
+	public void onStop()
+	{
+		super.onStop();
+		if (gameSessionListUpdateDisposable != null)
+			gameSessionListUpdateDisposable.dispose();
 	}
 }

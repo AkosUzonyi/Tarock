@@ -1,5 +1,6 @@
 package com.tisza.tarock.game;
 
+import android.content.res.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.gui.*;
 import com.tisza.tarock.message.*;
@@ -101,7 +102,7 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		return i;
 	}
 
-	public String toString()
+	public String translate(Resources resources)
 	{
 		SentenceBuilder builder = new SentenceBuilder();
 

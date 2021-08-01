@@ -114,7 +114,7 @@
   <div *ngIf="seat !== null" id="card-list">
     <button
       id="button-fold"
-      *ngIf="game.phase === 'folding'"
+      *ngIf="game.phase === 'folding' && game.players[seat].turn"
       [disabled]="game.players[seat].cards.length - cardsToFold.length !== 9"
       (click)="foldCards()"
       >
@@ -130,7 +130,8 @@
     <img
       *ngFor="let card of game.players[seat].cards"
       [attr.data-card]="card"
+      [ngClass]="{'card-selected': cardsToFold.includes(card)}"
       src="/assets/images/cards/{{card}}.png"
-      (click)="clickCard($event)"/>
+      (click)="clickCard(card)"/>
   </div>
 </div>

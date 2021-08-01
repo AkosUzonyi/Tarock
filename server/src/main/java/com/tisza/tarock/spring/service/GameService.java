@@ -134,6 +134,7 @@ public class GameService
 		botService.executeBotActions(gameDB, game, 0);
 	}
 
+	@Transactional(isolation = Isolation.SERIALIZABLE)
 	public boolean executeAction(int gameId, PlayerSeat seat, Action action)
 	{
 		return executeAction(gameId, seat, action, 0);

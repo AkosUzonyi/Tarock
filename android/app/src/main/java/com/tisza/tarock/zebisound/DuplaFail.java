@@ -14,7 +14,7 @@ public class DuplaFail extends ZebiSound
 		super(context, 1F, R.raw.duplatbovenelbuktatok);
 	}
 
-	@Override
+	/*@Override
 	public void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
 	{
 		for (AnnouncementResult announcementResult : announcementResults)
@@ -23,5 +23,5 @@ public class DuplaFail extends ZebiSound
 			if (announcementResult.getAnnouncement().getName().equals("dupla") && announcementResult.getPoints() < 0 && teamPoints < 65)
 				activate();
 		}
-	}
+	}*/
 }

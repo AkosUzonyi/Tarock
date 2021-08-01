@@ -49,10 +49,10 @@ public class GameSession
 		return createTime;
 	}
 
-	public boolean containsUser(int userID)
+	public boolean containsUser(User user)
 	{
 		for (Player player : players)
-			if (player.user.id == userID)
+			if (player.user.id == user.id)
 				return true;
 
 		return false;

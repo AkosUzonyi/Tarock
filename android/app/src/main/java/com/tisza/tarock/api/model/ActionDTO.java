@@ -1,6 +1,6 @@
 package com.tisza.tarock.api.model;
 
-public class Action
+public class ActionDTO
 {
 	public int ordinal;
 

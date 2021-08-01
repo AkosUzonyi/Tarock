@@ -16,7 +16,7 @@ public class AnnouncementSuccecfulSound extends ZebiSound
 		this.announcement = announcement;
 	}
 
-	@Override
+	/*@Override
 	public void statistics(int callerGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier)
 	{
 		for (AnnouncementResult announcementResult : announcementResults)
@@ -24,5 +24,5 @@ public class AnnouncementSuccecfulSound extends ZebiSound
 			if (announcementResult.getAnnouncement().equals(announcement) && announcementResult.getPoints() > 0)
 				activate();
 		}
-	}
+	}*/
 }

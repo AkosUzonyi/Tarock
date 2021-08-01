@@ -117,12 +117,9 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     });
   }
 
-  clickCard(event : Event) {
-    const element = event.target as Element;
-    const card = element.getAttribute('data-card')!;
+  clickCard(card: string) {
     switch (this.game?.phase) {
       case 'folding':
-        element.classList.toggle('card-selected');
         const indexOfCard = this.cardsToFold.indexOf(card);
         if (indexOfCard < 0)
           this.cardsToFold.push(card);

@@ -3,7 +3,7 @@
   <p *ngFor="let player of gameSession.players">{{player.user.name}}</p>
   <button *ngIf="gameSession?.state === 'lobby'" (click)="start()">{{'lobby_start' | translate}} <span *ngIf="gameSession.players.length < 4">{{ 'with_bots' | translate: { botCount: 4 - gameSession.players.length } }}</span></button>
 </div>
-<div *ngIf="gameState && playersRotated" id=game-session>
+<div *ngIf="game && playersRotated" id=game-session>
   <div id=upper-half>
     <div id="action-list" class="game-session-vertical-box" appAutoScroll>
       <ng-template ngFor let-action [ngForOf]="actions" let-i="index">
@@ -14,13 +14,13 @@
         <p
           *ngIf="gameTranslateService.translateAction(action.action) as translated"
           >
-          {{gameState.players[action.seat].user.name}}: {{translated}}
+          {{game.players[action.seat].user.name}}: {{translated}}
         </p>
       </ng-template>
-      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('bid:') && gameState.phase == 'bidding'">{{'message_bidding' | translate}}</h2>
-      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('fold:') && gameState.phase == 'folding'">{{'message_folding' | translate}}</h2>
-      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('call:') && gameState.phase == 'calling'">{{'message_calling' | translate}}</h2>
-      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('announce:') && gameState.phase == 'announcing'">{{'message_announcing' | translate}}</h2>
+      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('bid:') && game.phase == 'bidding'">{{'message_bidding' | translate}}</h2>
+      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('fold:') && game.phase == 'folding'">{{'message_folding' | translate}}</h2>
+      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('call:') && game.phase == 'calling'">{{'message_calling' | translate}}</h2>
+      <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('announce:') && game.phase == 'announcing'">{{'message_announcing' | translate}}</h2>
     </div>
     <div id="chat" class="game-session-vertical-box">
       <h1>{{'chat' | translate}}</h1>
@@ -35,7 +35,7 @@
           *ngIf="trickTaking ? player.previousTrickCard : player.currentTrickCard as card"
           src="/assets/images/cards/{{card}}.png"
           [ngClass]="'played-card played-card-' + i"
-          [ngStyle]="{'z-index': ((seat || 0) + i - (gameState.previousTrickWinner || 0) + 4) % 4}"
+          [ngStyle]="{'z-index': ((seat || 0) + i - (game.previousTrickWinner || 0) + 4) % 4}"
           />
         <p
           [ngClass]="{
@@ -59,37 +59,37 @@
           {{text}}
         </p>
       </ng-template>
-      <table *ngIf="gameState.phase === 'end'">
+      <table *ngIf="game.phase === 'end'">
         <tr class="statistics-table-team">
           <td colspan="2">{{'statistics.caller' | translate}}</td>
         </tr>
         <tr
           class="statistics-table-announcement"
-          *ngFor="let announcementResult of gameState.statistics.callerAnnouncementResults"
+          *ngFor="let announcementResult of game.statistics.callerAnnouncementResults"
           [ngClass]="{'statistics-announcement-failed': announcementResult.points < 0}"
           >
           <td>{{gameTranslateService.translateAnnouncement(announcementResult.announcement)}}</td>
-          <td>{{announcementResult.points * (seat === null || gameState.players[seat].team === 'caller' ? 1 : -1)}}</td>
+          <td>{{announcementResult.points * (seat === null || game.players[seat].team === 'caller' ? 1 : -1)}}</td>
         </tr>
         <tr class="statistics-table-team">
           <td colspan="2">{{'statistics.opponent' | translate}}</td>
         </tr>
         <tr
           class="statistics-table-announcement"
-          *ngFor="let announcementResult of gameState.statistics.opponentAnnouncementResults"
+          *ngFor="let announcementResult of game.statistics.opponentAnnouncementResults"
           [ngClass]="{'statistics-announcement-failed': announcementResult.points < 0}"
           >
           <td>{{gameTranslateService.translateAnnouncement(announcementResult.announcement)}}</td>
-          <td>{{announcementResult.points * (seat === null || gameState.players[seat].team === 'caller' ? -1 : 1)}}</td>
+          <td>{{announcementResult.points * (seat === null || game.players[seat].team === 'caller' ? -1 : 1)}}</td>
         </tr>
         <tr class="statistics-table-sum">
           <td>{{'statistics.sum' | translate}}</td>
-          <td>{{gameState.statistics.sumPoints}}</td>
+          <td>{{game.statistics.sumPoints}}</td>
         </tr>
       </table>
       <button
         id="button-new-game"
-        *ngIf="['interrupted', 'end'].includes(gameState.phase) && seat !== null && gameState.players[seat].turn"
+        *ngIf="['interrupted', 'end'].includes(game.phase) && seat !== null && game.players[seat].turn"
         (click)="executeAction('newgame:')"
         >
         {{'ready_for_new_game' | translate}}
@@ -98,13 +98,13 @@
     <div *ngIf="seat !== null" id="action-button-list">
       <button
         id="button-announce-passz"
-        *ngIf="gameState.phase === 'announcing' && gameState.players[seat].turn"
+        *ngIf="game.phase === 'announcing' && game.players[seat].turn"
         (click)="executeAction('announce:passz')"
         >
         {{'passz' | translate}}
       </button>
       <button
-        *ngFor="let action of gameState.availableActions"
+        *ngFor="let action of game.availableActions"
         (click)="executeAction(action)"
         >
         {{gameTranslateService.translateAction(action)}}
@@ -114,21 +114,21 @@
   <div *ngIf="seat !== null" id="card-list">
     <button
       id="button-fold"
-      *ngIf="gameState.phase === 'folding'"
-      [disabled]="gameState.players[seat].cards.length - cardsToFold.length !== 9"
+      *ngIf="game.phase === 'folding'"
+      [disabled]="game.players[seat].cards.length - cardsToFold.length !== 9"
       (click)="foldCards()"
       >
       {{'fold' | translate}}
     </button>
     <button
       id="button-throw"
-      *ngIf="gameState.canThrowCards"
+      *ngIf="game.canThrowCards"
       (click)="executeAction('throw:')"
       >
       {{'throw_cards' | translate}}
     </button>
     <img
-      *ngFor="let card of gameState.players[seat].cards"
+      *ngFor="let card of game.players[seat].cards"
       [attr.data-card]="card"
       src="/assets/images/cards/{{card}}.png"
       (click)="clickCard($event)"/>

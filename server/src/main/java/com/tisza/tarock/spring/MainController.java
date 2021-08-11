@@ -236,17 +236,17 @@ public class MainController
 	}
 
 	@GetMapping("/games/{gameId}")
-	public ResponseEntity<GameStateDTO> getGame(@PathVariable int gameId)
+	public ResponseEntity<GameDTO> getGame(@PathVariable int gameId)
 	{
 		GameDB gameDB = gameService.findGame(gameId);
 		Game game = gameService.loadGame(gameId);
 
-		GameStateDTO gameStateDTO = new GameStateDTO();
+		GameDTO gameDTO = new GameDTO();
 
-		gameStateDTO.id = gameDB.id;
-		gameStateDTO.type = gameDB.gameSession.type;
-		gameStateDTO.gameSessionId = gameDB.gameSession.id;
-		gameStateDTO.createTime = gameDB.createTime;
+		gameDTO.id = gameDB.id;
+		gameDTO.type = gameDB.gameSession.type;
+		gameDTO.gameSessionId = gameDB.gameSession.id;
+		gameDTO.createTime = gameDB.createTime;
 
 		PlayerSeat me = null;
 		int userId = getLoggedInUserId();
@@ -257,22 +257,22 @@ public class MainController
 				me = gameService.getSeatFromPlayer(gameDB, playerDB);
 		}
 
-		gameStateDTO.phase = game.getCurrentPhaseEnum().getID();
-		gameStateDTO.canThrowCards = me != null && game.canThrowCards(me);
+		gameDTO.phase = game.getCurrentPhaseEnum().getID();
+		gameDTO.canThrowCards = me != null && game.canThrowCards(me);
 		if (me != null && game.getTurn(me))
-			gameStateDTO.availableActions = game.getAvailableActions().stream().map(Action::getId).collect(Collectors.toList());
+			gameDTO.availableActions = game.getAvailableActions().stream().map(Action::getId).collect(Collectors.toList());
 
-		gameStateDTO.statistics.callerCardPoints = game.getCallerCardPoints();
-		gameStateDTO.statistics.opponentCardPoints = game.getOpponentCardPoints();
+		gameDTO.statistics.callerCardPoints = game.getCallerCardPoints();
+		gameDTO.statistics.opponentCardPoints = game.getOpponentCardPoints();
 		for (AnnouncementResult ar : game.getAnnouncementResults())
 		{
-			GameStateDTO.AnnouncementResult arDTO = new GameStateDTO.AnnouncementResult();
+			GameDTO.AnnouncementResult arDTO = new GameDTO.AnnouncementResult();
 			arDTO.announcement = ar.getAnnouncementContra().getID();
 			arDTO.points = ar.getPoints();
-			(ar.getTeam() == Team.CALLER ? gameStateDTO.statistics.callerAnnouncementResults : gameStateDTO.statistics.opponentAnnouncementResults).add(arDTO);
+			(ar.getTeam() == Team.CALLER ? gameDTO.statistics.callerAnnouncementResults : gameDTO.statistics.opponentAnnouncementResults).add(arDTO);
 		}
-		gameStateDTO.statistics.sumPoints = game.getSumPoints();
-		gameStateDTO.statistics.pointMultiplier = game.getPointMultiplier();
+		gameDTO.statistics.sumPoints = game.getSumPoints();
+		gameDTO.statistics.pointMultiplier = game.getPointMultiplier();
 
 		Trick currentTrick, previousTrick;
 		if (game.getTrickCount() == 0)
@@ -297,12 +297,12 @@ public class MainController
 		}
 
 		if (previousTrick != null)
-			gameStateDTO.previousTrickWinner = previousTrick.getWinner().asInt();
+			gameDTO.previousTrickWinner = previousTrick.getWinner().asInt();
 
 		for (PlayerSeat p : PlayerSeat.getAll())
 		{
-			GameStateDTO.PlayerInfo playerInfo = new GameStateDTO.PlayerInfo();
-			gameStateDTO.players.add(playerInfo);
+			GameDTO.PlayerInfo playerInfo = new GameDTO.PlayerInfo();
+			gameDTO.players.add(playerInfo);
 
 			playerInfo.user = gameService.getPlayerFromSeat(gameDB, p).user;
 
@@ -332,7 +332,7 @@ public class MainController
 			}
 		}
 
-		return new ResponseEntity<>(gameStateDTO, HttpStatus.OK);
+		return new ResponseEntity<>(gameDTO, HttpStatus.OK);
 	}
 
 	@GetMapping("/gameSessions/{gameSessionId}/chat")

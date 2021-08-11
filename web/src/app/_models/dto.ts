@@ -45,7 +45,7 @@ export interface Chat {
   time: number;
 }
 
-export interface GameStatePlayerInfo {
+export interface GamePlayerInfo {
   user: User;
   cards: string[];
   turn: boolean;
@@ -57,7 +57,7 @@ export interface GameStatePlayerInfo {
   points: number;
 }
 
-export interface GameState {
+export interface Game {
   id: number;
   type: GameType;
   gameSessionId: number;
@@ -66,7 +66,7 @@ export interface GameState {
   canThrowCards: boolean;
   availableActions: string[];
   previousTrickWinner: number | null;
-  players: GameStatePlayerInfo[];
+  players: GamePlayerInfo[];
   statistics: {
     callerCardPoints: number;
     opponentCardPoints: number;

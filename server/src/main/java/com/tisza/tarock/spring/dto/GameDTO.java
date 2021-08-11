@@ -4,7 +4,7 @@ import com.tisza.tarock.spring.model.*;
 
 import java.util.*;
 
-public class GameStateDTO
+public class GameDTO
 {
 	public int id;
 	public String type;

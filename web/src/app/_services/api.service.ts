@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Action, Chat, DoubleRoundType, GameSession, GameState, GameType, User, LoginResult } from '../_models/dto';
+import { Action, Chat, DoubleRoundType, GameSession, Game, GameType, User, LoginResult } from '../_models/dto';
 import { map } from 'rxjs/operators';
 
 @Injectable({
@@ -76,7 +76,7 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/games/${gameId}/actions`, body);
   }
 
-  getGameState(id: number): Observable<GameState> {
-    return this.http.get<GameState>(`${this.baseUrl}/games/${id}`);
+  getGame(id: number): Observable<Game> {
+    return this.http.get<Game>(`${this.baseUrl}/games/${id}`);
   }
 }

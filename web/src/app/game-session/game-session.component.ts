@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { ApiService } from '../_services/api.service';
-import { Action, Chat, Game, GameSession, GameState, GameStatePlayerInfo } from '../_models/dto';
+import { Action, Chat, GameSession, GameState, GameStatePlayerInfo } from '../_models/dto';
 import { AuthService } from '../_services/auth.service';
 import { GameTranslateService } from '../_services/game-translate.service';
 
@@ -28,9 +28,8 @@ export class GameSessionComponent implements OnInit, OnDestroy {
 
   actions: Action[] = [];
   nextActionOrdinal = 0;
-  game: Game | null = null;
   gameState: GameState | null = null;
-  playerInfosRotated: GameStatePlayerInfo[] | null = null;
+  playersRotated: GameStatePlayerInfo[] | null = null;
   actionBubbleContent: (string | null)[] = Array(4).fill(null);
 
   cardsToFold: string[] = [];
@@ -59,15 +58,11 @@ export class GameSessionComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.userSubscription = this.authService.getUserObservable().subscribe(user => {
-      if (this.game === null)
-        return;
-
       this.calculateSeat();
       this.updateGameState();
     });
 
     this.updateGameSession();
-    this.userSubscription = this.authService.getUserObservable().subscribe(user => this.calculateSeat());
   }
 
   ngOnDestroy() {
@@ -142,7 +137,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
 
   private updateGameSession() {
     this.apiService.getGameSession(this.gameSessionId).subscribe(gameSession => {
-      const updateGame = this.gameSession?.currentGameId !== gameSession.currentGameId;
+      const isNewGame = this.gameSession?.currentGameId !== gameSession.currentGameId;
       this.gameSession = gameSession;
       if (this.gameSession?.state === 'lobby') {
         this.apiService.joinGameSession(this.gameSessionId).subscribe();
@@ -151,20 +146,13 @@ export class GameSessionComponent implements OnInit, OnDestroy {
       this.chats = [];
       this.lastChatTime = this.gameSession.createTime;
       this.pollChats();
-      if (updateGame)
-        this.updateGame();
-    });
-  }
-
-  private updateGame() {
-    this.apiService.getGame(this.getCurrentGameId()).subscribe(game => {
-      this.game = game;
-      this.actions = [];
-      this.nextActionOrdinal = 0;
-      this.cardsToFold = [];
-      this.calculateSeat();
-      this.updateGameState();
-      this.pollActions(true);
+      if (isNewGame) {
+        this.actions = [];
+        this.nextActionOrdinal = 0;
+        this.cardsToFold = [];
+        this.updateGameState();
+        this.pollActions(true);
+      }
     });
   }
 
@@ -175,7 +163,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
     if (this.game === null || user === null)
       return;
 
-    this.game.players.forEach((player, i) => {
+    this.gameState.players.forEach((player, i) => {
       if (player.user.id === user.id)
         this.seat = i;
     });
@@ -220,9 +208,10 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   private updateGameState() {
     this.apiService.getGameState(this.getCurrentGameId()).subscribe(gameState => {
       this.gameState = gameState;
-      this.playerInfosRotated = this.rotateLeft(this.gameState.playerInfos, this.seat ?? 0);
+      this.calculateSeat();
+      this.playersRotated = this.rotateLeft(this.gameState.players, this.seat ?? 0);
 
-      let trickEmpty = this.gameState.playerInfos.every(playerInfo => playerInfo.currentTrickCard === null);
+      let trickEmpty = this.gameState.players.every(playerInfo => playerInfo.currentTrickCard === null);
       if (!trickEmpty) {
         this.takeTrickSubscription?.unsubscribe();
         this.trickTaken = false;

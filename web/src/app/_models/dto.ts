@@ -32,14 +32,6 @@ export interface GameSession {
   createTime: number;
 }
 
-export interface Game {
-  id: number;
-  type: GameType;
-  players: Player[];
-  gameSessionId: number;
-  createTime: number;
-}
-
 export interface Action {
   ordinal: number;
   action: string;
@@ -62,14 +54,19 @@ export interface GameStatePlayerInfo {
   visibleFoldedCards: string[];
   currentTrickCard: string | null;
   previousTrickCard: string | null;
+  points: number;
 }
 
 export interface GameState {
+  id: number;
+  type: GameType;
+  gameSessionId: number;
+  createTime: number;
   phase: Phase;
   canThrowCards: boolean;
   availableActions: string[];
   previousTrickWinner: number | null;
-  playerInfos: GameStatePlayerInfo[];
+  players: GameStatePlayerInfo[];
   statistics: {
     callerCardPoints: number;
     opponentCardPoints: number;

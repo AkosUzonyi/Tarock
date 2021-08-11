@@ -3,7 +3,7 @@
   <p *ngFor="let player of gameSession.players">{{player.user.name}}</p>
   <button *ngIf="gameSession?.state === 'lobby'" (click)="start()">{{'lobby_start' | translate}} <span *ngIf="gameSession.players.length < 4">{{ 'with_bots' | translate: { botCount: 4 - gameSession.players.length } }}</span></button>
 </div>
-<div *ngIf="game && gameState && playerInfosRotated" id=game-session>
+<div *ngIf="gameState && playersRotated" id=game-session>
   <div id=upper-half>
     <div id="action-list" class="game-session-vertical-box" appAutoScroll>
       <ng-template ngFor let-action [ngForOf]="actions" let-i="index">
@@ -14,7 +14,7 @@
         <p
           *ngIf="gameTranslateService.translateAction(action.action) as translated"
           >
-          {{game.players[action.seat].user.name}}: {{translated}}
+          {{gameState.players[action.seat].user.name}}: {{translated}}
         </p>
       </ng-template>
       <h2 *ngIf="!actions[actions.length - 1]?.action?.startsWith('bid:') && gameState.phase == 'bidding'">{{'message_bidding' | translate}}</h2>
@@ -30,7 +30,7 @@
       <input placeholder="{{'chat_hint' | translate}}" [(ngModel)]="chatInputContent" (keyup.enter)="sendChat()"/>
     </div>
     <div id="card-table">
-      <ng-template ngFor let-player [ngForOf]="playerInfosRotated" let-i="index">
+      <ng-template ngFor let-player [ngForOf]="playersRotated" let-i="index">
         <img
           *ngIf="trickTaking ? player.previousTrickCard : player.currentTrickCard as card"
           src="/assets/images/cards/{{card}}.png"
@@ -69,7 +69,7 @@
           [ngClass]="{'statistics-announcement-failed': announcementResult.points < 0}"
           >
           <td>{{gameTranslateService.translateAnnouncement(announcementResult.announcement)}}</td>
-          <td>{{announcementResult.points * (seat === null || gameState.playerInfos[seat].team === 'caller' ? 1 : -1)}}</td>
+          <td>{{announcementResult.points * (seat === null || gameState.players[seat].team === 'caller' ? 1 : -1)}}</td>
         </tr>
         <tr class="statistics-table-team">
           <td colspan="2">{{'statistics.opponent' | translate}}</td>
@@ -80,7 +80,7 @@
           [ngClass]="{'statistics-announcement-failed': announcementResult.points < 0}"
           >
           <td>{{gameTranslateService.translateAnnouncement(announcementResult.announcement)}}</td>
-          <td>{{announcementResult.points * (seat === null || gameState.playerInfos[seat].team === 'caller' ? -1 : 1)}}</td>
+          <td>{{announcementResult.points * (seat === null || gameState.players[seat].team === 'caller' ? -1 : 1)}}</td>
         </tr>
         <tr class="statistics-table-sum">
           <td>{{'statistics.sum' | translate}}</td>
@@ -89,7 +89,7 @@
       </table>
       <button
         id="button-new-game"
-        *ngIf="['interrupted', 'end'].includes(gameState.phase) && seat !== null && gameState.playerInfos[seat].turn"
+        *ngIf="['interrupted', 'end'].includes(gameState.phase) && seat !== null && gameState.players[seat].turn"
         (click)="executeAction('newgame:')"
         >
         {{'ready_for_new_game' | translate}}
@@ -98,7 +98,7 @@
     <div *ngIf="seat !== null" id="action-button-list">
       <button
         id="button-announce-passz"
-        *ngIf="gameState.phase === 'announcing' && gameState.playerInfos[seat].turn"
+        *ngIf="gameState.phase === 'announcing' && gameState.players[seat].turn"
         (click)="executeAction('announce:passz')"
         >
         {{'passz' | translate}}
@@ -115,7 +115,7 @@
     <button
       id="button-fold"
       *ngIf="gameState.phase === 'folding'"
-      [disabled]="gameState.playerInfos[seat].cards.length - cardsToFold.length !== 9"
+      [disabled]="gameState.players[seat].cards.length - cardsToFold.length !== 9"
       (click)="foldCards()"
       >
       {{'fold' | translate}}
@@ -128,7 +128,7 @@
       {{'throw_cards' | translate}}
     </button>
     <img
-      *ngFor="let card of gameState.playerInfos[seat].cards"
+      *ngFor="let card of gameState.players[seat].cards"
       [attr.data-card]="card"
       src="/assets/images/cards/{{card}}.png"
       (click)="clickCard($event)"/>

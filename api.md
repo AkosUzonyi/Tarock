@@ -312,28 +312,6 @@ Response:
 - 410: Game session is deleted
 - 413: The message length exceeds the 255 character limit
 
-### GET /games/{gameID}
-
-Returns some basic data about the given game.
-
-Response:
-- 200: Success
-- 404: Game does not exists
-- 410: Game has finished
-
-```
-{
-        "id": Int,
-        "type": "paskievics"|"illusztralt"|"magas"|"zebi",
-        "gameSessionId": Int,
-        "players": [{
-                "user": User,
-                "points": Int
-        }],
-        "createTime": Long,
-}
-```
-
 ### GET /games/{gameID}/actions
 
 Return the actions that were executed in this game. Each action has an ordinal number. These ordinal numbers are monotonically increasing in time, but not guaranteed to be consecutive integers. The returned list is sorted by ordinal numbers.
@@ -377,24 +355,29 @@ Response:
 - 413: The length of the action string exceeds the 255 character limit
 - 422: The action does not comply with the game rules
 
-### GET /games/{gameID}/state
+### GET /games/{gameID}
 
 Returns a lot of data describing the current state of the game. Most of the fields are redundant (given the actions executed in the game), their goal is to help the client applications to render the game without knowing much of the game rules. The state is updated only when an action is executed. The returned information is not the same for all players.
 
 The fields in the response:
+- id: The id of the game.
+- type: The game type of the game.
+- gameSessionId: The id of the game session this game belongs to.
+- createTime: The unix timestamp when the game was started.
 - phase: The current phase of the game
 - canThrowCards: Whether throw button should be shown
 - availableActions: A list of actions that are executable at this by the player (if it's an other player's turn, the list is empty). Only bid, call, and announce actions are listed this way. Used for displaying action buttons.
 - previousTrickWinner: The seat number of the player, who won the last trick. Used for the taking animation, and positioning the taken cards.
-- playerInfos: A four element list containing information about the players in seat order.
-- playerInfos.user: The user of the player.
-- playerInfos.card: The list of the cards the player hold in their hands. Only self cards are shown, the card list of other players are null (for kibices everything is null).
-- playerInfos.turn: Whether the player name should be highlighted, indicating that it's their turn. Most of the time exactly one player has a true value here (except a few cases, for example folding).
-- playerInfos.team: Used for coloring the name of the player, indicating which team they are in. Null means the authenticated player doesn't know which team the other player is in.
-- playerInfos.tarockFoldCount: Count of folded tarocks of the player. 0 before folding.
-- playerInfos.visibleFoldedCards: The list folded cards by the player visible to anybody. In case the caller player folds tarocks, those appear here.
-- playerInfos.currentTrickCard: The cards played in the current trick by the player.
-- playerInfos.previousTrickCard: The cards played in the previous trick by each player.
+- players: A four element list containing information about the players in seat order.
+- players.user: The user of the player.
+- players.card: The list of the cards the player hold in their hands. Only self cards are shown, the card list of other players are null (for kibices everything is null).
+- players.turn: Whether the player name should be highlighted, indicating that it's their turn. Most of the time exactly one player has a true value here (except a few cases, for example folding).
+- players.team: Used for coloring the name of the player, indicating which team they are in. Null means the authenticated player doesn't know which team the other player is in.
+- players.tarockFoldCount: Count of folded tarocks of the player. 0 before folding.
+- players.visibleFoldedCards: The list folded cards by the player visible to anybody. In case the caller player folds tarocks, those appear here.
+- players.currentTrickCard: The cards played in the current trick by the player.
+- players.previousTrickCard: The cards played in the previous trick by each player.
+- players.points: The points earned by the player in this game. Until the end the the game it's value is 0.
 - statistics.callerCardPoints: The sum of the values of the card won by the caller team.
 - statistics.opponentCardPoints: The sum of the values of the card won by the opponent team.
 - statistics.announcements.announcement: An announcement contributing to the points.
@@ -410,11 +393,15 @@ Response:
 
 ```
 {
+        "id": Int,
+        "type": "paskievics"|"illusztralt"|"magas"|"zebi",
+        "gameSessionId": Int,
+        "createTime": Long,
         "phase": "bidding"|"folding"|"calling"|"announcing"|"gameplay"|"end"|"interrupted",
         "canThrowCards": Bool,
         "availableActions": [String],
         "previousTrickWinner": Int?,
-        "playerInfos": [{
+        "players": [{
                 "user": User,
                 "cards": [Card],
                 "turn": Bool,
@@ -423,6 +410,7 @@ Response:
                 "visibleFoldedCards": [Card],
                 "currentTrickCard": Card?,
                 "previousTrickCard": Card?,
+                "points": Int
         }],
         "statistics": {
                 "callerCardPoints": Int,

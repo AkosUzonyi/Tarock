@@ -6,11 +6,15 @@ import java.util.*;
 
 public class GameStateDTO
 {
+	public int id;
+	public String type;
+	public int gameSessionId;
+	public long createTime;
 	public String phase;
 	public boolean canThrowCards;
 	public List<String> availableActions = new ArrayList<>();
 	public Integer previousTrickWinner;
-	public List<PlayerInfo> playerInfos = new ArrayList<>();
+	public List<PlayerInfo> players = new ArrayList<>();
 	public Statistics statistics = new Statistics();
 
 	public static class PlayerInfo
@@ -23,6 +27,7 @@ public class GameStateDTO
 		public List<String> visibleFoldedCards = new ArrayList<>();
 		public String currentTrickCard;
 		public String previousTrickCard;
+		public int points;
 	}
 
 	public static class Statistics

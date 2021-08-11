@@ -186,22 +186,6 @@ public class MainController
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	@GetMapping("/games/{gameId}")
-	public ResponseEntity<GameDTO> game(@PathVariable int gameId)
-	{
-		GameDB gameDB = gameService.findGame(gameId);
-
-		GameDTO gameDTO = new GameDTO();
-		gameDTO.id = gameDB.id;
-		gameDTO.type = gameDB.gameSession.type;
-		gameDTO.gameSessionId = gameDB.gameSession.id;
-		for (PlayerSeat seat : PlayerSeat.getAll())
-			gameDTO.players.add(gameService.getPlayerFromSeat(gameDB, seat));
-		gameDTO.createTime = gameDB.createTime;
-
-		return new ResponseEntity<>(gameDTO, HttpStatus.OK);
-	}
-
 	@GetMapping("/games/{gameId}/actions")
 	public Object getActions(@PathVariable int gameId, @RequestParam(defaultValue = "-1") int from)
 	{
@@ -251,11 +235,18 @@ public class MainController
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 
-	@GetMapping("/games/{gameId}/state")
-	public ResponseEntity<GameStateDTO> getGameState(@PathVariable int gameId)
+	@GetMapping("/games/{gameId}")
+	public ResponseEntity<GameStateDTO> getGame(@PathVariable int gameId)
 	{
 		GameDB gameDB = gameService.findGame(gameId);
 		Game game = gameService.loadGame(gameId);
+
+		GameStateDTO gameStateDTO = new GameStateDTO();
+
+		gameStateDTO.id = gameDB.id;
+		gameStateDTO.type = gameDB.gameSession.type;
+		gameStateDTO.gameSessionId = gameDB.gameSession.id;
+		gameStateDTO.createTime = gameDB.createTime;
 
 		PlayerSeat me = null;
 		int userId = getLoggedInUserId();
@@ -266,7 +257,6 @@ public class MainController
 				me = gameService.getSeatFromPlayer(gameDB, playerDB);
 		}
 
-		GameStateDTO gameStateDTO = new GameStateDTO();
 		gameStateDTO.phase = game.getCurrentPhaseEnum().getID();
 		gameStateDTO.canThrowCards = me != null && game.canThrowCards(me);
 		if (me != null && game.getTurn(me))
@@ -312,7 +302,7 @@ public class MainController
 		for (PlayerSeat p : PlayerSeat.getAll())
 		{
 			GameStateDTO.PlayerInfo playerInfo = new GameStateDTO.PlayerInfo();
-			gameStateDTO.playerInfos.add(playerInfo);
+			gameStateDTO.players.add(playerInfo);
 
 			playerInfo.user = gameService.getPlayerFromSeat(gameDB, p).user;
 
@@ -329,6 +319,8 @@ public class MainController
 
 			if (previousTrick != null)
 				playerInfo.previousTrickCard = previousTrick.getCardByPlayer(p) == null ? null : previousTrick.getCardByPlayer(p).getID();
+
+			playerInfo.points = game.getPoints(p);
 
 			Collection<Card> skart = game.getSkart(p);
 			if (skart != null)

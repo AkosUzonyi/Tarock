@@ -15,7 +15,6 @@ import android.widget.*;
 import androidx.annotation.*;
 import androidx.appcompat.app.*;
 import androidx.lifecycle.*;
-import androidx.preference.*;
 import androidx.recyclerview.widget.*;
 import androidx.viewpager.widget.*;
 import com.tisza.tarock.*;
@@ -23,7 +22,6 @@ import com.tisza.tarock.R;
 import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.message.*;
 import com.tisza.tarock.message.Action;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.zebisound.*;
@@ -342,11 +340,11 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	private int getSeatOfUser(int userID)
 	{
-		if (gameDTO == null)
+		if (gameStateDTO == null)
 			return -1;
 
-		for (int i = 0; i < gameDTO.players.size(); i++)
-			if (gameDTO.players.get(i).user.id == userID)
+		for (int i = 0; i < gameStateDTO.players.size(); i++)
+			if (gameStateDTO.players.get(i).user.id == userID)
 				return i;
 
 		return -1;
@@ -367,7 +365,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	private void updateSeat()
 	{
-		if (gameDTO == null)
+		if (gameStateDTO == null)
 			return;
 
 		mySeat = loggedInUser == null ? -1 : getSeatOfUser(loggedInUser.id);
@@ -393,7 +391,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		{
 			TextView playerNameView = playerNameViews[getPositionFromSeat(i)];
 			playerNameView.setText(R.string.empty_seat);
-			User user = gameDTO.players.get(i).user;
+			User user = gameStateDTO.players.get(i).user;
 			if (user != null)
 			{
 				playerNameView.setText(user.getName());
@@ -405,7 +403,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private int gameSessionId;
 	private GameSession gameSession;
 
-	private GameDTO gameDTO;
 	private GameStateDTO gameStateDTO;
 	private List<String> shortUserNames;
 
@@ -429,10 +426,10 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	private void doAction(Action action)
 	{
-		if (gameDTO == null)
+		if (gameStateDTO == null)
 			Log.w(TAG,"doAction: no game is in progress");
 
-		connectionViewModel.getApiInterface().postAction(gameDTO.id, new ActionPostDTO(action.getId())).subscribe(responseBody -> {}, throwable ->
+		connectionViewModel.getApiInterface().postAction(gameStateDTO.id, new ActionPostDTO(action.getId())).subscribe(responseBody -> {}, throwable ->
 		{
 			if (throwable instanceof HttpException)
 			{
@@ -475,8 +472,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			return;
 		}
 
-		boolean updateGame = this.gameSession == null || this.gameSession.currentGameId != gameSession.currentGameId;
-
 		this.gameSession = gameSession;
 
 		if (GameSessionState.fromId(gameSession.state) == GameSessionState.LOBBY)
@@ -485,9 +480,8 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		updateSeat();
 		if (lastChatTime == 0)
 			lastChatTime = gameSession.createTime;
-		//pollChats(true); TODO
-		if (updateGame)
-			updateGame();
+
+		updateGameState();
 
 		List<User> users = new ArrayList<>();
 		for (Player player : gameSession.getPlayers())
@@ -521,57 +515,18 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		zebiSounds.setEnabled(soundsEnabled && gameSession.getType() == GameType.ZEBI && gameSession.containsUser(121));*/
 	}
 
-	private void updateGame()
-	{
-		if (gameSession == null || gameSession.currentGameId == null)
-			return;
-
-		connectionViewModel.getApiInterface().getGame(gameSession.currentGameId).observeOn(AndroidSchedulers.mainThread()).subscribe(gameDTO ->
-		{
-			this.gameDTO = gameDTO;
-
-			updateSeat();
-			updateShortNames();
-			updateGameState();
-			statisticsPointsAdapter.setPoints(Utils.map(gameDTO.players, p -> p.points));
-
-			cardsToFold.clear();
-
-			chats.clear();
-			lastChatTime = gameDTO.createTime;
-			pollChats(true); //TODO is it ok here?
-
-			actions.clear();
-			nextActionOrdinal = 0;
-			pollActions(true);
-
-			//TODO: incrementpoints, update points at and of game
-		},
-		throwable ->
-		{
-			if (throwable instanceof HttpException)
-			{
-				HttpException httpException = (HttpException) throwable;
-				if (httpException.code() == 410)
-					return; //TODO update game session?
-			}
-
-			RxJavaPlugins.onError(throwable);
-		});
-	}
-
 	private void updateShortNames()
 	{
 		Set<String> firstNames = new HashSet<>();
 		Set<String> duplicateFirstNames = new HashSet<>();
-		for (Player player : gameDTO.getPlayers())
+		for (GameStateDTO.PlayerInfo player : gameStateDTO.players)
 		{
 			String firstName = getFirstName(player.user.getName());
 			if (!firstNames.add(firstName))
 				duplicateFirstNames.add(firstName);
 		}
 		shortUserNames = new ArrayList<>();
-		for (Player player : gameDTO.getPlayers())
+		for (GameStateDTO.PlayerInfo player : gameStateDTO.players)
 		{
 			String firstName = getFirstName(player.user.getName());
 			if (!duplicateFirstNames.contains(firstName))
@@ -612,10 +567,10 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		if (actionDisposable != null)
 			actionDisposable.dispose();
 
-		if (gameDTO == null)
+		if (gameSession == null || gameSession.currentGameId == null)
 			return;
 
-		actionDisposable = connectionViewModel.getApiInterface().getActions(gameDTO.id, nextActionOrdinal).observeOn(AndroidSchedulers.mainThread()).subscribe(newActions ->
+		actionDisposable = connectionViewModel.getApiInterface().getActions(gameSession.currentGameId, nextActionOrdinal).observeOn(AndroidSchedulers.mainThread()).subscribe(newActions ->
 		{
 			actions.addAll(newActions);
 			if (!init)
@@ -643,8 +598,23 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		connectionViewModel.getApiInterface().getGameState(gameSession.currentGameId).observeOn(AndroidSchedulers.mainThread()).subscribe(newGameState ->
 		{
 			boolean phaseChange = gameStateDTO == null || !newGameState.phase.equals(gameStateDTO.phase);
+			boolean isNewGame = gameStateDTO == null || gameStateDTO.id != newGameState.id;
 
 			gameStateDTO = newGameState;
+			updateSeat();
+
+			if (isNewGame)
+			{
+				cardsToFold.clear();
+
+				chats.clear();
+				lastChatTime = gameStateDTO.createTime;
+				pollChats(true);
+
+				actions.clear();
+				nextActionOrdinal = 0;
+				pollActions(true);
+			}
 
 			if (phaseChange)
 				phaseChanged();
@@ -756,7 +726,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 					{
 						for (int seat = 0; seat < 4; seat++)
 						{
-							int count = gameStateDTO.playerInfos.get(seat).tarockFoldCount;
+							int count = gameStateDTO.players.get(seat).tarockFoldCount;
 							if (count > 0)
 							{
 								String tarockFoldMessage = getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
@@ -807,7 +777,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			case ANNOUNCING:
 			case END:
 			case INTERRUPTED:
-				if (gameStateDTO.playerInfos.get(mySeat).turn)
+				if (gameStateDTO.players.get(mySeat).turn)
 					okVisible = true;
 				break;
 		}
@@ -817,7 +787,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private void updateMyCardsView()
 	{
 		Set<Card> removedCards = new HashSet<>(cardToViewMapping.keySet());
-		for (String cardId : gameStateDTO.playerInfos.get(mySeat).cards)
+		for (String cardId : gameStateDTO.players.get(mySeat).cards)
 		{
 			Card card = Card.fromId(cardId);
 			removedCards.remove(card);
@@ -844,7 +814,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			myCardView.requestLayout();
 		});
 		shrinkAnimator.setDuration(PLAY_DURATION);
-		boolean shouldArrange = gameStateDTO.playerInfos.get(mySeat).cards.size() == CARDS_PER_ROW;
+		boolean shouldArrange = gameStateDTO.players.get(mySeat).cards.size() == CARDS_PER_ROW;
 		shrinkAnimator.addListener(new AnimatorListenerAdapter()
 		{
 			@Override
@@ -866,7 +836,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		{
 			PlayedCardView playedCardView = playedCardViews[getPositionFromSeat(seat)];
 
-			GameStateDTO.PlayerInfo playerInfo = gameStateDTO.playerInfos.get(seat);
+			GameStateDTO.PlayerInfo playerInfo = gameStateDTO.players.get(seat);
 			Card previousCard = Card.fromId(playerInfo.previousTrickCard);
 			Card currentCard = Card.fromId(playerInfo.currentTrickCard);
 			int dir = getPositionFromSeat(gameStateDTO.previousTrickWinner == null ? 0 : gameStateDTO.previousTrickWinner);
@@ -901,7 +871,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 				for (int seat = 0; seat < 4; seat++)
 				{
-					int count = gameStateDTO.playerInfos.get(seat).tarockFoldCount;
+					int count = gameStateDTO.players.get(seat).tarockFoldCount;
 					if (count > 0)
 					{
 						String tarockFoldMessage = getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
@@ -996,7 +966,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		for (int seat = 0; seat < 4; seat++)
 		{
 			int pos = getPositionFromSeat(seat);
-			String team = gameStateDTO.playerInfos.get(seat).team;
+			String team = gameStateDTO.players.get(seat).team;
 			int color = getResources().getColor(team == null ? R.color.unknown_team : team.equals("caller") ? R.color.caller_team : R.color.opponent_team);
 
 			if (seat == mySeat)
@@ -1020,7 +990,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			return;
 		}
 
-		Team selfTeam = isKibic() || "caller".equals(gameStateDTO.playerInfos.get(mySeat).team) ? Team.CALLER : Team.OPPONENT;
+		Team selfTeam = isKibic() || "caller".equals(gameStateDTO.players.get(mySeat).team) ? Team.CALLER : Team.OPPONENT;
 
 		statisticsGamepointsCaller.setText(String.valueOf(statistics.callerCardPoints));
 		statisticsGamepointsOpponent.setText(String.valueOf(statistics.opponentCardPoints));
@@ -1055,12 +1025,29 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 		int selfSumPoints = statistics.sumPoints * (selfTeam == Team.CALLER ? 1 : -1);
 		statisticsSumPointsView.setText(String.valueOf(selfSumPoints));
+
+		List<Integer> pointsList = new ArrayList<>();
+		List<Integer> incrementPointsList = new ArrayList<>();
+		for (Player player : gameSession.players)
+		{
+			int points = player.points;
+			int gamePoints = 0;
+			if (gameStateDTO != null)
+				for (GameStateDTO.PlayerInfo inGamePlayer : gameStateDTO.players)
+					if (inGamePlayer.user.id == player.user.id)
+						gamePoints = inGamePlayer.points;
+
+			pointsList.add(points + gamePoints);
+			incrementPointsList.add(gamePoints);
+		}
+		statisticsPointsAdapter.setPoints(pointsList);
+		statisticsPointsAdapter.setIncrementPoints(incrementPointsList);
 	}
 
 	private void arrangeCards()
 	{
 		List<Card> myCards = new ArrayList<>();
-		for (String cardId : gameStateDTO.playerInfos.get(mySeat).cards)
+		for (String cardId : gameStateDTO.players.get(mySeat).cards)
 			myCards.add(Card.fromId(cardId));
 
 		removeAllMyCardsView();
@@ -1089,7 +1076,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			cardView.setTag(card);
 			cardView.setOnClickListener(view ->
 			{
-				if (cardClickListener != null && gameStateDTO.playerInfos.get(mySeat).turn)
+				if (cardClickListener != null && gameStateDTO.players.get(mySeat).turn)
 					cardClickListener.onClick(view);
 			});
 		}
@@ -1204,7 +1191,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		for (int seat = 0; seat < 4; seat++)
 		{
 			int pos = getPositionFromSeat(seat);
-			boolean val = gameStateDTO.playerInfos.get(seat).turn;
+			boolean val = gameStateDTO.players.get(seat).turn;
 
 			if (pos == 0)
 			{

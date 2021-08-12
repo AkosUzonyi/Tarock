@@ -37,9 +37,6 @@ public interface APIInterface
 	@POST("/api/gameSessions/{id}/start")
 	Observable<ResponseBody> startGameSession(@Path("id") int id);
 
-	@GET("/api/games/{id}")
-	Observable<GameDTO> getGame(@Path("id") int id);
-
 	@GET("/api/gameSessions/{id}/chat")
 	Observable<List<Chat>> getChat(@Path("id") int gameSessionId, @Query("from") long from);
 
@@ -52,6 +49,6 @@ public interface APIInterface
 	@POST("/api/games/{id}/actions")
 	Observable<ResponseBody> postAction(@Path("id") int gameId, @Body ActionPostDTO actionPostDTO);
 
-	@GET("/api/games/{id}/state")
+	@GET("/api/games/{id}")
 	Observable<GameStateDTO> getGameState(@Path("id") int id);
 }

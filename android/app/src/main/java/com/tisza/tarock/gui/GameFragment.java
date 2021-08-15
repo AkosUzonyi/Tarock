@@ -357,10 +357,12 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	private String getPlayerName(int seat)
 	{
-		if (seat >= shortUserNames.size())
-			return getString(R.string.empty_seat);
+		User user = gameStateDTO.players.get(seat).user;
+		for (int i = 0; i < gameSession.players.size(); i++)
+			if (gameSession.players.get(i).user.id == user.id)
+				return shortUserNames.get(i);
 
-		return shortUserNames.get(seat);
+		return getString(R.string.empty_seat);
 	}
 
 	private void updateSeat()
@@ -478,6 +480,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			connectionViewModel.getApiInterface().joinGameSession(gameSessionId).subscribe();
 
 		updateSeat();
+		updateShortNames();
 		if (lastChatTime == 0)
 			lastChatTime = gameSession.createTime;
 
@@ -519,14 +522,14 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	{
 		Set<String> firstNames = new HashSet<>();
 		Set<String> duplicateFirstNames = new HashSet<>();
-		for (GameStateDTO.PlayerInfo player : gameStateDTO.players)
+		for (Player player : gameSession.players)
 		{
 			String firstName = getFirstName(player.user.getName());
 			if (!firstNames.add(firstName))
 				duplicateFirstNames.add(firstName);
 		}
 		shortUserNames = new ArrayList<>();
-		for (GameStateDTO.PlayerInfo player : gameStateDTO.players)
+		for (Player player : gameSession.players)
 		{
 			String firstName = getFirstName(player.user.getName());
 			if (!duplicateFirstNames.contains(firstName))

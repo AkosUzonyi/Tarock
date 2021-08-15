@@ -97,7 +97,7 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   }
 
   sendChat() {
-    if (this.gameSession === null)
+    if (this.gameSession === null || this.chatInputContent.length === 0)
       return;
     this.apiService.postChat(this.gameSession.id, this.chatInputContent).subscribe();
     this.chatInputContent = "";

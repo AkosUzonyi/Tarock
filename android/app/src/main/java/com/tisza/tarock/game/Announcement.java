@@ -7,7 +7,7 @@ import com.tisza.tarock.message.*;
 
 import java.util.*;
 
-public class Announcement implements Comparable<Announcement>, ActionButtonItem
+public class Announcement implements Comparable<Announcement>
 {
 	private final String id;
 	private final String name;
@@ -124,12 +124,6 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		builder.appendWord(nameText);
 
 		return builder.toString();
-	}
-
-	@Override
-	public Action getAction()
-	{
-		return Action.announce(this);
 	}
 
 	public String getName()

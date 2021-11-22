@@ -78,7 +78,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private ScrollView messagesScrollView;
 	private TextView messagesTextView;
 	private ListView availableActionsListView;
-	private ArrayAdapter<ActionButtonItem> availableActionsAdapter;
+	private ArrayAdapter<Action> availableActionsAdapter;
 	private EditText messagesChatEditText;
 
 	private View ultimoView;
@@ -172,17 +172,15 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
 		throwButton.setOnClickListener(v -> doAction(Action.throwCards()));
 
-		availableActionsAdapter = new ArrayAdapter<ActionButtonItem>(getActivity(), R.layout.button)
+		availableActionsAdapter = new ArrayAdapter<Action>(getActivity(), R.layout.button)
 		{
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent)
 			{
-				View view = super.getView(position, convertView, parent);
-				view.setOnClickListener(new DoubleClickListener(getContext(), v ->
-				{
-					ActionButtonItem actionButton = getItem(position);
-					actionButton.onClicked();
-				}));
+				TextView view = (TextView) super.getView(position, convertView, parent);
+				Action action = getItem(position);
+				view.setOnClickListener(new DoubleClickListener(getContext(), v -> doAction(action)));
+				view.setText(action.translate(getResources()));
 				return view;
 			}
 		};
@@ -664,27 +662,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		for (String actionId : gameStateDTO.availableActions)
 		{
 			Action action = new Action(actionId);
-			availableActionsAdapter.add(new ActionButtonItem()
-			{
-				@Override
-				public Action getAction()
-				{
-					return action;
-				}
-
-				@Override
-				public void onClicked()
-				{
-					doAction(new Action(actionId));
-				}
-
-				@NonNull
-				@Override
-				public String toString()
-				{
-					return action.translate(getResources());
-				}
-			});
+			availableActionsAdapter.add(action);
 		}
 	}
 

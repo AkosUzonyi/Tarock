@@ -3,7 +3,7 @@ package com.tisza.tarock.game;
 import com.tisza.tarock.gui.*;
 import com.tisza.tarock.message.*;
 
-public class Bid implements ActionButtonItem
+public class Bid
 {
 	private int bid;
 	private boolean keep;
@@ -15,12 +15,6 @@ public class Bid implements ActionButtonItem
 
 		this.bid = bid;
 		this.keep = keep;
-	}
-
-	@Override
-	public Action getAction()
-	{
-		return Action.bid(bid);
 	}
 
 	@Override

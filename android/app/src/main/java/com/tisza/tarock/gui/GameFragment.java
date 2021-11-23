@@ -79,6 +79,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private TextView messagesTextView;
 	private ListView availableActionsListView;
 	private ArrayAdapter<Action> availableActionsAdapter;
+	private Button availableActionsListUltimoButton;
 	private EditText messagesChatEditText;
 
 	private View ultimoView;
@@ -193,6 +194,9 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		messagesTextView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> messagesScrollView.smoothScrollTo(0, bottom));
 		availableActionsListView = messagesFrame.findViewById(R.id.available_actions_list);
 		availableActionsListView.setAdapter(availableActionsAdapter);
+		availableActionsListUltimoButton = (Button) inflater.inflate(R.layout.button, availableActionsListView, false);
+		availableActionsListUltimoButton.setText(R.string.ultimo_button);
+		availableActionsListUltimoButton.setOnClickListener(view -> setUltimoViewVisible(true));
 		messagesChatEditText = messagesFrame.findViewById(R.id.messages_chat_edit_text);
 		messagesChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
 		messagesChatEditText.setOnEditorActionListener(this);
@@ -658,11 +662,32 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	private void updateAvailableActions()
 	{
+		if (ultimoView.getVisibility() == View.VISIBLE)
+			return;
+
 		availableActionsAdapter.clear();
-		for (String actionId : gameStateDTO.availableActions)
+		availableActionsListView.removeHeaderView(availableActionsListUltimoButton);
+
+		PhaseEnum phaseEnum = PhaseEnum.fromID(gameStateDTO.phase);
+		if (phaseEnum == PhaseEnum.ANNOUNCING)
 		{
-			Action action = new Action(actionId);
-			availableActionsAdapter.add(action);
+			List<Announcement> announcements = new ArrayList<>();
+			for (String actionId : gameStateDTO.availableActions)
+				announcements.add(Announcement.fromID(new Action(actionId).getParams()));
+
+			if (GameType.fromID(gameStateDTO.type) != GameType.PASKIEVICS)
+				ultimoViewManager.takeAnnouncements(announcements);
+
+			if (ultimoViewManager.hasAnyUltimo())
+				availableActionsListView.addHeaderView(availableActionsListUltimoButton);
+
+			for (Announcement announcement : announcements)
+				availableActionsAdapter.add(Action.announce(announcement));
+		}
+		else
+		{
+			for (String actionId : gameStateDTO.availableActions)
+				availableActionsAdapter.add(new Action(actionId));
 		}
 	}
 

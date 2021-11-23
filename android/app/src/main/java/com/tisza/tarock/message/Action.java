@@ -168,4 +168,9 @@ public class Action
 				return null;
 		}
 	}
+
+	public String getParams()
+	{
+		return id.substring(id.indexOf(":") + 1);
+	}
 }

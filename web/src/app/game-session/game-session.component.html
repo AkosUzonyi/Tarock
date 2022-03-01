@@ -12,7 +12,7 @@
         <h2 *ngIf="!actions[i - 1]?.action?.startsWith('call:') && action.action.startsWith('call:')">{{'message_calling' | translate}}</h2>
         <h2 *ngIf="!actions[i - 1]?.action?.startsWith('announce:') && action.action.startsWith('announce:')">{{'message_announcing' | translate}}</h2>
         <p
-          *ngIf="gameTranslateService.translateAction(action.action) as translated"
+          *ngIf="action.action !== 'announce:passz' && gameTranslateService.translateAction(action.action) as translated"
           >
           {{game.players[action.seat].user.name}}: {{translated}}
         </p>

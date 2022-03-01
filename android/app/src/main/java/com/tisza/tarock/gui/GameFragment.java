@@ -719,6 +719,9 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 				message = action.translate(getResources());
 				actionIndex++;
 
+				if (action.getId().equals("announce:passz"))
+					continue;
+
 				PhaseEnum nextActionPhase;
 				if (actionIndex < actions.size())
 					nextActionPhase = new Action(actions.get(actionIndex).action).getPhase();

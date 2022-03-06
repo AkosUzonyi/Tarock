@@ -403,7 +403,7 @@ Response:
         "previousTrickWinner": Int?,
         "players": [{
                 "user": User,
-                "cards": [Card],
+                "cards": [Card]?,
                 "turn": Bool,
                 "team": "caller"|"opponent"|null,
                 "tarockFoldCount": Int,

@@ -739,7 +739,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 							if (count > 0)
 							{
 								String tarockFoldMessage = getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
-								messagesHtml.append(getString(stringTemplateRes, userName, tarockFoldMessage));
+								messagesHtml.append(getString(stringTemplateRes, getPlayerName(seat), tarockFoldMessage));
 								messagesHtml.append("<br>");
 							}
 						}

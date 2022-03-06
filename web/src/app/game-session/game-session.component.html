@@ -8,7 +8,12 @@
     <div id="action-list" class="game-session-vertical-box" appAutoScroll>
       <ng-template ngFor let-action [ngForOf]="actions" let-i="index">
         <h2 *ngIf="!actions[i - 1]?.action?.startsWith('bid:') && action.action.startsWith('bid:')">{{'message_bidding' | translate}}</h2>
-        <h2 *ngIf="!actions[i - 1]?.action?.startsWith('fold:') && action.action.startsWith('fold:')">{{'message_folding' | translate}}</h2>
+        <ng-container *ngIf="!actions[i - 1]?.action?.startsWith('fold:') && action.action.startsWith('fold:')">
+          <h2>{{'message_folding' | translate}}</h2>
+          <ng-container *ngFor="let p of game.players">
+            <p *ngIf="p.tarockFoldCount">{{p.user.name}} {{'message_fold_tarock' | translate: { count: p.tarockFoldCount } }}</p>
+          </ng-container>
+        </ng-container>
         <h2 *ngIf="!actions[i - 1]?.action?.startsWith('call:') && action.action.startsWith('call:')">{{'message_calling' | translate}}</h2>
         <h2 *ngIf="!actions[i - 1]?.action?.startsWith('announce:') && action.action.startsWith('announce:')">{{'message_announcing' | translate}}</h2>
         <p

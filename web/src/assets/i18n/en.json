@@ -53,6 +53,7 @@
   "message_announcing": "ANNOUNCING\n",
   "message_cards_thrown": "threw in their cards",
   "message_press_ok": "Press OK to continue",
+  "message_fold_tarock": "laid {{count}} tarokk",
   "bid": {
     "3": "3",
     "2": "2",

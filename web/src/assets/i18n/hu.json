@@ -51,6 +51,7 @@
   "message_announcing": "BEMONDÁSOK",
   "message_cards_thrown": "bedobta a lapjait",
   "message_press_ok": "Nyomj OK-t a folytatáshoz",
+  "message_fold_tarock": "{{count}} tarokkot fektetett",
   "bid": {
     "3": "3",
     "2": "2",

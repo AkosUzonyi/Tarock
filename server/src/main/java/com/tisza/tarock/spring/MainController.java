@@ -323,7 +323,7 @@ public class MainController
 			playerInfo.points = game.getPoints(p);
 
 			Collection<Card> skart = game.getSkart(p);
-			if (skart != null)
+			if (game.getCurrentPhaseEnum().isAfter(PhaseEnum.FOLDING) && skart != null)
 			{
 				playerInfo.tarockFoldCount = (int) skart.stream().filter(c -> c instanceof TarockCard).count();
 

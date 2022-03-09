@@ -25,7 +25,7 @@ public class GameService
 	@Autowired
 	private GameSessionRepository gameSessionRepository;
 	@Autowired
-	private ListDeferredResultService<ActionDB> actionDeferredResultService;
+	private DeferredResultService<ActionDB> actionDeferredResultService;
 
 	private final ScheduledExecutorService taskScheduler = Executors.newSingleThreadScheduledExecutor();
 

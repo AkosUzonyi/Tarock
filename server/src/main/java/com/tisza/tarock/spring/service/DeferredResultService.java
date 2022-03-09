@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 import java.util.function.*;
 
 @Service
-public class ListDeferredResultService<T>
+public class DeferredResultService<T>
 {
 	private final Map<Integer, Collection<Request>> requestsById = new ConcurrentHashMap<>();
 
@@ -31,9 +31,9 @@ public class ListDeferredResultService<T>
 		getRequestList(id).removeIf(Request::checkResult);
 	}
 
-	public Object getDeferredResult(int id, Supplier<List<T>> listSupplier)
+	public Object getDeferredResult(int id, Supplier<Optional<T>> resultSupplier)
 	{
-		Request request = new Request(id, listSupplier);
+		Request request = new Request(id, resultSupplier);
 		addRequest(request);
 		return request.getDeferredResult();
 	}
@@ -55,29 +55,29 @@ public class ListDeferredResultService<T>
 		private static final long TIMEOUT = 30 * 1000;
 
 		private final int id;
-		private final Supplier<List<T>> listSupplier;
-		private final DeferredResult<List<T>> deferredResult;
+		private final Supplier<Optional<T>> resultSupplier;
+		private final DeferredResult<T> deferredResult;
 
-		private Request(int id, Supplier<List<T>> listSupplier)
+		private Request(int id, Supplier<Optional<T>> resultSupplier)
 		{
 			this.id = id;
-			this.listSupplier = listSupplier;
+			this.resultSupplier = resultSupplier;
 			this.deferredResult = new DeferredResult<>(TIMEOUT, new ResponseEntity<Void>(HttpStatus.REQUEST_TIMEOUT));
 		}
 
-		private DeferredResult<List<T>> getDeferredResult()
+		private DeferredResult<T> getDeferredResult()
 		{
 			return deferredResult;
 		}
 
 		private boolean checkResult()
 		{
-			List<T> resultTmp = null;
+			Optional<T> resultTmp = null;
 			Exception exceptionTmp = null;
 
 			try
 			{
-				resultTmp = listSupplier.get();
+				resultTmp = resultSupplier.get();
 				Objects.requireNonNull(resultTmp);
 			}
 			catch (Exception e)
@@ -86,7 +86,7 @@ public class ListDeferredResultService<T>
 			}
 
 			Exception exception = exceptionTmp;
-			List<T> result = resultTmp;
+			Optional<T> result = resultTmp;
 
 			if (result != null && result.isEmpty())
 				return false;
@@ -101,7 +101,7 @@ public class ListDeferredResultService<T>
 					else if (exception != null)
 						deferredResult.setErrorResult(exception);
 					else
-						deferredResult.setResult(result);
+						deferredResult.setResult(result.get());
 				}
 			});
 

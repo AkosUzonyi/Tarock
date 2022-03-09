@@ -39,9 +39,9 @@ public class MainController
 	@Autowired
 	private ChatRepository chatRepository;
 	@Autowired
-	private ListDeferredResultService<ChatDB> chatDeferredResultService;
+	private DeferredResultService<List<ChatDB>> chatDeferredResultService;
 	@Autowired
-	private ListDeferredResultService<ActionDB> actionDeferredResultService;
+	private DeferredResultService<List<ActionDB>> actionDeferredResultService;
 	@Autowired
 	private GameService gameService;
 	@Autowired
@@ -196,9 +196,9 @@ public class MainController
 			List<ActionDB> actions = gameService.getActionsFiltered(gameId);
 
 			if (from >= actions.size())
-				return Collections.emptyList();
+				return Optional.empty();
 
-			return actions.subList(from, actions.size());
+			return Optional.of(actions.subList(from, actions.size()));
 		});
 	}
 
@@ -340,7 +340,8 @@ public class MainController
 	{
 		return chatDeferredResultService.getDeferredResult(gameSessionId, () -> {
 			gameSessionService.findGameSession(gameSessionId);
-			return chatRepository.findTop100ByGameSessionIdAndTimeGreaterThanEqual(gameSessionId, from);
+			List<ChatDB> chats = chatRepository.findTop100ByGameSessionIdAndTimeGreaterThanEqual(gameSessionId, from);
+			return chats.isEmpty() ? Optional.empty() : Optional.of(chats);
 		});
 	}
 

@@ -8,35 +8,37 @@ import androidx.annotation.*;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.*;
 import com.tisza.tarock.*;
+import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
+import retrofit2.http.*;
 
 import java.util.*;
 
-public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewHolder>
+public class GameListAdapter extends ListAdapter<GameSession, GameListAdapter.ViewHolder>
 {
 	private final Context context;
 	private final LayoutInflater inflater;
 	private GameAdapterListener gameAdapterListener;
-	private Integer userID;
+	private User loggedInUser;
 
-	private static final DiffUtil.ItemCallback<GameInfo> gameInfoItemCallback = new DiffUtil.ItemCallback<GameInfo>()
+	private static final DiffUtil.ItemCallback<GameSession> gameSessionItemCallback = new DiffUtil.ItemCallback<GameSession>()
 	{
 		@Override
-		public boolean areItemsTheSame(GameInfo oldItem, GameInfo newItem)
+		public boolean areItemsTheSame(GameSession oldItem, GameSession newItem)
 		{
 			return oldItem.getId() == newItem.getId();
 		}
 
 		@Override
-		public boolean areContentsTheSame(GameInfo oldItem, GameInfo newItem)
+		public boolean areContentsTheSame(GameSession oldItem, GameSession newItem)
 		{
-			if (oldItem.getId() != newItem.getId() || oldItem.getType() != newItem.getType() || oldItem.getUsers().size() != newItem.getUsers().size())
+			if (oldItem.getId() != newItem.getId() || oldItem.getType() != newItem.getType() || oldItem.getPlayers().size() != newItem.getPlayers().size())
 				return false;
 
-			for (int i = 0; i < oldItem.getUsers().size(); i++)
+			for (int i = 0; i < oldItem.getPlayers().size(); i++)
 			{
-				User oldUser = oldItem.getUsers().get(i);
-				User newUser = newItem.getUsers().get(i);
+				User oldUser = oldItem.getPlayers().get(i).user;
+				User newUser = newItem.getPlayers().get(i).user;
 				if (!oldUser.areContentsTheSame(newUser))
 					return false;
 			}
@@ -47,33 +49,37 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 
 	public GameListAdapter(Context context, GameAdapterListener gameAdapterListener)
 	{
-		super(gameInfoItemCallback);
+		super(gameSessionItemCallback);
 		this.context = context;
 		this.gameAdapterListener = gameAdapterListener;
 		inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
-	public void setData(List<GameInfo> list, Integer userID)
+	public void setUser(User loggedInUser)
 	{
-		this.userID = userID;
-		List<GameInfo> filteredSortedList = new ArrayList<>();
-		for (GameInfo gi : list)
-			if (gi.getId() >= 0)
-				filteredSortedList.add(gi);
-		Collections.sort(filteredSortedList, this::compareGames);
+		this.loggedInUser = loggedInUser;
+	}
+
+	public void setGameSessions(List<GameSession> gameSessions)
+	{
+		List<GameSession> filteredSortedList = new ArrayList<>();
+		for (GameSession gameSession : gameSessions)
+			if (gameSession.getId() >= 0)
+				filteredSortedList.add(gameSession);
+		Collections.sort(filteredSortedList, this::compareGameSessions);
 		submitList(filteredSortedList);
 	}
 
 	@Override
-	public GameInfo getItem(int position)
+	public GameSession getItem(int position)
 	{
 		return super.getItem(position);
 	}
 
-	private int compareGames(GameInfo g0, GameInfo g1)
+	private int compareGameSessions(GameSession g0, GameSession g1)
 	{
-		if (userID != null && g0.containsUser(userID) != g1.containsUser(userID))
-			return g0.containsUser(userID) ? -1 : 1;
+		if (loggedInUser != null && g0.containsUser(loggedInUser) != g1.containsUser(loggedInUser))
+			return g0.containsUser(loggedInUser) ? -1 : 1;
 
 		if (g0.getState() != g1.getState())
 			return g0.getState().ordinal() - g1.getState().ordinal();
@@ -82,18 +88,18 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 		int onlineCount1 = 0;
 		int realPlayerCount0 = 0;
 		int realPlayerCount1 = 0;
-		for (User u : g0.getUsers())
+		for (Player p : g0.getPlayers())
 		{
-			if (u.isOnline() && !u.isBot())
+			if (p.user.isOnline() && !p.user.isBot())
 				onlineCount0++;
-			if (!u.isBot())
+			if (!p.user.isBot())
 				realPlayerCount0++;
 		}
-		for (User u : g1.getUsers())
+		for (Player p : g1.getPlayers())
 		{
-			if (u.isOnline() && !u.isBot())
+			if (p.user.isOnline() && !p.user.isBot())
 				onlineCount1++;
-			if (!u.isBot())
+			if (!p.user.isBot())
 				realPlayerCount1++;
 		}
 
@@ -128,32 +134,35 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 	@Override
 	public void onBindViewHolder(ViewHolder holder, int position)
 	{
-		GameInfo gameInfo = getItem(position);
+		GameSession gameSession = getItem(position);
 
-		holder.usersAdapter.setUsers(gameInfo.getUsers());
+		List<User> users = new ArrayList<>();
+		for (Player player : gameSession.getPlayers())
+			users.add(player.user);
+		holder.usersAdapter.setUsers(users);
 
 		int joinButtonText;
-		if (gameInfo.getState() == GameSessionState.LOBBY)
+		if (gameSession.getState() == GameSessionState.LOBBY)
 			joinButtonText = R.string.lobby_enter;
-		else if (gameInfo.containsUser(userID))
+		else if (gameSession.containsUser(loggedInUser))
 			joinButtonText = R.string.join_game;
 		else
 			joinButtonText = R.string.join_game_kibic;
 
 		boolean deleteButtonVisible;
-		if (gameInfo.getState() == GameSessionState.LOBBY)
-			deleteButtonVisible = gameInfo.getUsers().size() > 0 && gameInfo.getUsers().get(0).getId() == userID;
+		if (gameSession.getState() == GameSessionState.LOBBY)
+			deleteButtonVisible = gameSession.getPlayers().size() > 0 && gameSession.getPlayers().get(0).user.id == loggedInUser.id;
 		else
-			deleteButtonVisible = gameInfo.containsUser(userID);
+			deleteButtonVisible = gameSession.containsUser(loggedInUser);
 
-		boolean isInteresting = gameInfo.containsUser(userID) || gameInfo.getState() == GameSessionState.LOBBY;
+		boolean isInteresting = gameSession.containsUser(loggedInUser) || gameSession.getState() == GameSessionState.LOBBY;
 
-		holder.gameTypeTextView.setText(context.getResources().getStringArray(R.array.game_type_array)[gameInfo.getType().ordinal()]);
+		holder.gameTypeTextView.setText(context.getResources().getStringArray(R.array.game_type_array)[gameSession.getType().ordinal()]);
 		holder.joinGameButton.setText(joinButtonText);
 		holder.joinGameButton.setTypeface(null, isInteresting ? Typeface.BOLD : Typeface.NORMAL);
-		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGame(gameInfo.getId()));
+		holder.joinGameButton.setOnClickListener(v -> gameAdapterListener.joinGameSession(gameSession.getId()));
 		holder.deleteGameButton.setVisibility(deleteButtonVisible ? View.VISIBLE : View.GONE);
-		holder.deleteGameButton.setOnClickListener(v -> gameAdapterListener.deleteGame(gameInfo.getId()));
+		holder.deleteGameButton.setOnClickListener(v -> gameAdapterListener.deleteGame(gameSession.getId()));
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder
@@ -172,7 +181,7 @@ public class GameListAdapter extends ListAdapter<GameInfo, GameListAdapter.ViewH
 
 	public interface GameAdapterListener
 	{
-		void joinGame(int gameID);
-		void deleteGame(int gameID);
+		void joinGameSession(int gameSessionID);
+		void deleteGame(int gameSessionID);
 	}
 }

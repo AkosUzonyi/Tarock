@@ -1,12 +1,13 @@
 package com.tisza.tarock.game;
 
+import android.content.res.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.gui.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
 
-public class Announcement implements Comparable<Announcement>, ActionButtonItem
+public class Announcement
 {
 	private final String id;
 	private final String name;
@@ -101,7 +102,7 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		return i;
 	}
 
-	public String toString()
+	public String translate(Resources resources)
 	{
 		SentenceBuilder builder = new SentenceBuilder();
 
@@ -123,12 +124,6 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		builder.appendWord(nameText);
 
 		return builder.toString();
-	}
-
-	@Override
-	public Action getAction()
-	{
-		return Action.announce(this);
 	}
 
 	public String getName()
@@ -231,33 +226,4 @@ public class Announcement implements Comparable<Announcement>, ActionButtonItem
 		"kisszincsalad",
 		"nagyszincsalad"
 	);
-
-	@Override
-	public int compareTo(Announcement other)
-	{
-		if (contraLevel != other.contraLevel)
-			return other.contraLevel - contraLevel;
-
-		if (!name.equals(other.name))
-		{
-			int myIndex = order.indexOf(name);
-			int otherIndex = order.indexOf(other.name);
-
-			if (myIndex < 0 || otherIndex < 0)
-				return name.compareTo(other.name);
-
-			return myIndex - otherIndex;
-		}
-
-		if (hasSuit() && other.hasSuit() && suit != other.suit)
-			return suit - other.suit;
-
-		if (hasCard() && other.hasCard() && !card.equals(other.card))
-			return card.compareTo(other.card);
-
-		if (hasTrick() && other.hasTrick() && trick != other.trick)
-			return (trick - other.trick) * (name.equals("ultimo") ? -1 : 1);
-
-		return 0;
-	}
 }

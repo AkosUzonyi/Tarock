@@ -6,7 +6,7 @@ import com.tisza.tarock.message.*;
 
 import java.util.*;
 
-public abstract class Card implements ActionButtonItem, Comparable<Card>
+public abstract class Card implements Comparable<Card>
 {
 	private static final Map<String, Card> idToCard = new LinkedHashMap<>();
 	private static final TarockCard[] tarockCards = new TarockCard[22];
@@ -46,16 +46,13 @@ public abstract class Card implements ActionButtonItem, Comparable<Card>
 
 	public static Card fromId(String id)
 	{
+		if (id == null)
+			return null;
+
 		if (!idToCard.containsKey(id))
 			throw new IllegalArgumentException("invalid card: " + id);
 
 		return idToCard.get(id);
-	}
-
-	@Override
-	public Action getAction()
-	{
-		return Action.call(this);
 	}
 
 	@Override

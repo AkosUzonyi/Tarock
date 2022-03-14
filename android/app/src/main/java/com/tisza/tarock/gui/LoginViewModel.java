@@ -4,7 +4,6 @@ import android.app.*;
 import android.content.*;
 import android.os.*;
 import androidx.lifecycle.*;
-import androidx.preference.*;
 import com.facebook.*;
 import com.facebook.login.*;
 import com.google.android.gms.auth.api.*;
@@ -12,10 +11,7 @@ import com.google.android.gms.auth.api.signin.*;
 import com.google.android.gms.common.*;
 import com.google.android.gms.common.api.*;
 import com.google.android.gms.tasks.*;
-import com.google.firebase.iid.*;
 import com.tisza.tarock.R;
-
-import java.io.*;
 
 public class LoginViewModel extends AndroidViewModel
 {
@@ -31,10 +27,6 @@ public class LoginViewModel extends AndroidViewModel
 	public LoginViewModel(Application application)
 	{
 		super(application);
-
-		boolean notifications = PreferenceManager.getDefaultSharedPreferences(application).getBoolean("notifications", true);
-		if (!notifications)
-			new FCMDeleteTokenAsyncTask().execute();
 
 		loginState =
 			Transformations.switchMap(fbAccessToken, fbAccessTokenValue ->
@@ -118,7 +110,6 @@ public class LoginViewModel extends AndroidViewModel
 
 	public void logOut()
 	{
-		new FCMDeleteTokenAsyncTask().execute();
 		googleSignInClient.signOut().addOnCompleteListener(result -> googleAccount.setValue(null));
 		LoginManager.getInstance().logOut();
 	}
@@ -155,23 +146,6 @@ public class LoginViewModel extends AndroidViewModel
 		protected void onPostExecute(GoogleSignInAccount googleSignInAccount)
 		{
 			googleAccount.setValue(googleSignInAccount);
-		}
-	}
-
-	private class FCMDeleteTokenAsyncTask extends AsyncTask<Void, Void, Void>
-	{
-		@Override
-		protected Void doInBackground(Void... voids)
-		{
-			try
-			{
-				FirebaseInstanceId.getInstance().deleteInstanceId();
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-			return null;
 		}
 	}
 

@@ -1,27 +1,28 @@
-package com.tisza.tarock.game;
+package com.tisza.tarock.api.model;
 
 import com.tisza.tarock.*;
 
 public class User implements Comparable<User>
 {
-	private final int id;
-	private final String name;
-	private final String imgURL;
-	private final boolean isFriend;
-	private final boolean online;
-	private final boolean bot;
+	public int id;
+	public String name;
+	public String imgUrl;
+	public boolean isBot;
+	public boolean online = true;
+	public long registrationTime;
 
-	public User(int id, String name, String imgURL, boolean isFriend, boolean online, boolean bot)
+	public User()
 	{
-		if (name == null)
-			throw new IllegalArgumentException("name == null");
+	}
 
+	public User(int id, String name, String imgUrl, boolean isBot, boolean online, long registrationTime)
+	{
 		this.id = id;
 		this.name = name;
-		this.imgURL = imgURL;
-		this.isFriend = isFriend;
+		this.imgUrl = imgUrl;
+		this.isBot = isBot;
 		this.online = online;
-		this.bot = bot;
+		this.registrationTime = registrationTime;
 	}
 
 	public int getId()
@@ -36,12 +37,7 @@ public class User implements Comparable<User>
 
 	public String getImageURL()
 	{
-		return imgURL;
-	}
-
-	public boolean isFriend()
-	{
-		return isFriend;
+		return imgUrl;
 	}
 
 	public boolean isOnline()
@@ -51,7 +47,7 @@ public class User implements Comparable<User>
 
 	public boolean isBot()
 	{
-		return bot;
+		return isBot;
 	}
 
 	@Override
@@ -76,15 +72,12 @@ public class User implements Comparable<User>
 
 	public boolean areContentsTheSame(User other)
 	{
-		return id == other.id && Utils.equals(name, other.name) && Utils.equals(imgURL, other.imgURL) && isFriend == other.isFriend && online == other.online && bot == other.bot;
+		return id == other.id && Utils.equals(name, other.name) && Utils.equals(imgUrl, other.imgUrl) && online == other.online && isBot == other.isBot;
 	}
 
 	@Override
 	public int compareTo(User other)
 	{
-		if (isFriend != other.isFriend)
-			return isFriend ? -1 : 1;
-
 		if (online != other.online)
 			return online ? -1 : 1;
 

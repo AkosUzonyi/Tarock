@@ -40,7 +40,7 @@ public class AuthService
 		UserDB userDB;
 		switch (idpServiceId)
 		{
-			case "faceebook":
+			case "facebook":
 				userDB = facebookAuth(idpToken);
 				break;
 			case "google":

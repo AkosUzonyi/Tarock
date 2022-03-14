@@ -203,6 +203,12 @@ export class GameSessionComponent implements OnInit, OnDestroy {
   }
 
   private updateGame() {
+    const gameId = this.gameSession?.currentGameId ?? null;
+    if (gameId === null) {
+      this.game = null;
+      return;
+    }
+
     this.apiService.getGame(this.getCurrentGameId()).subscribe(game => {
       this.game = game;
       this.calculateSeat();

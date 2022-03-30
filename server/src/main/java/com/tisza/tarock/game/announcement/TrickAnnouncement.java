@@ -35,7 +35,7 @@ public abstract class TrickAnnouncement extends AnnouncementBase
 
 	private boolean hasCommonTrickWith(TrickAnnouncement other)
 	{
-		for (int trick = 0; trick < Game.ROUND_COUNT; trick++)
+		for (int trick = 0; trick < Game.TRICK_COUNT; trick++)
 		{
 			if (containsTrick(trick) && other.containsTrick(trick))
 				return true;

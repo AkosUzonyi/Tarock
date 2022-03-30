@@ -72,7 +72,7 @@ class Folding extends Phase
 		
 		PlayerCards foldingPlayerCards = game.getPlayerCards(player);
 
-		if (foldingPlayerCards.size() - cardsToSkart.size() != Game.ROUND_COUNT)
+		if (foldingPlayerCards.size() - cardsToSkart.size() != Game.TRICK_COUNT)
 		{
 			//game.sendEvent(player, new EventActionFailed(Reason.WRONG_SKART_COUNT));
 			return false;

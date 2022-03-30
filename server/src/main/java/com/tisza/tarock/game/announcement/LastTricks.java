@@ -61,7 +61,7 @@ public abstract class LastTricks extends TrickAnnouncement
 	@Override
 	protected boolean containsTrick(int trick)
 	{
-		return trick >= Game.ROUND_COUNT - getTrickCount();
+		return trick >= Game.TRICK_COUNT - getTrickCount();
 	}
 }
 

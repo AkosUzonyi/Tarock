@@ -8,7 +8,7 @@ import java.util.*;
 
 public class Game
 {
-	public static final int ROUND_COUNT = 9;
+	public static final int TRICK_COUNT = 9;
 
 	private final GameType gameType;
 	private final List<Card> deck;
@@ -64,7 +64,7 @@ public class Game
 		List<Card> cardsToDeal = new ArrayList<>(deck);
 		for (PlayerSeat player : PlayerSeat.getAll())
 		{
-			for (int i = 0; i < ROUND_COUNT; i++)
+			for (int i = 0; i < TRICK_COUNT; i++)
 			{
 				getPlayerCards(player).addCard(cardsToDeal.remove(0));
 			}
@@ -267,7 +267,7 @@ public class Game
 
 	public boolean areAllTricksPassed()
 	{
-		return tricks.size() >= ROUND_COUNT && tricks.get(ROUND_COUNT - 1).isFinished();
+		return tricks.size() >= TRICK_COUNT && tricks.get(TRICK_COUNT - 1).isFinished();
 	}
 
 	public Trick getTrick(int index)

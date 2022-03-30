@@ -44,7 +44,6 @@ public class Game
 	private List<AnnouncementResult> announcementResults = new ArrayList<>();
 	private int sumPoints = 0;
 	private int[] points = new int[4];
-	private final int pointMultiplier;
 
 	private boolean finished = false;
 	private boolean normalFinish;
@@ -57,11 +56,10 @@ public class Game
 		}
 	}
 
-	public Game(GameType gameType, List<Card> deck, int pointMultiplier)
+	public Game(GameType gameType, List<Card> deck)
 	{
 		this.gameType = gameType;
 		this.deck = deck;
-		this.pointMultiplier = pointMultiplier;
 
 		List<Card> cardsToDeal = new ArrayList<>(deck);
 		for (PlayerSeat player : PlayerSeat.getAll())
@@ -403,7 +401,6 @@ public class Game
 					continue;
 
 				int announcementPoints = announcement.calculatePoints(this, team);
-				announcementPoints *= pointMultiplier;
 
 				sumPoints += announcementPoints * (team == Team.CALLER ? 1 : -1);
 
@@ -421,7 +418,6 @@ public class Game
 		{
 			TarockCount tarockCountAnnouncement = announcementsState.getTarockCountAnnounced(player);
 			int tarockCountPoints = tarockCountAnnouncement == null ? 0 : tarockCountAnnouncement.getPoints();
-			tarockCountPoints *= pointMultiplier;
 			points[player.asInt()] += tarockCountPoints * 4;
 			allTarockCountPoints += tarockCountPoints;
 		}
@@ -453,11 +449,6 @@ public class Game
 	public int getSumPoints()
 	{
 		return sumPoints;
-	}
-
-	public int getPointMultiplier()
-	{
-		return pointMultiplier;
 	}
 
 	public int getPoints(PlayerSeat seat)

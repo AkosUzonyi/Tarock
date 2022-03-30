@@ -63,9 +63,7 @@ public class GameService
 		GameDB gameDB = findGame(gameId);
 
 		List<Card> deck = gameDB.deckCards.stream().map(deckCardDB -> Card.fromId(deckCardDB.card)).collect(Collectors.toList());
-		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
-		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
-		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
+		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck);
 
 		long now = System.currentTimeMillis();
 		for (ActionDB actionDB : gameDB.actions)
@@ -127,9 +125,7 @@ public class GameService
 
 		gameDB.deckCards = deckDB;
 
-		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
-		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
-		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck, doubleRoundTracker.getCurrentMultiplier());
+		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck);
 
 		botService.executeBotActions(gameDB, game, 0);
 	}
@@ -166,14 +162,15 @@ public class GameService
 
 		if (game.isFinished())
 		{
+			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
+			doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
+
 			for (PlayerSeat s : PlayerSeat.getAll())
 			{
 				PlayerDB p = getPlayerFromSeat(gameDB, s);
-				p.points += game.getPoints(s);
+				p.points += game.getPoints(s) * doubleRoundTracker.getCurrentMultiplier();
 			}
 
-			DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
-			doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
 			if (game.isNormalFinish())
 				doubleRoundTracker.gameFinished();
 			else

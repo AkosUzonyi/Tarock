@@ -241,6 +241,10 @@ public class MainController
 		GameDB gameDB = gameService.findGame(gameId);
 		Game game = gameService.loadGame(gameId);
 
+		DoubleRoundTracker doubleRoundTracker = DoubleRoundTracker.createFromType(DoubleRoundType.fromID(gameDB.gameSession.doubleRoundType));
+		doubleRoundTracker.setData(gameDB.gameSession.doubleRoundData);
+		int pointMultiplier = doubleRoundTracker.getCurrentMultiplier();
+
 		GameDTO gameDTO = new GameDTO();
 
 		gameDTO.id = gameDB.id;
@@ -268,11 +272,11 @@ public class MainController
 		{
 			GameDTO.AnnouncementResult arDTO = new GameDTO.AnnouncementResult();
 			arDTO.announcement = ar.getAnnouncementContra().getID();
-			arDTO.points = ar.getPoints();
+			arDTO.points = ar.getPoints() * pointMultiplier;
 			(ar.getTeam() == Team.CALLER ? gameDTO.statistics.callerAnnouncementResults : gameDTO.statistics.opponentAnnouncementResults).add(arDTO);
 		}
-		gameDTO.statistics.sumPoints = game.getSumPoints();
-		gameDTO.statistics.pointMultiplier = game.getPointMultiplier();
+		gameDTO.statistics.sumPoints = game.getSumPoints() * pointMultiplier;
+		gameDTO.statistics.pointMultiplier = pointMultiplier;
 
 		Trick currentTrick, previousTrick;
 		if (game.getTrickCount() == 0)
@@ -320,7 +324,7 @@ public class MainController
 			if (previousTrick != null)
 				playerInfo.previousTrickCard = previousTrick.getCardByPlayer(p) == null ? null : previousTrick.getCardByPlayer(p).getID();
 
-			playerInfo.points = game.getPoints(p);
+			playerInfo.points = game.getPoints(p) * pointMultiplier;
 
 			Collection<Card> skart = game.getSkart(p);
 			if (game.getCurrentPhaseEnum().isAfter(PhaseEnum.FOLDING) && skart != null)

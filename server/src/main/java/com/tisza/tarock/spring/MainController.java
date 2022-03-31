@@ -26,28 +26,32 @@ import java.util.stream.*;
 @RestController
 public class MainController
 {
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private IdpUserRepository idpUserRepository;
-	@Autowired
-	private GameSessionRepository gameSessionRepository;
-	@Autowired
-	private PlayerRepository playerRepository;
-	@Autowired
-	private GameRepository gameRepository;
-	@Autowired
-	private ChatRepository chatRepository;
-	@Autowired
-	private DeferredResultService<List<ChatDB>> chatDeferredResultService;
-	@Autowired
-	private DeferredResultService<List<ActionDB>> actionDeferredResultService;
-	@Autowired
-	private GameService gameService;
-	@Autowired
-	private GameSessionService gameSessionService;
-	@Autowired
-	private AuthService authService;
+	private final UserRepository userRepository;
+	private final IdpUserRepository idpUserRepository;
+	private final GameSessionRepository gameSessionRepository;
+	private final PlayerRepository playerRepository;
+	private final GameRepository gameRepository;
+	private final ChatRepository chatRepository;
+	private final DeferredResultService<List<ChatDB>> chatDeferredResultService;
+	private final DeferredResultService<List<ActionDB>> actionDeferredResultService;
+	private final GameService gameService;
+	private final GameSessionService gameSessionService;
+	private final AuthService authService;
+
+	public MainController(UserRepository userRepository, IdpUserRepository idpUserRepository, GameSessionRepository gameSessionRepository, PlayerRepository playerRepository, GameRepository gameRepository, ChatRepository chatRepository, DeferredResultService<List<ChatDB>> chatDeferredResultService, DeferredResultService<List<ActionDB>> actionDeferredResultService, GameService gameService, GameSessionService gameSessionService, AuthService authService)
+	{
+		this.userRepository = userRepository;
+		this.idpUserRepository = idpUserRepository;
+		this.gameSessionRepository = gameSessionRepository;
+		this.playerRepository = playerRepository;
+		this.gameRepository = gameRepository;
+		this.chatRepository = chatRepository;
+		this.chatDeferredResultService = chatDeferredResultService;
+		this.actionDeferredResultService = actionDeferredResultService;
+		this.gameService = gameService;
+		this.gameSessionService = gameSessionService;
+		this.authService = authService;
+	}
 
 	private int getLoggedInUserId()
 	{

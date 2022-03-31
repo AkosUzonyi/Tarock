@@ -13,10 +13,14 @@ import java.util.*;
 @Service
 public class BotService
 {
-	@Autowired
-	private GameService gameService;
+	private final GameService gameService;
 
 	private final Random rnd = new Random();
+
+	public BotService(GameService gameService)
+	{
+		this.gameService = gameService;
+	}
 
 	public void executeBotActions(GameDB gameDB, Game game, int extraDelay)
 	{

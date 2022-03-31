@@ -15,14 +15,18 @@ import java.util.stream.*;
 @Service
 public class GameSessionService
 {
-	@Autowired
-	private GameSessionRepository gameSessionRepository;
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private PlayerRepository playerRepository;
-	@Autowired
-	private GameService gameService;
+	private final GameSessionRepository gameSessionRepository;
+	private final UserRepository userRepository;
+	private final PlayerRepository playerRepository;
+	private final GameService gameService;
+
+	public GameSessionService(GameSessionRepository gameSessionRepository, UserRepository userRepository, PlayerRepository playerRepository, GameService gameService)
+	{
+		this.gameSessionRepository = gameSessionRepository;
+		this.userRepository = userRepository;
+		this.playerRepository = playerRepository;
+		this.gameService = gameService;
+	}
 
 	public PlayerDB getPlayerFromUser(GameSessionDB gameSessionDB, int userId)
 	{

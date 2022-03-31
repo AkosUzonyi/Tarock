@@ -18,14 +18,18 @@ import java.util.stream.*;
 @Service
 public class GameService
 {
-	@Autowired
-	private GameRepository gameRepository;
-	@Autowired
-	private BotService botService;
-	@Autowired
-	private GameSessionRepository gameSessionRepository;
-	@Autowired
-	private DeferredResultService<ActionDB> actionDeferredResultService;
+	private final GameRepository gameRepository;
+	private final BotService botService;
+	private final GameSessionRepository gameSessionRepository;
+	private final DeferredResultService<ActionDB> actionDeferredResultService;
+
+	public GameService(GameRepository gameRepository, BotService botService, GameSessionRepository gameSessionRepository, DeferredResultService<ActionDB> actionDeferredResultService)
+	{
+		this.gameRepository = gameRepository;
+		this.botService = botService;
+		this.gameSessionRepository = gameSessionRepository;
+		this.actionDeferredResultService = actionDeferredResultService;
+	}
 
 	private final ScheduledExecutorService taskScheduler = Executors.newSingleThreadScheduledExecutor();
 

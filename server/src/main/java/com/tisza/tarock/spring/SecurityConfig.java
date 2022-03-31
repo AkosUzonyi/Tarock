@@ -11,8 +11,12 @@ import org.springframework.security.web.authentication.*;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter
 {
-	@Autowired
-	private JwtRequestFilter jwtRequestFilter;
+	private final JwtRequestFilter jwtRequestFilter;
+
+	public SecurityConfig(JwtRequestFilter jwtRequestFilter)
+	{
+		this.jwtRequestFilter = jwtRequestFilter;
+	}
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {

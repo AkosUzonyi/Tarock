@@ -14,8 +14,12 @@ import java.util.*;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter
 {
-	@Autowired
-	private JwtTokenProvider jwtTokenProvider;
+	private final JwtTokenProvider jwtTokenProvider;
+
+	public JwtRequestFilter(JwtTokenProvider jwtTokenProvider)
+	{
+		this.jwtTokenProvider = jwtTokenProvider;
+	}
 
 	private void doAuthentication(HttpServletRequest request)
 	{

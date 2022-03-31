@@ -15,12 +15,16 @@ public class GameSessionCleanup
 {
 	private static final int MAX_GAME_IDLE_TIME = 2 * 3600 * 1000;
 
-	@Autowired
-	private GameSessionRepository gameSessionRepository;
-	@Autowired
-	private GameRepository gameRepository;
-	@Autowired
-	private GameSessionService gameSessionService;
+	private final GameSessionRepository gameSessionRepository;
+	private final GameRepository gameRepository;
+	private final GameSessionService gameSessionService;
+
+	public GameSessionCleanup(GameSessionRepository gameSessionRepository, GameRepository gameRepository, GameSessionService gameSessionService)
+	{
+		this.gameSessionRepository = gameSessionRepository;
+		this.gameRepository = gameRepository;
+		this.gameSessionService = gameSessionService;
+	}
 
 	@Scheduled(fixedRate = 10 * 60 * 1000)
 	@Transactional(isolation = Isolation.REPEATABLE_READ)

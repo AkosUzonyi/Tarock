@@ -27,12 +27,16 @@ public class AuthService
 					.setAudience(Collections.singletonList(GOOGLE_CLIENT_ID))
 					.build();
 
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private IdpUserRepository idpUserRepository;
-	@Autowired
-	private JwtTokenProvider jwtTokenProvider;
+	private final UserRepository userRepository;
+	private final IdpUserRepository idpUserRepository;
+	private final JwtTokenProvider jwtTokenProvider;
+
+	public AuthService(UserRepository userRepository, IdpUserRepository idpUserRepository, JwtTokenProvider jwtTokenProvider)
+	{
+		this.userRepository = userRepository;
+		this.idpUserRepository = idpUserRepository;
+		this.jwtTokenProvider = jwtTokenProvider;
+	}
 
 	@Transactional(isolation = Isolation.REPEATABLE_READ)
 	public LoginResponseDTO auth(String idpServiceId, String idpToken) throws Exception

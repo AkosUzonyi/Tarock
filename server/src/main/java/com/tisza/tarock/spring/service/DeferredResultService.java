@@ -17,8 +17,12 @@ public class DeferredResultService<T>
 {
 	private final Map<Integer, Collection<Request>> requestsById = new ConcurrentHashMap<>();
 
-	@Autowired
-	private PlatformTransactionManager transactionManager;
+	private final PlatformTransactionManager transactionManager;
+
+	public DeferredResultService(PlatformTransactionManager transactionManager)
+	{
+		this.transactionManager = transactionManager;
+	}
 
 	private Collection<Request> getRequestList(int id)
 	{

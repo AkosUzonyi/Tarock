@@ -131,7 +131,7 @@ public class GameService
 
 		Game game = new Game(GameType.fromID(gameDB.gameSession.type), deck);
 
-		botService.executeBotActions(gameDB, game, 0);
+		botService.executeBotActions(this, gameDB, game, 0);
 	}
 
 	@Transactional(isolation = Isolation.SERIALIZABLE)
@@ -162,7 +162,7 @@ public class GameService
 		else
 			taskScheduler.schedule(() -> actionDeferredResultService.notifyNewResult(gameDB.id), delay + 50, TimeUnit.MILLISECONDS);
 
-		botService.executeBotActions(gameDB, game, delay);
+		botService.executeBotActions(this, gameDB, game, delay);
 
 		if (game.isFinished())
 		{

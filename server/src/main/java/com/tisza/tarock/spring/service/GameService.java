@@ -21,9 +21,9 @@ public class GameService
 	private final GameRepository gameRepository;
 	private final BotService botService;
 	private final GameSessionRepository gameSessionRepository;
-	private final DeferredResultService<ActionDB> actionDeferredResultService;
+	private final DeferredResultService<List<ActionDB>> actionDeferredResultService;
 
-	public GameService(GameRepository gameRepository, BotService botService, GameSessionRepository gameSessionRepository, DeferredResultService<ActionDB> actionDeferredResultService)
+	public GameService(GameRepository gameRepository, BotService botService, GameSessionRepository gameSessionRepository, DeferredResultService<List<ActionDB>> actionDeferredResultService)
 	{
 		this.gameRepository = gameRepository;
 		this.botService = botService;

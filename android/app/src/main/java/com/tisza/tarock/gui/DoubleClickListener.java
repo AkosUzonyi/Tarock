@@ -14,7 +14,7 @@ public class DoubleClickListener implements View.OnClickListener
 
 	private long lastClickTime = 0;
 
-	protected DoubleClickListener(Context context, View.OnClickListener clickListener)
+	public DoubleClickListener(Context context, View.OnClickListener clickListener)
 	{
 		this.clickListener = clickListener;
 		doubleClick = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("double_click", false);

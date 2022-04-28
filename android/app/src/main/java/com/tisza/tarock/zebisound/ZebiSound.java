@@ -3,7 +3,7 @@ package com.tisza.tarock.zebisound;
 import android.content.*;
 import android.media.*;
 import android.os.*;
-import com.tisza.tarock.message.*;
+import com.tisza.tarock.game.*;
 
 import java.util.*;
 

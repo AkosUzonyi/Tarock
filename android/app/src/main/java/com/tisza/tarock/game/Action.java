@@ -1,12 +1,12 @@
-package com.tisza.tarock.message;
+package com.tisza.tarock.game;
 
 import android.content.res.*;
 import android.text.*;
 import android.util.*;
 import com.tisza.tarock.*;
-import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.gui.*;
+import com.tisza.tarock.message.*;
 
 import java.util.*;
 

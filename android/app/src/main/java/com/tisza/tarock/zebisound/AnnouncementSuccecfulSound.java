@@ -2,9 +2,6 @@ package com.tisza.tarock.zebisound;
 
 import android.content.*;
 import com.tisza.tarock.game.*;
-import com.tisza.tarock.message.*;
-
-import java.util.*;
 
 public class AnnouncementSuccecfulSound extends ZebiSound
 {

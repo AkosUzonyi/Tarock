@@ -311,37 +311,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			gameSessionDisposable.dispose();
 	}
 
-	private void resetGameViews()
-	{
-		showCenterView(MESSAGES_VIEW_INDEX);
-		okButton.setVisibility(View.GONE);
-		throwButton.setVisibility(View.GONE);
-		messagesTextView.setText("");
-		availableActionsAdapter.clear();
-		setUltimoViewVisible(false);
-
-		cardsHighlightView.setVisibility(View.GONE);
-		cardsBackgroundColorView.setBackgroundDrawable(null);
-
-		statisticsGamepointsCaller.setText(null);
-		statisticsGamepointsOpponent.setText(null);
-		statisticsPointMultiplierView.setVisibility(View.GONE);
-		statisticsCallerEntriesView.removeAllViews();
-		statisticsOpponentEntriesView.removeAllViews();
-		statisticsSumPointsView.setText(null);
-
-		cardClickListener = null;
-
-		for (PlayedCardView playedCardView : playedCardViews)
-			playedCardView.reset();
-
-		for (TextView nameView : playerNameViews)
-			nameView.setTextColor(getResources().getColor(R.color.unknown_team));
-
-		for (View skartView : skartViews)
-			skartView.setVisibility(View.GONE);
-	}
-
 	private int getSeatOfUser(int userID)
 	{
 		if (gameStateDTO == null)
@@ -904,73 +873,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 		skartViews[getPositionFromSeat(0)].setVisibility(phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE);
 	}
-
-	/*@Override
-	public void availableBids(List<Integer> bids)
-	{
-		availableActionsAdapter.clear();
-		for (int bid : bids)
-			availableActionsAdapter.add(new Bid(bid, bid == prevBid));
-	}
-	
-	@Override
-	public void bid(int player, int bid)
-	{
-		if (player == mySeat)
-			availableActionsAdapter.clear();
-
-		String msg = ResourceMappings.bidToName.get(bid == prevBid ? -2 : bid);
-		displayPlayerActionMessage(player, msg);
-
-		if (bid >= 0)
-			prevBid = bid;
-	}
-
-	@Override
-	public void availableCalls(List<Card> calls)
-	{
-		availableActionsAdapter.clear();
-		availableActionsAdapter.addAll(calls);
-	}
-
-	@Override
-	public void availableAnnouncements(List<Announcement> announcements)
-	{
-		availableActionsAdapter.clear();
-
-		Collections.sort(announcements);
-
-		if (gameDTO.getType() != GameType.PASKIEVICS)
-			ultimoViewManager.takeAnnouncements(announcements);
-
-		if (ultimoViewManager.hasAnyUltimo())
-		{
-			availableActionsAdapter.add(new ActionButtonItem()
-			{
-				@Override
-				public void onClicked()
-				{
-					setUltimoViewVisible(true);
-				}
-
-				@Override
-				public Action getAction()
-				{
-					return null;
-				}
-
-				@Override
-				public String toString()
-				{
-					return getString(R.string.ultimo_button);
-				}
-			});
-		}
-
-		availableActionsAdapter.addAll(announcements);
-
-		okButton.setVisibility(View.VISIBLE);
-	}*/
 
 	public void updateTeamColors()
 	{

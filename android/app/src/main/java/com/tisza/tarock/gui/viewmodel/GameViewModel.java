@@ -3,7 +3,6 @@ package com.tisza.tarock.gui.viewmodel;
 import android.app.*;
 import android.text.*;
 import android.util.*;
-import android.view.*;
 import androidx.lifecycle.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.api.*;
@@ -29,10 +28,11 @@ public class GameViewModel extends AndroidViewModel
 	private User loggedInUser;
 
 	private final MutableLiveData<GameSession> gameSession = new MutableLiveData<>();
-	private final MutableLiveData<GameStateDTO> gameStateDTO = new MutableLiveData<>();
+	private GameStateDTO gameStateDTO;
 	private final MutableLiveData<Integer> mySeat = new MutableLiveData<>();
 
 	private final MutableLiveData<List<String>> shortUserNames = new MutableLiveData<>();
+	private final MutableLiveData<GameState> gameState = new MutableLiveData<>();
 	private final MutableLiveData<PhaseEnum> phase = new MutableLiveData<>();
 	private final MutableLiveData<Spanned> messagesText = new MutableLiveData<>();
 	private final List<MutableLiveData<String>> actionBubbleContents = new ArrayList<>();
@@ -72,7 +72,7 @@ public class GameViewModel extends AndroidViewModel
 	{
 		this.loggedInUser = loggedInUser;
 		updateSeat();
-		updateGameState();
+		updateGameStateValues();
 	}
 
 	public LiveData<GameSession> getGameSession()
@@ -80,9 +80,9 @@ public class GameViewModel extends AndroidViewModel
 		return gameSession;
 	}
 
-	public LiveData<GameStateDTO> getGameStateDTO()
+	public MutableLiveData<GameState> getGameState()
 	{
-		return gameStateDTO;
+		return gameState;
 	}
 
 	public LiveData<Integer> getMySeat()
@@ -122,10 +122,10 @@ public class GameViewModel extends AndroidViewModel
 
 	public void doAction(Action action)
 	{
-		if (gameStateDTO.getValue() == null)
+		if (gameStateDTO == null)
 			Log.w(TAG, "doAction: no game is in progress");
 
-		apiInterface.postAction(gameStateDTO.getValue().id, new ActionPostDTO(action.getId())).subscribe(responseBody -> {}, throwable ->
+		apiInterface.postAction(gameStateDTO.id, new ActionPostDTO(action.getId())).subscribe(responseBody -> {}, throwable ->
 		{
 			if (throwable instanceof HttpException)
 			{
@@ -148,11 +148,11 @@ public class GameViewModel extends AndroidViewModel
 
 	private int getSeatOfUser(int userID)
 	{
-		if (gameStateDTO.getValue() == null)
+		if (gameStateDTO == null)
 			return -1;
 
-		for (int i = 0; i < gameStateDTO.getValue().players.size(); i++)
-			if (gameStateDTO.getValue().players.get(i).user.id == userID)
+		for (int i = 0; i < gameStateDTO.players.size(); i++)
+			if (gameStateDTO.players.get(i).user.id == userID)
 				return i;
 
 		return -1;
@@ -160,7 +160,7 @@ public class GameViewModel extends AndroidViewModel
 
 	private String getPlayerName(int seat)
 	{
-		User user = gameStateDTO.getValue().players.get(seat).user;
+		User user = gameStateDTO.players.get(seat).user;
 		for (int i = 0; i < gameSession.getValue().players.size(); i++)
 			if (gameSession.getValue().players.get(i).user.id == user.id)
 				return shortUserNames.getValue().get(i);
@@ -197,10 +197,11 @@ public class GameViewModel extends AndroidViewModel
 
 	private void updateSeat()
 	{
-		if (gameStateDTO.getValue() == null)
+		if (gameStateDTO == null)
 			return;
 
 		mySeat.setValue(loggedInUser == null ? null : getSeatOfUser(loggedInUser.id));
+		updateGameStateValues();
 	}
 
 	//TODO do not update so frequent
@@ -271,7 +272,7 @@ public class GameViewModel extends AndroidViewModel
 				if (actionIndex < actions.size())
 					nextActionPhase = new Action(actions.get(actionIndex).action).getPhase();
 				else
-					nextActionPhase = PhaseEnum.fromID(gameStateDTO.getValue().phase);
+					nextActionPhase = PhaseEnum.fromID(gameStateDTO.phase);
 
 				if (action.getPhase() != nextActionPhase)
 				{
@@ -280,7 +281,7 @@ public class GameViewModel extends AndroidViewModel
 					{
 						for (int seat = 0; seat < 4; seat++)
 						{
-							int count = gameStateDTO.getValue().players.get(seat).tarockFoldCount;
+							int count = gameStateDTO.players.get(seat).tarockFoldCount;
 							if (count > 0)
 							{
 								String tarockFoldMessage = getApplication().getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
@@ -335,7 +336,7 @@ public class GameViewModel extends AndroidViewModel
 				{
 					int seat = getSeatOfUser(chat.user.id);
 					if (seat >= 0)
-						chatBubbleContents.get(seat).setValue(chat.message);
+						chatBubbleContents.get(getDirectionOfSeat(seat)).setValue(chat.message);
 				}
 			}
 
@@ -363,7 +364,7 @@ public class GameViewModel extends AndroidViewModel
 				{
 					String message = new Action(actionDTO.action).translate(getApplication().getResources());
 					if (message != null)
-						actionBubbleContents.get(actionDTO.seat).setValue(message);
+						actionBubbleContents.get(getDirectionOfSeat(actionDTO.seat)).setValue(message);
 				}
 			}
 
@@ -375,6 +376,32 @@ public class GameViewModel extends AndroidViewModel
 		});
 	}
 
+	private void updateGameStateValues()
+	{
+		if (gameStateDTO == null)
+		{
+			gameState.setValue(null);
+			return;
+		}
+
+		GameState gameStateLocal = new GameState();
+
+		GameStateDTO.PlayerInfo[] playersRotated = new GameStateDTO.PlayerInfo[4];
+		for (int seat = 0; seat < 4; seat++)
+			playersRotated[getDirectionOfSeat(seat)] = gameStateDTO.players.get(seat);
+
+		gameStateLocal.type = GameType.fromID(gameStateDTO.type);
+		gameStateLocal.phase = PhaseEnum.fromID(gameStateDTO.phase);
+		gameStateLocal.canThrowCards = gameStateDTO.canThrowCards;
+		gameStateLocal.availableActions = gameStateDTO.availableActions;
+		gameStateLocal.previousTrickWinnerDirection = gameStateDTO.previousTrickWinner == null ? null : getDirectionOfSeat(gameStateDTO.previousTrickWinner);
+		gameStateLocal.playersRotated = Arrays.asList(playersRotated);
+		gameStateLocal.beginnerDirection = getDirectionOfSeat(0);
+		gameStateLocal.statistics = gameStateDTO.statistics;
+
+		gameState.setValue(gameStateLocal);
+	}
+
 	private void updateGameState()
 	{
 		if (gameSession.getValue() == null || gameSession.getValue().currentGameId == null)
@@ -382,12 +409,12 @@ public class GameViewModel extends AndroidViewModel
 
 		apiInterface.getGameState(gameSession.getValue().currentGameId).observeOn(AndroidSchedulers.mainThread()).subscribe(newGameState ->
 		{
-			boolean phaseChange = gameStateDTO.getValue() == null || !newGameState.phase.equals(gameStateDTO.getValue().phase);
-			boolean isNewGame = gameStateDTO.getValue() == null || gameStateDTO.getValue().id != newGameState.id;
+			boolean phaseChange = gameStateDTO == null || !newGameState.phase.equals(gameStateDTO.phase);
+			boolean isNewGame = gameStateDTO == null || gameStateDTO.id != newGameState.id;
 
-			//TODO later?
-			gameStateDTO.setValue(newGameState);
+			gameStateDTO = newGameState;
 			updateSeat();
+			updateGameStateValues();
 
 			if (isNewGame)
 			{
@@ -413,7 +440,7 @@ public class GameViewModel extends AndroidViewModel
 						if (count > 0)
 						{
 							String tarockFoldMessage = getApplication().getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
-							actionBubbleContents.get(seat).setValue(tarockFoldMessage);
+							actionBubbleContents.get(getDirectionOfSeat(seat)).setValue(tarockFoldMessage);
 						}
 					}
 				}
@@ -432,6 +459,12 @@ public class GameViewModel extends AndroidViewModel
 
 			RxJavaPlugins.onError(throwable);
 		});
+	}
+
+	private int getDirectionOfSeat(int otherSeat)
+	{
+		int viewSeat = mySeat.getValue() == null ? 0 : mySeat.getValue();
+		return (otherSeat - viewSeat + 4) % 4;
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import android.content.*;
 import android.graphics.*;
 import android.os.*;
 import android.text.*;
-import android.util.*;
 import android.view.*;
 import android.view.View.*;
 import android.view.animation.*;
@@ -27,14 +26,8 @@ import com.tisza.tarock.gui.view.*;
 import com.tisza.tarock.gui.viewmodel.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.zebisound.*;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.*;
-import io.reactivex.disposables.*;
-import io.reactivex.plugins.*;
-import retrofit2.*;
 
 import java.util.*;
-import java.util.concurrent.*;
 
 public class GameFragment extends MainActivityFragment implements TextView.OnEditorActionListener
 {
@@ -122,19 +115,24 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	private void setupBinding()
 	{
-		//TODO csunya
-		gameViewModel.getGameStateDTO().observe(this, gameStateDTO -> updateView(gameStateDTO, gameViewModel.getMySeat().getValue()));
+		gameViewModel.getGameState().observe(this, this::updateView);
 		for (int i = 0; i < 4; i++)
 		{
-			int seat = i;
-			gameViewModel.getActionBubbleContent(seat).observe(this, message -> showPlayerMessageView(getPositionFromSeat(gameViewModel.getMySeat().getValue(), seat), message, R.drawable.player_message_background));
-			gameViewModel.getChatBubbleContent(seat).observe(this, message -> showPlayerMessageView(getPositionFromSeat(gameViewModel.getMySeat().getValue(), seat), message, R.drawable.player_message_background_chat));
+			int dir = i;
+			gameViewModel.getActionBubbleContent(dir).observe(this, message -> showPlayerMessageView(dir, message, R.drawable.player_message_background));
+			gameViewModel.getChatBubbleContent(dir).observe(this, message -> showPlayerMessageView(dir, message, R.drawable.player_message_background_chat));
 		}
 
 		gameViewModel.getShortUserNames().observe(this, names -> statisticsPointsAdapter.setNames(names));
 
 		gameViewModel.getPhase().observe(this, this::phaseChanged);
 		gameViewModel.getMessagesText().observe(this, messagesTextView::setText);
+
+		gameViewModel.getMySeat().observe(this, mySeat ->
+		{
+			myCardsView.setVisibility(mySeat == null ? View.GONE : View.VISIBLE);
+			playerNameViews[0].setVisibility(mySeat == null ? View.VISIBLE : View.GONE);
+		});
 
 		gameViewModel.getGameSession().observe(this, gameSession ->
 		{
@@ -215,7 +213,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
 		okButton.setOnClickListener(v ->
 		{
-			switch (PhaseEnum.fromID(gameViewModel.getGameStateDTO().getValue().phase))
+			switch (gameViewModel.getGameState().getValue().phase)
 			{
 				case FOLDING:
 					gameViewModel.doAction(Action.fold(cardsToFold));
@@ -346,13 +344,13 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		return contentView;
 	}
 
-	private void updatePlayerNameViews(GameStateDTO gameStateDTO, Integer mySeat)
+	private void updatePlayerNameViews(GameState gameState)
 	{
-		for (int i = 0; i < 4; i++)
+		for (int dir = 0; dir < 4; dir++)
 		{
-			TextView playerNameView = playerNameViews[getPositionFromSeat(mySeat, i)];
+			TextView playerNameView = playerNameViews[dir];
 			playerNameView.setText(R.string.empty_seat);
-			User user = gameStateDTO.players.get(i).user;
+			User user = gameState.playersRotated.get(dir).user;
 			if (user != null)
 			{
 				playerNameView.setText(user.getName());
@@ -384,29 +382,29 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		return false;
 	}
 
-	private void updateView(GameStateDTO gameStateDTO, Integer mySeat)
+	private void updateView(GameState gameState)
 	{
-		if (mySeat != null)
+		if (gameState == null)
+			return;
+
+		if (gameViewModel.getMySeat().getValue() != null)
 		{
-			updateMyCardsView(gameStateDTO, mySeat);
-			updateOkButtonVisibility(gameStateDTO, mySeat);
-			updateAvailableActions(gameStateDTO, mySeat);
+			updateMyCardsView(gameState);
+			updateOkButtonVisibility(gameState);
+			updateAvailableActions(gameState);
 		}
-		updateTurnHighlight(gameStateDTO, mySeat);
-		updatePlayerNameViews(gameStateDTO, mySeat);
-		updateTeamColors(gameStateDTO, mySeat);
-		updatePlayedCards(gameStateDTO, mySeat);
-		updateStatistics(gameStateDTO, mySeat);
+		updateTurnHighlight(gameState);
+		updatePlayerNameViews(gameState);
+		updateTeamColors(gameState);
+		updatePlayedCards(gameState);
+		updateStatistics(gameState);
 
-		throwButton.setVisibility(gameStateDTO.canThrowCards ? View.VISIBLE : View.GONE);
+		throwButton.setVisibility(gameState.canThrowCards ? View.VISIBLE : View.GONE);
 
-		myCardsView.setVisibility(mySeat == null ? View.GONE : View.VISIBLE);
-		playerNameViews[0].setVisibility(mySeat == null ? View.VISIBLE : View.GONE);
-
-		skartViews[getPositionFromSeat(mySeat, 0)].setVisibility(PhaseEnum.fromID(gameStateDTO.phase).isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE);
+		skartViews[gameState.beginnerDirection].setVisibility(gameState.phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE);
 	}
 
-	private void updateAvailableActions(GameStateDTO gameStateDTO, Integer mySeat)
+	private void updateAvailableActions(GameState gameState)
 	{
 		if (ultimoView.getVisibility() == View.VISIBLE)
 			return;
@@ -414,14 +412,13 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		availableActionsAdapter.clear();
 		availableActionsListView.removeHeaderView(availableActionsListUltimoButton);
 
-		PhaseEnum phaseEnum = PhaseEnum.fromID(gameStateDTO.phase);
-		if (phaseEnum == PhaseEnum.ANNOUNCING)
+		if (gameState.phase == PhaseEnum.ANNOUNCING)
 		{
 			List<Announcement> announcements = new ArrayList<>();
-			for (String actionId : gameStateDTO.availableActions)
+			for (String actionId : gameState.availableActions)
 				announcements.add(Announcement.fromID(new Action(actionId).getParams()));
 
-			if (GameType.fromID(gameStateDTO.type) != GameType.PASKIEVICS)
+			if (gameState.type != GameType.PASKIEVICS)
 				ultimoViewManager.takeAnnouncements(announcements);
 
 			if (ultimoViewManager.hasAnyUltimo())
@@ -432,46 +429,45 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 		else
 		{
-			for (String actionId : gameStateDTO.availableActions)
+			for (String actionId : gameState.availableActions)
 				availableActionsAdapter.add(new Action(actionId));
 		}
 	}
 
-	private void updateOkButtonVisibility(GameStateDTO gameStateDTO, Integer mySeat)
+	private void updateOkButtonVisibility(GameState gameState)
 	{
-		PhaseEnum phaseEnum = PhaseEnum.fromID(gameStateDTO.phase);
 		boolean okVisible = false;
-		switch (phaseEnum)
+		switch (gameState.phase)
 		{
 			case FOLDING:
 			case ANNOUNCING:
 			case END:
 			case INTERRUPTED:
-				if (gameStateDTO.players.get(mySeat).turn)
+				if (gameState.playersRotated.get(0).turn)
 					okVisible = true;
 				break;
 		}
 		okButton.setVisibility(okVisible ? View.VISIBLE : View.GONE);
 	}
 
-	private void updateMyCardsView(GameStateDTO gameStateDTO, Integer mySeat)
+	private void updateMyCardsView(GameState gameState)
 	{
 		Set<Card> removedCards = new HashSet<>(cardToViewMapping.keySet());
-		for (String cardId : gameStateDTO.players.get(mySeat).cards)
+		for (String cardId : gameState.playersRotated.get(0).cards)
 		{
 			Card card = Card.fromId(cardId);
 			removedCards.remove(card);
 			if (!cardToViewMapping.containsKey(card))
 			{
-				arrangeCards(gameStateDTO, mySeat);
+				arrangeCards(gameState);
 				return;
 			}
 		}
 		for (Card card : removedCards)
-			animateCardShrink(gameStateDTO, mySeat, card);
+			animateCardShrink(gameState, card);
 	}
 
-	private void animateCardShrink(GameStateDTO gameStateDTO, Integer mySeat, Card card)
+	private void animateCardShrink(GameState gameState, Card card)
 	{
 		View myCardView = cardToViewMapping.remove(card);
 		if (myCardView == null)
@@ -484,7 +480,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			myCardView.requestLayout();
 		});
 		shrinkAnimator.setDuration(PLAY_DURATION);
-		boolean shouldArrange = gameStateDTO.players.get(mySeat).cards.size() == CARDS_PER_ROW;
+		boolean shouldArrange = gameState.playersRotated.get(0).cards.size() == CARDS_PER_ROW;
 		shrinkAnimator.addListener(new AnimatorListenerAdapter()
 		{
 			@Override
@@ -494,27 +490,27 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 				myCardsView1.removeView(myCardView);
 
 				if (shouldArrange)
-					arrangeCards(gameStateDTO, mySeat);
+					arrangeCards(gameState);
 			}
 		});
 		shrinkAnimator.start();
 	}
 
-	private void updatePlayedCards(GameStateDTO gameStateDTO, Integer mySeat)
+	private void updatePlayedCards(GameState gameState)
 	{
-		for (int seat = 0; seat < 4; seat++)
+		for (int dir = 0; dir < 4; dir++)
 		{
-			PlayedCardView playedCardView = playedCardViews[getPositionFromSeat(mySeat, seat)];
+			PlayedCardView playedCardView = playedCardViews[dir];
 
-			GameStateDTO.PlayerInfo playerInfo = gameStateDTO.players.get(seat);
+			GameStateDTO.PlayerInfo playerInfo = gameState.playersRotated.get(dir);
 			Card previousCard = Card.fromId(playerInfo.previousTrickCard);
 			Card currentCard = Card.fromId(playerInfo.currentTrickCard);
-			int dir = getPositionFromSeat(mySeat, gameStateDTO.previousTrickWinner == null ? 0 : gameStateDTO.previousTrickWinner);
+			int takeDir = gameState.previousTrickWinnerDirection == null ? 0 : gameState.previousTrickWinnerDirection;
 
 			if (previousCard != playedCardView.getTakenCard())
 			{
 				playedCardView.play(previousCard);
-				playedCardView.take(dir);
+				playedCardView.take(takeDir);
 				playedCardView.play(currentCard);
 			}
 			else if (currentCard != playedCardView.getCurrentCard())
@@ -550,24 +546,23 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 	}
 
-	public void updateTeamColors(GameStateDTO gameStateDTO, Integer mySeat)
+	public void updateTeamColors(GameState gameState)
 	{
-		for (int seat = 0; seat < 4; seat++)
+		for (int dir = 0; dir < 4; dir++)
 		{
-			int pos = getPositionFromSeat(mySeat, seat);
-			String team = gameStateDTO.players.get(seat).team;
+			String team = gameState.playersRotated.get(dir).team;
 			int color = getResources().getColor(team == null ? R.color.unknown_team : team.equals("caller") ? R.color.caller_team : R.color.opponent_team);
 
-			if (mySeat != null && seat == mySeat)
+			if (dir == 0 && gameViewModel.getMySeat().getValue() != null)
 				cardsBackgroundColorView.setBackgroundColor(color);
 
-			playerNameViews[pos].setTextColor(color);
+			playerNameViews[dir].setTextColor(color);
 		}
 	}
 
-	private void updateStatistics(GameStateDTO gameStateDTO, Integer mySeat)
+	private void updateStatistics(GameState gameState)
 	{
-		GameStateDTO.Statistics statistics = gameStateDTO.statistics;
+		GameStateDTO.Statistics statistics = gameState.statistics;
 		if (statistics == null)
 		{
 			statisticsGamepointsCaller.setText("");
@@ -579,7 +574,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			return;
 		}
 
-		Team selfTeam = mySeat == null || "caller".equals(gameStateDTO.players.get(mySeat).team) ? Team.CALLER : Team.OPPONENT;
+		Team selfTeam = gameViewModel.getMySeat().getValue() == null || "caller".equals(gameState.playersRotated.get(0).team) ? Team.CALLER : Team.OPPONENT;
 
 		statisticsGamepointsCaller.setText(String.valueOf(statistics.callerCardPoints));
 		statisticsGamepointsOpponent.setText(String.valueOf(statistics.opponentCardPoints));
@@ -622,10 +617,9 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		{
 			int points = player.points;
 			int gamePoints = 0;
-			if (gameStateDTO != null)
-				for (GameStateDTO.PlayerInfo inGamePlayer : gameStateDTO.players)
-					if (inGamePlayer.user.id == player.user.id)
-						gamePoints = inGamePlayer.points;
+			for (GameStateDTO.PlayerInfo inGamePlayer : gameState.playersRotated)
+				if (inGamePlayer.user.id == player.user.id)
+					gamePoints = inGamePlayer.points;
 
 			pointsList.add(points + gamePoints);
 			incrementPointsList.add(gamePoints);
@@ -634,22 +628,22 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		statisticsPointsAdapter.setIncrementPoints(incrementPointsList);
 	}
 
-	private void arrangeCards(GameStateDTO gameStateDTO, Integer mySeat)
+	private void arrangeCards(GameState gameState)
 	{
 		List<Card> myCards = new ArrayList<>();
-		for (String cardId : gameStateDTO.players.get(mySeat).cards)
+		for (String cardId : gameState.playersRotated.get(0).cards)
 			myCards.add(Card.fromId(cardId));
 
 		removeAllMyCardsView();
-		
+
 		Collections.sort(myCards);
-		
+
 		int cardCount = myCards.size();
 		int cardsUp = cardCount <= CARDS_PER_ROW ? 0 : cardCount / 2;
 		for (int i = 0; i < cardCount; i++)
 		{
 			final Card card = myCards.get(i);
-			
+
 			ImageView cardView = new ImageView(getActivity());
 			cardView.setAdjustViewBounds(true);
 			int margin = (int)(cardWidth * 0.1F / 2);
@@ -658,7 +652,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			cardView.setLayoutParams(lp);
 			if (card != null)
 				cardView.setImageResource(ResourceMappings.getBitmapResForCard(card));
-			
+
 			final LinearLayout parentView = i < cardsUp ? myCardsView1 : myCardsView0;
 			parentView.addView(cardView);
 			cardToViewMapping.put(card, cardView);
@@ -666,7 +660,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			cardView.setTag(card);
 			cardView.setOnClickListener(view ->
 			{
-				if (cardClickListener != null && gameStateDTO.players.get(mySeat).turn)
+				if (cardClickListener != null && gameState.playersRotated.get(0).turn)
 					cardClickListener.onClick(view);
 			});
 		}
@@ -707,7 +701,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private void removeAllMyCardsView()
 	{
 		cardToViewMapping.clear();
-		
+
 		for (ViewGroup cardsView : new ViewGroup[]{myCardsView0, myCardsView1})
 		{
 			int c = cardsView.getChildCount();
@@ -726,13 +720,13 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		ultimoView.setVisibility(visible ? View.VISIBLE : View.GONE);
 		messagesView.setVisibility(visible ? View.GONE : View.VISIBLE);
 	}
-	
+
 	private void showCenterView(int item)
 	{
 		pendingCenterView = item;
 		centerSpace.setCurrentItem(item);
 	}
-	
+
 	private int pendingCenterView;
 	private void showCenterViewDelayed(int item)
 	{
@@ -746,9 +740,9 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}, DELAY);
 	}
 
-	private void showPlayerMessageView(int position, String msg, int backgroundRes)
+	private void showPlayerMessageView(int dir, String msg, int backgroundRes)
 	{
-		final TextView view = playerMessageViews[position];
+		final TextView view = playerMessageViews[dir];
 		view.setText(Html.fromHtml(msg));
 		view.setBackgroundResource(backgroundRes);
 		view.setVisibility(View.VISIBLE);
@@ -761,12 +755,12 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			public void onAnimationStart(Animation animation)
 			{
 			}
-			
+
 			@Override
 			public void onAnimationRepeat(Animation animation)
 			{
 			}
-			
+
 			@Override
 			public void onAnimationEnd(Animation animation)
 			{
@@ -776,28 +770,21 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		view.setAnimation(fadeAnimation);
 	}
 
-	private void updateTurnHighlight(GameStateDTO gameStateDTO, Integer mySeat)
+	private void updateTurnHighlight(GameState gameState)
 	{
-		for (int seat = 0; seat < 4; seat++)
+		for (int dir = 0; dir < 4; dir++)
 		{
-			int pos = getPositionFromSeat(mySeat, seat);
-			boolean val = gameStateDTO.players.get(seat).turn;
+			boolean val = gameState.playersRotated.get(dir).turn;
 
-			if (pos == 0)
+			if (dir == 0)
 			{
 				cardsHighlightView.setVisibility(val ? View.VISIBLE : View.GONE);
 			}
 
 			if (val)
-				playerNameViews[pos].setBackgroundResource(R.drawable.name_highlight);
+				playerNameViews[dir].setBackgroundResource(R.drawable.name_highlight);
 			else
-				playerNameViews[pos].setBackgroundColor(Color.TRANSPARENT);
+				playerNameViews[dir].setBackgroundColor(Color.TRANSPARENT);
 		}
-	}
-
-	private int getPositionFromSeat(Integer mySeat, int otherSeat)
-	{
-		int viewSeat = mySeat == null ? 0 : mySeat;
-		return (otherSeat - viewSeat + 4) % 4;
 	}
 }

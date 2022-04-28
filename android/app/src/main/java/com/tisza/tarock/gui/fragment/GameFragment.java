@@ -104,16 +104,74 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private EditText statisticsChatEditText;
 
 	private ConnectionViewModel connectionViewModel;
+	private GameViewModel gameViewModel;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 
+		int gameSessionId = getArguments().getInt(KEY_GAME_SESSION_ID);
+
 		layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		zebiSounds = new ZebiSounds(getActivity());
 		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
+		gameViewModel = ViewModelProviders.of(this, new GameViewModel.Factory(getActivity().getApplication(), gameSessionId)).get(GameViewModel.class);
 		vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+	}
+
+	private void setupBinding()
+	{
+		//TODO csunya
+		gameViewModel.getGameStateDTO().observe(this, gameStateDTO -> updateView(gameStateDTO, gameViewModel.getMySeat().getValue()));
+		for (int i = 0; i < 4; i++)
+		{
+			int seat = i;
+			gameViewModel.getActionBubbleContent(seat).observe(this, message -> showPlayerMessageView(getPositionFromSeat(gameViewModel.getMySeat().getValue(), seat), message, R.drawable.player_message_background));
+			gameViewModel.getChatBubbleContent(seat).observe(this, message -> showPlayerMessageView(getPositionFromSeat(gameViewModel.getMySeat().getValue(), seat), message, R.drawable.player_message_background_chat));
+		}
+
+		gameViewModel.getShortUserNames().observe(this, names -> statisticsPointsAdapter.setNames(names));
+
+		gameViewModel.getPhase().observe(this, this::phaseChanged);
+		gameViewModel.getMessagesText().observe(this, messagesTextView::setText);
+
+		gameViewModel.getGameSession().observe(this, gameSession ->
+		{
+			if (gameSession == null)
+			{
+				getActivity().getSupportFragmentManager().popBackStack();
+				return;
+			}
+
+			List<User> users = new ArrayList<>();
+			for (Player player : gameSession.getPlayers())
+				users.add(player.user);
+			usersAdapter.setUsers(users);
+
+			int userCount = gameSession.getPlayers().size();
+			if (userCount >= 4)
+				lobbyStartButton.setText(R.string.lobby_start);
+			else
+				lobbyStartButton.setText(getResources().getQuantityString(R.plurals.lobby_start_with_bots, 4 - userCount, 4 - userCount));
+
+			switch (gameSession.getState())
+			{
+				case LOBBY:
+					lobbyStartButton.setVisibility(View.VISIBLE);
+					userListRecyclerView.setVisibility(View.VISIBLE);
+					availableActionsListView.setVisibility(View.GONE);
+					break;
+				case GAME:
+					lobbyStartButton.setVisibility(View.GONE);
+					userListRecyclerView.setVisibility(View.GONE);
+					availableActionsListView.setVisibility(View.VISIBLE);
+					break;
+				case DELETED:
+					getActivity().getSupportFragmentManager().popBackStack();
+					break;
+			}
+		});
 	}
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -157,23 +215,23 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
 		okButton.setOnClickListener(v ->
 		{
-			switch (PhaseEnum.fromID(gameStateDTO.phase))
+			switch (PhaseEnum.fromID(gameViewModel.getGameStateDTO().getValue().phase))
 			{
 				case FOLDING:
-					doAction(Action.fold(cardsToFold));
+					gameViewModel.doAction(Action.fold(cardsToFold));
 					break;
 				case ANNOUNCING:
 					if (ultimoView.getVisibility() == View.GONE)
-						doAction(Action.announcePassz());
+						gameViewModel.doAction(Action.announcePassz());
 					break;
 				case END:
 				case INTERRUPTED:
-					doAction(Action.readyForNewGame());
+					gameViewModel.doAction(Action.readyForNewGame());
 					break;
 			}
 		});
 		throwButton = (Button)contentView.findViewById(R.id.throw_button);
-		throwButton.setOnClickListener(v -> doAction(Action.throwCards()));
+		throwButton.setOnClickListener(v -> gameViewModel.doAction(Action.throwCards()));
 
 		availableActionsAdapter = new ArrayAdapter<Action>(getActivity(), R.layout.button)
 		{
@@ -182,7 +240,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			{
 				TextView view = (TextView) super.getView(position, convertView, parent);
 				Action action = getItem(position);
-				view.setOnClickListener(new DoubleClickListener(getContext(), v -> doAction(action)));
+				view.setOnClickListener(new DoubleClickListener(getContext(), v -> gameViewModel.doAction(action)));
 				view.setText(action.translate(getResources()));
 				return view;
 			}
@@ -212,13 +270,13 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		{
 			MainProto.Message startMessage = MainProto.Message.newBuilder().setStartGameSessionLobby(MainProto.StartGameSessionLobby.getDefaultInstance()).build();
 
-			if (gameSession.getPlayers().size() >= 4)
-				connectionViewModel.getApiInterface().startGameSession(gameSessionId).subscribe();
+			if (gameViewModel.getGameSession().getValue().getPlayers().size() >= 4)
+				gameViewModel.startGameSession();
 			else
 				new AlertDialog.Builder(getContext())
 						.setTitle(Html.fromHtml(getString(R.string.lobby_start_with_bots_confirm_title)))
 						.setMessage(Html.fromHtml(getString(R.string.lobby_start_with_bots_confirm_body)))
-						.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> connectionViewModel.getApiInterface().startGameSession(gameSessionId).subscribe())
+						.setPositiveButton(R.string.lobby_start_with_bots_confirm_yes, (dialog, which) -> gameViewModel.startGameSession())
 						.setNegativeButton(R.string.cancel, null)
 						.show();
 
@@ -237,7 +295,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			if (announcement == null)
 				throw new RuntimeException();
 
-			doAction(Action.announce(announcement));
+			gameViewModel.doAction(Action.announce(announcement));
 			setUltimoViewVisible(false);
 		}));
 
@@ -278,93 +336,21 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		if (!getArguments().containsKey(KEY_GAME_SESSION_ID))
 			throw new IllegalArgumentException("no game id given");
 
-		gameSessionId = getArguments().getInt(KEY_GAME_SESSION_ID);
+		connectionViewModel.getLoggedInUser().observe(this, gameViewModel::setLoggedInUser);
 
-		gameSessionDisposable = Observable.interval(0, 2, TimeUnit.SECONDS)
-				.flatMap(i -> connectionViewModel.getApiInterface().getGameSession(gameSessionId))
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(this::onGameSessionUpdate);
+		/*boolean soundsEnabled = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("sounds", true);
+		zebiSounds.setEnabled(soundsEnabled && gameSession.getType() == GameType.ZEBI && gameSession.containsUser(121));*/
 
-		connectionViewModel.getLoggedInUser().observe(this, user ->
-		{
-			loggedInUser = user;
-			updateSeat();
-			updateGameState();
-		});
+		setupBinding();
 
 		return contentView;
 	}
 
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
-
-		if (gameSession != null && GameSessionState.fromId(gameSession.state) == GameSessionState.LOBBY)
-			connectionViewModel.getApiInterface().leaveGameSession(gameSessionId).subscribe();
-
-		if (actionDisposable != null)
-			actionDisposable.dispose();
-		if (chatDisposable != null)
-			chatDisposable.dispose();
-		if (gameSessionDisposable != null)
-			gameSessionDisposable.dispose();
-	}
-
-	private int getSeatOfUser(int userID)
-	{
-		if (gameStateDTO == null)
-			return -1;
-
-		for (int i = 0; i < gameStateDTO.players.size(); i++)
-			if (gameStateDTO.players.get(i).user.id == userID)
-				return i;
-
-		return -1;
-	}
-
-	public static String getFirstName(String name)
-	{
-		return name.substring(name.lastIndexOf(' ') + 1);
-	}
-
-	private String getPlayerName(int seat)
-	{
-		User user = gameStateDTO.players.get(seat).user;
-		for (int i = 0; i < gameSession.players.size(); i++)
-			if (gameSession.players.get(i).user.id == user.id)
-				return shortUserNames.get(i);
-
-		return getString(R.string.empty_seat);
-	}
-
-	private void updateSeat()
-	{
-		if (gameStateDTO == null)
-			return;
-
-		mySeat = loggedInUser == null ? -1 : getSeatOfUser(loggedInUser.id);
-	}
-
-	private int getPhaseStringRes(PhaseEnum phase)
-	{
-		int phaseStringRes = 0;
-		switch (phase)
-		{
-			case BIDDING: phaseStringRes = R.string.message_bidding; break;
-			case FOLDING: phaseStringRes = R.string.message_folding; break;
-			case CALLING: phaseStringRes = R.string.message_calling; break;
-			case ANNOUNCING: phaseStringRes = R.string.message_announcing; break;
-			case INTERRUPTED: phaseStringRes = R.string.message_press_ok; break;
-		}
-		return phaseStringRes;
-	}
-
-	private void updatePlayerNameViews()
+	private void updatePlayerNameViews(GameStateDTO gameStateDTO, Integer mySeat)
 	{
 		for (int i = 0; i < 4; i++)
 		{
-			TextView playerNameView = playerNameViews[getPositionFromSeat(i)];
+			TextView playerNameView = playerNameViews[getPositionFromSeat(mySeat, i)];
 			playerNameView.setText(R.string.empty_seat);
 			User user = gameStateDTO.players.get(i).user;
 			if (user != null)
@@ -375,50 +361,10 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 	}
 
-	private int gameSessionId;
-	private GameSession gameSession;
-
-	private GameStateDTO gameStateDTO;
-	private List<String> shortUserNames;
-
-	private User loggedInUser;
-	private int mySeat = -1;
-
-	private List<ActionDTO> actions = new ArrayList<>();
-	private int nextActionOrdinal = 0;
-	private List<Chat> chats = new ArrayList<>();
-	private long lastChatTime = 0;
-
 	private Map<Card, View> cardToViewMapping = new HashMap<>();
 	private OnClickListener cardClickListener;
 
 	private List<Card> cardsToFold = new ArrayList<>();
-	private int prevBid;
-
-	private Disposable chatDisposable = null;
-	private Disposable actionDisposable = null;
-	private Disposable gameSessionDisposable = null;
-
-	private void doAction(Action action)
-	{
-		if (gameStateDTO == null)
-			Log.w(TAG,"doAction: no game is in progress");
-
-		connectionViewModel.getApiInterface().postAction(gameStateDTO.id, new ActionPostDTO(action.getId())).subscribe(responseBody -> {}, throwable ->
-		{
-			if (throwable instanceof HttpException)
-			{
-				HttpException httpException = (HttpException) throwable;
-				switch (httpException.code())
-				{
-					case 422:
-						vibrator.vibrate(100);
-						return;
-				}
-			}
-			RxJavaPlugins.onError(throwable);
-		});
-	}
 
 	@Override
 	public boolean onEditorAction(TextView view, int actionId, KeyEvent event)
@@ -428,7 +374,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			Editable text = ((EditText)view).getText();
 			if (text.length() == 0)
 				return false;
-			connectionViewModel.getApiInterface().postChat(gameSessionId, new ChatPostDTO(text.toString())).subscribe();
+			gameViewModel.sendChat(text.toString());
 			text.clear();
 			InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 			imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -438,200 +384,29 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		return false;
 	}
 
-	//TODO do not update so frequent
-	private void onGameSessionUpdate(GameSession gameSession)
+	private void updateView(GameStateDTO gameStateDTO, Integer mySeat)
 	{
-		if (gameSession == null)
+		if (mySeat != null)
 		{
-			getActivity().getSupportFragmentManager().popBackStack();
-			return;
+			updateMyCardsView(gameStateDTO, mySeat);
+			updateOkButtonVisibility(gameStateDTO, mySeat);
+			updateAvailableActions(gameStateDTO, mySeat);
 		}
-
-		this.gameSession = gameSession;
-
-		if (GameSessionState.fromId(gameSession.state) == GameSessionState.LOBBY)
-			connectionViewModel.getApiInterface().joinGameSession(gameSessionId).subscribe();
-
-		updateSeat();
-		updateShortNames();
-		if (lastChatTime == 0)
-			lastChatTime = gameSession.createTime;
-
-		updateGameState();
-
-		List<User> users = new ArrayList<>();
-		for (Player player : gameSession.getPlayers())
-			users.add(player.user);
-		usersAdapter.setUsers(users);
-
-		int userCount = gameSession.getPlayers().size();
-		if (userCount >= 4)
-			lobbyStartButton.setText(R.string.lobby_start);
-		else
-			lobbyStartButton.setText(getResources().getQuantityString(R.plurals.lobby_start_with_bots, 4 - userCount, 4 - userCount));
-
-		switch (gameSession.getState())
-		{
-			case LOBBY:
-				lobbyStartButton.setVisibility(View.VISIBLE);
-				userListRecyclerView.setVisibility(View.VISIBLE);
-				availableActionsListView.setVisibility(View.GONE);
-				break;
-			case GAME:
-				lobbyStartButton.setVisibility(View.GONE);
-				userListRecyclerView.setVisibility(View.GONE);
-				availableActionsListView.setVisibility(View.VISIBLE);
-				break;
-			case DELETED:
-				getActivity().getSupportFragmentManager().popBackStack();
-				break;
-		}
-
-		/*boolean soundsEnabled = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("sounds", true);
-		zebiSounds.setEnabled(soundsEnabled && gameSession.getType() == GameType.ZEBI && gameSession.containsUser(121));*/
-	}
-
-	private void updateShortNames()
-	{
-		Set<String> firstNames = new HashSet<>();
-		Set<String> duplicateFirstNames = new HashSet<>();
-		for (Player player : gameSession.players)
-		{
-			String firstName = getFirstName(player.user.getName());
-			if (!firstNames.add(firstName))
-				duplicateFirstNames.add(firstName);
-		}
-		shortUserNames = new ArrayList<>();
-		for (Player player : gameSession.players)
-		{
-			String firstName = getFirstName(player.user.getName());
-			if (!duplicateFirstNames.contains(firstName))
-				shortUserNames.add(firstName);
-			else
-				shortUserNames.add(player.user.getName());
-		}
-		statisticsPointsAdapter.setNames(shortUserNames);
-	}
-
-	private void pollChats(boolean init)
-	{
-		if (chatDisposable != null)
-			chatDisposable.dispose();
-
-		chatDisposable = connectionViewModel.getApiInterface().getChat(gameSessionId, lastChatTime).observeOn(AndroidSchedulers.mainThread()).subscribe(newChats ->
-		{
-			chats.addAll(newChats);
-			if (!init)
-			{
-				for (Chat chat : newChats)
-				{
-					int seat = getSeatOfUser(chat.user.id);
-					if (seat >= 0)
-						showPlayerMessageView(seat, chat.message, R.drawable.player_message_background_chat);
-				}
-			}
-
-			if (!chats.isEmpty())
-				lastChatTime = chats.get(chats.size() - 1).time + 1;
-			updateMessagesView();
-			pollChats(false);
-		});
-	}
-
-	private void pollActions(boolean init)
-	{
-		if (actionDisposable != null)
-			actionDisposable.dispose();
-
-		if (gameSession == null || gameSession.currentGameId == null)
-			return;
-
-		actionDisposable = connectionViewModel.getApiInterface().getActions(gameSession.currentGameId, nextActionOrdinal).observeOn(AndroidSchedulers.mainThread()).subscribe(newActions ->
-		{
-			actions.addAll(newActions);
-			if (!init)
-			{
-				for (ActionDTO actionDTO : newActions)
-				{
-					String message = new Action(actionDTO.action).translate(getResources());
-					if (message != null)
-						showPlayerMessageView(actionDTO.seat, message, R.drawable.player_message_background);
-				}
-			}
-
-			if (!actions.isEmpty())
-				nextActionOrdinal = actions.get(actions.size() - 1).ordinal + 1;
-			updateGameState();
-			pollActions(false);
-		});
-	}
-
-	private void updateGameState()
-	{
-		if (gameSession == null || gameSession.currentGameId == null)
-			return;
-
-		connectionViewModel.getApiInterface().getGameState(gameSession.currentGameId).observeOn(AndroidSchedulers.mainThread()).subscribe(newGameState ->
-		{
-			boolean phaseChange = gameStateDTO == null || !newGameState.phase.equals(gameStateDTO.phase);
-			boolean isNewGame = gameStateDTO == null || gameStateDTO.id != newGameState.id;
-
-			gameStateDTO = newGameState;
-			updateSeat();
-
-			if (isNewGame)
-			{
-				cardsToFold.clear();
-
-				chats.clear();
-				lastChatTime = gameStateDTO.createTime;
-				pollChats(true);
-
-				actions.clear();
-				nextActionOrdinal = 0;
-				pollActions(true);
-			}
-
-			if (phaseChange)
-				phaseChanged();
-
-			updateView();
-		},
-		throwable ->
-		{
-			if (throwable instanceof HttpException)
-			{
-				HttpException httpException = (HttpException) throwable;
-				if (httpException.code() == 410)
-					return; //TODO update game session?
-			}
-
-			RxJavaPlugins.onError(throwable);
-		});
-	}
-
-	private void updateView()
-	{
-		if (!isKibic())
-		{
-			updateMyCardsView();
-			updateOkButtonVisibility();
-			updateAvailableActions();
-		}
-		updateTurnHighlight();
-		updatePlayerNameViews();
-		updateTeamColors();
-		updateMessagesView();
-		updatePlayedCards();
-		updateStatistics();
+		updateTurnHighlight(gameStateDTO, mySeat);
+		updatePlayerNameViews(gameStateDTO, mySeat);
+		updateTeamColors(gameStateDTO, mySeat);
+		updatePlayedCards(gameStateDTO, mySeat);
+		updateStatistics(gameStateDTO, mySeat);
 
 		throwButton.setVisibility(gameStateDTO.canThrowCards ? View.VISIBLE : View.GONE);
 
-		myCardsView.setVisibility(isKibic() ? View.GONE : View.VISIBLE);
-		playerNameViews[0].setVisibility(isKibic() ? View.VISIBLE : View.GONE);
+		myCardsView.setVisibility(mySeat == null ? View.GONE : View.VISIBLE);
+		playerNameViews[0].setVisibility(mySeat == null ? View.VISIBLE : View.GONE);
+
+		skartViews[getPositionFromSeat(mySeat, 0)].setVisibility(PhaseEnum.fromID(gameStateDTO.phase).isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE);
 	}
 
-	private void updateAvailableActions()
+	private void updateAvailableActions(GameStateDTO gameStateDTO, Integer mySeat)
 	{
 		if (ultimoView.getVisibility() == View.VISIBLE)
 			return;
@@ -662,92 +437,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 	}
 
-	private void updateMessagesView()
-	{
-		StringBuilder messagesHtml = new StringBuilder();
-		messagesHtml.append(getString(R.string.message_phase, getString(R.string.message_bidding)));
-
-		int actionIndex = 0;
-		int chatIndex = 0;
-		while (true)
-		{
-			ActionDTO actionDTO = actionIndex >= actions.size() ? null : actions.get(actionIndex);
-			Chat chat = chatIndex >= chats.size() ? null : chats.get(chatIndex);
-			if (actionDTO == null && chat == null)
-				break;
-
-			boolean selectAction = chat == null || actionDTO != null && actionDTO.time < chat.time;
-
-			int phaseStringRes = 0;
-			int stringTemplateRes;
-			String userName;
-			String message;
-			if (selectAction)
-			{
-				stringTemplateRes = R.string.message_action;
-				userName = getPlayerName(actionDTO.seat);
-				Action action = new Action(actionDTO.action);
-				message = action.translate(getResources());
-				actionIndex++;
-
-				if (action.getId().equals("announce:passz"))
-					continue;
-
-				PhaseEnum nextActionPhase;
-				if (actionIndex < actions.size())
-					nextActionPhase = new Action(actions.get(actionIndex).action).getPhase();
-				else
-					nextActionPhase = PhaseEnum.fromID(gameStateDTO.phase);
-
-				if (action.getPhase() != nextActionPhase)
-				{
-					phaseStringRes = getPhaseStringRes(nextActionPhase);
-					if (action.getPhase() == PhaseEnum.FOLDING)
-					{
-						for (int seat = 0; seat < 4; seat++)
-						{
-							int count = gameStateDTO.players.get(seat).tarockFoldCount;
-							if (count > 0)
-							{
-								String tarockFoldMessage = getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
-								messagesHtml.append(getString(stringTemplateRes, getPlayerName(seat), tarockFoldMessage));
-								messagesHtml.append("<br>");
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				stringTemplateRes = R.string.message_chat;
-
-				int seat = getSeatOfUser(chat.user.id);
-				if (seat < 0)
-					userName = chat.user.name;
-				else
-					userName = getPlayerName(seat);
-
-				message = chat.message;
-				chatIndex++;
-			}
-
-			if (message != null)
-			{
-				messagesHtml.append(getString(stringTemplateRes, userName, message));
-				messagesHtml.append("<br>");
-			}
-
-			if (phaseStringRes > 0)
-			{
-				messagesHtml.append("<br>");
-				messagesHtml.append(getString(R.string.message_phase, getString(phaseStringRes)));
-			}
-		}
-
-		messagesTextView.setText(Html.fromHtml(messagesHtml.toString()));
-	}
-
-	private void updateOkButtonVisibility()
+	private void updateOkButtonVisibility(GameStateDTO gameStateDTO, Integer mySeat)
 	{
 		PhaseEnum phaseEnum = PhaseEnum.fromID(gameStateDTO.phase);
 		boolean okVisible = false;
@@ -764,7 +454,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		okButton.setVisibility(okVisible ? View.VISIBLE : View.GONE);
 	}
 
-	private void updateMyCardsView()
+	private void updateMyCardsView(GameStateDTO gameStateDTO, Integer mySeat)
 	{
 		Set<Card> removedCards = new HashSet<>(cardToViewMapping.keySet());
 		for (String cardId : gameStateDTO.players.get(mySeat).cards)
@@ -773,15 +463,15 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			removedCards.remove(card);
 			if (!cardToViewMapping.containsKey(card))
 			{
-				arrangeCards();
+				arrangeCards(gameStateDTO, mySeat);
 				return;
 			}
 		}
 		for (Card card : removedCards)
-			animateCardShrink(card);
+			animateCardShrink(gameStateDTO, mySeat, card);
 	}
 
-	private void animateCardShrink(Card card)
+	private void animateCardShrink(GameStateDTO gameStateDTO, Integer mySeat, Card card)
 	{
 		View myCardView = cardToViewMapping.remove(card);
 		if (myCardView == null)
@@ -804,22 +494,22 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 				myCardsView1.removeView(myCardView);
 
 				if (shouldArrange)
-					arrangeCards();
+					arrangeCards(gameStateDTO, mySeat);
 			}
 		});
 		shrinkAnimator.start();
 	}
 
-	private void updatePlayedCards()
+	private void updatePlayedCards(GameStateDTO gameStateDTO, Integer mySeat)
 	{
 		for (int seat = 0; seat < 4; seat++)
 		{
-			PlayedCardView playedCardView = playedCardViews[getPositionFromSeat(seat)];
+			PlayedCardView playedCardView = playedCardViews[getPositionFromSeat(mySeat, seat)];
 
 			GameStateDTO.PlayerInfo playerInfo = gameStateDTO.players.get(seat);
 			Card previousCard = Card.fromId(playerInfo.previousTrickCard);
 			Card currentCard = Card.fromId(playerInfo.currentTrickCard);
-			int dir = getPositionFromSeat(gameStateDTO.previousTrickWinner == null ? 0 : gameStateDTO.previousTrickWinner);
+			int dir = getPositionFromSeat(mySeat, gameStateDTO.previousTrickWinner == null ? 0 : gameStateDTO.previousTrickWinner);
 
 			if (previousCard != playedCardView.getTakenCard())
 			{
@@ -834,10 +524,8 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 	}
 
-	public void phaseChanged()
+	public void phaseChanged(PhaseEnum phase)
 	{
-		PhaseEnum phase = PhaseEnum.fromID(gameStateDTO.phase);
-
 		cardClickListener = null;
 
 		switch (phase)
@@ -848,16 +536,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			case FOLDING:
 				cardsToFold.clear();
 				setSkartCardClickListener();
-
-				for (int seat = 0; seat < 4; seat++)
-				{
-					int count = gameStateDTO.players.get(seat).tarockFoldCount;
-					if (count > 0)
-					{
-						String tarockFoldMessage = getResources().getQuantityString(R.plurals.message_fold_tarock, count, count);
-						showPlayerMessageView(seat, tarockFoldMessage, R.drawable.player_message_background);
-					}
-				}
 				break;
 			case GAMEPLAY:
 				showCenterViewDelayed(GAMEPLAY_VIEW_INDEX);
@@ -870,26 +548,24 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 				showCenterView(MESSAGES_VIEW_INDEX);
 				break;
 		}
-
-		skartViews[getPositionFromSeat(0)].setVisibility(phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE);
 	}
 
-	public void updateTeamColors()
+	public void updateTeamColors(GameStateDTO gameStateDTO, Integer mySeat)
 	{
 		for (int seat = 0; seat < 4; seat++)
 		{
-			int pos = getPositionFromSeat(seat);
+			int pos = getPositionFromSeat(mySeat, seat);
 			String team = gameStateDTO.players.get(seat).team;
 			int color = getResources().getColor(team == null ? R.color.unknown_team : team.equals("caller") ? R.color.caller_team : R.color.opponent_team);
 
-			if (seat == mySeat)
+			if (mySeat != null && seat == mySeat)
 				cardsBackgroundColorView.setBackgroundColor(color);
 
 			playerNameViews[pos].setTextColor(color);
 		}
 	}
 
-	private void updateStatistics()
+	private void updateStatistics(GameStateDTO gameStateDTO, Integer mySeat)
 	{
 		GameStateDTO.Statistics statistics = gameStateDTO.statistics;
 		if (statistics == null)
@@ -903,7 +579,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			return;
 		}
 
-		Team selfTeam = isKibic() || "caller".equals(gameStateDTO.players.get(mySeat).team) ? Team.CALLER : Team.OPPONENT;
+		Team selfTeam = mySeat == null || "caller".equals(gameStateDTO.players.get(mySeat).team) ? Team.CALLER : Team.OPPONENT;
 
 		statisticsGamepointsCaller.setText(String.valueOf(statistics.callerCardPoints));
 		statisticsGamepointsOpponent.setText(String.valueOf(statistics.opponentCardPoints));
@@ -941,7 +617,8 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 		List<Integer> pointsList = new ArrayList<>();
 		List<Integer> incrementPointsList = new ArrayList<>();
-		for (Player player : gameSession.players)
+		//TODO csunya
+		for (Player player : gameViewModel.getGameSession().getValue().players)
 		{
 			int points = player.points;
 			int gamePoints = 0;
@@ -957,7 +634,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		statisticsPointsAdapter.setIncrementPoints(incrementPointsList);
 	}
 
-	private void arrangeCards()
+	private void arrangeCards(GameStateDTO gameStateDTO, Integer mySeat)
 	{
 		List<Card> myCards = new ArrayList<>();
 		for (String cardId : gameStateDTO.players.get(mySeat).cards)
@@ -1023,7 +700,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	{
 		cardClickListener = new DoubleClickListener(getContext(), v ->
 		{
-			doAction(Action.play((Card)v.getTag()));
+			gameViewModel.doAction(Action.play((Card)v.getTag()));
 		});
 	}
 
@@ -1069,9 +746,9 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}, DELAY);
 	}
 
-	private void showPlayerMessageView(int player, String msg, int backgroundRes)
+	private void showPlayerMessageView(int position, String msg, int backgroundRes)
 	{
-		final TextView view = playerMessageViews[getPositionFromSeat(player)];
+		final TextView view = playerMessageViews[position];
 		view.setText(Html.fromHtml(msg));
 		view.setBackgroundResource(backgroundRes);
 		view.setVisibility(View.VISIBLE);
@@ -1099,11 +776,11 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		view.setAnimation(fadeAnimation);
 	}
 
-	private void updateTurnHighlight()
+	private void updateTurnHighlight(GameStateDTO gameStateDTO, Integer mySeat)
 	{
 		for (int seat = 0; seat < 4; seat++)
 		{
-			int pos = getPositionFromSeat(seat);
+			int pos = getPositionFromSeat(mySeat, seat);
 			boolean val = gameStateDTO.players.get(seat).turn;
 
 			if (pos == 0)
@@ -1118,14 +795,9 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 	}
 
-	private boolean isKibic()
+	private int getPositionFromSeat(Integer mySeat, int otherSeat)
 	{
-		return mySeat < 0;
-	}
-	
-	private int getPositionFromSeat(int id)
-	{
-		int viewID = isKibic() ? 0 : mySeat;
-		return (id - viewID + 4) % 4;
+		int viewSeat = mySeat == null ? 0 : mySeat;
+		return (otherSeat - viewSeat + 4) % 4;
 	}
 }

@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.fragment;
 
 import android.os.*;
 import android.view.*;
@@ -7,11 +7,12 @@ import androidx.lifecycle.*;
 import androidx.recyclerview.widget.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.api.model.*;
+import com.tisza.tarock.gui.adapter.*;
+import com.tisza.tarock.gui.viewmodel.*;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.*;
 import io.reactivex.disposables.*;
 
-import java.util.*;
 import java.util.concurrent.*;
 
 public class GameListFragment extends MainActivityFragment

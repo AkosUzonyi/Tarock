@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.fragment;
 
 import android.animation.*;
 import android.content.*;
@@ -21,6 +21,10 @@ import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.Action;
+import com.tisza.tarock.gui.adapter.*;
+import com.tisza.tarock.gui.misc.*;
+import com.tisza.tarock.gui.view.*;
+import com.tisza.tarock.gui.viewmodel.*;
 import com.tisza.tarock.proto.*;
 import com.tisza.tarock.zebisound.*;
 import io.reactivex.Observable;

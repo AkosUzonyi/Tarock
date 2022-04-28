@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.misc;
 
 import android.content.*;
 import android.view.*;
@@ -8,7 +8,7 @@ import com.tisza.tarock.game.*;
 
 import java.util.*;
 
-import static com.tisza.tarock.gui.UltimoSelector.*;
+import static com.tisza.tarock.gui.misc.UltimoSelector.*;
 
 public class UltimoViewManager
 {

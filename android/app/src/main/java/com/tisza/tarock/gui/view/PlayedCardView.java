@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.view;
 
 import android.animation.*;
 import android.annotation.*;
@@ -8,6 +8,8 @@ import android.view.animation.*;
 import android.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.card.*;
+import com.tisza.tarock.gui.fragment.*;
+import com.tisza.tarock.gui.misc.*;
 
 @SuppressLint("AppCompatCustomView")
 public class PlayedCardView extends ImageView

@@ -92,7 +92,7 @@
             android:layout_centerHorizontal="true"
             style="@style/player_name"
         />
-        <com.tisza.tarock.gui.VerticalTextView
+        <com.tisza.tarock.gui.view.VerticalTextView
             android:id="@+id/player_name_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
             android:layout_centerHorizontal="true"
             style="@style/player_name"
             />
-        <com.tisza.tarock.gui.VerticalTextView
+        <com.tisza.tarock.gui.view.VerticalTextView
             android:id="@+id/player_name_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

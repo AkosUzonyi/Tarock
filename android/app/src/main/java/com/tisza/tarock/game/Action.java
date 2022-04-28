@@ -5,8 +5,7 @@ import android.text.*;
 import android.util.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.gui.*;
-import com.tisza.tarock.message.*;
+import com.tisza.tarock.gui.misc.*;
 
 import java.util.*;
 

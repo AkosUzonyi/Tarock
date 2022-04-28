@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.viewmodel;
 
 import android.app.*;
 import android.content.*;

@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.misc;
 
 import android.annotation.*;
 import android.content.*;
@@ -6,6 +6,7 @@ import android.content.res.*;
 import android.util.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.game.card.*;
+import com.tisza.tarock.gui.fragment.*;
 
 import java.util.*;
 

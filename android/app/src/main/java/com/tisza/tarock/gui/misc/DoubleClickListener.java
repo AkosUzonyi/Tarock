@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.misc;
 
 import android.content.*;
 import android.os.*;

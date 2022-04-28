@@ -1,7 +1,8 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.misc;
 
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
+import com.tisza.tarock.gui.misc.*;
 
 import java.util.*;
 

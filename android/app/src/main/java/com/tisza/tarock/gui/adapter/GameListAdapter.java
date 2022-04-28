@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.adapter;
 
 import android.content.*;
 import android.graphics.*;
@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.*;
 import com.tisza.tarock.*;
 import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
-import retrofit2.http.*;
 
 import java.util.*;
 

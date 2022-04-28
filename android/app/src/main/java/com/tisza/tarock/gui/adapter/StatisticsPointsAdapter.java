@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.adapter;
 
 import android.view.*;
 import android.widget.*;

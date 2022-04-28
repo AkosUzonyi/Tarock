@@ -2,8 +2,7 @@ package com.tisza.tarock.game;
 
 import android.content.res.*;
 import com.tisza.tarock.game.card.*;
-import com.tisza.tarock.gui.*;
-import com.tisza.tarock.message.*;
+import com.tisza.tarock.gui.misc.*;
 
 import java.util.*;
 

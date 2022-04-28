@@ -1,10 +1,5 @@
 package com.tisza.tarock;
 
-import com.tisza.tarock.game.*;
-import com.tisza.tarock.message.*;
-import com.tisza.tarock.proto.EventProto.Event;
-import com.tisza.tarock.proto.*;
-
 import java.util.*;
 
 public class Utils

@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.fragment;
 
 import android.content.*;
 import android.net.*;
@@ -10,6 +10,7 @@ import androidx.preference.*;
 import com.facebook.*;
 import com.facebook.login.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.gui.viewmodel.*;
 
 import java.util.*;
 

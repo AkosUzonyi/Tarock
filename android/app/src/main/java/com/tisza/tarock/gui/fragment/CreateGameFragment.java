@@ -1,4 +1,4 @@
-package com.tisza.tarock.gui;
+package com.tisza.tarock.gui.fragment;
 
 import android.app.*;
 import android.content.*;
@@ -9,8 +9,7 @@ import androidx.lifecycle.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
-
-import java.util.*;
+import com.tisza.tarock.gui.viewmodel.*;
 
 public class CreateGameFragment extends MainActivityFragment
 {

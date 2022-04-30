@@ -17,7 +17,7 @@ def getVersionName = { ->
 
 android {
     compileSdkVersion 30
-    buildToolsVersion '30'
+    buildToolsVersion '30.0.2'
     defaultConfig {
         applicationId "com.tisza.tarock"
         minSdkVersion 21
@@ -39,6 +39,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+    buildFeatures {
+        dataBinding true
     }
     sourceSets {
         main {

@@ -1,5 +1,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
+        <import type="android.view.View" />
         <variable name="gameViewModel" type="com.tisza.tarock.gui.viewmodel.GameViewModel"/>
     </data>
 
@@ -95,6 +96,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            android:text="@{gameViewModel.gameState.playersRotated[0].user.name ?? @string/empty_seat}"
+            android:alpha="@{gameViewModel.gameState.playersRotated[0].user.isOnline() ? 1F : 0.5F}"
+            android:background="@{gameViewModel.gameState.playersRotated[0].turn ? @drawable/name_highlight : null}"
+            android:textColor='@{gameViewModel.gameState.playersRotated[0].team == null ? @color/unknown_team : gameViewModel.gameState.playersRotated[0].team.equals("caller") ? @color/caller_team : @color/opponent_team}'
+            android:visibility="@{gameViewModel.mySeat == null ? View.VISIBLE : View.GONE}"
             style="@style/player_name"
         />
         <com.tisza.tarock.gui.view.VerticalTextView
@@ -104,6 +110,10 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:gravity="top"
+            android:text="@{gameViewModel.gameState.playersRotated[1].user.name ?? @string/empty_seat}"
+            android:alpha="@{gameViewModel.gameState.playersRotated[1].user.isOnline() ? 1F : 0.5F}"
+            android:background="@{gameViewModel.gameState.playersRotated[1].turn ? @drawable/name_highlight : null}"
+            android:textColor='@{gameViewModel.gameState.playersRotated[1].team == null ? @color/unknown_team : gameViewModel.gameState.playersRotated[1].team.equals("caller") ? @color/caller_team : @color/opponent_team}'
             style="@style/player_name"
             />
         <TextView
@@ -112,6 +122,10 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
+            android:text="@{gameViewModel.gameState.playersRotated[2].user.name ?? @string/empty_seat}"
+            android:alpha="@{gameViewModel.gameState.playersRotated[2].user.isOnline() ? 1F : 0.5F}"
+            android:background="@{gameViewModel.gameState.playersRotated[2].turn ? @drawable/name_highlight : null}"
+            android:textColor='@{gameViewModel.gameState.playersRotated[2].team == null ? @color/unknown_team : gameViewModel.gameState.playersRotated[2].team.equals("caller") ? @color/caller_team : @color/opponent_team}'
             style="@style/player_name"
             />
         <com.tisza.tarock.gui.view.VerticalTextView
@@ -121,6 +135,10 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:gravity="bottom"
+            android:text="@{gameViewModel.gameState.playersRotated[3].user.name ?? @string/empty_seat}"
+            android:alpha="@{gameViewModel.gameState.playersRotated[3].user.isOnline() ? 1F : 0.5F}"
+            android:background="@{gameViewModel.gameState.playersRotated[3].turn ? @drawable/name_highlight : null}"
+            android:textColor='@{gameViewModel.gameState.playersRotated[3].team == null ? @color/unknown_team : gameViewModel.gameState.playersRotated[3].team.equals("caller") ? @color/caller_team : @color/opponent_team}'
             style="@style/player_name"
             />
 
@@ -195,7 +213,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/cards"
-        android:visibility="gone"
+        android:visibility="@{gameViewModel.mySeat != null ? View.VISIBLE : View.GONE}"
         >
 
         <View
@@ -205,6 +223,7 @@
             android:layout_alignTop="@id/my_cards_1"
             android:layout_alignBottom="@id/my_cards_0"
             android:alpha="0.4"
+            android:backgroundColor='@{gameViewModel.gameState.playersRotated[0].team == null ? @color/unknown_team : gameViewModel.gameState.playersRotated[0].team.equals("caller") ? @color/caller_team : @color/opponent_team}'
         />
 
         <View
@@ -214,6 +233,7 @@
             android:layout_alignTop="@id/my_cards_1"
             android:layout_alignBottom="@id/my_cards_0"
             android:background="@drawable/cards_highlight"
+            android:visibility="@{gameViewModel.gameState.playersRotated[0].turn ? View.VISIBLE : View.GONE}"
         />
 
         <LinearLayout

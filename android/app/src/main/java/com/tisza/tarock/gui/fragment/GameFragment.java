@@ -56,14 +56,10 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	private GameBinding gameBinding;
 
-	private TextView[] playerNameViews;
 	private TextView[] playerMessageViews;
 	private View[] skartViews;
-	private View myCardsView;
 	private LinearLayout myCardsView0;
 	private LinearLayout myCardsView1;
-	private View cardsBackgroundColorView;
-	private View cardsHighlightView;
 	private ViewPager centerSpace;
 	private Button okButton;
 	private Button throwButton;
@@ -132,12 +128,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		gameViewModel.getPhase().observe(this, this::phaseChanged);
 		gameViewModel.getMessagesText().observe(this, messagesTextView::setText);
 
-		gameViewModel.getMySeat().observe(this, mySeat ->
-		{
-			myCardsView.setVisibility(mySeat == null ? View.GONE : View.VISIBLE);
-			playerNameViews[0].setVisibility(mySeat == null ? View.VISIBLE : View.GONE);
-		});
-
 		gameViewModel.getGameSession().observe(this, gameSession ->
 		{
 			if (gameSession == null)
@@ -187,14 +177,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 		centerSpace = contentView.findViewById(R.id.center_space);
 
-		playerNameViews = new TextView[]
-		{
-				(TextView)contentView.findViewById(R.id.player_name_0),
-				(TextView)contentView.findViewById(R.id.player_name_1),
-				(TextView)contentView.findViewById(R.id.player_name_2),
-				(TextView)contentView.findViewById(R.id.player_name_3),
-		};
-
 		playerMessageViews = new TextView[]
 		{
 				(TextView)contentView.findViewById(R.id.player_message_0),
@@ -211,11 +193,8 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 				contentView.findViewById(R.id.skart_3),
 		};
 
-		myCardsView = contentView.findViewById(R.id.cards);
 		myCardsView0 = (LinearLayout)contentView.findViewById(R.id.my_cards_0);
 		myCardsView1 = (LinearLayout)contentView.findViewById(R.id.my_cards_1);
-		cardsBackgroundColorView = contentView.findViewById(R.id.cards_background_color);
-		cardsHighlightView = contentView.findViewById(R.id.cards_highlight);
 
 		okButton = (Button)contentView.findViewById(R.id.ok_button);
 		okButton.setOnClickListener(v ->
@@ -351,21 +330,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		return contentView;
 	}
 
-	private void updatePlayerNameViews(GameState gameState)
-	{
-		for (int dir = 0; dir < 4; dir++)
-		{
-			TextView playerNameView = playerNameViews[dir];
-			playerNameView.setText(R.string.empty_seat);
-			User user = gameState.playersRotated.get(dir).user;
-			if (user != null)
-			{
-				playerNameView.setText(user.getName());
-				playerNameView.setAlpha(user.isOnline() ? 1F : 0.5F);
-			}
-		}
-	}
-
 	private Map<Card, View> cardToViewMapping = new HashMap<>();
 	private OnClickListener cardClickListener;
 
@@ -400,9 +364,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			updateOkButtonVisibility(gameState);
 			updateAvailableActions(gameState);
 		}
-		updateTurnHighlight(gameState);
-		updatePlayerNameViews(gameState);
-		updateTeamColors(gameState);
 		updatePlayedCards(gameState);
 		updateStatistics(gameState);
 
@@ -550,20 +511,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			case INTERRUPTED:
 				showCenterView(MESSAGES_VIEW_INDEX);
 				break;
-		}
-	}
-
-	public void updateTeamColors(GameState gameState)
-	{
-		for (int dir = 0; dir < 4; dir++)
-		{
-			String team = gameState.playersRotated.get(dir).team;
-			int color = getResources().getColor(team == null ? R.color.unknown_team : team.equals("caller") ? R.color.caller_team : R.color.opponent_team);
-
-			if (dir == 0 && gameViewModel.getMySeat().getValue() != null)
-				cardsBackgroundColorView.setBackgroundColor(color);
-
-			playerNameViews[dir].setTextColor(color);
 		}
 	}
 
@@ -775,23 +722,5 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			}
 		});
 		view.setAnimation(fadeAnimation);
-	}
-
-	private void updateTurnHighlight(GameState gameState)
-	{
-		for (int dir = 0; dir < 4; dir++)
-		{
-			boolean val = gameState.playersRotated.get(dir).turn;
-
-			if (dir == 0)
-			{
-				cardsHighlightView.setVisibility(val ? View.VISIBLE : View.GONE);
-			}
-
-			if (val)
-				playerNameViews[dir].setBackgroundResource(R.drawable.name_highlight);
-			else
-				playerNameViews[dir].setBackgroundColor(Color.TRANSPARENT);
-		}
 	}
 }

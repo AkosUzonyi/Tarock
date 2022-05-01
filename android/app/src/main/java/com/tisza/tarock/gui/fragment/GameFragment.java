@@ -12,11 +12,13 @@ import android.view.animation.Animation.*;
 import android.view.inputmethod.*;
 import android.widget.*;
 import androidx.appcompat.app.*;
+import androidx.databinding.*;
 import androidx.lifecycle.*;
 import androidx.recyclerview.widget.*;
 import androidx.viewpager.widget.*;
 import com.tisza.tarock.R;
 import com.tisza.tarock.api.model.*;
+import com.tisza.tarock.databinding.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.Action;
@@ -51,6 +53,8 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	private LayoutInflater layoutInflater;
 	private Vibrator vibrator;
+
+	private GameBinding gameBinding;
 
 	private TextView[] playerNameViews;
 	private TextView[] playerMessageViews;
@@ -174,7 +178,10 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		View contentView = inflater.inflate(R.layout.game, container, false);
+		gameBinding = GameBinding.inflate(inflater, container, false);
+		gameBinding.setGameViewModel(gameViewModel);
+		gameBinding.setLifecycleOwner(this);
+		View contentView = gameBinding.getRoot();
 
 		cardWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth() / CARDS_PER_ROW;
 

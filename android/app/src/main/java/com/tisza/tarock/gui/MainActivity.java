@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				case 410:
 					break;
 				default:
-					showErrorDialog(R.string.error_server_error_title, errorBodyString);
+					showErrorDialog(R.string.error_server_error_title, httpException.code() + " " + httpException.message() + "\n" + errorBodyString);
 					break;
 			}
 		}

@@ -215,7 +215,6 @@ public class GameViewModel extends AndroidViewModel
 		if (GameSessionState.fromId(gameSession.state) == GameSessionState.LOBBY)
 			apiInterface.joinGameSession(gameSessionId).subscribe();
 
-		updateSeat();
 		updateShortNames();
 		if (lastChatTime == 0)
 			lastChatTime = gameSession.createTime;

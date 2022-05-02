@@ -2,6 +2,7 @@
     <data>
         <import type="android.view.View" />
         <import type="com.tisza.tarock.game.Action" />
+        <import type="com.tisza.tarock.game.PhaseEnum" />
         <variable name="gameViewModel" type="com.tisza.tarock.gui.viewmodel.GameViewModel"/>
     </data>
 
@@ -28,7 +29,7 @@
             android:layout_margin="@dimen/skart_margin"
             android:src="@drawable/card_back"
             android:adjustViewBounds="true"
-            android:visibility="gone"
+            android:visibility="@{gameViewModel.gameState.beginnerDirection == 0 &amp;&amp; gameViewModel.gameState.phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE}"
         />
 
         <ImageView
@@ -41,7 +42,7 @@
             android:layout_margin="@dimen/skart_margin"
             android:src="@drawable/card_back"
             android:adjustViewBounds="true"
-            android:visibility="gone"
+            android:visibility="@{gameViewModel.gameState.beginnerDirection == 1 &amp;&amp; gameViewModel.gameState.phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE}"
         />
 
         <ImageView
@@ -54,7 +55,7 @@
             android:layout_margin="@dimen/skart_margin"
             android:src="@drawable/card_back"
             android:adjustViewBounds="true"
-            android:visibility="gone"
+            android:visibility="@{gameViewModel.gameState.beginnerDirection == 2 &amp;&amp; gameViewModel.gameState.phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE}"
         />
 
         <ImageView
@@ -67,7 +68,7 @@
             android:layout_margin="@dimen/skart_margin"
             android:src="@drawable/card_back"
             android:adjustViewBounds="true"
-            android:visibility="gone"
+            android:visibility="@{gameViewModel.gameState.beginnerDirection == 3 &amp;&amp; gameViewModel.gameState.phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE}"
         />
 
         <Button

@@ -55,7 +55,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private GameBinding gameBinding;
 
 	private TextView[] playerMessageViews;
-	private View[] skartViews;
 	private LinearLayout myCardsView0;
 	private LinearLayout myCardsView1;
 	private ViewPager centerSpace;
@@ -180,14 +179,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 				(TextView)contentView.findViewById(R.id.player_message_1),
 				(TextView)contentView.findViewById(R.id.player_message_2),
 				(TextView)contentView.findViewById(R.id.player_message_3),
-		};
-
-		skartViews = new View[]
-		{
-				contentView.findViewById(R.id.skart_0),
-				contentView.findViewById(R.id.skart_1),
-				contentView.findViewById(R.id.skart_2),
-				contentView.findViewById(R.id.skart_3),
 		};
 
 		myCardsView0 = (LinearLayout)contentView.findViewById(R.id.my_cards_0);
@@ -361,8 +352,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 		updatePlayedCards(gameState);
 		updateStatistics(gameState);
-
-		skartViews[gameState.beginnerDirection].setVisibility(gameState.phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE);
 	}
 
 	private void updateAvailableActions(GameState gameState)

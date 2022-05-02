@@ -72,6 +72,7 @@
         app:layout_constraintTop_toBottomOf="@+id/login_name"
         app:layout_constraintLeft_toLeftOf="@+id/button_left"
         app:layout_constraintRight_toLeftOf="@+id/button_right"
+        android:visibility="gone"
         style="@style/login_button"
     />
     <Button

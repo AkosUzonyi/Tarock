@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.api.*;
 import com.tisza.tarock.gui.adapter.*;
 import com.tisza.tarock.gui.fragment.*;
 import com.tisza.tarock.gui.misc.*;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	private static final int DISCONNECT_DELAY_SEC = 40;
 	private static final int DOWNLOAD_CSV_REQUEST_CODE = 1;
 
+	private final APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);;
 	private ConnectionViewModel connectionViewModel;
 	private ProgressDialog progressDialog;
 
@@ -45,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		setContentView(R.layout.main);
 
 		connectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
-		connectionViewModel.getConnectionState().observe(this, this::connectionStateChanged);
+		connectionViewModel.getLoginState().observe(this, this::loginStateChanged);
 		progressDialog = new ProgressDialog(this);
 		handler = new Handler();
 		//TODO: finish timeout
@@ -98,17 +100,6 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 					showErrorDialog(R.string.error_server_error_title, errorBodyString);
 					break;
 			}
-			/*case NO_NETWORK:
-				showErrorDialog(R.string.error_no_network_title, R.string.error_no_network_message);
-				break;
-			case OUTDATED:
-				requireUpdate();
-				break;
-			case LOGIN_UNSUCCESSFUL:
-				showErrorDialog(R.string.error_login_unsuccessful_title, R.string.error_login_unsuccessful_message);
-				break;*/
-
-			return;
 		}
 		else if (exception instanceof ConnectException)
 		{
@@ -141,18 +132,12 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.commit();
 	}
 
-	private void connectionStateChanged(ConnectionViewModel.ConnectionState connectionState)
+	private void loginStateChanged(ConnectionViewModel.LoginState loginState)
 	{
-		switch (connectionState)
+		switch (loginState)
 		{
-			case DISCONNECTED:
-			case CONNECTED:
+			case LOGGED_OUT:
 				popBackToLoginScreen();
-				break;
-			case CONNECTING:
-				progressDialog.setMessage(getResources().getString(R.string.connecting));
-				//progressDialog.setOnDismissListener(x -> connectionViewModel.disconnect());
-				progressDialog.show();
 				break;
 			case LOGGING_IN:
 				progressDialog.setMessage(getResources().getString(R.string.logging_in));
@@ -234,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	{
 		new AlertDialog.Builder(this)
 				.setTitle(R.string.delete_game_confirm)
-				.setPositiveButton(R.string.delete_game, (dialog, which) -> connectionViewModel.getApiInterface().deleteGameSession(gameSessionID).subscribe())
+				.setPositiveButton(R.string.delete_game, (dialog, which) -> apiInterface.deleteGameSession(gameSessionID).subscribe())
 				.setNegativeButton(R.string.cancel, null)
 				.show();
 	}

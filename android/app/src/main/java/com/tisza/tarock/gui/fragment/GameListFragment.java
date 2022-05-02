@@ -6,6 +6,7 @@ import android.widget.*;
 import androidx.lifecycle.*;
 import androidx.recyclerview.widget.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.api.*;
 import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.gui.adapter.*;
 import com.tisza.tarock.gui.viewmodel.*;
@@ -19,6 +20,7 @@ public class GameListFragment extends MainActivityFragment
 {
 	public static final String TAG = "game_list";
 
+	private final APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);;
 	private ConnectionViewModel connectionViewModel;
 	private GameListAdapter gameListAdapter;
 	private Disposable gameSessionListUpdateDisposable;
@@ -74,7 +76,7 @@ public class GameListFragment extends MainActivityFragment
 	{
 		super.onStart();
 		gameSessionListUpdateDisposable = Observable.interval(0, 2, TimeUnit.SECONDS)
-				.flatMap(i -> connectionViewModel.getApiInterface().getGameSessions())
+				.flatMap(i -> apiInterface.getGameSessions())
 				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(gameListAdapter::setGameSessions);
 	}

@@ -7,6 +7,7 @@ import android.view.*;
 import android.widget.*;
 import androidx.lifecycle.*;
 import com.tisza.tarock.R;
+import com.tisza.tarock.api.*;
 import com.tisza.tarock.api.model.*;
 import com.tisza.tarock.game.*;
 import com.tisza.tarock.gui.viewmodel.*;
@@ -23,13 +24,12 @@ public class CreateGameFragment extends MainActivityFragment
 	private Button createButton;
 	private ProgressDialog progressDialog;
 
-	private ConnectionViewModel connectionViewModel;
+	private final APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class CreateGameFragment extends MainActivityFragment
 		String gameType = GameType.values()[gameTypeSpinner.getSelectedItemPosition()].getID();
 		String doubleRoundType = DoubleRoundType.values()[doubleRoundTypeSpinner.getSelectedItemPosition()].getID();
 
-		connectionViewModel.getApiInterface().createGameSession(new CreateGameSessionDTO(gameType, doubleRoundType)).subscribe(response ->
+		apiInterface.createGameSession(new CreateGameSessionDTO(gameType, doubleRoundType)).subscribe(response ->
 		{
 			progressDialog.dismiss();
 			getMainActivity().getSupportFragmentManager().popBackStack();

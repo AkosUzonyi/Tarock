@@ -22,7 +22,7 @@ public class LoginFragment extends MainActivityFragment
 	private CallbackManager facebookCallbackManager;
 	private TextView loginNameTextView;
 	private Button facebookButton, googleButton, playButton, settingsButton, rulesButton, logoutButton, donateButton;
-	private ConnectionViewModel connectionViewModel;
+	private AuthenticationViewModel authenticationViewModel;
 	private LoginViewModel loginViewModel;
 
 	@Override
@@ -30,7 +30,7 @@ public class LoginFragment extends MainActivityFragment
 	{
 		super.onCreate(savedInstanceState);
 		facebookCallbackManager = CallbackManager.Factory.create();
-		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
+		authenticationViewModel = ViewModelProviders.of(getActivity()).get(AuthenticationViewModel.class);
 		loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
 	}
 
@@ -49,7 +49,7 @@ public class LoginFragment extends MainActivityFragment
 
 		facebookButton.setOnClickListener(v -> LoginManager.getInstance().logIn(this, Collections.singleton("public_profile")));
 		googleButton.setOnClickListener(v -> startActivityForResult(loginViewModel.getGoogleLoginIntent(), REQUEST_CODE_GOOGLE_LOGIN));
-		playButton.setOnClickListener(v -> connectionViewModel.login());
+		playButton.setOnClickListener(v -> authenticationViewModel.login());
 		settingsButton.setOnClickListener(v -> getMainActivity().openSettings());
 		rulesButton.setOnClickListener(v -> openRules());
 		logoutButton.setOnClickListener(v -> loginViewModel.logOut());
@@ -67,7 +67,7 @@ public class LoginFragment extends MainActivityFragment
 			logoutButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
 
 			if (!loggedIn)
-				connectionViewModel.logout();
+				authenticationViewModel.logout();
 		});
 
 		return view;

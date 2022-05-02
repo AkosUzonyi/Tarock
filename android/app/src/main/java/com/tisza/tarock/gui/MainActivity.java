@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	private static final int DOWNLOAD_CSV_REQUEST_CODE = 1;
 
 	private final APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);;
-	private ConnectionViewModel connectionViewModel;
+	private AuthenticationViewModel authenticationViewModel;
 	private ProgressDialog progressDialog;
 
 	private Handler handler;
@@ -46,8 +46,8 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		LocaleManager.updateLocale(this);
 		setContentView(R.layout.main);
 
-		connectionViewModel = ViewModelProviders.of(this).get(ConnectionViewModel.class);
-		connectionViewModel.getLoginState().observe(this, this::loginStateChanged);
+		authenticationViewModel = ViewModelProviders.of(this).get(AuthenticationViewModel.class);
+		authenticationViewModel.getLoginState().observe(this, this::loginStateChanged);
 		progressDialog = new ProgressDialog(this);
 		handler = new Handler();
 		//TODO: finish timeout
@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.commit();
 
 		if (getIntent().hasExtra(GameFragment.KEY_GAME_SESSION_ID))
-			connectionViewModel.login();
+			authenticationViewModel.login();
 	}
 
 	private void handleError(Exception exception)
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		}
 		else if (exception instanceof ConnectException)
 		{
-			connectionViewModel.logout();
+			authenticationViewModel.logout();
 			showErrorDialog(R.string.error_server_down_title, getString(R.string.error_server_down_message) + " (" + exception.getMessage() + ")");
 		}
 		else
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.commit();
 	}
 
-	private void loginStateChanged(ConnectionViewModel.LoginState loginState)
+	private void loginStateChanged(AuthenticationViewModel.LoginState loginState)
 	{
 		switch (loginState)
 		{
@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 			return;
 		}
 
-		DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse("https://tarokk.net/cgi-bin/tarock/tarokk_pontok.csv?user_id=" + connectionViewModel.getLoggedInUser().getValue()));
+		DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse("https://tarokk.net/cgi-bin/tarock/tarokk_pontok.csv?user_id=" + authenticationViewModel.getLoggedInUser().getValue()));
 		downloadRequest.allowScanningByMediaScanner();
 		downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 		downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "tarokk_pontok.csv");

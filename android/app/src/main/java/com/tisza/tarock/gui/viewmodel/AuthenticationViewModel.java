@@ -8,14 +8,14 @@ import com.tisza.tarock.api.*;
 import com.tisza.tarock.api.model.*;
 import io.reactivex.android.schedulers.*;
 
-public class ConnectionViewModel extends AndroidViewModel
+public class AuthenticationViewModel extends AndroidViewModel
 {
 	private MutableLiveData<LoginState> connectionState = new MutableLiveData<>(LoginState.LOGGED_OUT);
 	private MutableLiveData<User> user = new MutableLiveData<>(null);
 
 	private APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);
 
-	public ConnectionViewModel(Application application)
+	public AuthenticationViewModel(Application application)
 	{
 		super(application);
 	}

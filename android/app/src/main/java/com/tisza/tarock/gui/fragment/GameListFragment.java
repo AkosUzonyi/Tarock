@@ -21,7 +21,7 @@ public class GameListFragment extends MainActivityFragment
 	public static final String TAG = "game_list";
 
 	private final APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);;
-	private ConnectionViewModel connectionViewModel;
+	private AuthenticationViewModel authenticationViewModel;
 	private GameListAdapter gameListAdapter;
 	private Disposable gameSessionListUpdateDisposable;
 
@@ -41,7 +41,7 @@ public class GameListFragment extends MainActivityFragment
 			@Override
 			public void onItemRangeInserted(int positionStart, int itemCount)
 			{
-				User loggedInUser = connectionViewModel.getLoggedInUser().getValue();
+				User loggedInUser = authenticationViewModel.getLoggedInUser().getValue();
 				if (loggedInUser == null)
 					return;
 
@@ -59,8 +59,8 @@ public class GameListFragment extends MainActivityFragment
 			}
 		});
 
-		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
-		connectionViewModel.getLoggedInUser().observe(this, gameListAdapter::setUser);
+		authenticationViewModel = ViewModelProviders.of(getActivity()).get(AuthenticationViewModel.class);
+		authenticationViewModel.getLoggedInUser().observe(this, gameListAdapter::setUser);
 
 		View downloadCsvButton = view.findViewById(R.id.download_csv_button);
 		downloadCsvButton.setOnClickListener(v -> getMainActivity().downloadCsv());

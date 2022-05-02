@@ -2,7 +2,6 @@ package com.tisza.tarock.gui.fragment;
 
 import android.animation.*;
 import android.content.*;
-import android.graphics.*;
 import android.os.*;
 import android.text.*;
 import android.view.*;
@@ -12,7 +11,6 @@ import android.view.animation.Animation.*;
 import android.view.inputmethod.*;
 import android.widget.*;
 import androidx.appcompat.app.*;
-import androidx.databinding.*;
 import androidx.lifecycle.*;
 import androidx.recyclerview.widget.*;
 import androidx.viewpager.widget.*;
@@ -96,7 +94,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private StatisticsPointsAdapter statisticsPointsAdapter;
 	private EditText statisticsChatEditText;
 
-	private ConnectionViewModel connectionViewModel;
+	private AuthenticationViewModel authenticationViewModel;
 	private GameViewModel gameViewModel;
 
 	@Override
@@ -108,7 +106,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 		layoutInflater = (LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		zebiSounds = new ZebiSounds(getActivity());
-		connectionViewModel = ViewModelProviders.of(getActivity()).get(ConnectionViewModel.class);
+		authenticationViewModel = ViewModelProviders.of(getActivity()).get(AuthenticationViewModel.class);
 		gameViewModel = ViewModelProviders.of(this, new GameViewModel.Factory(getActivity().getApplication(), gameSessionId)).get(GameViewModel.class);
 		vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 	}
@@ -320,7 +318,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		if (!getArguments().containsKey(KEY_GAME_SESSION_ID))
 			throw new IllegalArgumentException("no game id given");
 
-		connectionViewModel.getLoggedInUser().observe(this, gameViewModel::setLoggedInUser);
+		authenticationViewModel.getLoggedInUser().observe(this, gameViewModel::setLoggedInUser);
 
 		/*boolean soundsEnabled = PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean("sounds", true);
 		zebiSounds.setEnabled(soundsEnabled && gameSession.getType() == GameType.ZEBI && gameSession.containsUser(121));*/

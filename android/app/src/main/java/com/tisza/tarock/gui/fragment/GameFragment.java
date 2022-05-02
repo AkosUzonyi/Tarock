@@ -596,7 +596,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			cardView.setTag(card);
 			cardView.setOnClickListener(view ->
 			{
-				if (cardClickListener != null && gameState.playersRotated.get(0).turn)
+				if (cardClickListener != null)
 					cardClickListener.onClick(view);
 			});
 		}
@@ -606,6 +606,10 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	{
 		cardClickListener = v ->
 		{
+			GameState gameState = gameViewModel.getGameState().getValue();
+			if (gameState == null || !gameState.playersRotated.get(0).turn)
+				return;
+
 			Card card = (Card)v.getTag();
 			if (!cardsToFold.contains(card))
 			{

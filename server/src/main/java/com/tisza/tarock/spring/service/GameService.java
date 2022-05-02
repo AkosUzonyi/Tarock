@@ -181,7 +181,8 @@ public class GameService
 				doubleRoundTracker.gameInterrupted();
 			gameDB.gameSession.doubleRoundData = doubleRoundTracker.getData();
 
-			startNewGame(gameDB.gameSession.id, (gameDB.beginnerPlayer + 1) % gameDB.gameSession.players.size());
+			int nextBeginnerPlayer = (gameDB.beginnerPlayer + (game.isNormalFinish() ? 1 : 0)) % gameDB.gameSession.players.size();
+			startNewGame(gameDB.gameSession.id, nextBeginnerPlayer);
 		}
 
 		return true;

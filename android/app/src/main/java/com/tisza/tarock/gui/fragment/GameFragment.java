@@ -60,7 +60,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private LinearLayout myCardsView1;
 	private ViewPager centerSpace;
 	private Button okButton;
-	private Button throwButton;
 	private Button lobbyStartButton;
 	private RecyclerView userListRecyclerView;
 	private UsersAdapter usersAdapter;
@@ -212,8 +211,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 					break;
 			}
 		});
-		throwButton = (Button)contentView.findViewById(R.id.throw_button);
-		throwButton.setOnClickListener(v -> gameViewModel.doAction(Action.throwCards()));
 
 		availableActionsAdapter = new ArrayAdapter<Action>(getActivity(), R.layout.button)
 		{
@@ -364,8 +361,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 		updatePlayedCards(gameState);
 		updateStatistics(gameState);
-
-		throwButton.setVisibility(gameState.canThrowCards ? View.VISIBLE : View.GONE);
 
 		skartViews[gameState.beginnerDirection].setVisibility(gameState.phase.isAfter(PhaseEnum.FOLDING) ? View.VISIBLE : View.GONE);
 	}

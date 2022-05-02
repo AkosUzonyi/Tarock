@@ -1,6 +1,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
         <import type="android.view.View" />
+        <import type="com.tisza.tarock.game.Action" />
         <variable name="gameViewModel" type="com.tisza.tarock.gui.viewmodel.GameViewModel"/>
     </data>
 
@@ -86,7 +87,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true"
-            android:visibility="gone"
+            android:onClick="@{() -> gameViewModel.doAction(Action.throwCards())}"
+            android:visibility="@{gameViewModel.gameState.canThrowCards ? View.VISIBLE : View.GONE}"
             android:text="@string/throw_cards"
             />
 

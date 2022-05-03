@@ -50,7 +50,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private ZebiSounds zebiSounds;
 
 	private LayoutInflater layoutInflater;
-	private Vibrator vibrator;
 
 	private GameBinding gameBinding;
 
@@ -106,7 +105,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		zebiSounds = new ZebiSounds(getActivity());
 		authenticationViewModel = ViewModelProviders.of(getActivity()).get(AuthenticationViewModel.class);
 		gameViewModel = ViewModelProviders.of(this, new GameViewModel.Factory(getActivity().getApplication(), gameSessionId)).get(GameViewModel.class);
-		vibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
 	private void setupBinding()

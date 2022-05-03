@@ -125,20 +125,7 @@ public class GameViewModel extends AndroidViewModel
 		if (gameStateDTO == null)
 			Log.w(TAG, "doAction: no game is in progress");
 
-		apiInterface.postAction(gameStateDTO.id, new ActionPostDTO(action.getId())).subscribe(responseBody -> {}, throwable ->
-		{
-			if (throwable instanceof HttpException)
-			{
-				HttpException httpException = (HttpException) throwable;
-				switch (httpException.code())
-				{
-					case 422:
-						//TODO vibrator.vibrate(100);
-						return;
-				}
-			}
-			RxJavaPlugins.onError(throwable);
-		});
+		apiInterface.postAction(gameStateDTO.id, new ActionPostDTO(action.getId())).subscribe();
 	}
 
 	public void sendChat(String text)

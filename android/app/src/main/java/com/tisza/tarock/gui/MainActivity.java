@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 	private final APIInterface apiInterface = APIClient.getClient().create(APIInterface.class);;
 	private AuthenticationViewModel authenticationViewModel;
 	private ProgressDialog progressDialog;
+	private Vibrator vibrator;
 
 	private Handler handler;
 	private Runnable disconnectRunnable;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 		authenticationViewModel = ViewModelProviders.of(this).get(AuthenticationViewModel.class);
 		authenticationViewModel.getLoginState().observe(this, this::loginStateChanged);
 		progressDialog = new ProgressDialog(this);
+		vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		handler = new Handler();
 		//TODO: finish timeout
 		//disconnectRunnable = connectionViewModel::disconnect;
@@ -95,6 +97,9 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 					showErrorDialog(R.string.error_server_down_title, getString(R.string.error_server_down_message) + " (" + errorBodyString + ")");
 					break;
 				case 410:
+					break;
+				case 422:
+					vibrator.vibrate(100);
 					break;
 				default:
 					showErrorDialog(R.string.error_server_error_title, httpException.code() + " " + httpException.message() + "\n" + errorBodyString);

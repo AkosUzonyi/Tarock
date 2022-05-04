@@ -121,11 +121,10 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		gameViewModel.getShortUserNames().observe(this, names -> statisticsPointsAdapter.setNames(names));
 
 		gameViewModel.getPhase().observe(this, this::phaseChanged);
-		gameViewModel.getMessagesText().observe(this, messagesTextView::setText);
 
 		gameViewModel.getGameSession().observe(this, gameSession ->
 		{
-			if (gameSession == null)
+			if (gameSession == null || gameSession.getState() == GameSessionState.DELETED)
 			{
 				getActivity().getSupportFragmentManager().popBackStack();
 				return;
@@ -135,29 +134,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			for (Player player : gameSession.getPlayers())
 				users.add(player.user);
 			usersAdapter.setUsers(users);
-
-			int userCount = gameSession.getPlayers().size();
-			if (userCount >= 4)
-				lobbyStartButton.setText(R.string.lobby_start);
-			else
-				lobbyStartButton.setText(getResources().getQuantityString(R.plurals.lobby_start_with_bots, 4 - userCount, 4 - userCount));
-
-			switch (gameSession.getState())
-			{
-				case LOBBY:
-					lobbyStartButton.setVisibility(View.VISIBLE);
-					userListRecyclerView.setVisibility(View.VISIBLE);
-					availableActionsListView.setVisibility(View.GONE);
-					break;
-				case GAME:
-					lobbyStartButton.setVisibility(View.GONE);
-					userListRecyclerView.setVisibility(View.GONE);
-					availableActionsListView.setVisibility(View.VISIBLE);
-					break;
-				case DELETED:
-					getActivity().getSupportFragmentManager().popBackStack();
-					break;
-			}
 		});
 	}
 

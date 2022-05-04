@@ -82,9 +82,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private PlayedCardView[] playedCardViews;
 
 	private View statisticsView;
-	private TextView statisticsGamepointsCaller;
-	private TextView statisticsGamepointsOpponent;
-	private TextView statisticsPointMultiplierView;
 	private LinearLayout statisticsCallerEntriesView;
 	private LinearLayout statisticsOpponentEntriesView;
 	private TextView statisticsSumPointsView;
@@ -265,9 +262,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 
 
-		statisticsGamepointsCaller = (TextView)statisticsView.findViewById(R.id.statistics_gamepoints_caller);
-		statisticsGamepointsOpponent = (TextView)statisticsView.findViewById(R.id.statistics_gamepoints_opponent);
-		statisticsPointMultiplierView = (TextView)statisticsView.findViewById(R.id.statistics_point_multiplier);
 		statisticsCallerEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_caller_entries_list);
 		statisticsOpponentEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_opponent_entries_list);
 		statisticsSumPointsView = (TextView)statisticsView.findViewById(R.id.statistics_sum_points);
@@ -481,22 +475,12 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		GameStateDTO.Statistics statistics = gameState.statistics;
 		if (statistics == null)
 		{
-			statisticsGamepointsCaller.setText("");
-			statisticsGamepointsOpponent.setText("");
-			statisticsPointMultiplierView.setVisibility(View.GONE);
 			statisticsCallerEntriesView.removeAllViews();
 			statisticsOpponentEntriesView.removeAllViews();
-			statisticsSumPointsView.setText("0");
 			return;
 		}
 
 		Team selfTeam = gameViewModel.getMySeat().getValue() == null || "caller".equals(gameState.playersRotated.get(0).team) ? Team.CALLER : Team.OPPONENT;
-
-		statisticsGamepointsCaller.setText(String.valueOf(statistics.callerCardPoints));
-		statisticsGamepointsOpponent.setText(String.valueOf(statistics.opponentCardPoints));
-
-		statisticsPointMultiplierView.setVisibility(statistics.pointMultiplier == 1 ? View.GONE : View.VISIBLE);
-		statisticsPointMultiplierView.setText(getString(R.string.statictics_point_multiplier, statistics.pointMultiplier));
 
 		statisticsCallerEntriesView.removeAllViews();
 		statisticsOpponentEntriesView.removeAllViews();

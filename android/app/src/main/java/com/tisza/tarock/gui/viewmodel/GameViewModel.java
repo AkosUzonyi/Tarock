@@ -117,7 +117,10 @@ public class GameViewModel extends AndroidViewModel
 
 	public void startGameSession()
 	{
-		apiInterface.startGameSession(gameSessionId).subscribe();
+		apiInterface.startGameSession(gameSessionId).observeOn(AndroidSchedulers.mainThread()).subscribe(() ->
+		{
+			apiInterface.getGameSession(gameSessionId).observeOn(AndroidSchedulers.mainThread()).subscribe(this::onGameSessionUpdate);
+		});
 	}
 
 	public void doAction(Action action)

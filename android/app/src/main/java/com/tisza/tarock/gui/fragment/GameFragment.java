@@ -55,39 +55,14 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private StatisticsBinding statisticsBinding;
 
 	private TextView[] playerMessageViews;
-	private LinearLayout myCardsView0;
-	private LinearLayout myCardsView1;
-	private ViewPager centerSpace;
-	private Button okButton;
-	private Button lobbyStartButton;
-	private RecyclerView userListRecyclerView;
-	private UsersAdapter usersAdapter;
-
-	private View messagesFrame;
-
-	private View messagesView;
-	private ScrollView messagesScrollView;
-	private TextView messagesTextView;
-	private ListView availableActionsListView;
-	private ArrayAdapter<Action> availableActionsAdapter;
 	private Button availableActionsListUltimoButton;
-	private EditText messagesChatEditText;
-
-	private View ultimoView;
-	private Button ultimoBackButton;
-	private UltimoViewManager ultimoViewManager;
-	private Button announceButton;
-
 	private RelativeLayout gameplayView;
 	private PlayedCardView[] playedCardViews;
 
-	private View statisticsView;
-	private LinearLayout statisticsCallerEntriesView;
-	private LinearLayout statisticsOpponentEntriesView;
-	private TextView statisticsSumPointsView;
-	private RecyclerView statisticsPointsView;
+	private UsersAdapter usersAdapter;
+	private ArrayAdapter<Action> availableActionsAdapter;
+	private UltimoViewManager ultimoViewManager;
 	private StatisticsPointsAdapter statisticsPointsAdapter;
-	private EditText statisticsChatEditText;
 
 	private AuthenticationViewModel authenticationViewModel;
 	private GameViewModel gameViewModel;
@@ -139,35 +114,20 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		gameBinding = GameBinding.inflate(inflater, container, false);
 		gameBinding.setGameViewModel(gameViewModel);
 		gameBinding.setLifecycleOwner(this);
-		View contentView = gameBinding.getRoot();
 
 		cardWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth() / CARDS_PER_ROW;
 
-		centerSpace = contentView.findViewById(R.id.center_space);
-
-		messagesBinding = MessagesBinding.inflate(layoutInflater, centerSpace, false);
+		messagesBinding = MessagesBinding.inflate(layoutInflater, gameBinding.centerSpace, false);
 		messagesBinding.setGameViewModel(gameViewModel);
 		messagesBinding.setLifecycleOwner(this);
-		messagesFrame = messagesBinding.getRoot();
 
-		statisticsBinding = StatisticsBinding.inflate(layoutInflater, centerSpace, false);
+		statisticsBinding = StatisticsBinding.inflate(layoutInflater, gameBinding.centerSpace, false);
 		statisticsBinding.setGameViewModel(gameViewModel);
 		statisticsBinding.setLifecycleOwner(this);
-		statisticsView = statisticsBinding.getRoot();
 
-		playerMessageViews = new TextView[]
-		{
-				(TextView)contentView.findViewById(R.id.player_message_0),
-				(TextView)contentView.findViewById(R.id.player_message_1),
-				(TextView)contentView.findViewById(R.id.player_message_2),
-				(TextView)contentView.findViewById(R.id.player_message_3),
-		};
+		playerMessageViews = new TextView[] {gameBinding.playerMessage0, gameBinding.playerMessage1, gameBinding.playerMessage2, gameBinding.playerMessage3};
 
-		myCardsView0 = (LinearLayout)contentView.findViewById(R.id.my_cards_0);
-		myCardsView1 = (LinearLayout)contentView.findViewById(R.id.my_cards_1);
-
-		okButton = (Button)contentView.findViewById(R.id.ok_button);
-		okButton.setOnClickListener(v ->
+		gameBinding.okButton.setOnClickListener(v ->
 		{
 			switch (gameViewModel.getGameState().getValue().phase)
 			{
@@ -175,7 +135,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 					gameViewModel.doAction(Action.fold(cardsToFold));
 					break;
 				case ANNOUNCING:
-					if (ultimoView.getVisibility() == View.GONE)
+					if (messagesBinding.ultimoView.getVisibility() == View.GONE)
 						gameViewModel.doAction(Action.announcePassz());
 					break;
 				case END:
@@ -198,25 +158,17 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			}
 		};
 
-		messagesView = messagesFrame.findViewById(R.id.messages_view);
-		messagesScrollView = (ScrollView)messagesFrame.findViewById(R.id.messages_scroll);
-		messagesTextView = (TextView)messagesFrame.findViewById(R.id.messages_text_view);
-		messagesTextView.addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> messagesScrollView.smoothScrollTo(0, bottom));
-		availableActionsListView = messagesFrame.findViewById(R.id.available_actions_list);
-		availableActionsListView.setAdapter(availableActionsAdapter);
-		availableActionsListUltimoButton = (Button) inflater.inflate(R.layout.button, availableActionsListView, false);
+		messagesBinding.availableActionsList.setAdapter(availableActionsAdapter);
+		availableActionsListUltimoButton = (Button) inflater.inflate(R.layout.button, messagesBinding.availableActionsList, false);
 		availableActionsListUltimoButton.setText(R.string.ultimo_button);
 		availableActionsListUltimoButton.setOnClickListener(view -> setUltimoViewVisible(true));
-		messagesChatEditText = messagesFrame.findViewById(R.id.messages_chat_edit_text);
-		messagesChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
-		messagesChatEditText.setOnEditorActionListener(this);
-		userListRecyclerView = messagesFrame.findViewById(R.id.game_user_list_recycler_view);
-		userListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-		userListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+		((EditText) messagesBinding.messagesChatEditText).setRawInputType(InputType.TYPE_CLASS_TEXT);
+		((EditText) messagesBinding.messagesChatEditText).setOnEditorActionListener(this);
+		messagesBinding.gameUserListRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+		messagesBinding.gameUserListRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 		usersAdapter = new UsersAdapter(getContext());
-		userListRecyclerView.setAdapter(usersAdapter);
-		lobbyStartButton = messagesFrame.findViewById(R.id.lobby_start_button);
-		lobbyStartButton.setOnClickListener(v ->
+		messagesBinding.gameUserListRecyclerView.setAdapter(usersAdapter);
+		messagesBinding.lobbyStartButton.setOnClickListener(v ->
 		{
 			if (gameViewModel.getGameSession().getValue().getPlayers().size() >= 4)
 				gameViewModel.startGameSession();
@@ -230,13 +182,10 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 		});
 
-		ultimoView = messagesFrame.findViewById(R.id.ultimo_view);
-		ultimoBackButton = (Button)messagesFrame.findViewById(R.id.ultimo_back_buton);
-		announceButton = (Button)messagesFrame.findViewById(R.id.ultimo_announce_button);
-		ultimoViewManager = new UltimoViewManager(getActivity(), layoutInflater, (LinearLayout)messagesFrame.findViewById(R.id.ultimo_spinner_list));
-		ultimoBackButton.setOnClickListener(v -> setUltimoViewVisible(false));
+		ultimoViewManager = new UltimoViewManager(getActivity(), layoutInflater, (LinearLayout)messagesBinding.getRoot().findViewById(R.id.ultimo_spinner_list));
+		messagesBinding.ultimoBackButon.setOnClickListener(v -> setUltimoViewVisible(false));
 
-		announceButton.setOnClickListener(new DoubleClickListener(getContext(), v ->
+		messagesBinding.ultimoAnnounceButton.setOnClickListener(new DoubleClickListener(getContext(), v ->
 		{
 			Announcement announcement = ultimoViewManager.getCurrentSelectedAnnouncement();
 
@@ -247,7 +196,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			setUltimoViewVisible(false);
 		}));
 
-		gameplayView = (RelativeLayout)layoutInflater.inflate(R.layout.gameplay, centerSpace, false);
+		gameplayView = (RelativeLayout)layoutInflater.inflate(R.layout.gameplay, gameBinding.centerSpace, false);
 		playedCardViews = new PlayedCardView[4];
 		for (int i = 0; i < 4; i++)
 		{
@@ -262,20 +211,15 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 
 
-		statisticsCallerEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_caller_entries_list);
-		statisticsOpponentEntriesView = (LinearLayout)statisticsView.findViewById(R.id.statistics_opponent_entries_list);
-		statisticsSumPointsView = (TextView)statisticsView.findViewById(R.id.statistics_sum_points);
-		statisticsPointsView = statisticsView.findViewById(R.id.statistics_points);
-		statisticsPointsView.setLayoutManager(new GridLayoutManager(getContext(), 4));
+		statisticsBinding.statisticsPoints.setLayoutManager(new GridLayoutManager(getContext(), 4));
 		statisticsPointsAdapter = new StatisticsPointsAdapter();
-		statisticsPointsView.setAdapter(statisticsPointsAdapter);
-		statisticsChatEditText = statisticsView.findViewById(R.id.statistics_chat_edit_text);
-		statisticsChatEditText.setRawInputType(InputType.TYPE_CLASS_TEXT);
-		statisticsChatEditText.setOnEditorActionListener(this);
+		statisticsBinding.statisticsPoints.setAdapter(statisticsPointsAdapter);
+		((EditText) statisticsBinding.statisticsChatEditText).setRawInputType(InputType.TYPE_CLASS_TEXT);
+		((EditText) statisticsBinding.statisticsChatEditText).setOnEditorActionListener(this);
 
-		View[] centerViews = {messagesFrame, gameplayView, statisticsView};
+		View[] centerViews = {messagesBinding.getRoot(), gameplayView, statisticsBinding.getRoot()};
 		int[] centerViewTitles = {R.string.pager_announcing, R.string.pager_gameplay, R.string.pager_statistics};
-		centerSpace.setAdapter(new CenterViewPagerAdapter(getActivity(), centerViews, centerViewTitles));
+		gameBinding.centerSpace.setAdapter(new CenterViewPagerAdapter(getActivity(), centerViews, centerViewTitles));
 
 		if (!getArguments().containsKey(KEY_GAME_SESSION_ID))
 			throw new IllegalArgumentException("no game id given");
@@ -287,7 +231,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 		setupBinding();
 
-		return contentView;
+		return gameBinding.getRoot();
 	}
 
 	private Map<Card, View> cardToViewMapping = new HashMap<>();
@@ -298,7 +242,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	@Override
 	public boolean onEditorAction(TextView view, int actionId, KeyEvent event)
 	{
-		if ((view == messagesChatEditText || view == statisticsChatEditText) && actionId == EditorInfo.IME_ACTION_SEND)
+		if ((view == messagesBinding.messagesChatEditText || view == statisticsBinding.statisticsChatEditText) && actionId == EditorInfo.IME_ACTION_SEND)
 		{
 			Editable text = ((EditText)view).getText();
 			if (text.length() == 0)
@@ -330,11 +274,11 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	private void updateAvailableActions(GameState gameState)
 	{
-		if (ultimoView.getVisibility() == View.VISIBLE)
+		if (messagesBinding.ultimoView.getVisibility() == View.VISIBLE)
 			return;
 
 		availableActionsAdapter.clear();
-		availableActionsListView.removeHeaderView(availableActionsListUltimoButton);
+		messagesBinding.availableActionsList.removeHeaderView(availableActionsListUltimoButton);
 
 		if (gameState.phase == PhaseEnum.ANNOUNCING)
 		{
@@ -346,7 +290,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 				ultimoViewManager.takeAnnouncements(announcements);
 
 			if (ultimoViewManager.hasAnyUltimo())
-				availableActionsListView.addHeaderView(availableActionsListUltimoButton);
+				messagesBinding.availableActionsList.addHeaderView(availableActionsListUltimoButton);
 
 			for (Announcement announcement : announcements)
 				availableActionsAdapter.add(Action.announce(announcement));
@@ -371,7 +315,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 					okVisible = true;
 				break;
 		}
-		okButton.setVisibility(okVisible ? View.VISIBLE : View.GONE);
+		gameBinding.okButton.setVisibility(okVisible ? View.VISIBLE : View.GONE);
 	}
 
 	private void updateMyCardsView(GameState gameState)
@@ -410,8 +354,8 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			@Override
 			public void onAnimationEnd(Animator animation)
 			{
-				myCardsView0.removeView(myCardView);
-				myCardsView1.removeView(myCardView);
+				gameBinding.myCards0.removeView(myCardView);
+				gameBinding.myCards0.removeView(myCardView);
 
 				if (shouldArrange)
 					arrangeCards(gameState);
@@ -475,19 +419,19 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		GameStateDTO.Statistics statistics = gameState.statistics;
 		if (statistics == null)
 		{
-			statisticsCallerEntriesView.removeAllViews();
-			statisticsOpponentEntriesView.removeAllViews();
+			statisticsBinding.statisticsCallerEntriesList.removeAllViews();
+			statisticsBinding.statisticsOpponentEntriesList.removeAllViews();
 			return;
 		}
 
 		Team selfTeam = gameViewModel.getMySeat().getValue() == null || "caller".equals(gameState.playersRotated.get(0).team) ? Team.CALLER : Team.OPPONENT;
 
-		statisticsCallerEntriesView.removeAllViews();
-		statisticsOpponentEntriesView.removeAllViews();
+		statisticsBinding.statisticsCallerEntriesList.removeAllViews();
+		statisticsBinding.statisticsOpponentEntriesList.removeAllViews();
 		for (Team team : Team.values())
 		{
 			List<GameStateDTO.AnnouncementResult> announcementResults = team == Team.CALLER ? statistics.callerAnnouncementResults : statistics.opponentAnnouncementResults;
-			ViewGroup viewToAppend = team == Team.CALLER ? statisticsCallerEntriesView : statisticsOpponentEntriesView;
+			ViewGroup viewToAppend = team == Team.CALLER ? statisticsBinding.statisticsCallerEntriesList : statisticsBinding.statisticsOpponentEntriesList;
 
 			for (GameStateDTO.AnnouncementResult announcementResult : announcementResults)
 			{
@@ -508,7 +452,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 
 		int selfSumPoints = statistics.sumPoints * (selfTeam == Team.CALLER ? 1 : -1);
-		statisticsSumPointsView.setText(String.valueOf(selfSumPoints));
+		statisticsBinding.statisticsSumPoints.setText(String.valueOf(selfSumPoints));
 
 		List<Integer> pointsList = new ArrayList<>();
 		List<Integer> incrementPointsList = new ArrayList<>();
@@ -553,7 +497,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			if (card != null)
 				cardView.setImageResource(ResourceMappings.getBitmapResForCard(card));
 
-			final LinearLayout parentView = i < cardsUp ? myCardsView1 : myCardsView0;
+			final LinearLayout parentView = i < cardsUp ? gameBinding.myCards1 : gameBinding.myCards0;
 			parentView.addView(cardView);
 			cardToViewMapping.put(card, cardView);
 
@@ -606,7 +550,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	{
 		cardToViewMapping.clear();
 
-		for (ViewGroup cardsView : new ViewGroup[]{myCardsView0, myCardsView1})
+		for (ViewGroup cardsView : new ViewGroup[]{gameBinding.myCards0, gameBinding.myCards1})
 		{
 			int c = cardsView.getChildCount();
 			for (int i = 0; i < c; i++)
@@ -621,14 +565,14 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 	private void setUltimoViewVisible(boolean visible)
 	{
-		ultimoView.setVisibility(visible ? View.VISIBLE : View.GONE);
-		messagesView.setVisibility(visible ? View.GONE : View.VISIBLE);
+		messagesBinding.ultimoView.setVisibility(visible ? View.VISIBLE : View.GONE);
+		messagesBinding.messagesView.setVisibility(visible ? View.GONE : View.VISIBLE);
 	}
 
 	private void showCenterView(int item)
 	{
 		pendingCenterView = item;
-		centerSpace.setCurrentItem(item);
+		gameBinding.centerSpace.setCurrentItem(item);
 	}
 
 	private int pendingCenterView;

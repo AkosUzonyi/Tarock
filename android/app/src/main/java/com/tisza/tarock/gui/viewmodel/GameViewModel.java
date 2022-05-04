@@ -61,10 +61,7 @@ public class GameViewModel extends AndroidViewModel
 			chatBubbleContents.add(new MutableLiveData<>());
 		}
 
-		gameSessionDisposable = Observable.interval(0, 2, TimeUnit.SECONDS)
-				.flatMap(i -> apiInterface.getGameSession(gameSessionId))
-				.observeOn(AndroidSchedulers.mainThread())
-				.subscribe(this::onGameSessionUpdate);
+		gameSessionDisposable = Observable.interval(0, 2, TimeUnit.SECONDS).subscribe(i -> updateGameSession());
 	}
 
 	//TODO hack
@@ -117,10 +114,7 @@ public class GameViewModel extends AndroidViewModel
 
 	public void startGameSession()
 	{
-		apiInterface.startGameSession(gameSessionId).observeOn(AndroidSchedulers.mainThread()).subscribe(() ->
-		{
-			apiInterface.getGameSession(gameSessionId).observeOn(AndroidSchedulers.mainThread()).subscribe(this::onGameSessionUpdate);
-		});
+		apiInterface.startGameSession(gameSessionId).observeOn(AndroidSchedulers.mainThread()).subscribe(this::updateGameSession);
 	}
 
 	public void doAction(Action action)
@@ -195,21 +189,24 @@ public class GameViewModel extends AndroidViewModel
 	}
 
 	//TODO do not update so frequent
-	private void onGameSessionUpdate(GameSession gameSession)
+	private void updateGameSession()
 	{
-		this.gameSession.setValue(gameSession);
+		apiInterface.getGameSession(gameSessionId).observeOn(AndroidSchedulers.mainThread()).subscribe(gameSession ->
+		{
+			this.gameSession.setValue(gameSession);
 
-		if (gameSession == null)
-			return;
+			if (gameSession == null)
+				return;
 
-		if (GameSessionState.fromId(gameSession.state) == GameSessionState.LOBBY)
-			apiInterface.joinGameSession(gameSessionId).subscribe();
+			if (GameSessionState.fromId(gameSession.state) == GameSessionState.LOBBY)
+				apiInterface.joinGameSession(gameSessionId).subscribe();
 
-		updateShortNames();
-		if (lastChatTime == 0)
-			lastChatTime = gameSession.createTime;
+			updateShortNames();
+			if (lastChatTime == 0)
+				lastChatTime = gameSession.createTime;
 
-		updateGameState();
+			updateGameState();
+		});
 	}
 
 	private int getPhaseStringRes(PhaseEnum phase)

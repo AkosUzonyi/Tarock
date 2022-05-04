@@ -20,34 +20,34 @@ public interface APIInterface
 	Observable<List<GameSession>> getGameSessions();
 
 	@POST("/api/gameSessions")
-	Observable<ResponseBody> createGameSession(@Body CreateGameSessionDTO createGameSessionDTO);
+	Completable createGameSession(@Body CreateGameSessionDTO createGameSessionDTO);
 
 	@GET("/api/gameSessions/{id}")
 	Observable<GameSession> getGameSession(@Path("id") int id);
 
 	@DELETE("/api/gameSessions/{id}")
-	Observable<ResponseBody> deleteGameSession(@Path("id") int id);
+	Completable deleteGameSession(@Path("id") int id);
 
 	@POST("/api/gameSessions/{id}/join")
-	Observable<ResponseBody> joinGameSession(@Path("id") int id);
+	Completable joinGameSession(@Path("id") int id);
 
 	@POST("/api/gameSessions/{id}/leave")
-	Observable<ResponseBody> leaveGameSession(@Path("id") int id);
+	Completable leaveGameSession(@Path("id") int id);
 
 	@POST("/api/gameSessions/{id}/start")
-	Observable<ResponseBody> startGameSession(@Path("id") int id);
+	Completable startGameSession(@Path("id") int id);
 
 	@GET("/api/gameSessions/{id}/chat")
 	Observable<List<Chat>> getChat(@Path("id") int gameSessionId, @Query("from") long from);
 
 	@POST("/api/gameSessions/{id}/chat")
-	Observable<ResponseBody> postChat(@Path("id") int gameSessionId, @Body ChatPostDTO chatPostDTO);
+	Completable postChat(@Path("id") int gameSessionId, @Body ChatPostDTO chatPostDTO);
 
 	@GET("/api/games/{id}/actions")
 	Observable<List<ActionDTO>> getActions(@Path("id") int gameId, @Query("from") int from);
 
 	@POST("/api/games/{id}/actions")
-	Observable<ResponseBody> postAction(@Path("id") int gameId, @Body ActionPostDTO actionPostDTO);
+	Completable postAction(@Path("id") int gameId, @Body ActionPostDTO actionPostDTO);
 
 	@GET("/api/games/{id}")
 	Observable<GameStateDTO> getGameState(@Path("id") int id);

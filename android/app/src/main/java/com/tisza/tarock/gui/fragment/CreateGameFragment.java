@@ -65,7 +65,7 @@ public class CreateGameFragment extends MainActivityFragment
 		String gameType = GameType.values()[gameTypeSpinner.getSelectedItemPosition()].getID();
 		String doubleRoundType = DoubleRoundType.values()[doubleRoundTypeSpinner.getSelectedItemPosition()].getID();
 
-		apiInterface.createGameSession(new CreateGameSessionDTO(gameType, doubleRoundType)).subscribe(response ->
+		apiInterface.createGameSession(new CreateGameSessionDTO(gameType, doubleRoundType)).subscribe(() ->
 		{
 			progressDialog.dismiss();
 			getMainActivity().getSupportFragmentManager().popBackStack();

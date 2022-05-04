@@ -51,6 +51,8 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 	private LayoutInflater layoutInflater;
 
 	private GameBinding gameBinding;
+	private MessagesBinding messagesBinding;
+	private StatisticsBinding statisticsBinding;
 
 	private TextView[] playerMessageViews;
 	private LinearLayout myCardsView0;
@@ -170,6 +172,16 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 		centerSpace = contentView.findViewById(R.id.center_space);
 
+		messagesBinding = MessagesBinding.inflate(layoutInflater, centerSpace, false);
+		messagesBinding.setGameViewModel(gameViewModel);
+		messagesBinding.setLifecycleOwner(this);
+		messagesFrame = messagesBinding.getRoot();
+
+		statisticsBinding = StatisticsBinding.inflate(layoutInflater, centerSpace, false);
+		statisticsBinding.setGameViewModel(gameViewModel);
+		statisticsBinding.setLifecycleOwner(this);
+		statisticsView = statisticsBinding.getRoot();
+
 		playerMessageViews = new TextView[]
 		{
 				(TextView)contentView.findViewById(R.id.player_message_0),
@@ -212,8 +224,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 				return view;
 			}
 		};
-
-		messagesFrame = layoutInflater.inflate(R.layout.messages, centerSpace, false);
 
 		messagesView = messagesFrame.findViewById(R.id.messages_view);
 		messagesScrollView = (ScrollView)messagesFrame.findViewById(R.id.messages_scroll);
@@ -279,7 +289,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 		}
 
 
-		statisticsView = layoutInflater.inflate(R.layout.statistics, centerSpace, false);
 		statisticsGamepointsCaller = (TextView)statisticsView.findViewById(R.id.statistics_gamepoints_caller);
 		statisticsGamepointsOpponent = (TextView)statisticsView.findViewById(R.id.statistics_gamepoints_opponent);
 		statisticsPointMultiplierView = (TextView)statisticsView.findViewById(R.id.statistics_point_multiplier);

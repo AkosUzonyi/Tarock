@@ -1,4 +1,9 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable name="gameViewModel" type="com.tisza.tarock.gui.viewmodel.GameViewModel"/>
+    </data>
+
+<ScrollView
     android:id="@+id/statistics_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -127,3 +132,4 @@
         />
     </LinearLayout>
 </ScrollView>
+</layout>

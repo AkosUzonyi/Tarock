@@ -440,7 +440,10 @@ public class GameViewModel extends AndroidViewModel
 			{
 				HttpException httpException = (HttpException) throwable;
 				if (httpException.code() == 410)
-					return; //TODO update game session?
+				{
+					updateGameSession();
+					return;
+				}
 			}
 
 			RxJavaPlugins.onError(throwable);

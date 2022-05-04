@@ -36,10 +36,7 @@ class Gameplay extends Phase
 			return false;
 		
 		if (!getPlayableCards().contains(card))
-		{
-			//game.sendEvent(player, new EventActionFailed(Reason.INVALID_CARD));
 			return false;
-		}
 
 		game.getPlayerCards(player).removeCard(card);
 		currentTrick.placeCard(card);

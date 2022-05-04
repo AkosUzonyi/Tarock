@@ -72,11 +72,8 @@ class Announcing extends Phase implements IAnnouncing
 			return false;
 		
 		if (shouldHkpBeAnnounced())
-		{
-			//game.sendEvent(player, new EventActionFailed(Reason.CONTRAJATEK_REQUIRED));
 			return false;
-		}
-		
+
 		if (currentPlayerAnnounced)
 		{
 			lastAnnouncer = currentPlayer;

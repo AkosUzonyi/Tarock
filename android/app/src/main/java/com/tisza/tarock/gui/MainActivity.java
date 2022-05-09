@@ -26,7 +26,7 @@ import retrofit2.*;
 import java.io.*;
 import java.net.*;
 
-public class MainActivity extends AppCompatActivity implements GameListAdapter.GameAdapterListener
+public class MainActivity extends AppCompatActivity
 {
 	private static final int DISCONNECT_DELAY_SEC = 40;
 	private static final int DOWNLOAD_CSV_REQUEST_CODE = 1;
@@ -217,16 +217,6 @@ public class MainActivity extends AppCompatActivity implements GameListAdapter.G
 				.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
 				.addToBackStack(null)
 				.commit();
-	}
-
-	@Override
-	public void deleteGame(int gameSessionID)
-	{
-		new AlertDialog.Builder(this)
-				.setTitle(R.string.delete_game_confirm)
-				.setPositiveButton(R.string.delete_game, (dialog, which) -> apiInterface.deleteGameSession(gameSessionID).subscribe())
-				.setNegativeButton(R.string.cancel, null)
-				.show();
 	}
 
 	public void downloadCsv()

@@ -101,7 +101,11 @@ public class GameListFragment extends MainActivityFragment implements GameListAd
 	{
 		new AlertDialog.Builder(getContext())
 				.setTitle(R.string.delete_game_confirm)
-				.setPositiveButton(R.string.delete_game, (dialog, which) -> apiInterface.deleteGameSession(gameSessionID).subscribe())
+				.setPositiveButton(R.string.delete_game, (dialog, which) ->
+				{
+					apiInterface.deleteGameSession(gameSessionID).subscribe();
+					apiInterface.getGameSessions().observeOn(AndroidSchedulers.mainThread()).subscribe(gameListAdapter::setGameSessions);
+				})
 				.setNegativeButton(R.string.cancel, null)
 				.show();
 	}

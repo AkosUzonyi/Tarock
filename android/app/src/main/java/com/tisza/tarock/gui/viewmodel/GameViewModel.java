@@ -129,16 +129,16 @@ public class GameViewModel extends AndroidViewModel
 		apiInterface.postChat(gameSessionId, new ChatPostDTO(text)).subscribe();
 	}
 
-	private int getSeatOfUser(int userID)
+	private Integer getSeatOfUser(int userID)
 	{
 		if (gameStateDTO == null)
-			return -1;
+			return null;
 
 		for (int i = 0; i < gameStateDTO.players.size(); i++)
 			if (gameStateDTO.players.get(i).user.id == userID)
 				return i;
 
-		return -1;
+		return null;
 	}
 
 	private String getPlayerName(int seat)
@@ -281,8 +281,8 @@ public class GameViewModel extends AndroidViewModel
 			{
 				stringTemplateRes = R.string.message_chat;
 
-				int seat = getSeatOfUser(chat.user.id);
-				if (seat < 0)
+				Integer seat = getSeatOfUser(chat.user.id);
+				if (seat == null)
 					userName = chat.user.name;
 				else
 					userName = getPlayerName(seat);
@@ -319,8 +319,8 @@ public class GameViewModel extends AndroidViewModel
 			{
 				for (Chat chat : newChats)
 				{
-					int seat = getSeatOfUser(chat.user.id);
-					if (seat >= 0)
+					Integer seat = getSeatOfUser(chat.user.id);
+					if (seat != null)
 						chatBubbleContents.get(getDirectionOfSeat(seat)).setValue(chat.message);
 				}
 			}

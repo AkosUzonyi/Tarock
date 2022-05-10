@@ -456,7 +456,6 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 
 		List<Integer> pointsList = new ArrayList<>();
 		List<Integer> incrementPointsList = new ArrayList<>();
-		//TODO csunya
 		for (Player player : gameViewModel.getGameSession().getValue().players)
 		{
 			int points = player.points;

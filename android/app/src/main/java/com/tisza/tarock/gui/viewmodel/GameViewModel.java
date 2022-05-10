@@ -64,7 +64,6 @@ public class GameViewModel extends AndroidViewModel
 		gameSessionDisposable = Observable.interval(0, 2, TimeUnit.SECONDS).subscribe(i -> updateGameSession());
 	}
 
-	//TODO hack
 	public void setLoggedInUser(User loggedInUser)
 	{
 		this.loggedInUser = loggedInUser;

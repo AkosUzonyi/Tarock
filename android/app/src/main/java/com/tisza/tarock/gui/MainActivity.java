@@ -161,6 +161,8 @@ public class MainActivity extends AppCompatActivity
 
 	private void showErrorDialog(int title, String message)
 	{
+		popBackToLoginScreen();
+
 		new AlertDialog.Builder(this)
 				.setTitle(title)
 				.setMessage(message)

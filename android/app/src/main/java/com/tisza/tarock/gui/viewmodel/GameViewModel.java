@@ -61,7 +61,22 @@ public class GameViewModel extends AndroidViewModel
 			chatBubbleContents.add(new MutableLiveData<>());
 		}
 
-		gameSessionDisposable = Observable.interval(0, 2, TimeUnit.SECONDS).subscribe(i -> updateGameSession());
+		updateGameSession();
+
+		apiInterface.joinGameSession(gameSessionId).subscribe(this::updateGameSession, throwable ->
+		{
+			if (throwable instanceof HttpException && ((HttpException) throwable).code() == 409)
+				return;
+
+			RxJavaPlugins.onError(throwable);
+		});
+
+		gameSessionDisposable = Observable.interval(0, 2, TimeUnit.SECONDS).subscribe(i ->
+		{
+			GameSession gs = gameSession.getValue();
+			if (gs != null && gs.state.equals("lobby"))
+				updateGameSession();
+		});
 	}
 
 	public void setLoggedInUser(User loggedInUser)
@@ -196,9 +211,6 @@ public class GameViewModel extends AndroidViewModel
 
 			if (gameSession == null)
 				return;
-
-			if (GameSessionState.fromId(gameSession.state) == GameSessionState.LOBBY)
-				apiInterface.joinGameSession(gameSessionId).subscribe();
 
 			updateShortNames();
 			if (lastChatTime == 0)

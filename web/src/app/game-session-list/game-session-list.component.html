@@ -9,8 +9,8 @@
       </div>
     </div>
     <div class="game-session-button-container">
-      <a routerLink="/gameSessions/{{gameSession.id}}"><button class="button-normal">{{'join_game' | translate}}</button></a>
-      <div><button class="button-normal button-red" (click)="deleteGameSession(gameSession.id)">{{'delete_game' | translate}}</button></div>
+      <a routerLink="/gameSessions/{{gameSession.id}}"><button class="button-normal">{{(gameSession.state == 'lobby' ? 'lobby_enter' : (isMyGameSession(gameSession) ? 'join_game' : 'join_game_kibic')) | translate}}</button></a>
+      <div><button *ngIf="isMyGameSession(gameSession)" class="button-normal button-red" (click)="deleteGameSession(gameSession.id)">{{'delete_game' | translate}}</button></div>
     </div>
   </div>
 </div>

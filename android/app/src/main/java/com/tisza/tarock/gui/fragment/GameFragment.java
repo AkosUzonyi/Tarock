@@ -355,7 +355,7 @@ public class GameFragment extends MainActivityFragment implements TextView.OnEdi
 			public void onAnimationEnd(Animator animation)
 			{
 				gameBinding.myCards0.removeView(myCardView);
-				gameBinding.myCards0.removeView(myCardView);
+				gameBinding.myCards1.removeView(myCardView);
 
 				if (shouldArrange)
 					arrangeCards(gameState);

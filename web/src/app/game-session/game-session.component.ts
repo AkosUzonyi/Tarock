@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { animate, style, transition, trigger } from '@angular/animations';
 import { ApiService } from '../_services/api.service';
-import { Action, Chat, GameSession, Game as Game, GamePlayerInfo } from '../_models/dto';
+import { Action, Chat, GameSession, Game as Game, GamePlayerInfo, Player, User } from '../_models/dto';
 import { AuthService } from '../_services/auth.service';
 import { GameTranslateService } from '../_services/game-translate.service';
 
@@ -193,6 +193,17 @@ export class GameSessionComponent implements OnInit, OnDestroy {
 
   private getPositionFromSeat(seat: number): number {
     return (seat - (this.seat ?? 0) + 4) % 4;
+  }
+
+  getGamePointsOfUser(user: User): number {
+    if (this.game === null)
+      return 0;
+
+    for (let p of this.game.players)
+      if (p.user.id === user.id)
+        return p.points;
+
+    return 0;
   }
 
   private rotateLeft(list: any[], n: number) {

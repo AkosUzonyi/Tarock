@@ -210,13 +210,18 @@
 }
 
 #card-table table {
-  position: absolute;
-  top: 10%;
-  left: 50%;
+  margin: 50px auto;
   min-width: 400px;
-  transform: translate(-50%, 0);
   font-size: 24px;
   border-spacing: 20px;
+}
+
+#points-table {
+  text-align: center;
+}
+
+.increment-points-row {
+  font-size: 18px;
 }
 
 .statistics-table-team {

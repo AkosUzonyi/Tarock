@@ -3,7 +3,7 @@
   <p *ngFor="let player of gameSession.players">{{player.user.name}}</p>
   <button *ngIf="gameSession?.state === 'lobby'" (click)="start()">{{'lobby_start' | translate}} <span *ngIf="gameSession.players.length < 4">{{ 'with_bots' | translate: { botCount: 4 - gameSession.players.length } }}</span></button>
 </div>
-<div *ngIf="game && playersRotated" id=game-session>
+<div *ngIf="gameSession && game && playersRotated" id=game-session>
   <div id=upper-half>
     <div id="action-list" class="game-session-vertical-box" appAutoScroll>
       <ng-template ngFor let-action [ngForOf]="actions" let-i="index">
@@ -90,6 +90,17 @@
         <tr class="statistics-table-sum">
           <td>{{'statistics.sum' | translate}}</td>
           <td>{{game.statistics.sumPoints}}</td>
+        </tr>
+      </table>
+      <table id="points-table">
+        <tr>
+          <td *ngFor="let player of gameSession.players">{{player.user.name}}</td>
+        </tr>
+        <tr>
+          <td *ngFor="let player of gameSession.players">{{player.points + getGamePointsOfUser(player.user)}}</td>
+        </tr>
+        <tr class="increment-points-row">
+          <td *ngFor="let player of gameSession.players">({{getGamePointsOfUser(player.user)}})</td>
         </tr>
       </table>
       <button

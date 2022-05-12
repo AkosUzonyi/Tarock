@@ -201,28 +201,4 @@ public class Announcement
 		result = 31 * result + contraLevel;
 		return result;
 	}
-
-	private static final List<String> order = Arrays.asList(
-		"jatek",
-		"hkp",
-		"nyolctarokk",
-		"kilenctarokk",
-		"trull",
-		"negykiraly",
-		"banda",
-		"dupla",
-		"hosszudupla",
-		"kezbevacak",
-		"szinesites",
-		"volat",
-		"kiralyultimo",
-		"ketkiralyok",
-		"haromkiralyok",
-		"zaroparos",
-		"xxifogas",
-		"parosfacan",
-		"ultimo",
-		"kisszincsalad",
-		"nagyszincsalad"
-	);
 }

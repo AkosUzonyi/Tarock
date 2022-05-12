@@ -37,7 +37,7 @@ export class AuthService {
     });
   }
 
-  private apiLogin() {
+  apiLogin() {
     if (this.socialUser === null) {
       this.logout();
       return;

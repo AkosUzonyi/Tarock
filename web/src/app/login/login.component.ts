@@ -18,13 +18,14 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.authService.logout();
+
     this.userSubscription = this.authService.getUserObservable().subscribe(user => {
       if (user !== null)
         this.navigateBack();
     });
 
-    if (this.authService.getUser() !== null)
-      this.navigateBack();
+    this.authService.apiLogin();
   }
 
   navigateBack() {

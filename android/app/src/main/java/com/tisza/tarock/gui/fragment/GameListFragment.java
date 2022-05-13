@@ -78,7 +78,6 @@ public class GameListFragment extends MainActivityFragment implements GameListAd
 		super.onStart();
 		gameSessionListUpdateDisposable = Observable.interval(0, 2, TimeUnit.SECONDS)
 				.flatMap(i -> apiInterface.getGameSessions())
-				.observeOn(AndroidSchedulers.mainThread())
 				.subscribe(gameListAdapter::setGameSessions);
 	}
 
@@ -104,7 +103,7 @@ public class GameListFragment extends MainActivityFragment implements GameListAd
 				.setPositiveButton(R.string.delete_game, (dialog, which) ->
 				{
 					apiInterface.deleteGameSession(gameSessionID).subscribe();
-					apiInterface.getGameSessions().observeOn(AndroidSchedulers.mainThread()).subscribe(gameListAdapter::setGameSessions);
+					apiInterface.getGameSessions().subscribe(gameListAdapter::setGameSessions);
 				})
 				.setNegativeButton(R.string.cancel, null)
 				.show();

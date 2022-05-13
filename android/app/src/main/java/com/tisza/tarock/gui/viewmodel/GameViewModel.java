@@ -128,7 +128,7 @@ public class GameViewModel extends AndroidViewModel
 
 	public void startGameSession()
 	{
-		apiInterface.startGameSession(gameSessionId).observeOn(AndroidSchedulers.mainThread()).subscribe(this::updateGameSession);
+		apiInterface.startGameSession(gameSessionId).subscribe(this::updateGameSession);
 	}
 
 	public void doAction(Action action)
@@ -205,7 +205,7 @@ public class GameViewModel extends AndroidViewModel
 	//TODO do not update so frequent
 	private void updateGameSession()
 	{
-		apiInterface.getGameSession(gameSessionId).observeOn(AndroidSchedulers.mainThread()).subscribe(gameSession ->
+		apiInterface.getGameSession(gameSessionId).subscribe(gameSession ->
 		{
 			this.gameSession.setValue(gameSession);
 
@@ -324,7 +324,7 @@ public class GameViewModel extends AndroidViewModel
 		if (chatDisposable != null)
 			chatDisposable.dispose();
 
-		chatDisposable = apiInterface.getChat(gameSessionId, lastChatTime).observeOn(AndroidSchedulers.mainThread()).subscribe(newChats ->
+		chatDisposable = apiInterface.getChat(gameSessionId, lastChatTime).subscribe(newChats ->
 		{
 			chats.addAll(newChats);
 			if (!init)
@@ -352,7 +352,7 @@ public class GameViewModel extends AndroidViewModel
 		if (gameSession.getValue() == null || gameSession.getValue().currentGameId == null)
 			return;
 
-		actionDisposable = apiInterface.getActions(gameSession.getValue().currentGameId, nextActionOrdinal).observeOn(AndroidSchedulers.mainThread()).subscribe(newActions ->
+		actionDisposable = apiInterface.getActions(gameSession.getValue().currentGameId, nextActionOrdinal).subscribe(newActions ->
 		{
 			actions.addAll(newActions);
 			if (!init)
@@ -404,7 +404,7 @@ public class GameViewModel extends AndroidViewModel
 		if (gameSession.getValue() == null || gameSession.getValue().currentGameId == null)
 			return;
 
-		apiInterface.getGameState(gameSession.getValue().currentGameId).observeOn(AndroidSchedulers.mainThread()).subscribe(newGameState ->
+		apiInterface.getGameState(gameSession.getValue().currentGameId).subscribe(newGameState ->
 		{
 			boolean phaseChange = gameStateDTO == null || !newGameState.phase.equals(gameStateDTO.phase);
 			boolean isNewGame = gameStateDTO == null || gameStateDTO.id != newGameState.id;

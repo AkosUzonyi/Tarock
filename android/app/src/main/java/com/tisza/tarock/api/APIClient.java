@@ -32,7 +32,7 @@ public class APIClient
 		retrofit = new Retrofit.Builder()
 				.baseUrl(BuildConfig.SERVER_URL)
 				.addConverterFactory(GsonConverterFactory.create())
-				.addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(Schedulers.io()))
+				.addCallAdapterFactory(new RxThreadingCallAdapterFactory())
 				//.addCallAdapterFactory(new LiveDataCallAdapterFactory())
 				.client(client)
 				.build();

@@ -92,7 +92,7 @@
           <td>{{game.statistics.sumPoints}}</td>
         </tr>
       </table>
-      <table id="points-table">
+      <table id="points-table" *ngIf="game.phase === 'end'">
         <tr>
           <td *ngFor="let player of gameSession.players">{{player.user.name}}</td>
         </tr>

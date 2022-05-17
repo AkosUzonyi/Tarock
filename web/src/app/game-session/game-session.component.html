@@ -89,7 +89,7 @@
         </tr>
         <tr class="statistics-table-sum">
           <td>{{'statistics.sum' | translate}}</td>
-          <td>{{game.statistics.sumPoints}}</td>
+          <td>{{game.statistics.sumPoints * (seat === null || game.players[seat].team === 'caller' ? 1 : -1)}}</td>
         </tr>
       </table>
       <table id="points-table" *ngIf="game.phase === 'end'">

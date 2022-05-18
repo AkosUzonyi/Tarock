@@ -55,7 +55,7 @@ public class AuthenticationViewModel extends AndroidViewModel
 					loginRequestDTO.token = googleAccount.getIdToken();
 				}
 
-				apiInterface.login(loginRequestDTO).subscribe(loginResponseDTO ->
+				apiInterface.login(loginRequestDTO).doOnError(error -> logout()).subscribe(loginResponseDTO ->
 				{
 					user.setValue(loginResponseDTO.user);
 					AuthInterceptor.authToken = loginResponseDTO.token;

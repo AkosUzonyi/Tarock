@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity
 				break;
 			case LOGGING_IN:
 				progressDialog.setMessage(getResources().getString(R.string.logging_in));
+				progressDialog.setOnDismissListener(dialog -> authenticationViewModel.logout());
 				progressDialog.show();
 				break;
 			case LOGGED_IN:

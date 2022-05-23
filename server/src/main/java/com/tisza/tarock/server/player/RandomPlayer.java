@@ -1,26 +1,18 @@
 package com.tisza.tarock.server.player;
 
-import com.tisza.tarock.*;
-import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
+import com.tisza.tarock.game.*;
+import com.tisza.tarock.server.database.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
-import com.tisza.tarock.server.database.*;
 
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.stream.*;
 
-public class RandomPlayer extends Player
+public class RandomPlayer extends NonHumanPlayer
 {
-	private final int delay, extraDelay;
-	private final EventHandler eventHandler = new MyEventHandler();
-	private final Random rnd = new Random();
-
-	private boolean historyMode;
-	private Action lastActionInHistoryMode;
+	private Random rnd = new Random();
 	private boolean isMyTurn;
 
 	public RandomPlayer(User user)
@@ -30,26 +22,8 @@ public class RandomPlayer extends Player
 
 	public RandomPlayer(User user, int delay, int extraDelay)
 	{
-		super(user);
-		this.delay = delay;
-		this.extraDelay = extraDelay;
-	}
-
-	@Override
-	public void handleEvent(Event event)
-	{
-		event.handle(eventHandler);
-	}
-
-	private void enqueueActionDelayed(Action action, int delayMillis)
-	{
-		if (historyMode)
-		{
-			lastActionInHistoryMode = action;
-			return;
-		}
-
-		Main.GAME_EXECUTOR_SERVICE.schedule(() -> doAction(action), delayMillis, TimeUnit.MILLISECONDS);
+		super(user, delay, extraDelay);
+		setEventHandler(new MyEventHandler());
 	}
 
 	private class MyEventHandler implements EventHandler
@@ -86,7 +60,6 @@ public class RandomPlayer extends Player
 		@Override public void call(PlayerSeat player, Card card) {}
 
 		private Card currentFirstCard = null;
-		private Card currentStrongestCard = null;
 		private int cardsInTrick;
 
 		@Override
@@ -96,28 +69,17 @@ public class RandomPlayer extends Player
 				myCards.removeCard(card);
 
 			if (cardsInTrick == 0)
-			{
 				currentFirstCard = card;
-				currentStrongestCard = card;
-			}
-			else if (card.doesBeat(currentStrongestCard))
-			{
-				currentStrongestCard = card;
-			}
 
 			cardsInTrick++;
 
 			if (cardsInTrick == 4)
-			{
 				currentFirstCard = null;
-				currentStrongestCard = null;
-			}
 
 			cardsInTrick %= 4;
 		}
 
 		@Override public void readyForNewGame(PlayerSeat player) {}
-
 		@Override public void throwCards(PlayerSeat player) {}
 
 		@Override
@@ -141,15 +103,6 @@ public class RandomPlayer extends Player
 				}
 				else
 				{
-					for (Card card : myCards.getPlayableCards(currentFirstCard).stream()
-							.sorted(Comparator.comparingInt(this::getCardValue)).collect(Collectors.toList()))
-					{
-						if (card.doesBeat(currentStrongestCard))
-						{
-							enqueueActionDelayed(Action.play(card), delay);
-						}
-						return;
-					}
 					enqueueActionDelayed(Action.play(cardToPlay), delay);
 				}
 			}
@@ -182,15 +135,7 @@ public class RandomPlayer extends Player
 		@Override
 		public void availableCalls(Collection<Card> cards)
 		{
-			List<Card> sortedCards = cards.stream().sorted(Comparator.comparingInt(this::getCardValue).reversed()).collect(Collectors.toList());
-			for (Card card : sortedCards)
-			{
-				if (!myCards.hasCard(card))
-				{
-					enqueueActionDelayed(Action.call(card), delay);
-					return;
-				}
-			}
+			enqueueActionDelayed(Action.call(chooseRandom(cards)), delay);
 		}
 
 		@Override public void foldDone(PlayerSeat player) {}
@@ -212,26 +157,12 @@ public class RandomPlayer extends Player
 		}
 
 		@Override public void cardsTaken(PlayerSeat player) {}
-
 		@Override public void announcementStatistics(int selfGamePoints, int opponentGamePoints, List<AnnouncementResult> announcementResults, int sumPoints, int pointMultiplier) {}
 
 		@Override
 		public void pendingNewGame()
 		{
 			enqueueActionDelayed(Action.readyForNewGame(), 0);
-		}
-
-		private int getCardValue(Card card)
-		{
-			if (card instanceof SuitCard)
-			{
-				return ((SuitCard) card).getValue();
-			}
-			if (card instanceof TarockCard)
-			{
-				return ((TarockCard) card).getValue();
-			}
-			return 0;
 		}
 	}
 }

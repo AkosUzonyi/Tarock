@@ -1,4 +1,4 @@
-package com.tisza.tarock.game.phase.util;
+package com.tisza.tarock.util.util;
 
 import com.tisza.tarock.game.card.*;
 

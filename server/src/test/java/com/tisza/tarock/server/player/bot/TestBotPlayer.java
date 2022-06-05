@@ -1,22 +1,21 @@
-package com.tisza.tarock.game.phase.util;
+package com.tisza.tarock.server.player.bot;
 
 import com.tisza.tarock.message.*;
 import com.tisza.tarock.server.database.*;
-import com.tisza.tarock.server.player.bot.*;
 
 import java.util.*;
 
-public class ExtendedBotPlayer extends BotPlayer
+public class TestBotPlayer extends BotPlayer
 {
 
 	private final List<Action> actions = new ArrayList<>();
 
-	public ExtendedBotPlayer()
+	public TestBotPlayer()
 	{
 		this(new User(-1, new TarockDatabase()));
 	}
 
-	public ExtendedBotPlayer(User user)
+	public TestBotPlayer(User user)
 	{
 		super(user, 0, 0);
 	}
@@ -27,7 +26,7 @@ public class ExtendedBotPlayer extends BotPlayer
 	}
 
 	@Override
-	protected void doAction(Action action)
+	protected void enqueueActionDelayed(Action action, int delayMillis)
 	{
 		actions.add(action);
 	}

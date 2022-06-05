@@ -38,7 +38,8 @@ public abstract class NonHumanPlayer extends Player
 		event.handle(eventHandler);
 	}
 
-	protected void setEventHandler(EventHandler eventHandler){
+	protected void setEventHandler(EventHandler eventHandler)
+	{
 		this.eventHandler = eventHandler;
 	}
 }

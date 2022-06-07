@@ -1,6 +1,7 @@
 package com.tisza.tarock.server.database;
 
 import com.tisza.tarock.server.player.*;
+import com.tisza.tarock.server.player.bot.*;
 import io.reactivex.*;
 
 import java.util.*;
@@ -53,7 +54,7 @@ public class User
 
 	public Player createPlayer()
 	{
-		return isBot() ? new RandomPlayer(this, 500, 3000) : new ProtoPlayer(this);
+		return isBot() ? new BotPlayer(this, 500, 3000) : new ProtoPlayer(this);
 	}
 
 	@Override

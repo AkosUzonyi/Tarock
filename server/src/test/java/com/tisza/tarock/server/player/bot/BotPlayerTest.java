@@ -4,7 +4,7 @@ import com.tisza.tarock.game.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
-import com.tisza.tarock.util.util.*;
+import com.tisza.tarock.util.*;
 import org.junit.*;
 
 import java.util.*;

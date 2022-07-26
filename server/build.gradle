@@ -46,6 +46,10 @@ dependencies {
     compile 'com.google.firebase:firebase-admin:6.12.1'
     compile 'mysql:mysql-connector-java:8.0.19'
 
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 buildscript {

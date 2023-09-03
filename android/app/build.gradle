@@ -16,12 +16,12 @@ def getVersionName = { ->
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion '30'
+    compileSdkVersion 33
+    buildToolsVersion '33'
     defaultConfig {
         applicationId "com.tisza.tarock"
         minSdkVersion 17
-        targetSdkVersion 30
+        targetSdkVersion 33
         versionCode 31
         versionName getVersionName()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

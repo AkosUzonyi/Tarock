@@ -1,6 +1,5 @@
 package com.tisza.tarock.server.player;
 
-import com.tisza.tarock.*;
 import com.tisza.tarock.game.announcement.*;
 import com.tisza.tarock.game.card.*;
 import com.tisza.tarock.game.card.filter.*;
@@ -10,16 +9,10 @@ import com.tisza.tarock.game.phase.*;
 import com.tisza.tarock.message.*;
 
 import java.util.*;
-import java.util.concurrent.*;
 
-public class RandomPlayer extends Player
+public class RandomPlayer extends NonHumanPlayer
 {
-	private final int delay, extraDelay;
-	private EventHandler eventHandler = new MyEventHandler();
 	private Random rnd = new Random();
-
-	private boolean historyMode;
-	private Action lastActionInHistoryMode;
 	private boolean isMyTurn;
 
 	public RandomPlayer(User user)
@@ -29,26 +22,8 @@ public class RandomPlayer extends Player
 
 	public RandomPlayer(User user, int delay, int extraDelay)
 	{
-		super(user);
-		this.delay = delay;
-		this.extraDelay = extraDelay;
-	}
-
-	@Override
-	public void handleEvent(Event event)
-	{
-		event.handle(eventHandler);
-	}
-
-	private void enqueueActionDelayed(Action action, int delayMillis)
-	{
-		if (historyMode)
-		{
-			lastActionInHistoryMode = action;
-			return;
-		}
-
-		Main.GAME_EXECUTOR_SERVICE.schedule(() -> doAction(action), delayMillis, TimeUnit.MILLISECONDS);
+		super(user, delay, extraDelay);
+		setEventHandler(new MyEventHandler());
 	}
 
 	private class MyEventHandler implements EventHandler

@@ -63,6 +63,7 @@
     />
     <Button
         android:id="@+id/fb_login_button"
+        android:visibility="gone"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/button_margin"

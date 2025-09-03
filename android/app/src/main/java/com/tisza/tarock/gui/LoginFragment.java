@@ -60,10 +60,12 @@ public class LoginFragment extends MainActivityFragment
 		loginViewModel.getLoginState().observe(this, loginState ->
 		{
 			boolean loggedIn = loginState != LoginViewModel.LoginState.LOGGED_OUT;
-			facebookButton.setVisibility(!loggedIn ? View.VISIBLE : View.GONE);
+			//facebookButton.setVisibility(!loggedIn ? View.VISIBLE : View.GONE);
 			googleButton.setVisibility(!loggedIn ? View.VISIBLE : View.GONE);
 			playButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
 			logoutButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
+			settingsButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
+			rulesButton.setVisibility(loggedIn ? View.VISIBLE : View.GONE);
 
 			if (!loggedIn)
 				connectionViewModel.disconnect();
